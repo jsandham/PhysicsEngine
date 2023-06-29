@@ -24,10 +24,10 @@ MaterialDrawer::MaterialDrawer()
     mProjection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 10.0f);
     mViewProjection = mProjection * mView;
 
-    mFBO = Framebuffer::create(1000, 1000);
+    mFBO = PhysicsEngine::Framebuffer::create(1000, 1000);
 
-    mCameraUniform = RendererUniforms::getCameraUniform();
-    mLightUniform = RendererUniforms::getLightUniform();
+    mCameraUniform = PhysicsEngine::RendererUniforms::getCameraUniform();
+    mLightUniform = PhysicsEngine::RendererUniforms::getLightUniform();
 
     mDrawRequired = true;
 }
@@ -37,29 +37,27 @@ MaterialDrawer::~MaterialDrawer()
     delete mFBO;
 }
 
-void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
+void MaterialDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Material *material = clipboard.getWorld()->getAssetByGuid<Material>(id);
+    PhysicsEngine::Material *material = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Material>(id);
 
     if (material != nullptr)
     {
         ImGui::Text(("Material id: " + material->getGuid().toString()).c_str());
         ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
 
-        Guid currentShaderId = material->getShaderId();
+        PhysicsEngine::Guid currentShaderId = material->getShaderId();
 
-        Shader* ss = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+        PhysicsEngine::Shader* ss = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderId);
 
         if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
         {
-            for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<Shader>(); i++)
+            for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Shader>(); i++)
             {
-                Shader* s = clipboard.getWorld()->getAssetByIndex<Shader>(i);
+                PhysicsEngine::Shader* s = clipboard.getWorld()->getAssetByIndex<PhysicsEngine::Shader>(i);
 
                 std::string label = s->getName() + "##" + s->getGuid().toString();
 
@@ -82,7 +80,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::EndCombo();
         }
 
-        Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(currentShaderId);
+        PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderId);
 
         if (shader == nullptr) 
         {
@@ -91,34 +89,34 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         }
 
         // draw material uniforms
-        std::vector<ShaderUniform> uniforms = material->getUniforms();
+        std::vector<PhysicsEngine::ShaderUniform> uniforms = material->getUniforms();
         for (size_t i = 0; i < uniforms.size(); i++)
         {
             // Note: matrices not supported
             switch (uniforms[i].mType)
             {
-            case ShaderUniformType::Int:
+            case PhysicsEngine::ShaderUniformType::Int:
                 this->drawIntUniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Float:
+            case PhysicsEngine::ShaderUniformType::Float:
                 this->drawFloatUniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Color:
+            case PhysicsEngine::ShaderUniformType::Color:
                 this->drawColorUniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Vec2:
+            case PhysicsEngine::ShaderUniformType::Vec2:
                 this->drawVec2Uniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Vec3:
+            case PhysicsEngine::ShaderUniformType::Vec3:
                 this->drawVec3Uniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Vec4:
+            case PhysicsEngine::ShaderUniformType::Vec4:
                 this->drawVec4Uniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::Sampler2D:
+            case PhysicsEngine::ShaderUniformType::Sampler2D:
                 this->drawTexture2DUniform(clipboard, material, &uniforms[i]);
                 break;
-            case ShaderUniformType::SamplerCube:
+            case PhysicsEngine::ShaderUniformType::SamplerCube:
                 this->drawCubemapUniform(clipboard, material, &uniforms[i]);
                 break;
             }
@@ -137,7 +135,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
         // A change to the material was made so re-draw required
         if(mDrawRequired)
         {
-            Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
+            PhysicsEngine::Mesh* mesh = clipboard.getWorld()->getPrimtiveMesh(PhysicsEngine::PrimitiveType::Sphere);
             if (mesh != nullptr)
             {
                 mCameraUniform->setView(mView);
@@ -156,8 +154,8 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                 mLightUniform->copyToUniformsToDevice();
 
                 int64_t variant = 0;
-                variant |= static_cast<int64_t>(ShaderMacro::Directional);
-                variant |= static_cast<int64_t>(ShaderMacro::HardShadows);
+                variant |= static_cast<int64_t>(PhysicsEngine::ShaderMacro::Directional);
+                variant |= static_cast<int64_t>(PhysicsEngine::ShaderMacro::HardShadows);
 
                 shader->bind(shader->getProgramFromVariant(variant) == nullptr ? 0 : variant);
                 shader->setMat4("model", mModel);
@@ -166,7 +164,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
                 mFBO->bind();
                 mFBO->setViewport(0, 0, 1000, 1000);
-                mFBO->clearColor(Color(0.15f, 0.15f, 0.15f, 1.0f));
+                mFBO->clearColor(PhysicsEngine::Color(0.15f, 0.15f, 0.15f, 1.0f));
                 mFBO->clearDepth(1.0f);
                 mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
                 mFBO->unbind();
@@ -182,7 +180,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
 
         if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
         {
-            if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+            if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
             {
                 // opengl
                 ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
@@ -196,10 +194,6 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
                     ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
                     ImVec2(0, 0));
             }
-
-            //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-            //    ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-            //    ImVec2(0, 0));
         }
         ImGui::EndChild();
     }
@@ -208,7 +202,7 @@ void MaterialDrawer::render(Clipboard &clipboard, const Guid& id)
     mContentMax = ImGui::GetItemRectMax();
 }
 
-void MaterialDrawer::drawIntUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawIntUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     int temp = material->getInt(uniform->mName);
 
@@ -220,7 +214,7 @@ void MaterialDrawer::drawIntUniform(Clipboard& clipboard, Material* material, Sh
     }
 }
 
-void MaterialDrawer::drawFloatUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawFloatUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     float temp = material->getFloat(uniform->mName);
 
@@ -232,9 +226,9 @@ void MaterialDrawer::drawFloatUniform(Clipboard& clipboard, Material* material, 
     }
 }
 
-void MaterialDrawer::drawColorUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawColorUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
-    Color temp = material->getColor(uniform->mName);
+    PhysicsEngine::Color temp = material->getColor(uniform->mName);
 
     if (ImGui::ColorEdit4(uniform->getShortName().c_str(), reinterpret_cast<float*>(&temp.mR)))
     {
@@ -244,7 +238,7 @@ void MaterialDrawer::drawColorUniform(Clipboard& clipboard, Material* material, 
     }
 }
 
-void MaterialDrawer::drawVec2Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawVec2Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     glm::vec2 temp = material->getVec2(uniform->mName);
 
@@ -256,7 +250,7 @@ void MaterialDrawer::drawVec2Uniform(Clipboard& clipboard, Material* material, S
     }
 }
 
-void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     glm::vec3 temp = material->getVec3(uniform->mName);
 
@@ -281,7 +275,7 @@ void MaterialDrawer::drawVec3Uniform(Clipboard& clipboard, Material* material, S
     }
 }
 
-void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     glm::vec4 temp = material->getVec4(uniform->mName);
 
@@ -306,9 +300,9 @@ void MaterialDrawer::drawVec4Uniform(Clipboard& clipboard, Material* material, S
     }
 }
 
-void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
-    Texture2D* texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(material->getTexture(uniform->mName));
+    PhysicsEngine::Texture2D* texture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Texture2D>(material->getTexture(uniform->mName));
 
     if (ImGui::ImageButton((void*)(intptr_t)(texture == nullptr ? 0 : *reinterpret_cast<unsigned int*>(texture->getNativeGraphics()->getIMGUITexture())),
         ImVec2(80, 80),
@@ -342,7 +336,19 @@ void MaterialDrawer::drawTexture2DUniform(Clipboard& clipboard, Material* materi
     }
 }
 
-void MaterialDrawer::drawCubemapUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform)
+void MaterialDrawer::drawCubemapUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform)
 {
     
+}
+
+bool MaterialDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

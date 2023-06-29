@@ -112,5 +112,3 @@ void DirectXRenderer::drawIndexedInstanced_impl(const RenderObject &renderObject
 
 void DirectXRenderer::beginQuery_impl(unsigned int queryId){}
 void DirectXRenderer::endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime){}
-void DirectXRenderer::createScreenQuad_impl(unsigned int *vao, unsigned int *vbo){}
-void DirectXRenderer::renderScreenQuad_impl(unsigned int vao){}

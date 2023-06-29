@@ -28,6 +28,11 @@ void OpenGLShaderProgram::load(const std::string &name, const std::string &verte
     mVertex = vertex;
     mFragment = fragment;
     mGeometry = geometry;
+
+    memset(mStatus.mVertexCompileLog, 0, sizeof(mStatus.mVertexCompileLog));
+    memset(mStatus.mFragmentCompileLog, 0, sizeof(mStatus.mFragmentCompileLog));
+    memset(mStatus.mGeometryCompileLog, 0, sizeof(mStatus.mGeometryCompileLog));
+    memset(mStatus.mLinkLog, 0, sizeof(mStatus.mLinkLog));
 }
 
 void OpenGLShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment)

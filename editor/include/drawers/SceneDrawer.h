@@ -1,17 +1,26 @@
 #ifndef SCENE_DRAWER_H__
 #define SCENE_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-    class SceneDrawer : public InspectorDrawer
+    class SceneDrawer
     {
+    private:
+        ImVec2 mContentMin;
+        ImVec2 mContentMax;
+
     public:
         SceneDrawer();
         ~SceneDrawer();
 
-        virtual void render(Clipboard& clipboard, const Guid& id) override;
+        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+    private:
+        bool isHovered() const;
     };
 
 } // namespace PhysicsEditor

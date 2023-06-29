@@ -58,8 +58,6 @@ public:
 
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long *elapsedTime);
-    static void createScreenQuad(unsigned int *vao, unsigned int *vbo);
-    static void renderScreenQuad(unsigned int vao);
     
 protected:
     virtual void init_impl() = 0;
@@ -81,8 +79,6 @@ protected:
 
     virtual void beginQuery_impl(unsigned int queryId) = 0;
     virtual void endQuery_impl(unsigned int queryId, unsigned long long* elapsedTime) = 0;
-    virtual void createScreenQuad_impl(unsigned int* vao, unsigned int* vbo) = 0;
-    virtual void renderScreenQuad_impl(unsigned int vao) = 0;
 };
 }
 

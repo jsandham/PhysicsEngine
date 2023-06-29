@@ -1,33 +1,42 @@
 #ifndef MESH_DRAWER_H__
 #define MESH_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
 #include <graphics/Framebuffer.h>
 #include <graphics/RendererUniforms.h>
 
+#include "../EditorClipboard.h"
+
 namespace PhysicsEditor
 {
-class MeshDrawer : public InspectorDrawer
+class MeshDrawer
 {
-  private:
-    Framebuffer* mFBO;
+    private:
+        PhysicsEngine::Framebuffer* mFBO;
 
-    CameraUniform* mCameraUniform;
+        PhysicsEngine::CameraUniform* mCameraUniform;
 
-    glm::mat4 mModel;
+        glm::mat4 mModel;
 
-    float mMouseX;
-    float mMouseY;
+        float mMouseX;
+        float mMouseY;
 
-    int mActiveDrawModeIndex;
-    bool mWireframeOn;
-    bool mResetModelMatrix;
+        int mActiveDrawModeIndex;
+        bool mWireframeOn;
+        bool mResetModelMatrix;
 
-  public:
-    MeshDrawer();
-    ~MeshDrawer();
+        ImVec2 mContentMin;
+        ImVec2 mContentMax;
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    public:
+        MeshDrawer();
+        ~MeshDrawer();
+
+        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+    private:
+        bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

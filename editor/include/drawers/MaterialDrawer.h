@@ -1,46 +1,52 @@
 #ifndef MATERIAL_DRAWER_H__
 #define MATERIAL_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
 
 #include "core/Material.h"
-
 #include <graphics/Framebuffer.h>
 #include <graphics/RendererUniforms.h>
 
+#include "../EditorClipboard.h"
+
 namespace PhysicsEditor
 {
-class MaterialDrawer : public InspectorDrawer
+class MaterialDrawer
 {
-  private:
-    Framebuffer* mFBO;
+    private:
+        PhysicsEngine::Framebuffer* mFBO;
 
-    CameraUniform* mCameraUniform;
-    LightUniform* mLightUniform;
+        PhysicsEngine::CameraUniform* mCameraUniform;
+        PhysicsEngine::LightUniform* mLightUniform;
 
-    glm::vec3 mCameraPos;
-    glm::mat4 mModel;
-    glm::mat4 mView;
-    glm::mat4 mProjection;
-    glm::mat4 mViewProjection;
+        glm::vec3 mCameraPos;
+        glm::mat4 mModel;
+        glm::mat4 mView;
+        glm::mat4 mProjection;
+        glm::mat4 mViewProjection;
 
-    bool mDrawRequired;
+        bool mDrawRequired;
 
-  public:
-    MaterialDrawer();
-    ~MaterialDrawer();
+        ImVec2 mContentMin;
+        ImVec2 mContentMax;
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    public:
+        MaterialDrawer();
+        ~MaterialDrawer();
 
-  private:
-      void drawIntUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawFloatUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawColorUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawVec2Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawVec3Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawVec4Uniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawTexture2DUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
-      void drawCubemapUniform(Clipboard& clipboard, Material* material, ShaderUniform* uniform);
+        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+    private:
+        void drawIntUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawFloatUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawColorUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawVec2Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawVec3Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawVec4Uniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawTexture2DUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+        void drawCubemapUniform(Clipboard& clipboard, PhysicsEngine::Material* material, PhysicsEngine::ShaderUniform* uniform);
+
+        bool isHovered() const;
 };
 
 } // namespace PhysicsEditor

@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "RendererShaders.h"
 #include "RendererUniforms.h"
+#include "RendererMeshes.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -33,9 +34,7 @@ class DebugRenderer
 
     CameraUniform *mCameraUniform;
 
-    // quad
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
+    ScreenQuad *mScreenQuad;
 
   public:
     DebugRenderer();

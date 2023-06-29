@@ -16,16 +16,14 @@ MeshRendererDrawer::~MeshRendererDrawer()
 {
 }
 
-void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
+void MeshRendererDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("MeshRenderer", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        MeshRenderer *meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentByGuid<MeshRenderer>(id);
+        PhysicsEngine::MeshRenderer *meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::MeshRenderer>(id);
 
         if (meshRenderer != nullptr)
         {
@@ -33,7 +31,7 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
             // Mesh
             {
-                Mesh* mesh = clipboard.getWorld()->getAssetByGuid<Mesh>(meshRenderer->getMesh());
+                PhysicsEngine::Mesh* mesh = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Mesh>(meshRenderer->getMesh());
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
@@ -92,12 +90,12 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
             }
             ImGui::PopItemWidth();
 
-            Guid materialIds[8];
+            PhysicsEngine::Guid materialIds[8];
             for (int i = 0; i < materialCount; i++)
             {
                 materialIds[i] = meshRenderer->getMaterial(i);
 
-                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(materialIds[i]);
+                PhysicsEngine::Material* material = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Material>(materialIds[i]);
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
@@ -162,4 +160,30 @@ void MeshRendererDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::MeshRenderer* meshRenderer = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::MeshRenderer>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(meshRenderer->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::MeshRenderer>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool MeshRendererDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

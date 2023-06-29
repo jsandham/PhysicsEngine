@@ -1,17 +1,26 @@
 #ifndef SPHERECOLLIDER_DRAWER_H__
 #define SPHERECOLLIDER_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class SphereColliderDrawer : public InspectorDrawer
+class SphereColliderDrawer
 {
+  private:
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
+
   public:
     SphereColliderDrawer();
     ~SphereColliderDrawer();
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+private:
+    bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

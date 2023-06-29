@@ -88,7 +88,7 @@ void Inspector::update(Clipboard &clipboard, bool isOpenedThisFrame)
 
 void Inspector::drawEntity(Clipboard &clipboard)
 {
-    Entity *entity = clipboard.getWorld()->getActiveScene()->getEntityByGuid(clipboard.getSelectedId());
+    PhysicsEngine::Entity *entity = clipboard.getWorld()->getActiveScene()->getEntityByGuid(clipboard.getSelectedId());
 
     // entity may have been recently deleted
     if (entity == nullptr)
@@ -118,54 +118,30 @@ void Inspector::drawEntity(Clipboard &clipboard)
 
     ImGui::Separator();
 
-    std::vector<std::pair<Guid, int>> componentsOnEntity = entity->getComponentsOnEntity();
+    std::vector<std::pair<PhysicsEngine::Guid, int>> componentsOnEntity = entity->getComponentsOnEntity();
     for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
-        Guid componentId = componentsOnEntity[i].first;
+        PhysicsEngine::Guid componentId = componentsOnEntity[i].first;
         int componentType = componentsOnEntity[i].second;
 
-        ImGui::PushID(componentId.c_str());
-
-        InspectorDrawer *drawer = nullptr;
-        if (Component::isInternal(componentType))
+        //ImGui::PushID(componentId.c_str());
+        
+        switch (componentType)
         {
-            switch (componentType)
-            {
-            case ComponentType<Transform>::type: { drawer = &mTransformDrawer; break; }
-            case ComponentType<Rigidbody>::type: { drawer = &mRigidbodyDrawer; break; }
-            case ComponentType<Camera>::type: { drawer = &mCameraDrawer; break; }
-            case ComponentType<MeshRenderer>::type: { drawer = &mMeshRendererDrawer; break; }
-            case ComponentType<LineRenderer>::type: { drawer = &mLineRendererDrawer; break; }
-            case ComponentType<Light>::type: { drawer = &mLightDrawer; break; }
-            case ComponentType<BoxCollider>::type: { drawer = &mBoxColliderDrawer; break; }
-            case ComponentType<SphereCollider>::type: { drawer = &mSphereColliderDrawer; break; }
-            case ComponentType<CapsuleCollider>::type: { drawer = &mCapsuleColliderDrawer; break; }
-            case ComponentType<MeshCollider>::type: { drawer = &mMeshColliderDrawer; break; }
-            case ComponentType<Terrain>::type: { drawer = &mTerrainDrawer; break; }
-            }
+        case PhysicsEngine::ComponentType<PhysicsEngine::Transform>::type: { mTransformDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::Rigidbody>::type: { mRigidbodyDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::Camera>::type: { mCameraDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::MeshRenderer>::type: { mMeshRendererDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::LineRenderer>::type: { mLineRendererDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::Light>::type: { mLightDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::BoxCollider>::type: { mBoxColliderDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::SphereCollider>::type: { mSphereColliderDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::CapsuleCollider>::type: { mCapsuleColliderDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::MeshCollider>::type: { mMeshColliderDrawer.render(clipboard, componentId); break; }
+        case PhysicsEngine::ComponentType<PhysicsEngine::Terrain>::type: { mTerrainDrawer.render(clipboard, componentId); break; }
         }
 
-        if (drawer != nullptr) {
-            drawer->render(clipboard, componentId);
-
-            if (drawer->isHovered())
-            {
-                if (componentType != ComponentType<Transform>::type)
-                {
-                    if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
-                    {
-                        if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
-                        {
-                            clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(entity->getGuid(), componentId, componentType);
-                        }
-
-                        ImGui::EndPopup();
-                    }
-                }
-            }
-        }
-      
-        ImGui::PopID();
+        //ImGui::PopID();
     }
 
     static std::vector<std::string> components = { "Rigidbody",    "Camera",
@@ -174,32 +150,32 @@ void Inspector::drawEntity(Clipboard &clipboard)
     size_t index;
     if (ImGui::BeginDropdownWindow("Add component", components, &index))
     {
-        Component* component = nullptr;
+        PhysicsEngine::Component* component = nullptr;
         switch (index)
         {
         case 0:
-            component = entity->addComponent<Rigidbody>();
+            component = entity->addComponent<PhysicsEngine::Rigidbody>();
             break;
         case 1:
-            component = entity->addComponent<Camera>();
+            component = entity->addComponent<PhysicsEngine::Camera>();
             break;
         case 2:
-            component = entity->addComponent<MeshRenderer>();
+            component = entity->addComponent<PhysicsEngine::MeshRenderer>();
             break;
         case 3:
-            component = entity->addComponent<LineRenderer>();
+            component = entity->addComponent<PhysicsEngine::LineRenderer>();
             break;
         case 4:
-            component = entity->addComponent<Light>();
+            component = entity->addComponent<PhysicsEngine::Light>();
             break;
         case 5:
-            component = entity->addComponent<SphereCollider>();
+            component = entity->addComponent<PhysicsEngine::SphereCollider>();
             break;
         case 6:
-            component = entity->addComponent<BoxCollider>();
+            component = entity->addComponent<PhysicsEngine::BoxCollider>();
             break;
         case 7:
-            component = entity->addComponent<Terrain>();
+            component = entity->addComponent<PhysicsEngine::Terrain>();
             break;
         }
         

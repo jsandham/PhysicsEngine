@@ -4,9 +4,11 @@
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
 #include <algorithm>
+#include <iostream>
 #include <d3dcompiler.h>
 
 #pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "dxguid.lib")
 
 using namespace PhysicsEngine;
 
@@ -20,11 +22,15 @@ DirectXShaderProgram::DirectXShaderProgram()
     mPixelShaderBlob = NULL;
     mGeometryShaderBlob = NULL;
 
+    mVertexShaderReflector = NULL;
+    mPixelShaderReflector = NULL;
+    mGeometryShaderReflector = NULL;
 
-    ZeroMemory(&mVSConstantBufferDesc, sizeof(D3D11_BUFFER_DESC));
-    mVSConstantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;   // write access access by CPU and GPU
-    mVSConstantBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
-    mVSConstantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
+    // This should be replaced with UniformBuffer I think
+    //ZeroMemory(&mVSConstantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+    //mVSConstantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;   // write access access by CPU and GPU
+    //mVSConstantBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER; // use as a vertex buffer
+    //mVSConstantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; // allow CPU to write in buffer
 }
 
 DirectXShaderProgram ::~DirectXShaderProgram()
@@ -62,6 +68,11 @@ void DirectXShaderProgram::load(const std::string& name, const std::string &vert
     mVertex = vertex;
     mFragment = fragment;
     mGeometry = geometry;
+
+    memset(mStatus.mVertexCompileLog, 0, sizeof(mStatus.mVertexCompileLog));
+    memset(mStatus.mFragmentCompileLog, 0, sizeof(mStatus.mFragmentCompileLog));
+    memset(mStatus.mGeometryCompileLog, 0, sizeof(mStatus.mGeometryCompileLog));
+    memset(mStatus.mLinkLog, 0, sizeof(mStatus.mLinkLog));
 }
 
 void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment)
@@ -75,10 +86,6 @@ void DirectXShaderProgram::compile()
     memset(mStatus.mFragmentCompileLog, 0, sizeof(mStatus.mFragmentCompileLog));
     memset(mStatus.mGeometryCompileLog, 0, sizeof(mStatus.mGeometryCompileLog));
     memset(mStatus.mLinkLog, 0, sizeof(mStatus.mLinkLog));
-
-    mStatus.mVertexShaderCompiled = 1;
-    mStatus.mFragmentShaderCompiled = 1;
-    mStatus.mGeometryShaderCompiled = 1;
 
     if (mVertexShader != NULL)
     {
@@ -105,6 +112,39 @@ void DirectXShaderProgram::compile()
     {
         mGeometryShaderBlob->Release();
     }
+
+    if (mVertexShaderReflector != NULL)
+    {
+        mVertexShaderReflector->Release();
+    }
+    if (mPixelShaderReflector != NULL)
+    {
+        mPixelShaderReflector->Release();
+    }
+    if (mGeometryShaderReflector != NULL)
+    {
+        mGeometryShaderReflector->Release();
+    }
+
+    // Free any existing constant buffers
+    for (size_t i = 0; i < mVSConstantBuffers.size(); i++)
+    {
+        delete mVSConstantBuffers[i];
+    }
+
+    for (size_t i = 0; i < mPSConstantBuffers.size(); i++)
+    {
+        delete mPSConstantBuffers[i];
+    }
+
+    for (size_t i = 0; i < mGSConstantBuffers.size(); i++)
+    {
+        delete mGSConstantBuffers[i];
+    }
+
+    mVSConstantBuffers.clear();
+    mPSConstantBuffers.clear();
+    mGSConstantBuffers.clear();
 
     UINT flags = D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_DEBUG;
 
@@ -177,19 +217,187 @@ void DirectXShaderProgram::compile()
     {
         CHECK_ERROR(device->CreateVertexShader(
             mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(), NULL, &mVertexShader));
+        D3DReflect(mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(),
+                   IID_ID3D11ShaderReflection, (void **)&mVertexShaderReflector);
+
+        D3D11_SHADER_DESC desc;
+        CHECK_ERROR(mVertexShaderReflector->GetDesc(&desc));
+
+        std::cout << "mName: " << mName << std::endl;
+        std::cout << "Vertex constant buffer count: " << desc.ConstantBuffers << std::endl;
+
+        mVSConstantBuffers.resize(desc.ConstantBuffers);
+
+        // Loop through all constant buffers
+        for (unsigned int i = 0; i < desc.ConstantBuffers; i++)
+        {
+            ID3D11ShaderReflectionConstantBuffer *refectionBuffer =
+                mVertexShaderReflector->GetConstantBufferByIndex(i);
+            D3D11_SHADER_BUFFER_DESC constantBufferDesc = {};
+
+            CHECK_ERROR(refectionBuffer->GetDesc(&constantBufferDesc));
+
+            std::cout << "constantBufferDesc.Name: " << constantBufferDesc.Name << std::endl;
+            std::cout << "constantBufferDesc.Size: " << constantBufferDesc.Size << std::endl;
+            std::cout << "constantBufferDesc.Type: " << constantBufferDesc.Type << std::endl;
+            std::cout << "constantBufferDesc.uFlags: " << constantBufferDesc.uFlags << std::endl;
+            std::cout << "constantBufferDesc.Variables: " << constantBufferDesc.Variables << std::endl;
+
+            D3D11_SHADER_INPUT_BIND_DESC VSInputBindDesc;
+            CHECK_ERROR(
+                mVertexShaderReflector->GetResourceBindingDescByName(constantBufferDesc.Name, &VSInputBindDesc));
+
+            std::cout << "VSInputBindDesc.BindCount: " << VSInputBindDesc.BindCount << std::endl;
+            std::cout << "VSInputBindDesc.BindPoint: " << VSInputBindDesc.BindPoint << std::endl;
+            std::cout << "VSInputBindDesc.Dimension: " << VSInputBindDesc.Dimension << std::endl;
+            std::cout << "VSInputBindDesc.Name: " << VSInputBindDesc.Name << std::endl;
+            std::cout << "VSInputBindDesc.NumSamples: " << VSInputBindDesc.NumSamples << std::endl;
+            std::cout << "VSInputBindDesc.ReturnType: " << VSInputBindDesc.ReturnType << std::endl;
+            std::cout << "VSInputBindDesc.Type: " << VSInputBindDesc.Type << std::endl;
+            std::cout << "VSInputBindDesc.uFlags: " << VSInputBindDesc.uFlags << std::endl;
+
+            mVSConstantBuffers[i] = UniformBuffer::create(constantBufferDesc.Size, VSInputBindDesc.BindPoint);
+        }
+
+        /*std::cout << "desc.ArrayInstructionCount: " << desc.ArrayInstructionCount << std::endl;
+        std::cout << "desc.BoundResources: " << desc.BoundResources << std::endl;
+        std::cout << "desc.cBarrierInstructions: " << desc.cBarrierInstructions << std::endl;
+        std::cout << "desc.cControlPoints: " << desc.cControlPoints << std::endl;
+        std::cout << "desc.cGSInstanceCount: " << desc.cGSInstanceCount << std::endl;
+        std::cout << "desc.cInterlockedInstructions: " << desc.cInterlockedInstructions << std::endl;
+        std::cout << "desc.ConstantBuffers: " << desc.ConstantBuffers << std::endl;
+        std::cout << "desc.Creator: " << desc.Creator << std::endl;
+        std::cout << "desc.cTextureStoreInstructions: " << desc.cTextureStoreInstructions << std::endl;
+        std::cout << "desc.CutInstructionCount: " << desc.CutInstructionCount << std::endl;
+        std::cout << "desc.DclCount: " << desc.DclCount << std::endl;
+        std::cout << "desc.DefCount: " << desc.DefCount << std::endl;
+        std::cout << "desc.DynamicFlowControlCount: " << desc.DynamicFlowControlCount << std::endl;
+        std::cout << "desc.EmitInstructionCount: " << desc.EmitInstructionCount << std::endl;
+        std::cout << "desc.InputParameters: " << desc.InputParameters << std::endl;
+        std::cout << "desc.OutputParameters: " << desc.OutputParameters << std::endl;
+
+        ID3D11ShaderReflectionVariable* refectionVariable1 = mVertexShaderReflector->GetVariableByName("worldViewProjection");
+        D3D11_SHADER_VARIABLE_DESC desc1;
+        refectionVariable1->GetDesc(&desc1);
+
+        std::cout << "mName: " << mName << std::endl;
+        std::cout << "desc1.DefaultValue: " << desc1.DefaultValue << std::endl;
+        std::cout << "desc1.Name: " << desc1.Name << std::endl;
+        std::cout << "desc1.SamplerSize: " << desc1.SamplerSize << std::endl;
+        std::cout << "desc1.Size: " << desc1.Size << std::endl;
+        std::cout << "desc1.StartOffset: " << desc1.StartOffset << std::endl;
+        std::cout << "desc1.StartSampler: " << desc1.StartSampler << std::endl;
+        std::cout << "desc1.StartTexture: " << desc1.StartTexture << std::endl;
+        std::cout << "desc1.TextureSize: " << desc1.TextureSize << std::endl;
+        std::cout << "desc1.uFlags: " << desc1.uFlags << std::endl;
+
+
+        ID3D11ShaderReflectionConstantBuffer *refectionBuffer1 = mVertexShaderReflector->GetConstantBufferByIndex(0);
+        D3D11_SHADER_BUFFER_DESC cbShaderDesc1 = {};
+
+        hr = refectionBuffer1->GetDesc(&cbShaderDesc1);
+
+        if (hr == S_OK)
+        {
+            std::cout << "cbShaderDesc1.Name: " << cbShaderDesc1.Name << std::endl;
+            std::cout << "cbShaderDesc1.Size: " << cbShaderDesc1.Size << std::endl;
+            std::cout << "cbShaderDesc1.Type: " << cbShaderDesc1.Type << std::endl;
+            std::cout << "cbShaderDesc1.uFlags: " << cbShaderDesc1.uFlags << std::endl;
+            std::cout << "cbShaderDesc1.Variables: " << cbShaderDesc1.Variables << std::endl;
+
+        }
+
+        ID3D11ShaderReflectionConstantBuffer *refectionBuffer2 = mVertexShaderReflector->GetConstantBufferByIndex(1);
+        D3D11_SHADER_BUFFER_DESC cbShaderDesc2 = {};
+
+        hr = refectionBuffer2->GetDesc(&cbShaderDesc2);
+
+        if (hr == S_OK)
+        {
+            std::cout << "cbShaderDesc2.Name: " << cbShaderDesc2.Name << std::endl;
+            std::cout << "cbShaderDesc2.Size: " << cbShaderDesc2.Size << std::endl;
+            std::cout << "cbShaderDesc2.Type: " << cbShaderDesc2.Type << std::endl;
+            std::cout << "cbShaderDesc2.uFlags: " << cbShaderDesc2.uFlags << std::endl;
+            std::cout << "cbShaderDesc2.Variables: " << cbShaderDesc2.Variables << std::endl;
+        }
+
+        ID3D11ShaderReflectionConstantBuffer *refectionBuffer3 =
+            mVertexShaderReflector->GetConstantBufferByName("Test2");
+        D3D11_SHADER_BUFFER_DESC cbShaderDesc3 = {};
+
+        hr = refectionBuffer3->GetDesc(&cbShaderDesc3);
+
+        if (hr == S_OK)
+        {
+            std::cout << "cbShaderDesc3.Name: " << cbShaderDesc3.Name << std::endl;
+            std::cout << "cbShaderDesc3.Size: " << cbShaderDesc3.Size << std::endl;
+            std::cout << "cbShaderDesc3.Type: " << cbShaderDesc3.Type << std::endl;
+            std::cout << "cbShaderDesc3.uFlags: " << cbShaderDesc3.uFlags << std::endl;
+            std::cout << "cbShaderDesc3.Variables: " << cbShaderDesc3.Variables << std::endl;
+        }*/
+
+
+
+
+
+
+
+
+        /*ID3D11ShaderReflectionVariable* variable2 = mVertexShaderReflector->GetVariableByName("wvp");
+        D3D11_SHADER_VARIABLE_DESC desc2;
+        HRESULT hr = variable2->GetDesc(&desc2);
+
+        if (hr == S_OK)
+        {
+            std::cout << "desc2.DefaultValue: " << desc2.DefaultValue << std::endl;
+            std::cout << "desc2.Name: " << desc2.Name << std::endl;
+            std::cout << "desc2.SamplerSize: " << desc2.SamplerSize << std::endl;
+            std::cout << "desc2.Size: " << desc2.Size << std::endl;
+            std::cout << "desc2.StartOffset: " << desc2.StartOffset << std::endl;
+            std::cout << "desc2.StartSampler: " << desc2.StartSampler << std::endl;
+            std::cout << "desc2.StartTexture: " << desc2.StartTexture << std::endl;
+            std::cout << "desc2.TextureSize: " << desc2.TextureSize << std::endl;
+            std::cout << "desc2.uFlags: " << desc2.uFlags << std::endl;
+        }
+
+        hr = mVertexShaderReflector->GetResourceBindingDescByName("Test", &mVSInputBindDesc);
+
+        if (hr == S_OK)
+        {
+            std::cout << "mVSInputBindDesc.BindCount: " << mVSInputBindDesc.BindCount << std::endl;
+            std::cout << "mVSInputBindDesc.BindPoint: " << mVSInputBindDesc.BindPoint << std::endl;
+            std::cout << "mVSInputBindDesc.Dimension: " << mVSInputBindDesc.Dimension << std::endl;
+            std::cout << "mVSInputBindDesc.Name: " << mVSInputBindDesc.Name << std::endl;
+            std::cout << "mVSInputBindDesc.NumSamples: " << mVSInputBindDesc.NumSamples << std::endl;
+            std::cout << "mVSInputBindDesc.ReturnType: " << mVSInputBindDesc.ReturnType << std::endl;
+            std::cout << "mVSInputBindDesc.Type: " << mVSInputBindDesc.Type << std::endl;
+            std::cout << "mVSInputBindDesc.uFlags: " << mVSInputBindDesc.uFlags << std::endl;
+        }*/
+
+
+
+
     }
 
     if (mPixelShaderBlob != NULL)
     {
         CHECK_ERROR(device->CreatePixelShader(
             mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), NULL, &mPixelShader));
+        D3DReflect(mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection,
+                   (void **)&mPixelShaderReflector);
     }
 
     if (mGeometryShaderBlob != NULL)
     {
         CHECK_ERROR(device->CreateGeometryShader(
             mGeometryShaderBlob->GetBufferPointer(), mGeometryShaderBlob->GetBufferSize(), NULL, &mGeometryShader));
+        D3DReflect(mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection,
+                   (void **)&mPixelShaderReflector);
     }
+
+    mStatus.mVertexShaderCompiled = 1;
+    mStatus.mFragmentShaderCompiled = 1;
+    mStatus.mGeometryShaderCompiled = 1;
 }
 
 void DirectXShaderProgram::bind()
@@ -197,6 +405,7 @@ void DirectXShaderProgram::bind()
     DirectXRenderContext::get()->getD3DDeviceContext()->VSSetShader(mVertexShader, NULL, 0);
     DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(mPixelShader, NULL, 0);
 
+    // Replace with calls to bind UniformBuffer I think
     //DirectXRenderContext::get()->getD3DDeviceContext()->VSSetConstantBuffers(0, mVSConstantBuffersCount,
     //                                                                         mVSConstantBuffers);
     //DirectXRenderContext::get()->getD3DDeviceContext()->PSSetConstantBuffers(0, mPSConstantBuffersCount,

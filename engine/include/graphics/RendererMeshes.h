@@ -6,26 +6,30 @@
 namespace PhysicsEngine
 {
 
-class SphereMesh
+class ScreenQuad
 {
   private:
     MeshHandle *mMesh;
 
+    VertexBuffer *mVertexBuffer;
+    VertexBuffer *mTexCoordsBuffer;
+
   public:
-    SphereMesh();
-    ~SphereMesh();
+    ScreenQuad();
+    ~ScreenQuad();
 
     void bind();
     void unbind();
+    void draw();
 };
 
 class RendererMeshes
 {
   private:
-    static SphereMesh *sSphereMesh;
+    static ScreenQuad *sScreenQuad;
 
   public:
-    static SphereMesh *getSphereMesh();
+    static ScreenQuad *getScreenQuad();
    
     static void createInternalMeshes();
 };

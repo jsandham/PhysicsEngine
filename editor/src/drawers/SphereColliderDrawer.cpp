@@ -14,16 +14,14 @@ SphereColliderDrawer::~SphereColliderDrawer()
 {
 }
 
-void SphereColliderDrawer::render(Clipboard &clipboard, const Guid& id)
+void SphereColliderDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("SphereCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        SphereCollider *sphereCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<SphereCollider>(id);
+        PhysicsEngine::SphereCollider *sphereCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::SphereCollider>(id);
 
         if (sphereCollider != nullptr)
         {
@@ -58,4 +56,30 @@ void SphereColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::SphereCollider* sphereCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::SphereCollider>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(sphereCollider->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::SphereCollider>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool SphereColliderDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

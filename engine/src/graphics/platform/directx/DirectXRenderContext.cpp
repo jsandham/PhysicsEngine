@@ -87,7 +87,6 @@ DirectXRenderContext::~DirectXRenderContext()
     }
 }
 
-
 void DirectXRenderContext::present()
 {
     HRESULT hr = mSwapChain->Present(mSwapInterval, 0);

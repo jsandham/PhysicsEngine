@@ -33,8 +33,6 @@ namespace PhysicsEngine
 
         void beginQuery_impl(unsigned int queryId) override;
         void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) override;
-        void createScreenQuad_impl(unsigned int *vao, unsigned int *vbo) override;
-        void renderScreenQuad_impl(unsigned int vao) override;
 	};
 }
 

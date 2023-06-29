@@ -3,7 +3,8 @@
 
 #include <vector>
 
-#include "../drawers/InspectorDrawer.h"
+#include "../EditorClipboard.h"
+
 #include "../drawers/SceneDrawer.h"
 #include "../drawers/CubemapDrawer.h"
 #include "../drawers/MaterialDrawer.h"

@@ -5,6 +5,7 @@
 #include "../../include/graphics/Renderer.h"
 #include "../../include/graphics/RendererShaders.h"
 #include "../../include/graphics/RendererUniforms.h"
+#include "../../include/graphics/RendererMeshes.h"
 
 #include <assert.h>
 #include <iostream>
@@ -32,6 +33,7 @@ Application::Application(const std::string& name, int width, int height)
 	Renderer::init();
     RendererShaders::createInternalShaders();
     RendererUniforms::createInternalUniforms();
+    RendererMeshes::createInternalMeshes();
 }
 
 Application::~Application()

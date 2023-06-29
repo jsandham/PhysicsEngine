@@ -1,17 +1,26 @@
 #ifndef BOXCOLLIDER_DRAWER_H__
 #define BOXCOLLIDER_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class BoxColliderDrawer : public InspectorDrawer
+class BoxColliderDrawer
 {
+  private:
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
+ 
   public:
     BoxColliderDrawer();
     ~BoxColliderDrawer();
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+private:
+    bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

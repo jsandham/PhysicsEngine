@@ -3,17 +3,25 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class TransformDrawer : public InspectorDrawer
+class TransformDrawer
 {
+  private:
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
+
   public:
     TransformDrawer();
     ~TransformDrawer();
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+private:
+    bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

@@ -11,7 +11,7 @@ using namespace PhysicsEditor;
 
 TerrainDrawer::TerrainDrawer()
 {
-    mFBO = Framebuffer::create(256, 256, 1, false);
+    mFBO = PhysicsEngine::Framebuffer::create(256, 256, 1, false);
 }
 
 TerrainDrawer::~TerrainDrawer()
@@ -19,16 +19,14 @@ TerrainDrawer::~TerrainDrawer()
     delete mFBO;
 }
 
-void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
+void TerrainDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("Terrain", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Terrain>(id);
+        PhysicsEngine::Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
 
         if (terrain != nullptr)
         {
@@ -36,7 +34,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             // Transform
             {
-                Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(terrain->mCameraTransformId);
+                PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Transform>(terrain->mCameraTransformId);
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
@@ -52,7 +50,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                     {
                         const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
 
-                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<Transform>(*data)->getGuid();
+                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Transform>(*data)->getGuid();
                     }
                     ImGui::EndDragDropTarget();
                 }
@@ -84,7 +82,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             // Material
             {
-                Material* material = clipboard.getWorld()->getAssetByGuid<Material>(terrain->getMaterial());
+                PhysicsEngine::Material* material = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Material>(terrain->getMaterial());
 
                 ImVec2 windowSize = ImGui::GetWindowSize();
                 windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
@@ -159,7 +157,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                 terrain->updateTerrainHeight();
             }
 
-            Shader* shader = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("336b168c-3b92-473d-909a-0a2e342d483f"));
+            PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("336b168c-3b92-473d-909a-0a2e342d483f"));
             
             assert(shader != nullptr);
             
@@ -167,7 +165,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             mFBO->bind();
             mFBO->setViewport(0, 0, 256, 256);
-            mFBO->clearColor(Color::black);
+            mFBO->clearColor(PhysicsEngine::Color::black);
 
             mProgram->bind();
             terrain->getNativeGraphicsHandle()->draw(0, terrain->getVertices().size() / 3);
@@ -176,7 +174,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
             if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
             {
-                if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+                if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
                 {
                     // opengl
                     ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
@@ -190,10 +188,6 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
                         ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
                         ImVec2(0, 0));
                 }
-
-                //ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-                //    ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
-                //    ImVec2(0, 0));
             }
 
             if (ImGui::TreeNodeEx("Grass", ImGuiTreeNodeFlags_DefaultOpen))
@@ -296,4 +290,30 @@ void TerrainDrawer::render(Clipboard& clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::Terrain* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(transform->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::Terrain>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool TerrainDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

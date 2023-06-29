@@ -113,13 +113,3 @@ void Renderer::endQuery(unsigned int queryId, unsigned long long *elapsedTime)
 {
     return sInstance->endQuery_impl(queryId, elapsedTime);
 }
-
-void Renderer::createScreenQuad(unsigned int *vao, unsigned int *vbo)
-{
-    return sInstance->createScreenQuad_impl(vao, vbo);
-}
-
-void Renderer::renderScreenQuad(unsigned int vao)
-{
-    return sInstance->renderScreenQuad_impl(vao);
-}

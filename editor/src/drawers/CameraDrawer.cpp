@@ -14,16 +14,14 @@ CameraDrawer::~CameraDrawer()
 {
 }
 
-void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
+void CameraDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("Camera", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Camera *camera = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Camera>(id);
+        PhysicsEngine::Camera *camera = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Camera>(id);
 
         if (camera != nullptr)
         {
@@ -41,22 +39,22 @@ void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (ImGui::Combo("Render Path", &renderPath, renderPathNames, 2))
             {
-                camera->mRenderPath = static_cast<RenderPath>(renderPath);
+                camera->mRenderPath = static_cast<PhysicsEngine::RenderPath>(renderPath);
             }
 
             if (ImGui::Combo("Color Target", &colorTarget, colorTargetNames, 5))
             {
-                camera->mColorTarget = static_cast<ColorTarget>(colorTarget);
+                camera->mColorTarget = static_cast<PhysicsEngine::ColorTarget>(colorTarget);
             }
 
             if (ImGui::Combo("Mode", &mode, modeNames, 2))
             {
-                camera->mMode = static_cast<CameraMode>(mode);
+                camera->mMode = static_cast<PhysicsEngine::CameraMode>(mode);
             }
 
             if (ImGui::Combo("SSAO", &ssao, ssaoNames, 2))
             {
-                camera->mSSAO = static_cast<CameraSSAO>(ssao);
+                camera->mSSAO = static_cast<PhysicsEngine::CameraSSAO>(ssao);
             }
 
             /*Guid renderTargetId = camera->mRenderTextureId;
@@ -89,7 +87,7 @@ void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (ImGui::ColorEdit4("Background Color", glm::value_ptr(backgroundColor)))
             {
-                camera->mBackgroundColor = Color(backgroundColor);
+                camera->mBackgroundColor = PhysicsEngine::Color(backgroundColor);
             }
 
             if (ImGui::TreeNode("Viewport"))
@@ -148,10 +146,10 @@ void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (ImGui::Combo("Shadow Cascades", &cascadeType, cascadeTypeNames, 5))
             {
-                camera->mShadowCascades = static_cast<ShadowCascades>(cascadeType);
+                camera->mShadowCascades = static_cast<PhysicsEngine::ShadowCascades>(cascadeType);
             }
 
-            if (camera->mShadowCascades != ShadowCascades::NoCascades)
+            if (camera->mShadowCascades != PhysicsEngine::ShadowCascades::NoCascades)
             {
                 ImColor colors[5] = { ImColor(1.0f, 0.0f, 0.0f),
                                       ImColor(0.0f, 1.0f, 0.0f),
@@ -205,4 +203,30 @@ void CameraDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::Camera* camera = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Camera>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(camera->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::Camera>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool CameraDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

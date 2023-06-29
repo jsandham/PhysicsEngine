@@ -14,16 +14,14 @@ CapsuleColliderDrawer::~CapsuleColliderDrawer()
 {
 }
 
-void CapsuleColliderDrawer::render(Clipboard &clipboard, const Guid& id)
+void CapsuleColliderDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("CapsuleCollider", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        CapsuleCollider *capsuleCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<CapsuleCollider>(id);
+        PhysicsEngine::CapsuleCollider *capsuleCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::CapsuleCollider>(id);
 
         if (capsuleCollider != nullptr)
         {
@@ -59,4 +57,30 @@ void CapsuleColliderDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::CapsuleCollider* capsuleCollider = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::CapsuleCollider>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(capsuleCollider->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::CapsuleCollider>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool CapsuleColliderDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

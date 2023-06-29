@@ -14,16 +14,14 @@ TransformDrawer::~TransformDrawer()
 {
 }
 
-void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
+void TransformDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
     if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        Transform *transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<Transform>(id);
+        PhysicsEngine::Transform *transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Transform>(id);
 
         if (transform != nullptr)
         {
@@ -58,4 +56,30 @@ void TransformDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+
+    if (isHovered())
+    {
+        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+        {
+            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+            {
+                PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Transform>(id);
+                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(transform->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::BoxCollider>::type);
+            }
+
+            ImGui::EndPopup();
+        }
+    }
+}
+
+bool TransformDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

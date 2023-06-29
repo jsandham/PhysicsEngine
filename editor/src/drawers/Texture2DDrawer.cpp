@@ -12,16 +12,16 @@ using namespace PhysicsEditor;
 
 Texture2DDrawer::Texture2DDrawer()
 {
-    Renderer::getRenderer()->createScreenQuad(&mVAO, &mVBO);
-    mFBO = Framebuffer::create(256, 256);
+    mScreenQuad = PhysicsEngine::RendererMeshes::getScreenQuad();
+    mFBO = PhysicsEngine::Framebuffer::create(256, 256);
     
     mFBO->bind();
     mFBO->setViewport(0, 0, 256, 256);
-    mFBO->clearColor(Color::black);
+    mFBO->clearColor(PhysicsEngine::Color::black);
     mFBO->clearDepth(1.0f);
     mFBO->unbind();
 
-    mCurrentTexId = Guid::INVALID;
+    mCurrentTexId = PhysicsEngine::Guid::INVALID;
     mDrawTex = nullptr;
 }
 
@@ -30,14 +30,12 @@ Texture2DDrawer::~Texture2DDrawer()
     delete mFBO;
 }
 
-void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
+void Texture2DDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Texture2D *texture = clipboard.getWorld()->getAssetByGuid<Texture2D>(id);
+    PhysicsEngine::Texture2D *texture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Texture2D>(id);
 
     if (texture != nullptr)
     {
@@ -65,7 +63,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 {
                     activeWrapModeIndex = n;
 
-                    texture->setWrapMode(static_cast<TextureWrapMode>(n));
+                    texture->setWrapMode(static_cast<PhysicsEngine::TextureWrapMode>(n));
                     clipboard.mModifiedAssets.insert(texture->getGuid());
 
                     if (is_selected)
@@ -87,7 +85,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 {
                     activeFilterModeIndex = n;
 
-                    texture->setFilterMode(static_cast<TextureFilterMode>(n));
+                    texture->setFilterMode(static_cast<PhysicsEngine::TextureFilterMode>(n));
                     clipboard.mModifiedAssets.insert(texture->getGuid());
 
                     if (is_selected)
@@ -109,10 +107,10 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
         // Draw texture child window
         {
-            Shader* shaderR = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("f1b412ca-6641-425c-b996-72ac78e9c709"));
-            Shader* shaderG = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("1bec6e45-1cfb-4bb8-8cd9-9bb331e0459c"));
-            Shader* shaderB = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("3d0fbdd9-bfbb-4add-9b1b-93eb79162f48"));
-            Shader* shaderA = clipboard.getWorld()->getAssetByGuid<Shader>(Guid("0a125454-09bd-4cad-bf80-b8c98ad72681"));
+            PhysicsEngine::Shader* shaderR = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("f1b412ca-6641-425c-b996-72ac78e9c709"));
+            PhysicsEngine::Shader* shaderG = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("1bec6e45-1cfb-4bb8-8cd9-9bb331e0459c"));
+            PhysicsEngine::Shader* shaderB = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("3d0fbdd9-bfbb-4add-9b1b-93eb79162f48"));
+            PhysicsEngine::Shader* shaderA = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("0a125454-09bd-4cad-bf80-b8c98ad72681"));
 
             assert(shaderR != nullptr);
             assert(shaderG != nullptr);
@@ -129,13 +127,13 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                 ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
                 window_flags);
 
-            if (texture->getFormat() == TextureFormat::Depth)
+            if (texture->getFormat() == PhysicsEngine::TextureFormat::Depth)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 ImGui::Button("Depth");
                 ImGui::PopStyleColor();
             }
-            else if (texture->getFormat() == TextureFormat::RG)
+            else if (texture->getFormat() == PhysicsEngine::TextureFormat::RG)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RG"))
@@ -154,7 +152,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
                     mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramR->unbind();
                     mFBO->unbind();
                 }
@@ -170,13 +168,13 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
                     mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramG->unbind();
                     mFBO->unbind();
                 }
                 ImGui::PopStyleColor();
             }
-            else if (texture->getFormat() == TextureFormat::RGB)
+            else if (texture->getFormat() == PhysicsEngine::TextureFormat::RGB)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RGB"))
@@ -195,7 +193,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
                     mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramR->unbind();
                     mFBO->unbind();
                 }
@@ -211,7 +209,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
                     mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramG->unbind();
                     mFBO->unbind();
                 }
@@ -227,13 +225,13 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramB->bind();
                     mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramB->unbind();
                     mFBO->unbind();
                 }
                 ImGui::PopStyleColor();
             }
-            else if (texture->getFormat() == TextureFormat::RGBA)
+            else if (texture->getFormat() == PhysicsEngine::TextureFormat::RGBA)
             {
                 ImGui::PushStyleColor(ImGuiCol_Text, 0xFF000000);
                 if (ImGui::Button("RGBA"))
@@ -252,7 +250,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramR->bind();
                     mProgramR->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramR->unbind();
                     mFBO->unbind();
                 }
@@ -268,7 +266,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramG->bind();
                     mProgramG->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramG->unbind();
                     mFBO->unbind();
                 }
@@ -284,7 +282,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramB->bind();
                     mProgramB->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramB->unbind();
                     mFBO->unbind();
                 }
@@ -300,7 +298,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
                     mFBO->setViewport(0, 0, 256, 256);
                     mProgramA->bind();
                     mProgramA->setTexture2D("texture0", 0, texture->getNativeGraphics()->getTexture());
-                    Renderer::getRenderer()->renderScreenQuad(mVAO);
+                    mScreenQuad->draw();
                     mProgramA->unbind();
                     mFBO->unbind();
                 }
@@ -309,7 +307,7 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
             if (mDrawTex != nullptr)
             {
-                if (RenderContext::getRenderAPI() == RenderAPI::OpenGL)
+                if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
                 {
                     // opengl
                     ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mDrawTex)),
@@ -331,4 +329,16 @@ void Texture2DDrawer::render(Clipboard &clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+}
+
+bool Texture2DDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

@@ -15,14 +15,12 @@ RenderTextureDrawer::~RenderTextureDrawer()
 {
 }
 
-void RenderTextureDrawer::render(Clipboard& clipboard, const Guid& id)
+void RenderTextureDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<RenderTexture>(id);
+    PhysicsEngine::RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(id);
 
     if (texture != nullptr)
     {
@@ -44,4 +42,16 @@ void RenderTextureDrawer::render(Clipboard& clipboard, const Guid& id)
 
     ImGui::Separator();
     mContentMax = ImGui::GetItemRectMax();
+}
+
+bool RenderTextureDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }

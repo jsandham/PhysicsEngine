@@ -1,17 +1,26 @@
 #ifndef CAPSULECOLLIDER_DRAWER_H__
 #define CAPSULECOLLIDER_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class CapsuleColliderDrawer : public InspectorDrawer
+class CapsuleColliderDrawer
 {
+private:
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
+
   public:
     CapsuleColliderDrawer();
     ~CapsuleColliderDrawer();
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+private:
+    bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

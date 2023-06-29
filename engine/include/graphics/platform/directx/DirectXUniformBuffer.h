@@ -17,7 +17,6 @@ class DirectXUniformBuffer : public UniformBuffer
     D3D11_BUFFER_DESC mBufferDesc;
     D3D11_MAPPED_SUBRESOURCE mMappedSubresource;
     ID3D11Buffer *mBuffer;
-    ID3D11InputLayout *mInputLayout;
 
   public:
     DirectXUniformBuffer(size_t size, unsigned int bindingPoint);

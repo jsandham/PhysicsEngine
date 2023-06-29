@@ -1,17 +1,25 @@
 #ifndef RIGIDBODY_DRAWER_H__
 #define RIGIDBODY_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-class RigidbodyDrawer : public InspectorDrawer
+class RigidbodyDrawer
 {
-  public:
-    RigidbodyDrawer();
-    ~RigidbodyDrawer();
+    private:
+        ImVec2 mContentMin;
+        ImVec2 mContentMax;
 
-    virtual void render(Clipboard& clipboard, const Guid& id) override;
+    public:
+        RigidbodyDrawer();
+        ~RigidbodyDrawer();
+
+        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+    private:
+        bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

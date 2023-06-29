@@ -1,10 +1,14 @@
 #ifndef DIRECTXSHADERPROGRAM_H__
 #define DIRECTXSHADERPROGRAM_H__
 
-#include "../../../../include/graphics/ShaderProgram.h"
 #define NOMINMAX
 #include <windows.h>
 #include <d3d11.h>
+#include <d3d11shader.h>
+
+
+#include "../../ShaderProgram.h"
+#include "../../UniformBuffer.h"
 
 namespace PhysicsEngine
 {
@@ -19,10 +23,26 @@ class DirectXShaderProgram : public ShaderProgram
     ID3DBlob *mPixelShaderBlob;
     ID3DBlob *mGeometryShaderBlob;
 
-    D3D11_BUFFER_DESC mVSConstantBufferDesc;
-    D3D11_BUFFER_DESC mPSConstantBufferDesc;
-    ID3D11Buffer *mVSConstantBuffer;
-    ID3D11Buffer *mPSConstantBuffer;
+    // Do I need to store this? I think they can just be local inside the compile function
+    ID3D11ShaderReflection *mVertexShaderReflector;
+    ID3D11ShaderReflection *mPixelShaderReflector;
+    ID3D11ShaderReflection *mGeometryShaderReflector;
+
+
+    std::vector<UniformBuffer *> mVSConstantBuffers;
+    std::vector<UniformBuffer *> mPSConstantBuffers;
+    std::vector<UniformBuffer *> mGSConstantBuffers;
+
+
+
+
+
+
+    // Replace with UniformBuffer
+    //D3D11_BUFFER_DESC mVSConstantBufferDesc;
+    //D3D11_BUFFER_DESC mPSConstantBufferDesc;
+    //ID3D11Buffer *mVSConstantBuffer;
+    //ID3D11Buffer *mPSConstantBuffer;
 
   public:
     DirectXShaderProgram();

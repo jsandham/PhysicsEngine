@@ -1,34 +1,42 @@
 #ifndef TEXTURE2D_DRAWER_H__
 #define TEXTURE2D_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 #include <graphics/Framebuffer.h>
 #include <graphics/ShaderProgram.h>
 #include <graphics/TextureHandle.h>
+#include <graphics/RendererMeshes.h>
 
 namespace PhysicsEditor
 {
-class Texture2DDrawer : public InspectorDrawer
+class Texture2DDrawer
 {
   private:
-    Framebuffer* mFBO;
+    PhysicsEngine::Framebuffer* mFBO;
 
-    unsigned int mVAO;
-    unsigned int mVBO;
+    PhysicsEngine::ShaderProgram* mProgramR;
+    PhysicsEngine::ShaderProgram* mProgramG;
+    PhysicsEngine::ShaderProgram* mProgramB;
+    PhysicsEngine::ShaderProgram* mProgramA;
 
-    ShaderProgram* mProgramR;
-    ShaderProgram* mProgramG;
-    ShaderProgram* mProgramB;
-    ShaderProgram* mProgramA;
+    PhysicsEngine::ScreenQuad* mScreenQuad;
 
-    Guid mCurrentTexId;
+    PhysicsEngine::Guid mCurrentTexId;
     void* mDrawTex;
+
+    ImVec2 mContentMin;
+    ImVec2 mContentMax;
 
   public:
     Texture2DDrawer();
     ~Texture2DDrawer();
 
-    virtual void render(Clipboard &clipboard, const Guid& id) override;
+    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+private:
+    bool isHovered() const;
 };
 } // namespace PhysicsEditor
 

@@ -26,7 +26,8 @@ void ForwardRenderer::init(World *world)
     mCameraUniform = RendererUniforms::getCameraUniform();
     mLightUniform = RendererUniforms::getLightUniform();
 
-    Renderer::getRenderer()->createScreenQuad(&mQuadVAO, &mQuadVBO);
+    mScreenQuad = RendererMeshes::getScreenQuad();
+
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
@@ -167,7 +168,7 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
     mSsaoShader->setNormalTexture(1, camera->getNativeGraphicsNormalTex());
     mSsaoShader->setNoiseTexture(2, camera->getNativeGraphicsSSAONoiseTex());
 
-    Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
+    mScreenQuad->draw();
 
     camera->getNativeGraphicsSSAOFBO()->unbind();
 }
@@ -568,7 +569,7 @@ void ForwardRenderer::endFrame(Camera *camera)
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
-        Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
+        mScreenQuad->draw();
 
         Renderer::getRenderer()->unbindBackBuffer();
     }

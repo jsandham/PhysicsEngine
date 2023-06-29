@@ -223,35 +223,3 @@ void OpenGLRenderer::endQuery_impl(unsigned int queryId, unsigned long long *ela
     CHECK_ERROR(glEndQuery(GL_TIME_ELAPSED));
     CHECK_ERROR(glGetQueryObjectui64v(queryId, GL_QUERY_RESULT, elapsedTime));
 }
-
-void OpenGLRenderer::createScreenQuad_impl(unsigned int *vao, unsigned int *vbo)
-{
-    float quadVertices[] = {
-        // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-        // positions   // texCoords
-        -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
-
-        -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f};
-
-    CHECK_ERROR(glGenVertexArrays(1, vao));
-    CHECK_ERROR(glGenBuffers(1, vbo));
-    CHECK_ERROR(glBindVertexArray(*vao));
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, *vbo));
-    CHECK_ERROR(glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW));
-    CHECK_ERROR(glEnableVertexAttribArray(0));
-    CHECK_ERROR(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0));
-    CHECK_ERROR(glEnableVertexAttribArray(1));
-    CHECK_ERROR(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float))));
-
-    CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    CHECK_ERROR(glBindVertexArray(0));
-}
-
-void OpenGLRenderer::renderScreenQuad_impl(unsigned int vao)
-{
-    CHECK_ERROR(glDisable(GL_DEPTH_TEST));
-    CHECK_ERROR(glBindVertexArray(vao));
-    CHECK_ERROR(glDrawArrays(GL_TRIANGLES, 0, 6));
-    CHECK_ERROR(glBindVertexArray(0));
-    CHECK_ERROR(glEnable(GL_DEPTH_TEST));
-}

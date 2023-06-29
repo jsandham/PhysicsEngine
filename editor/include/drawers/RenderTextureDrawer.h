@@ -1,17 +1,26 @@
 #ifndef RENDER_TEXTURE_DRAWER_H__
 #define RENDER_TEXTURE_DRAWER_H__
 
-#include "InspectorDrawer.h"
+#include <imgui.h>
+
+#include "../EditorClipboard.h"
 
 namespace PhysicsEditor
 {
-    class RenderTextureDrawer : public InspectorDrawer
+    class RenderTextureDrawer
     {
+    private:
+        ImVec2 mContentMin;
+        ImVec2 mContentMax;
+
     public:
         RenderTextureDrawer();
         ~RenderTextureDrawer();
 
-        virtual void render(Clipboard& clipboard, const Guid& id) override;
+        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+    private:
+        bool isHovered() const;
     };
 } // namespace PhysicsEditor
 

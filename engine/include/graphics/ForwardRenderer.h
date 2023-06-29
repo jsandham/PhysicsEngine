@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include "RendererShaders.h"
 #include "RendererUniforms.h"
+#include "RendererMeshes.h"
 #include "RenderObject.h"
 
 namespace PhysicsEngine
@@ -33,6 +34,8 @@ class ForwardRenderer
     CameraUniform *mCameraUniform;
     LightUniform *mLightUniform;
 
+    ScreenQuad *mScreenQuad;
+
     // directional light cascade shadow map data
     float mCascadeEnds[6];
     glm::mat4 mCascadeOrthoProj[5];
@@ -44,10 +47,6 @@ class ForwardRenderer
 
     // pointlight cubemap shadow map data
     glm::mat4 mCubeViewProjMatrices[6];
-
-    // quad
-    unsigned int mQuadVAO;
-    unsigned int mQuadVBO;
 
   public:
     ForwardRenderer();

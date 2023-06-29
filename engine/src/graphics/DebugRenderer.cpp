@@ -27,7 +27,8 @@ void DebugRenderer::init(World *world)
 
     mCameraUniform = RendererUniforms::getCameraUniform();
 
-    Renderer::getRenderer()->createScreenQuad(&mQuadVAO, &mQuadVBO);
+    mScreenQuad = RendererMeshes::getScreenQuad();
+
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
@@ -236,7 +237,7 @@ void DebugRenderer::endDebugFrame(Camera *camera)
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());
 
-        Renderer::getRenderer()->renderScreenQuad(mQuadVAO);
+        mScreenQuad->draw();
         Renderer::getRenderer()->unbindBackBuffer();
     }
 

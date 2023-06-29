@@ -24,18 +24,16 @@ ShaderDrawer::~ShaderDrawer()
 {
 }
 
-void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
+void ShaderDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
 {
-    InspectorDrawer::render(clipboard, id);
-
     ImGui::Separator();
     mContentMin = ImGui::GetItemRectMin();
 
-    Shader *shader = clipboard.getWorld()->getAssetByGuid<Shader>(id);
+    PhysicsEngine::Shader *shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(id);
 
     if (shader != nullptr)
     {
-        std::vector<ShaderProgram*> programs = shader->getPrograms();
+        std::vector<PhysicsEngine::ShaderProgram*> programs = shader->getPrograms();
         //std::vector<ShaderUniform> uniforms = shader->getUniforms();
 
         if (ImGui::BeginTable("Shader Info", 2))
@@ -52,10 +50,10 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
             ImGui::TableNextColumn();
             ImGui::Text("Language:");
             ImGui::TableNextColumn();
-            switch (RenderContext::getRenderAPI())
+            switch (PhysicsEngine::RenderContext::getRenderAPI())
             {
-            case RenderAPI::OpenGL: {ImGui::Text("GLSL"); break; }
-            case RenderAPI::DirectX: {ImGui::Text("HLSL"); break; }
+            case PhysicsEngine::RenderAPI::OpenGL: {ImGui::Text("GLSL"); break; }
+            case PhysicsEngine::RenderAPI::DirectX: {ImGui::Text("HLSL"); break; }
             }
 
             ImGui::TableNextColumn();
@@ -82,7 +80,7 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
 
             for (size_t i = 0; i < programs.size(); i++)
             {
-                std::vector<ShaderUniform> uniforms = programs[i]->getUniforms();
+                std::vector<PhysicsEngine::ShaderUniform> uniforms = programs[i]->getUniforms();
 
                 ImGui::TableNextColumn();
                 ImGui::Text("Uniform Count:");
@@ -340,4 +338,16 @@ void ShaderDrawer::render(Clipboard &clipboard, const Guid& id)
     }
 
     mContentMax = ImGui::GetItemRectMax();
+}
+
+bool ShaderDrawer::isHovered() const
+{
+    ImVec2 cursorPos = ImGui::GetMousePos();
+
+    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+
+    PhysicsEngine::Rect rect(min, max);
+
+    return rect.contains(cursorPos.x, cursorPos.y);
 }
