@@ -14,6 +14,8 @@ class DirectXUniformBuffer : public UniformBuffer
     unsigned int mBindingPoint;
     size_t mSize;
 
+    char mData[2048];
+
     D3D11_BUFFER_DESC mBufferDesc;
     D3D11_MAPPED_SUBRESOURCE mMappedSubresource;
     ID3D11Buffer *mBuffer;
@@ -26,8 +28,10 @@ class DirectXUniformBuffer : public UniformBuffer
     unsigned int getBindingPoint() const override;
 
     void bind(PipelineStage stage) override;
-    void unbind() override;
+    void unbind(PipelineStage stage) override;
     void setData(const void *data, size_t offset, size_t size) override;
+    void getData(void *data, size_t offset, size_t size) override;
+    void copyDataToDevice() override;
 };
 }
 

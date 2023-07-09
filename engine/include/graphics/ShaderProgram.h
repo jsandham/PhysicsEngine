@@ -25,13 +25,48 @@ namespace PhysicsEngine
         Invalid = 11
     };
 
+    constexpr auto ShaderUniformTypeToString(ShaderUniformType type)
+    {
+        switch (type)
+        {
+        case ShaderUniformType::Int:
+            return "Int";
+        case ShaderUniformType::Float:
+            return "Float";
+        case ShaderUniformType::Color:
+            return "Color";
+        case ShaderUniformType::Vec2:
+            return "Vec2";
+        case ShaderUniformType::Vec3:
+            return "Vec3";
+        case ShaderUniformType::Vec4:
+            return "Vec4";
+        case ShaderUniformType::Mat2:
+            return "Mat2";
+        case ShaderUniformType::Mat3:
+            return "Mat3";
+        case ShaderUniformType::Mat4:
+            return "Mat4";
+        case ShaderUniformType::Sampler2D:
+            return "Sampler2D";
+        case ShaderUniformType::SamplerCube:
+            return "SamplerCube";
+        case ShaderUniformType::Invalid:
+            return "Invalid";
+        }
+
+        return "Invalid";
+    }
+
     struct ShaderUniform
     {
-        char mData[64];
+        std::string mBufferName; // "Block name" in OpenGL
         std::string mName;       // variable name (including block name if applicable)
         ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
+        int mUniformId;          // integer hash of uniform name
+
+        char mData[64];
         void *mTex; // if data stores a texture id, this is the texture handle
-        int mUniformId; // integer hash of uniform name
 
         std::string getShortName() const
         {

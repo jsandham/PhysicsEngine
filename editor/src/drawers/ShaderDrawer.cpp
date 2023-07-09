@@ -34,7 +34,6 @@ void ShaderDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
     if (shader != nullptr)
     {
         std::vector<PhysicsEngine::ShaderProgram*> programs = shader->getPrograms();
-        //std::vector<ShaderUniform> uniforms = shader->getUniforms();
 
         if (ImGui::BeginTable("Shader Info", 2))
         {
@@ -50,56 +49,53 @@ void ShaderDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
             ImGui::TableNextColumn();
             ImGui::Text("Language:");
             ImGui::TableNextColumn();
-            switch (PhysicsEngine::RenderContext::getRenderAPI())
-            {
-            case PhysicsEngine::RenderAPI::OpenGL: {ImGui::Text("GLSL"); break; }
-            case PhysicsEngine::RenderAPI::DirectX: {ImGui::Text("HLSL"); break; }
-            }
+            ImGui::Text(PhysicsEngine::GetShaderLanguageStringFromRenderAPI(PhysicsEngine::RenderContext::getRenderAPI()));
 
             ImGui::TableNextColumn();
             ImGui::Text("Source:");
             ImGui::TableNextColumn();
             ImGui::Text(shader->getSource().c_str());
-
-            ImGui::TableNextColumn();
-            ImGui::Text("Variant Count:");
-            ImGui::TableNextColumn();
-            ImGui::Text(std::to_string(programs.size()).c_str());
-
-            /*ImGui::TableNextColumn();
-            ImGui::Text("Uniform Count:");
-            ImGui::TableNextColumn();
-            ImGui::Text(std::to_string(uniforms.size()).c_str());
-
-            for (size_t i = 0; i < uniforms.size(); i++)
-            {
-                ImGui::TableNextColumn();
-                ImGui::TableNextColumn();
-                ImGui::Text(uniforms[i].mName.c_str());
-            }*/
-
-            for (size_t i = 0; i < programs.size(); i++)
-            {
-                std::vector<PhysicsEngine::ShaderUniform> uniforms = programs[i]->getUniforms();
-
-                ImGui::TableNextColumn();
-                ImGui::Text("Uniform Count:");
-                ImGui::TableNextColumn();
-                ImGui::Text(std::to_string(uniforms.size()).c_str());
-
-                for (size_t j = 0; j < uniforms.size(); j++)
-                {
-                    ImGui::TableNextColumn();
-                    ImGui::TableNextColumn();
-                    ImGui::Text(uniforms[j].mName.c_str());
-                }
-            }
             
-
             ImGui::EndTable();
         }
 
         ImGui::Separator();
+
+        {
+            std::vector<PhysicsEngine::ShaderUniform> uniforms = shader->getUniforms();
+            static ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | 
+                                           ImGuiTableFlags_Resizable | 
+                                           ImGuiTableFlags_Reorderable | 
+                                           ImGuiTableFlags_Hideable | 
+                                           ImGuiTableFlags_BordersOuter | 
+                                           ImGuiTableFlags_BordersV;
+            
+            ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeightWithSpacing() * 6);
+            if (ImGui::BeginTable("table1", 4, flags, outer_size))
+            {
+                ImGui::TableSetupColumn("Id");
+                ImGui::TableSetupColumn("Uniform Buffer");
+                ImGui::TableSetupColumn("Name");
+                ImGui::TableSetupColumn("Type");
+                ImGui::TableHeadersRow();
+
+                for (size_t j = 0; j < uniforms.size(); j++)
+                {
+                    ImGui::TableNextRow();
+
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::Text("%d", uniforms[j].mUniformId);
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::Text("%s", uniforms[j].mBufferName.c_str());
+                    ImGui::TableSetColumnIndex(2);
+                    ImGui::Text("%s", uniforms[j].mName.c_str());
+                    ImGui::TableSetColumnIndex(3);
+                    ImGui::Text("%s", PhysicsEngine::ShaderUniformTypeToString(uniforms[j].mType));
+                }
+
+                ImGui::EndTable();
+            }
+        }
 
         static bool vertexShaderActive = true;
         static bool geometryShaderActive = false;

@@ -12,6 +12,31 @@
 
 namespace PhysicsEngine
 {
+    struct ConstantBufferVariable
+    {
+        PipelineStage mStage;
+        int mUniformId;
+        unsigned int mConstantBufferIndex;
+        unsigned int mSize;
+        unsigned int mOffset;
+    };
+
+    //struct ShaderUniform
+    //{
+    //    char mData[64];
+    //    std::string mName;       // variable name (including block name if applicable)
+    //    ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
+    //    void *mTex;              // if data stores a texture id, this is the texture handle
+    //    int mUniformId;          // integer hash of uniform name
+
+    //    std::string getShortName() const
+    //    {
+    //        size_t pos = mName.find_first_of('.');
+    //        return mName.substr(pos + 1);
+    //    }
+    //};
+
+
 class DirectXShaderProgram : public ShaderProgram
 {
   private:
@@ -23,26 +48,11 @@ class DirectXShaderProgram : public ShaderProgram
     ID3DBlob *mPixelShaderBlob;
     ID3DBlob *mGeometryShaderBlob;
 
-    // Do I need to store this? I think they can just be local inside the compile function
-    ID3D11ShaderReflection *mVertexShaderReflector;
-    ID3D11ShaderReflection *mPixelShaderReflector;
-    ID3D11ShaderReflection *mGeometryShaderReflector;
-
-
     std::vector<UniformBuffer *> mVSConstantBuffers;
     std::vector<UniformBuffer *> mPSConstantBuffers;
     std::vector<UniformBuffer *> mGSConstantBuffers;
 
-
-
-
-
-
-    // Replace with UniformBuffer
-    //D3D11_BUFFER_DESC mVSConstantBufferDesc;
-    //D3D11_BUFFER_DESC mPSConstantBufferDesc;
-    //ID3D11Buffer *mVSConstantBuffer;
-    //ID3D11Buffer *mPSConstantBuffer;
+    std::vector<ConstantBufferVariable> mConstantBufferVariables;
 
   public:
     DirectXShaderProgram();
@@ -110,6 +120,10 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int uniformId) const override;
     glm::mat3 getMat3(int uniformId) const override;
     glm::mat4 getMat4(int uniformId) const override;
+
+private:
+    void setData(int uniformId, const void* data);
+    void getData(int uniformId, void* data);
 };
 } // namespace PhysicsEngine
 

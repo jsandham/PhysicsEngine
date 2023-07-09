@@ -225,7 +225,24 @@ void Shader::compile()
 
     mAllProgramsCompiled = true;
 
+    mUniforms.clear();
     mMaterialUniforms.clear();
+
+    std::set<std::string> uniformNames;
+    for (size_t i = 0; i < mPrograms.size(); i++)
+    {
+        std::vector<ShaderUniform> uniforms = mPrograms[i]->getUniforms();
+
+        for (size_t j = 0; j < uniforms.size(); j++)
+        {
+            std::set<std::string>::iterator it = uniformNames.find(uniforms[j].mName);
+            if (it == uniformNames.end())
+            {
+                uniformNames.insert(uniforms[j].mName);
+                mUniforms.push_back(uniforms[j]);
+            }
+        }
+    }
 
     std::set<std::string> materialUniformNames;
     for (size_t i = 0; i < mPrograms.size(); i++)
@@ -311,6 +328,11 @@ ShaderProgram* Shader::getActiveProgram() const
 std::vector<ShaderProgram*> Shader::getPrograms() const
 {
     return mPrograms;
+}
+
+std::vector<ShaderUniform> Shader::getUniforms() const
+{
+    return mUniforms;
 }
 
 std::vector<ShaderUniform> Shader::getMaterialUniforms() const

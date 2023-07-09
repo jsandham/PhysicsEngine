@@ -36,6 +36,49 @@ enum class ShadowMapResolution
     VeryHigh4096x4096 = 4096
 };
 
+constexpr auto LightTypeToString(LightType type)
+{
+    switch (type)
+    {
+    case LightType::Directional:
+        return "Directional";
+    case LightType::Spot:
+        return "Spot";
+    case LightType::Point:
+        return "Point";
+    case LightType::None:
+        return "None";
+    }
+}
+
+constexpr auto ShadowTypeToString(ShadowType type)
+{
+    switch (type)
+    {
+    case ShadowType::Hard:
+        return "Hard";
+    case ShadowType::Soft:
+        return "Soft";
+    case ShadowType::None:
+        return "None";
+    }
+}
+
+constexpr auto ShadowTypeToString(ShadowMapResolution resolution)
+{
+    switch (resolution)
+    {
+    case ShadowMapResolution::Low512x512:
+        return "Low512x512";
+    case ShadowMapResolution::Medium1024x1024:
+        return "Medium1024x1024";
+    case ShadowMapResolution::High2048x2048:
+        return "High2048x2048";
+    case ShadowMapResolution::VeryHigh4096x4096:
+        return "VeryHigh4096x4096";
+    }
+}
+
 struct LightTargets
 {
     Framebuffer *mShadowCascadeFBO[5];

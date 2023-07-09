@@ -70,6 +70,84 @@ enum class ShadowCascades
     FiveCascades = 4,
 };
 
+constexpr auto CameraModeToString(CameraMode mode)
+{
+    switch (mode)
+    {
+    case CameraMode::Main:
+        return "Main";
+    case CameraMode::Secondary:
+        return "Secondary";
+    }
+}
+
+constexpr auto CameraSSAOToString(CameraSSAO ssao)
+{
+    switch (ssao)
+    {
+    case CameraSSAO::SSAO_On:
+        return "SSAO On";
+    case CameraSSAO::SSAO_Off:
+        return "SSAO Off";
+    }
+}
+
+constexpr auto CameraGizmosToString(CameraGizmos gizmo)
+{
+    switch (gizmo)
+    {
+    case CameraGizmos::Gizmos_On:
+        return "Gizmos On";
+    case CameraGizmos::Gizmos_Off:
+        return "Gizmos Off";
+    }
+}
+
+constexpr auto RenderPathToString(RenderPath renderPath)
+{
+    switch (renderPath)
+    {
+    case RenderPath::Forward:
+        return "Forward";
+    case RenderPath::Deferred:
+        return "Deferred";
+    }
+}
+
+constexpr auto ColorTargetToString(ColorTarget target)
+{
+    switch (target)
+    {
+    case ColorTarget::Color:
+        return "Color";
+    case ColorTarget::LinearDepth:
+        return "LinearDepth";
+    case ColorTarget::Normal:
+        return "Normal";
+    case ColorTarget::Position:
+        return "Position";
+    case ColorTarget::ShadowCascades:
+        return "ShadowCascades";
+    }
+}
+
+constexpr auto ShadowCascadesToString(ShadowCascades cascade)
+{
+    switch (cascade)
+    {
+    case ShadowCascades::NoCascades:
+        return "NoCascades";
+    case ShadowCascades::TwoCascades:
+        return "TwoCascades";
+    case ShadowCascades::ThreeCascades:
+        return "ThreeCascades";
+    case ShadowCascades::FourCascades:
+        return "FourCascades";
+    case ShadowCascades::FiveCascades:
+        return "FiveCascades";
+    }
+}
+
 struct CameraTargets
 {
     Framebuffer *mMainFBO;

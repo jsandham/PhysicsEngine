@@ -40,6 +40,42 @@ enum class ShaderMacro
     Instancing = 128
 };
 
+constexpr auto RenderQueueToString(RenderQueue renderQueue)
+{
+    switch (renderQueue)
+    {
+    case RenderQueue::Opaque:
+        return "Opaque";
+    case RenderQueue::Transparent:
+        return "Transparent";
+    }
+}
+
+constexpr auto ShaderMacroToString(ShaderMacro macro)
+{
+    switch (macro)
+    {
+    case ShaderMacro::Directional:
+        return "Directional";
+    case ShaderMacro::Spot:
+        return "Spot";
+    case ShaderMacro::Point:
+        return "Point";
+    case ShaderMacro::HardShadows:
+        return "HardShadows";
+    case ShaderMacro::SoftShadows:
+        return "SoftShadows";
+    case ShaderMacro::SSAO:
+        return "SSAO";
+    case ShaderMacro::ShowCascades:
+        return "ShadowCascades";
+    case ShaderMacro::Instancing:
+        return "Instancing";
+    case ShaderMacro::None:
+        return "None";
+    }
+}
+
 struct ShaderCreationAttrib
 {
     std::string mName;
@@ -62,6 +98,7 @@ class Shader : public Asset
     std::vector<ShaderProgram*> mPrograms;
     std::vector<int64_t> mVariants;
 
+    std::vector<ShaderUniform> mUniforms;
     std::vector<ShaderUniform> mMaterialUniforms;
 
     bool mAllProgramsCompiled;
@@ -96,6 +133,7 @@ class Shader : public Asset
     ShaderProgram* getActiveProgram() const;
 
     std::vector<ShaderProgram*> getPrograms() const;
+    std::vector<ShaderUniform> getUniforms() const;
     std::vector<ShaderUniform> getMaterialUniforms() const;
     std::string getVertexShader() const;
     std::string getGeometryShader() const;

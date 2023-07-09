@@ -20,6 +20,25 @@ enum class CubemapFace
     NegativeZ
 };
 
+constexpr auto CubemapFaceToString(CubemapFace face)
+{
+    switch (face)
+    {
+    case CubemapFace::NegativeX:
+        return "NegativeX";
+    case CubemapFace::NegativeY:
+        return "NegativeY";
+    case CubemapFace::NegativeZ:
+        return "NegativeZ";
+    case CubemapFace::PositiveX:
+        return "PositiveX";
+    case CubemapFace::PositiveY:
+        return "PositiveY";
+    case CubemapFace::PositiveZ:
+        return "PositiveZ";
+    }
+}
+
 class Cubemap : public Texture
 {
   private:

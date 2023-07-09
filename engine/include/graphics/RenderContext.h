@@ -9,6 +9,28 @@ namespace PhysicsEngine
 		DirectX
 	};
 
+	constexpr auto RenderAPIToString(RenderAPI api)
+    {
+        switch (api)
+        {
+        case RenderAPI::OpenGL:
+            return "OpenGL";
+        case RenderAPI::DirectX:
+            return "DirectX";
+        }
+    }
+
+	constexpr auto GetShaderLanguageStringFromRenderAPI(RenderAPI api)
+    {
+        switch (api)
+        {
+        case RenderAPI::OpenGL:
+            return "GLSL";
+        case RenderAPI::DirectX:
+            return "HLSL";
+        }
+    }
+
 	class RenderContext
 	{
 	public:

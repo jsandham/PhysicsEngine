@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include <assert.h>
+#include <cstring>
 
 using namespace PhysicsEngine;
 
@@ -10,6 +11,10 @@ OpenGLUniformBuffer::OpenGLUniformBuffer(size_t size, unsigned int bindingPoint)
 {
     mSize = size;
     mBindingPoint = bindingPoint;
+
+    assert(mSize <= 2048);
+
+    memset(&mData, 0, 2048);
 
     CHECK_ERROR(glGenBuffers(1, &mBuffer));
     CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, mBuffer));
@@ -38,7 +43,7 @@ void OpenGLUniformBuffer::bind(PipelineStage stage)
     CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, mBuffer));
 }
 
-void OpenGLUniformBuffer::unbind()
+void OpenGLUniformBuffer::unbind(PipelineStage stage)
 {
     CHECK_ERROR(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 }
@@ -48,5 +53,18 @@ void OpenGLUniformBuffer::setData(const void *data, size_t offset, size_t size)
     assert(data != NULL);
     assert(offset + size <= mSize);
 
-    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data));
+    memcpy(mData + offset, data, size);
+}
+
+void OpenGLUniformBuffer::getData(void *data, size_t offset, size_t size)
+{
+    assert(data != NULL);
+    assert(offset + size <= mSize);
+
+    memcpy(data, mData + offset, size);
+}
+
+void OpenGLUniformBuffer::copyDataToDevice()
+{
+    CHECK_ERROR(glBufferSubData(GL_UNIFORM_BUFFER, 0, mSize, mData));
 }

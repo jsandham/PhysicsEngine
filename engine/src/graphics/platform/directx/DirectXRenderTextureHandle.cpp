@@ -6,61 +6,6 @@
 
 using namespace PhysicsEngine;
 
-static DXGI_FORMAT getTextureFormat(TextureFormat format)
-{
-    DXGI_FORMAT directxFormat = DXGI_FORMAT_R32_FLOAT;
-
-    switch (format)
-    {
-    case TextureFormat::Depth:
-        directxFormat = DXGI_FORMAT_R32_FLOAT;
-        break;
-    case TextureFormat::RG:
-        directxFormat = DXGI_FORMAT_R8G8_UNORM;
-        break;
-    case TextureFormat::RGB:
-        directxFormat = DXGI_FORMAT_R32G32B32_UINT;
-        break;
-    case TextureFormat::RGBA:
-        directxFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-        break;
-    default:
-        Log::error("DirectX: Invalid texture format\n");
-        break;
-    }
-
-    return directxFormat;
-}
-
-static D3D11_TEXTURE_ADDRESS_MODE getTextureWrapMode(TextureWrapMode wrapMode)
-{
-    D3D11_TEXTURE_ADDRESS_MODE directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
-
-    switch (wrapMode)
-    {
-    case TextureWrapMode::Repeat:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
-        break;
-    case TextureWrapMode::ClampToEdge:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_CLAMP;
-        break;
-    case TextureWrapMode::ClampToBorder:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_BORDER;
-        break;
-    case TextureWrapMode::MirrorRepeat:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR;
-        break;
-    case TextureWrapMode::MirrorClampToEdge:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
-        break;
-    default:
-        Log::error("DirectX: Invalid texture wrap mode\n");
-        break;
-    }
-
-    return directxWrapMode;
-}
-
 DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, TextureFormat format,
                                                        TextureWrapMode wrapMode, TextureFilterMode filterMode)
     : RenderTextureHandle(width, height, format, wrapMode, filterMode)

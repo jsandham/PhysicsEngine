@@ -10,7 +10,8 @@ using namespace PhysicsEngine;
 
 CameraUniform::CameraUniform()
 {
-    mBuffer = UniformBuffer::create(204, 0);
+    /*mBuffer = UniformBuffer::create(204, 0);*/
+    mBuffer = UniformBuffer::create(208, 0);
 
     mProjection = glm::mat4(1.0f);
     mView = glm::mat4(1.0f);
@@ -45,18 +46,22 @@ void CameraUniform::setCameraPos(const glm::vec3 &position)
 
 void CameraUniform::copyToUniformsToDevice()
 {
-    mBuffer->bind(PipelineStage::VS);
-    mBuffer->bind(PipelineStage::PS);
     mBuffer->setData(glm::value_ptr(mProjection), 0, 64);
     mBuffer->setData(glm::value_ptr(mView), 64, 64);
     mBuffer->setData(glm::value_ptr(mViewProjection), 128, 64);
     mBuffer->setData(glm::value_ptr(mCameraPos), 192, 12);
-    mBuffer->unbind();
+    
+    mBuffer->bind(PipelineStage::VS);
+    mBuffer->bind(PipelineStage::PS);
+    mBuffer->copyDataToDevice();
+    mBuffer->unbind(PipelineStage::VS);
+    mBuffer->unbind(PipelineStage::PS);
 }
 
 LightUniform::LightUniform()
 {
-    mBuffer = UniformBuffer::create(824, 1);
+    //mBuffer = UniformBuffer::create(824, 1);
+    mBuffer = UniformBuffer::create(800, 1);
 
     for (int i = 0; i < 5; i++)
     {
@@ -167,8 +172,6 @@ void LightUniform::setShadowStrength(float strength)
 
 void LightUniform::copyToUniformsToDevice()
 {
-    mBuffer->bind(PipelineStage::VS);
-    mBuffer->bind(PipelineStage::PS);
     mBuffer->setData(&mLightProjection[0], 0, 320);
     mBuffer->setData(&mLightView[0], 320, 320);
     mBuffer->setData(glm::value_ptr(mPosition), 640, 12);
@@ -190,7 +193,12 @@ void LightUniform::copyToUniformsToDevice()
     mBuffer->setData(&mShadowBias, 788, 4);
     mBuffer->setData(&mShadowRadius, 792, 4);
     mBuffer->setData(&mShadowStrength, 796, 4);
-    mBuffer->unbind();
+    
+    mBuffer->bind(PipelineStage::VS);
+    mBuffer->bind(PipelineStage::PS);
+    mBuffer->copyDataToDevice();
+    mBuffer->unbind(PipelineStage::VS);
+    mBuffer->unbind(PipelineStage::PS);
 }
 
 CameraUniform *RendererUniforms::sCameraUniform = nullptr;

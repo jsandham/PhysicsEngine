@@ -32,7 +32,7 @@ void CameraDrawer::render(Clipboard &clipboard, const PhysicsEngine::Guid& id)
             int mode = static_cast<int>(camera->mMode);
             int ssao = static_cast<int>(camera->mSSAO);
 
-            const char* renderPathNames[] = { "Forward", "Deferred" };
+            const char* renderPathNames[] = { "Forward", "Deferred" }; 
             const char* colorTargetNames[] = { "Color", "Normal", "Position", "Linear Depth", "Shadow Cascades" };
             const char* modeNames[] = { "Main", "Secondary" };
             const char* ssaoNames[] = { "On", "Off" };

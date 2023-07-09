@@ -1,4 +1,4 @@
-#include "../../../../include/graphics/platform/opengl/OpenGLShaderProgram.h"
+﻿#include "../../../../include/graphics/platform/opengl/OpenGLShaderProgram.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/graphics/Renderer.h"
 
@@ -6,6 +6,8 @@
 #include "../../../../include/core/Shader.h"
 
 #include <GL/glew.h>
+#include <iostream>
+#include <array>
 
 using namespace PhysicsEngine;
 
@@ -157,7 +159,92 @@ void OpenGLShaderProgram::compile()
         CHECK_ERROR(glUniformBlockBinding(mHandle, blockIndex, 1));
     }
 
-    // Uniforms
+
+
+
+
+
+    
+    //for (int j = 0; j < numBlocks; j++)
+    //{
+    //    GLint nameLen;
+    //    CHECK_ERROR(glGetActiveUniformBlockiv(mHandle, j, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen));
+
+    //    std::vector<GLchar> name;
+    //    name.resize(nameLen);
+    //    CHECK_ERROR(glGetActiveUniformBlockName(mHandle, j, nameLen, NULL, &name[0]));
+
+    //    std::string blockName;
+    //    blockName.assign(name.begin(), name.end() - 1);
+
+    //    std::cout << "blockName: " << blockName << std::endl;
+    //    //nameList.push_back(std::string());
+    //    //nameList.back().assign(name.begin(), name.end() - 1); // Remove the null terminator.
+    //}
+
+
+
+
+
+    // Uniform buffers
+    GLint numBlocks;
+    CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORM_BLOCKS, &numBlocks));
+
+    std::array<GLenum, 2> blockProperties{GL_NAME_LENGTH, GL_NUM_ACTIVE_VARIABLES};
+    std::array<GLint, 2> blockData{};
+
+    for (int blockIdx = 0; blockIdx < numBlocks; ++blockIdx)
+    {
+        CHECK_ERROR(glGetProgramResourceiv(mHandle, GL_UNIFORM_BLOCK, blockIdx, (GLsizei)blockProperties.size(),
+                                           blockProperties.data(), (GLsizei)blockData.size(), nullptr,
+                                           blockData.data()));
+
+        // Retrieve name
+        std::vector<char> blockName(blockData[0]);
+        CHECK_ERROR(glGetProgramResourceName(mHandle, GL_UNIFORM_BLOCK, blockIdx, (GLsizei)blockName.size() + 1,
+                                             nullptr,
+                                            blockName.data()));
+
+        // Retrieve indices of uniforms that are a member of this block.
+        std::vector<GLint> uniformIdxs(blockData[1]);
+
+        GLenum member = GL_ACTIVE_VARIABLES;
+        CHECK_ERROR(glGetProgramResourceiv(mHandle, GL_UNIFORM_BLOCK, blockIdx, 1, &member, (GLsizei)uniformIdxs.size(),
+                                           nullptr,
+                               uniformIdxs.data()));
+
+        std::cout << "blockName: " << std::string(blockName.data()) << " uniform count: " << blockData[1] << std::endl;
+     
+        std::array<GLenum, 2> uniformProperties{GL_NAME_LENGTH, GL_TYPE};
+        std::array<GLint, 2> uniformData{};
+        for (int uniformIdx = 0; uniformIdx < blockData[1]; uniformIdx++)
+        {
+            CHECK_ERROR(glGetProgramResourceiv(mHandle, GL_UNIFORM, uniformIdx, (GLsizei)uniformProperties.size(),
+                                               uniformProperties.data(), (GLsizei)blockData.size(), nullptr,
+                                               uniformData.data()));
+
+            std::vector<char> uniformName(uniformData[0]);
+            CHECK_ERROR(glGetProgramResourceName(mHandle, GL_UNIFORM, uniformIdx, (GLsizei)uniformName.size() + 1,
+                                                 nullptr,
+                                                 uniformName.data()));
+
+            std::cout << "uniform name: " << std::string(uniformName.data()) << " type: " << uniformData[1]
+                      << std::endl;
+
+            //mUniforms[].mName = std::string(uniformName.data());
+            //mUniforms[].mBufferName = std::string(blockName.data());
+            //mUniforms[].mType = 
+        }
+    }
+
+
+
+
+
+
+
+
+    // Standalone Uniforms
     GLint count;
     CHECK_ERROR(glGetProgramiv(mHandle, GL_ACTIVE_UNIFORMS, &count));
 
@@ -168,16 +255,18 @@ void OpenGLShaderProgram::compile()
 
     int uniformCount = 0;
     int materialUniformCount = 0;
-    for (size_t j = 0; j < mUniforms.size(); j++)
+    for (size_t uniformIdx = 0; uniformIdx < mUniforms.size(); uniformIdx++)
     {
         GLUniform uniform;
-        CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)j, 32, &uniform.nameLength, &uniform.size, &uniform.type,
+        CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)uniformIdx, 32, &uniform.nameLength, &uniform.size,
+                                       &uniform.type,
                                        &uniform.name[0]));
 
         int loc = findUniformLocation(&uniform.name[0]);
 
         if (loc >= 0)
         {
+            mUniforms[uniformCount].mBufferName = "$Global";
             mUniforms[uniformCount].mName = std::string(uniform.name);
             switch (uniform.type)
             {
@@ -278,6 +367,7 @@ std::vector<ShaderAttribute> OpenGLShaderProgram::getAttributes() const
 
 void OpenGLShaderProgram::setBool(const char *name, bool value)
 {
+    // TODO: Is it faster to call this->setBool(Shader::uniformToId(name), value);??
     CHECK_ERROR(glUniform1i(findUniformLocation(name), (int)value));
 }
 
