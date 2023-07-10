@@ -30,7 +30,8 @@ void DebugOverlay::update(Clipboard& clipboard)
         ImGuiWindowFlags_NoResize;
 
     static bool show_overlay = false;
-    if (ImGui::IsKeyPressed(112, false))
+    /*if (ImGui::IsKeyPressed(112, false))*/
+    if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_F1, false))
     {
         show_overlay = !show_overlay;
     }
@@ -138,7 +139,8 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
     ImGui::Text("Cubemap count: %d\n", clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Cubemap>());
     ImGui::Unindent(16.0f);
 
-    ImGui::SliderFloat("MaxFPS", &mMaxFPS, 30.0f, 120.0f, "%.0f", 1.0f);
+    /*ImGui::SliderFloat("MaxFPS", &mMaxFPS, 30.0f, 120.0f, "%.0f", 1.0f);*/
+    ImGui::SliderFloat("MaxFPS", &mMaxFPS, 30.0f, 120.0f, "%.0f");
 
     mPerfQueue.addSample(ImGui::GetIO().Framerate);
 

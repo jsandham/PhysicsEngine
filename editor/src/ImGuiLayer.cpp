@@ -1,13 +1,11 @@
 #include "../include/ImGuiLayer.h"
 
 #include "imgui.h"
-#include "imgui_impl_sdl.h"
-#include "imgui_impl_sdlrenderer.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
 #include <stdio.h>
-
-#if !SDL_VERSION_ATLEAST(2,0,17)
-#error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
-#endif
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_opengl.h>
 
 #include "ImGuizmo.h"
 
@@ -31,20 +29,25 @@ ImGuiLayer::ImGuiLayer() : PhysicsEngine::Layer("Imgui")
 
 ImGuiLayer::~ImGuiLayer()
 {
-    // Cleanup
-    switch (PhysicsEngine::RenderContext::getRenderAPI())
-    {
-    case PhysicsEngine::RenderAPI::OpenGL:
-        ImGui_ImplOpenGL3_Shutdown();
-        break;
-    case PhysicsEngine::RenderAPI::DirectX:
-        ImGui_ImplDX11_Shutdown();
-        break;
-    }
+    //// Cleanup
+    //switch (PhysicsEngine::RenderContext::getRenderAPI())
+    //{
+    //case PhysicsEngine::RenderAPI::OpenGL:
+    //    ImGui_ImplOpenGL3_Shutdown();
+    //    break;
+    //case PhysicsEngine::RenderAPI::DirectX:
+    //    ImGui_ImplDX11_Shutdown();
+    //    break;
+    //}
+
+
+ 
+
+
 
     // Cleanup
-    ImGui_ImplSDLRenderer_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
     
     ImGui::DestroyContext();
 
@@ -56,28 +59,31 @@ ImGuiLayer::~ImGuiLayer()
 void ImGuiLayer::init()
 {
     // Setup SDL
-    // (Some versions of SDL before <2.0.10 appears to have performance/stalling issues on a minority of Windows systems,
-    // depending on whether SDL_INIT_GAMECONTROLLER is enabled or disabled.. updating to latest version of SDL is recommended!)
-    /*if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)*/
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMEPAD) != 0)
     {
-        printf("Error: %s\n", SDL_GetError());
+        printf("Error: SDL_Init(): %s\n", SDL_GetError());
         return;
     }
 
-    // Setup window
-    /*SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);*/
-    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
-    /*window = SDL_CreateWindow("Dear ImGui SDL2+SDL_Renderer example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);*/
-    window = SDL_CreateWindow("Dear ImGui SDL2+SDL_Renderer example", 1280, 720, window_flags);
+    // Enable native IME.
+    SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
-    // Setup SDL_Renderer instance
-    renderer = SDL_CreateRenderer(window, "Test", SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL)
+    // Create window with SDL_Renderer graphics context
+    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
+    window = SDL_CreateWindow("Dear ImGui SDL3+SDL_Renderer example", 1280, 720, window_flags);
+    if (window == nullptr)
     {
-        SDL_Log("Error creating SDL_Renderer!");
+        printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
         return;
     }
+    renderer = SDL_CreateRenderer(window, NULL, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+    if (renderer == nullptr)
+    {
+        SDL_Log("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
+        return;
+    }
+    SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+    SDL_ShowWindow(window);
 
 
 
@@ -93,20 +99,20 @@ void ImGuiLayer::init()
     PhysicsEngine::Application& app = PhysicsEngine::Application::get();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-    ImGui_ImplSDLRenderer_Init(renderer);
+    ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer3_Init(renderer);
 
-    switch (PhysicsEngine::RenderContext::getRenderAPI())
-    {
-    case PhysicsEngine::RenderAPI::OpenGL:
-        // Init OpenGL Imgui Implementation
-        // GL 3.0 + GLSL 130
-        ImGui_ImplOpenGL3_Init("#version 330");
-        break;
-    case PhysicsEngine::RenderAPI::DirectX:
-        ImGui_ImplDX11_Init(PhysicsEngine::DirectXRenderContext::get()->getD3DDevice(), PhysicsEngine::DirectXRenderContext::get()->getD3DDeviceContext());
-        break;
-    }
+    //switch (PhysicsEngine::RenderContext::getRenderAPI())
+    //{
+    //case PhysicsEngine::RenderAPI::OpenGL:
+    //    // Init OpenGL Imgui Implementation
+    //    // GL 3.0 + GLSL 130
+    //    ImGui_ImplOpenGL3_Init("#version 330");
+    //    break;
+    //case PhysicsEngine::RenderAPI::DirectX:
+    //    ImGui_ImplDX11_Init(PhysicsEngine::DirectXRenderContext::get()->getD3DDevice(), PhysicsEngine::DirectXRenderContext::get()->getD3DDeviceContext());
+    //    break;
+    //}
 
     // enable docking
     ImGuiIO& io = ImGui::GetIO();
@@ -116,20 +122,22 @@ void ImGuiLayer::init()
 
 void ImGuiLayer::begin()
 {
-    // start the Dear ImGui frame
-    switch (PhysicsEngine::RenderContext::getRenderAPI())
-    {
-    case PhysicsEngine::RenderAPI::OpenGL:
-        ImGui_ImplOpenGL3_NewFrame();
-        break;
-    case PhysicsEngine::RenderAPI::DirectX:
-        ImGui_ImplDX11_NewFrame();
-        break;
-    }
+    //// start the Dear ImGui frame
+    //switch (PhysicsEngine::RenderContext::getRenderAPI())
+    //{
+    //case PhysicsEngine::RenderAPI::OpenGL:
+    //    ImGui_ImplOpenGL3_NewFrame();
+    //    break;
+    //case PhysicsEngine::RenderAPI::DirectX:
+    //    ImGui_ImplDX11_NewFrame();
+    //    break;
+    //}
 
-    ImGui_ImplSDLRenderer_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
+    // Start the Dear ImGui frame
+    ImGui_ImplSDLRenderer3_NewFrame();
+    ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
+
     ImGuizmo::BeginFrame();
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking |
@@ -163,13 +171,14 @@ void ImGuiLayer::end()
     // imgui render calls
     // Rendering
     ImGui::Render();
+    //SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
     SDL_RenderClear(renderer);
-    ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(renderer);
 
-    PhysicsEngine::Renderer::bindBackBuffer();
+    /*PhysicsEngine::Renderer::bindBackBuffer();
     switch (PhysicsEngine::RenderContext::getRenderAPI())
     {
     case PhysicsEngine::RenderAPI::OpenGL:
@@ -179,7 +188,7 @@ void ImGuiLayer::end()
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
         break;
     }
-    PhysicsEngine::Renderer::unbindBackBuffer();
+    PhysicsEngine::Renderer::unbindBackBuffer();*/
 
     ImGui::EndFrame();
 }

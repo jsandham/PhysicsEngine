@@ -1,8 +1,7 @@
 @echo off
 
-::set GLEW="../include/glew-2.1.0"
 set ROOT_INCLUDE="../include"
-set SDL_INCLUDE="../../external/SDL/include"
+set SDL_INCLUDE="../../SDL/include"
 set WARN=-W4 
 set OPT=/Od
 set MODEFLAGS=/MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
