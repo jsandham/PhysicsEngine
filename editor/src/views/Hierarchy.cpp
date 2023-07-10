@@ -114,8 +114,10 @@ void Hierarchy::update(Clipboard &clipboard, bool isOpenedThisFrame)
                 buf1[len] = '\0';
 
                 bool edited = false;
+                /*if (ImGui::SelectableInput(entity->getGuid().c_str(), selectedIndex == mEntries[i], &edited,
+                    ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))*/
                 if (ImGui::SelectableInput(entity->getGuid().c_str(), selectedIndex == mEntries[i], &edited,
-                    ImGuiSelectableFlags_DrawHoveredWhenHeld, buf1, IM_ARRAYSIZE(buf1)))
+                    ImGuiSelectableFlags_None, buf1, IM_ARRAYSIZE(buf1)))
                 {
                     entity->setName(std::string(buf1));
 
