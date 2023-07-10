@@ -1,6 +1,5 @@
 @echo off
 
-set GLEW="../include/glew-2.1.0"
 set IMGUI="../../imgui/include"
 set ROOT_INCLUDE="../include"
 set WARN=-W4 -wd4389 -wd4505
@@ -34,7 +33,7 @@ echo [92mOptimization level: %OPT%[0m
 :: compile c++ code
 echo [92mCompiling C++ imgui code...[0m
 for /R "../src" %%f in (*.cpp) do (
-	call cl /c /I%GLEW% /I%IMGUI% /I%ROOT_INCLUDE% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
+	call cl /c /I%IMGUI% /I%ROOT_INCLUDE% %OPT% %WARN% %MODEFLAGS% %FLAGS% %%f
 )
 
 :: create list of .obj files
