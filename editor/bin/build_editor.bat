@@ -6,6 +6,7 @@ set YAML="../../external/yaml-cpp/include"
 set IMGUI="../../external/imgui/include"
 set IMGUIZMO="../../external/imguizmo/include"
 set FILEWATCH="../../external/efsw/include"
+set SDL="../../external/SDL/include"
 set ENGINE="../../engine/include"
 set WARN=-W4 -wd4100 -wd4996 -wd4211 -wd4201
 set OPT=/Od
@@ -58,9 +59,10 @@ set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
 
 ::import libraries
 set GLEW_LIB="../../external/glew-2.1.0/lib/%MODE%/glew32.lib"
+set SDL_LIB="../../external/SDL/lib/%MODE%/SDL3.lib"
 
-set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% opengl32.lib comdlg32.lib
-set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%FILEWATCH% /I%ENGINE%
+set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% %SDL_LIB% opengl32.lib comdlg32.lib
+set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%FILEWATCH% /I%ENGINE% /I%SDL%
 cl /std:c++17 /Fe"%MODE%/EditorApplication" %OPT% %WARN% %MODEFLAGS% %FLAGS% %INCLUDES% ../EditorApplication.cpp %SRC_FILES% %LIBS%
 
 goto :eof

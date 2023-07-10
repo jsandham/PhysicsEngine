@@ -4,10 +4,16 @@
 #include <core/Layer.h>
 #include <core/Time.h>
 
+#include <SDL3/SDL.h>
+
 namespace PhysicsEditor
 {
 	class ImGuiLayer : public PhysicsEngine::Layer
 	{
+    private:
+        SDL_Window* window;
+        SDL_Renderer* renderer;
+
 	public:
         ImGuiLayer();
         ~ImGuiLayer();
