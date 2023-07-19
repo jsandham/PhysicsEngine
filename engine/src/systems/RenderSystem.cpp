@@ -10,8 +10,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "../../include/core/Intersect.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
 
 #include "../../include/systems/RenderSystem.h"
 
@@ -117,7 +117,7 @@ void RenderSystem::registerRenderAssets(World *world)
     // create all render texture assets not already created
     for (size_t i = 0; i < world->getNumberOfAssets<RenderTexture>(); i++)
     {
-        RenderTexture* texture = world->getAssetByIndex<RenderTexture>(i);
+        RenderTexture *texture = world->getAssetByIndex<RenderTexture>(i);
         if (texture->deviceUpdateRequired())
         {
             texture->copyTextureToDevice();
@@ -142,7 +142,8 @@ void RenderSystem::registerRenderAssets(World *world)
 
             if (!shader->isCompiled())
             {
-                std::string errorMessage = "Shader failed to compile " + shader->getName() + " " + shader->getGuid().toString() + "\n";
+                std::string errorMessage =
+                    "Shader failed to compile " + shader->getName() + " " + shader->getGuid().toString() + "\n";
                 Log::error(&errorMessage[0]);
             }
 
@@ -160,7 +161,7 @@ void RenderSystem::registerRenderAssets(World *world)
         if (material->hasShaderChanged() || it != shadersCompiledThisFrame.end())
         {
             material->onShaderChanged(); // need to also do this if the shader code changed but the assigned shader
-                                              // on the material remained the same!
+                                         // on the material remained the same!
         }
 
         if (material->hasTextureChanged())
@@ -200,7 +201,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
             Transform *transform = meshRenderer->getComponent<Transform>();
             Mesh *mesh = world->getAssetByGuid<Mesh>(meshRenderer->getMesh());
 
-            if (transform == nullptr || mesh == nullptr){ continue; }
+            if (transform == nullptr || mesh == nullptr)
+            {
+                continue;
+            }
 
             glm::mat4 model = transform->getModelMatrix();
 
@@ -213,7 +217,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
                 // could be nullptr if for example we are adding a material to the renderer in the editor
                 // but we have not yet actually set the material
-                if (material == nullptr){ break; }
+                if (material == nullptr)
+                {
+                    break;
+                }
 
                 int shaderIndex = world->getIndexOf(material->getShaderId());
 
@@ -238,7 +245,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                     std::pair<Guid, RenderObject> key = std::make_pair(material->getGuid(), object);
 
                     auto it = instanceMap.find(key);
-                    if(it != instanceMap.end())
+                    if (it != instanceMap.end())
                     {
                         it->second.models.push_back(model);
                         it->second.transformIds.push_back(transform->getId());
@@ -253,7 +260,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                         instanceMap[key].models.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
                         instanceMap[key].transformIds.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
                         instanceMap[key].boundingSpheres.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-                       
+
                         instanceMap[key].models.push_back(model);
                         instanceMap[key].transformIds.push_back(transform->getId());
                         instanceMap[key].boundingSpheres.push_back(boundingSphere);
@@ -294,8 +301,9 @@ void RenderSystem::buildRenderObjectsList(World *world)
         {
             RenderObject renderObject = it->first.second;
             renderObject.instanceStart = count;
-            renderObject.instanceCount = std::min(models.size() - count, static_cast<size_t>(Renderer::getRenderer()->INSTANCE_BATCH_SIZE));
-            
+            renderObject.instanceCount =
+                std::min(models.size() - count, static_cast<size_t>(Renderer::getRenderer()->INSTANCE_BATCH_SIZE));
+
             mTotalRenderObjects.push_back(renderObject);
 
             size_t start = mTotalModels.size();
@@ -312,7 +320,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 mTotalTransformIds[start + i] = transformIds[renderObject.instanceStart + i];
                 mTotalBoundingSpheres[start + i] = boundingSpheres[renderObject.instanceStart + i];
             }
-       
+
             count += Renderer::getRenderer()->INSTANCE_BATCH_SIZE;
         }
     }
@@ -329,7 +337,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
         {
             Transform *transform = terrain->getComponent<Transform>();
 
-            if (transform == nullptr){ continue; }
+            if (transform == nullptr)
+            {
+                continue;
+            }
 
             glm::mat4 model = transform->getModelMatrix();
 
@@ -338,10 +349,13 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
             // could be nullptr if for example we are adding a material to the renderer in the editor
             // but we have not yet actually set the material
-            if (material == nullptr){ break; }
+            if (material == nullptr)
+            {
+                break;
+            }
 
             int shaderIndex = world->getIndexOf(material->getShaderId());
- 
+
             for (int j = 0; j < terrain->getTotalChunkCount(); j++)
             {
                 if (terrain->isChunkEnabled(j))
@@ -386,17 +400,17 @@ void RenderSystem::cullRenderObjects(Camera *camera)
     int count = 0;
     for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
     {
-        //dont perform any culling on instanced objects
+        // dont perform any culling on instanced objects
         if (mTotalRenderObjects[i].instanced)
         {
             mRenderObjects[objectCount] = mTotalRenderObjects[i];
-            mRenderObjects[objectCount].instanceStart = count; 
+            mRenderObjects[objectCount].instanceStart = count;
 
             for (size_t j = 0; j < mTotalRenderObjects[i].instanceCount; j++)
             {
                 mModels[count + j] = mTotalModels[index];
                 mTransformIds[count + j] = mTotalTransformIds[index];
-              
+
                 index++;
             }
 
@@ -411,7 +425,7 @@ void RenderSystem::cullRenderObjects(Camera *camera)
 
                 mModels[count] = mTotalModels[index];
                 mTransformIds[count] = mTotalTransformIds[index];
-           
+
                 objectCount++;
                 count++;
             }
@@ -427,12 +441,12 @@ void RenderSystem::cullRenderObjects(Camera *camera)
 
 void RenderSystem::buildRenderQueue()
 {
-    //mRenderQueue.clear();
+    // mRenderQueue.clear();
 
-    //for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
+    // for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
     //{
-    //    // for now dont sort
-    //    uint64_t key = i;
+    //     // for now dont sort
+    //     uint64_t key = i;
 
     //    mRenderQueue.push_back(std::make_pair(key, (int)i));
 
@@ -468,11 +482,9 @@ void RenderSystem::buildRenderQueue()
 void RenderSystem::sortRenderQueue()
 {
     // sort render queue from highest priority key to lowest
-    //std::sort(mRenderQueue.begin(), mRenderQueue.end(),
+    // std::sort(mRenderQueue.begin(), mRenderQueue.end(),
     //          [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
 }
-
-
 
 Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere)
 {

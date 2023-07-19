@@ -88,7 +88,7 @@ void GizmoRenderer::update(Camera *camera)
     renderFrustumGizmos(camera);
 }
 
-void GizmoRenderer::drawGrid(Camera* camera)
+void GizmoRenderer::drawGrid(Camera *camera)
 {
     renderGridGizmo(camera);
 }
@@ -107,7 +107,7 @@ void GizmoRenderer::addToDrawList(const Ray &ray, float t, const Color &color)
     mLines.push_back(LineGizmo(line, color));
 }
 
-void GizmoRenderer::addToDrawList(const Sphere& sphere, const Color& color)
+void GizmoRenderer::addToDrawList(const Sphere &sphere, const Color &color)
 {
     mSpheres.push_back(SphereGizmo(sphere, color));
 }
@@ -244,7 +244,7 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
- 
+
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
@@ -267,7 +267,7 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
- 
+
     mesh->getNativeGraphicsHandle()->bind();
 
     mGizmoShader->bind();
@@ -287,7 +287,7 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
     }
 
     mesh->getNativeGraphicsHandle()->unbind();
-    
+
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
@@ -479,7 +479,7 @@ void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGiz
     mFrustumVertexBuffer->bind();
     mFrustumVertexBuffer->setData(mFrustumVertices.data(), 0, sizeof(float) * mFrustumVertices.size());
     mFrustumVertexBuffer->unbind();
- 
+
     mFrustumHandle->drawLines(0, 24);
 }
 

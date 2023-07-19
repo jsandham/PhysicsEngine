@@ -32,10 +32,10 @@ enum class BlendingFactor
 
 class Renderer
 {
-private:
-    static Renderer* sInstance;
+  private:
+    static Renderer *sInstance;
 
-public:
+  public:
     static int INSTANCE_BATCH_SIZE;
 
     static void init();
@@ -58,8 +58,8 @@ public:
 
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long *elapsedTime);
-    
-protected:
+
+  protected:
     virtual void init_impl() = 0;
     virtual void present_impl() = 0;
     virtual void turnVsyncOn_impl() = 0;
@@ -78,8 +78,8 @@ protected:
     virtual void drawIndexedInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query) = 0;
 
     virtual void beginQuery_impl(unsigned int queryId) = 0;
-    virtual void endQuery_impl(unsigned int queryId, unsigned long long* elapsedTime) = 0;
+    virtual void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) = 0;
 };
-}
+} // namespace PhysicsEngine
 
 #endif // RENDERER_API_H__

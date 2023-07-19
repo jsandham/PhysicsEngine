@@ -5,21 +5,21 @@
 
 namespace PhysicsEngine
 {
-	class OpenGLIndexBuffer : public IndexBuffer
-	{
-	public:
-		unsigned int mBuffer;
+class OpenGLIndexBuffer : public IndexBuffer
+{
+  public:
+    unsigned int mBuffer;
 
-	public:
-		OpenGLIndexBuffer();
-		~OpenGLIndexBuffer();
+  public:
+    OpenGLIndexBuffer();
+    ~OpenGLIndexBuffer();
 
-		void resize(size_t size) override;
-		void setData(void* data, size_t offset, size_t size) override;
-		void bind() override;
-		void unbind() override;
-		void* getBuffer() override;
-	};
-}
+    void resize(size_t size) override;
+    void setData(void *data, size_t offset, size_t size) override;
+    void bind() override;
+    void unbind() override;
+    void *getBuffer() override;
+};
+} // namespace PhysicsEngine
 
 #endif

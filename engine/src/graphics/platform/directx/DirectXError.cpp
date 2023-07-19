@@ -2,15 +2,16 @@
 #include <assert.h>
 #include <iostream>
 
-#include "../../../../include/graphics/platform/directx/DirectXError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
 
 using namespace PhysicsEngine;
 
 static const std::string ERROR_FILE_NOT_FOUND1 = "ERROR_FILE_NOT_FOUND";
 static const std::string ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS = "ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS";
 static const std::string ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS = "ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS";
-static const std::string ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD = "ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD";
+static const std::string ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD =
+    "ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD";
 static const std::string ERROR_INVALID_CALL = "ERROR_INVALID_CALL";
 static const std::string ERROR_WAS_STILL_DRAWING = "ERROR_WAS_STILL_DRAWING";
 static const std::string FAIL = "FAIL";
@@ -19,7 +20,7 @@ static const std::string OUTOFMEMORY = "OUTOFMEMORY";
 static const std::string NOTIMPL = "NOTIMPL";
 static const std::string FALSE1 = "FALSE";
 
-static void logError(const std::string& error, const std::string& line, const std::string& file)
+static void logError(const std::string &error, const std::string &line, const std::string &file)
 {
     char errorBuffer[512];
     size_t i = 1;

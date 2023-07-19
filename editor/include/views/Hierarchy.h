@@ -14,30 +14,30 @@
 
 namespace PhysicsEditor
 {
-class Hierarchy
-{
-  private:
-    std::vector<int> mEntries;
+	class Hierarchy
+	{
+	private:
+		std::vector<int> mEntries;
 
-    ImVec2 mWindowPos;
-    ImVec2 mContentMin;
-    ImVec2 mContentMax;
+		ImVec2 mWindowPos;
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-    bool mOpen;
+		bool mOpen;
 
-  public:
-    Hierarchy();
-    ~Hierarchy();
-    Hierarchy(const Hierarchy &other) = delete;
-    Hierarchy &operator=(const Hierarchy &other) = delete;
+	public:
+		Hierarchy();
+		~Hierarchy();
+		Hierarchy(const Hierarchy& other) = delete;
+		Hierarchy& operator=(const Hierarchy& other) = delete;
 
-    void init(Clipboard& clipboard);
-    void update(Clipboard &clipboard, bool isOpenedThisFrame);
+		void init(Clipboard& clipboard);
+		void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
-    ImVec2 getWindowPos() const;
-    ImVec2 getContentMin() const;
-    ImVec2 getContentMax() const;
-};
+		ImVec2 getWindowPos() const;
+		ImVec2 getContentMin() const;
+		ImVec2 getContentMax() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

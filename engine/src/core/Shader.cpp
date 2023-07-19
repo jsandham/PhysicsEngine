@@ -20,7 +20,7 @@ Shader::Shader(World *world, const Id &id) : Asset(world, id)
 }
 
 Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
-{   
+{
     mSource = "";
     mSourceFilepath = "";
     mVertexShader = "";
@@ -73,9 +73,12 @@ std::string Shader::getObjectName() const
     return PhysicsEngine::SHADER_NAME;
 }
 
-void Shader::load(const ShaderCreationAttrib& attrib)
+void Shader::load(const ShaderCreationAttrib &attrib)
 {
-    if (attrib.mSourceFilepath.empty()){ return; }
+    if (attrib.mSourceFilepath.empty())
+    {
+        return;
+    }
 
     shader_data data;
 
@@ -304,7 +307,7 @@ std::string Shader::getSourceFilepath() const
     return mSourceFilepath;
 }
 
-ShaderProgram* Shader::getProgramFromVariant(int64_t variant) const
+ShaderProgram *Shader::getProgramFromVariant(int64_t variant) const
 {
     if (mAllProgramsCompiled)
     {
@@ -320,12 +323,12 @@ ShaderProgram* Shader::getProgramFromVariant(int64_t variant) const
     return nullptr;
 }
 
-ShaderProgram* Shader::getActiveProgram() const
+ShaderProgram *Shader::getActiveProgram() const
 {
     return mActiveProgram;
 }
 
-std::vector<ShaderProgram*> Shader::getPrograms() const
+std::vector<ShaderProgram *> Shader::getPrograms() const
 {
     return mPrograms;
 }
@@ -435,7 +438,7 @@ void Shader::setMat4(const char *name, const glm::mat4 &mat) const
     }
 }
 
-void Shader::setTexture2D(const char *name, int texUnit, void* tex) const
+void Shader::setTexture2D(const char *name, int texUnit, void *tex) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -443,7 +446,8 @@ void Shader::setTexture2D(const char *name, int texUnit, void* tex) const
     }
 }
 
-void Shader::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const
+void Shader::setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                           const std::vector<void *> &texs) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -531,7 +535,7 @@ void Shader::setMat4(int uniformId, const glm::mat4 &mat) const
     }
 }
 
-void Shader::setTexture2D(int uniformId, int texUnit, void* tex) const
+void Shader::setTexture2D(int uniformId, int texUnit, void *tex) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -539,7 +543,8 @@ void Shader::setTexture2D(int uniformId, int texUnit, void* tex) const
     }
 }
 
-void Shader::setTexture2Ds(int uniformId, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const
+void Shader::setTexture2Ds(int uniformId, const std::vector<int> &texUnits, int count,
+                           const std::vector<void *> &texs) const
 {
     if (mActiveProgram != nullptr)
     {
@@ -659,7 +664,7 @@ int Shader::uniformToId(const char *uniform)
         hash = ((hash << 5) + hash) + c;
         c = *uniform++;
     }
-    
+
     return hash;
 }
 

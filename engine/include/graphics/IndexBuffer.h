@@ -3,26 +3,27 @@
 
 namespace PhysicsEngine
 {
-	class IndexBuffer
-	{
-	protected:
-		size_t mSize;
-	public:
-		IndexBuffer();
-		IndexBuffer(const IndexBuffer& other) = delete;
-		IndexBuffer& operator=(const IndexBuffer& other) = delete;
-		virtual ~IndexBuffer() = 0;
+class IndexBuffer
+{
+  protected:
+    size_t mSize;
 
-		virtual void resize(size_t size) = 0;
-		virtual void setData(void* data, size_t offset, size_t size) = 0;
-		virtual void bind() = 0;
-		virtual void unbind() = 0;
-		virtual void* getBuffer() = 0;
+  public:
+    IndexBuffer();
+    IndexBuffer(const IndexBuffer &other) = delete;
+    IndexBuffer &operator=(const IndexBuffer &other) = delete;
+    virtual ~IndexBuffer() = 0;
 
-		size_t getSize() const;
+    virtual void resize(size_t size) = 0;
+    virtual void setData(void *data, size_t offset, size_t size) = 0;
+    virtual void bind() = 0;
+    virtual void unbind() = 0;
+    virtual void *getBuffer() = 0;
 
-		static IndexBuffer* create();
-	};
-}
+    size_t getSize() const;
+
+    static IndexBuffer *create();
+};
+} // namespace PhysicsEngine
 
 #endif

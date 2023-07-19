@@ -1,23 +1,20 @@
 #include "../../include/systems/TerrainSystem.h"
-#include "../../include/components/Transform.h"
 #include "../../include/components/Terrain.h"
+#include "../../include/components/Transform.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
 TerrainSystem::TerrainSystem(World *world, const Id &id) : System(world, id)
 {
-
 }
 
 TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
 {
-
 }
 
 TerrainSystem::~TerrainSystem()
 {
-
 }
 
 void TerrainSystem::serialize(YAML::Node &out) const
@@ -64,7 +61,7 @@ void TerrainSystem::update(const Input &input, const Time &time)
             float z = transform->getPosition().z;
 
             Rect centreChunkRect = terrain->getCentreChunkRect();
-            
+
             if (!centreChunkRect.contains(x, z))
             {
                 float dx = 0.0f;

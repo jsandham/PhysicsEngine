@@ -139,7 +139,7 @@ struct Input
     int mRightStickY;
 };
 
-Input& getInput();
+Input &getInput();
 
 bool getKey(const Input &input, KeyCode key);
 bool getKeyDown(const Input &input, KeyCode key);

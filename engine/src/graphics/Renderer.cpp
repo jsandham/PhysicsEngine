@@ -1,8 +1,11 @@
 #include "../../include/graphics/Renderer.h"
 #include "../../include/graphics/RenderContext.h"
+#include "../../include/graphics/RendererMeshes.h"
+#include "../../include/graphics/RendererShaders.h"
+#include "../../include/graphics/RendererUniforms.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLRenderer.h"
 #include "../../include/graphics/platform/directx/DirectXRenderer.h"
+#include "../../include/graphics/platform/opengl/OpenGLRenderer.h"
 
 using namespace PhysicsEngine;
 
@@ -13,15 +16,19 @@ void Renderer::init()
 {
     switch (RenderContext::getRenderAPI())
     {
-        case RenderAPI::OpenGL:
-            sInstance = new OpenGLRenderer();
-            break;
-        case RenderAPI::DirectX:
-            sInstance = new DirectXRenderer();
-            break;
+    case RenderAPI::OpenGL:
+        sInstance = new OpenGLRenderer();
+        break;
+    case RenderAPI::DirectX:
+        sInstance = new DirectXRenderer();
+        break;
     }
 
     sInstance->init_impl();
+
+    RendererShaders::createInternalShaders();
+    RendererUniforms::createInternalUniforms();
+    RendererMeshes::createInternalMeshes();
 }
 
 Renderer *Renderer::getRenderer()
@@ -56,19 +63,19 @@ void Renderer::unbindBackBuffer()
 
 void Renderer::clearBackBufferColor(const Color &color)
 {
-     return sInstance->clearBackBufferColor_impl(color);
+    return sInstance->clearBackBufferColor_impl(color);
 }
 
 void Renderer::clearBackBufferColor(float r, float g, float b, float a)
 {
-     return sInstance->clearBackBufferColor_impl(r, g, b, a);
+    return sInstance->clearBackBufferColor_impl(r, g, b, a);
 }
 
 void Renderer::setViewport(int x, int y, int width, int height)
 {
     return sInstance->setViewport_impl(x, y, width, height);
 }
-    
+
 void Renderer::turnOn(Capability capability)
 {
     return sInstance->turnOn_impl(capability);

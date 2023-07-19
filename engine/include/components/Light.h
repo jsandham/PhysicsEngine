@@ -124,11 +124,11 @@ class Light : public Component
 
     glm::mat4 getProjMatrix() const;
 
-    Framebuffer* getNativeGraphicsShadowCascadeFBO(int index) const;
-    Framebuffer* getNativeGraphicsShadowSpotlightFBO() const;
-    Framebuffer* getNativeGraphicsShadowCubemapFBO() const;
+    Framebuffer *getNativeGraphicsShadowCascadeFBO(int index) const;
+    Framebuffer *getNativeGraphicsShadowSpotlightFBO() const;
+    Framebuffer *getNativeGraphicsShadowCubemapFBO() const;
 
-    RenderTextureHandle* getNativeGraphicsShadowCascadeDepthTex(int index) const;
+    RenderTextureHandle *getNativeGraphicsShadowCascadeDepthTex(int index) const;
     RenderTextureHandle *getNativeGrpahicsShadowSpotlightDepthTex() const;
     RenderTextureHandle *getNativeGraphicsShadowCubemapDepthTex() const;
 };

@@ -47,7 +47,7 @@ void DirectXUniformBuffer::bind(PipelineStage stage)
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
-    
+
     switch (stage)
     {
     case PipelineStage::VS:
@@ -59,7 +59,7 @@ void DirectXUniformBuffer::bind(PipelineStage stage)
     }
 }
 void DirectXUniformBuffer::unbind(PipelineStage stage)
-//void DirectXUniformBuffer::unbind()
+// void DirectXUniformBuffer::unbind()
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
@@ -83,7 +83,7 @@ void DirectXUniformBuffer::setData(const void *data, size_t offset, size_t size)
     memcpy(mData + offset, data, size);
 }
 
-void DirectXUniformBuffer::getData(void* data, size_t offset, size_t size)
+void DirectXUniformBuffer::getData(void *data, size_t offset, size_t size)
 {
     assert(data != NULL);
     assert(offset + size <= mSize);

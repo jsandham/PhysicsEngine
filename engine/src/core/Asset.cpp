@@ -12,7 +12,7 @@ Asset::Asset(World *world, const Id &id) : Object(world, id)
     mName = "Unnamed Asset";
 }
 
-Asset::Asset(World *world, const Guid& guid, const Id& id) : Object(world, guid, id)
+Asset::Asset(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
 {
     mName = "Unnamed Asset";
 }

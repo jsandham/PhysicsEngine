@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "Asset.h"
-#include "Sphere.h"
-#include "../graphics/VertexBuffer.h"
 #include "../graphics/IndexBuffer.h"
 #include "../graphics/MeshHandle.h"
+#include "../graphics/VertexBuffer.h"
+#include "Asset.h"
+#include "Sphere.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -29,7 +29,7 @@ class Mesh : public Asset
 
     std::vector<int> mSubMeshVertexStartIndices;
     std::vector<int> mSubMeshStartIndices;
-    
+
     Sphere mBounds;
 
     MeshHandle *mHandle;
@@ -70,9 +70,9 @@ class Mesh : public Asset
     int getSubMeshEndIndex(int subMeshIndex) const;
     int getSubMeshCount() const;
     Sphere getBounds() const;
-    MeshHandle* getNativeGraphicsHandle() const;
-    VertexBuffer* getNativeGraphicsInstanceModelBuffer() const;
-    VertexBuffer* getNativeGraphicsInstanceColorBuffer() const;
+    MeshHandle *getNativeGraphicsHandle() const;
+    VertexBuffer *getNativeGraphicsInstanceModelBuffer() const;
+    VertexBuffer *getNativeGraphicsInstanceColorBuffer() const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

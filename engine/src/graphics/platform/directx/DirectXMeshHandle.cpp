@@ -3,7 +3,7 @@
 
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
-#include<assert.h>
+#include <assert.h>
 
 using namespace PhysicsEngine;
 

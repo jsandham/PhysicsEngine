@@ -8,7 +8,7 @@ Component::Component(World *world, const Id &id) : Object(world, id)
     mEntityGuid = Guid::INVALID;
 }
 
-Component::Component(World* world, const Guid& guid, const Id& id) : Object(world, guid, id)
+Component::Component(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
 {
     mEntityGuid = Guid::INVALID;
 }
@@ -31,7 +31,7 @@ void Component::deserialize(const YAML::Node &in)
     mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 }
 
-Entity* Component::getEntity() const
+Entity *Component::getEntity() const
 {
     return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
 }

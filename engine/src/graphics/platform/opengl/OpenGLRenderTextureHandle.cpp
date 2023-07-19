@@ -1,6 +1,6 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLRenderTextureHandle.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -85,7 +85,6 @@ static GLint getTextureFilterMode(TextureFilterMode filterMode)
     return openglFilterMode;
 }
 
-
 OpenGLRenderTextureHandle::OpenGLRenderTextureHandle(int width, int height, TextureFormat format,
                                                      TextureWrapMode wrapMode, TextureFilterMode filterMode)
     : RenderTextureHandle(width, height, format, wrapMode, filterMode)
@@ -107,13 +106,12 @@ OpenGLRenderTextureHandle::OpenGLRenderTextureHandle(int width, int height, Text
     // glTexImage2D allows "re-allocating" a texture without having to delete and re-create it first
     if (mFormat == TextureFormat::Depth)
     {
-        CHECK_ERROR(
-            glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_FLOAT, nullptr));
+        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_FLOAT, nullptr));
     }
     else
     {
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_UNSIGNED_BYTE,
-                                 nullptr));
+        CHECK_ERROR(
+            glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_UNSIGNED_BYTE, nullptr));
     }
 
     CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
@@ -137,10 +135,10 @@ OpenGLRenderTextureHandle::~OpenGLRenderTextureHandle()
 
 void *OpenGLRenderTextureHandle::getTexture()
 {
-    return static_cast<void*>(&mHandle);
+    return static_cast<void *>(&mHandle);
 }
 
 void *OpenGLRenderTextureHandle::getIMGUITexture()
 {
-    return static_cast<void*>(&mHandle);
+    return static_cast<void *>(&mHandle);
 }

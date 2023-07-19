@@ -18,7 +18,7 @@ Plane::~Plane()
 {
 }
 
-float Plane::signedDistance(const glm::vec3& point) const
+float Plane::signedDistance(const glm::vec3 &point) const
 {
     float d = -glm::dot(mNormal, mX0);
 

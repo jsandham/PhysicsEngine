@@ -24,7 +24,6 @@ Transform::Transform(World *world, const Guid &guid, const Id &id) : Component(w
 
 Transform::~Transform()
 {
-
 }
 
 void Transform::serialize(YAML::Node &out) const
@@ -90,7 +89,7 @@ glm::mat4 Transform::getModelMatrix() const
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), mPosition);
     modelMatrix *= glm::toMat4(mRotation);
     modelMatrix = glm::scale(modelMatrix, mScale);
-    
+
     return modelMatrix;
 }
 
@@ -112,21 +111,21 @@ glm::vec3 Transform::getRight() const
     return glm::vec3(glm::rotate(mRotation, glm::vec4(1, 0, 0, 0)));
 }
 
-bool Transform::decompose(const glm::mat4& model, glm::vec3& translation, glm::quat& rotation, glm::vec3& scale)
+bool Transform::decompose(const glm::mat4 &model, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale)
 {
-	glm::vec3 skew;
-	glm::vec4 perspective;
-	return glm::decompose(model, scale, rotation, translation, skew, perspective);
+    glm::vec3 skew;
+    glm::vec4 perspective;
+    return glm::decompose(model, scale, rotation, translation, skew, perspective);
 }
 
-void Transform::v3Scale(glm::vec3& v, float desiredLength)
+void Transform::v3Scale(glm::vec3 &v, float desiredLength)
 {
-	float len = glm::length(v);
-	if (len != 0)
-	{
-		float l = desiredLength / len;
-		v[0] *= l;
-		v[1] *= l;
-		v[2] *= l;
-	}
+    float len = glm::length(v);
+    if (len != 0)
+    {
+        float l = desiredLength / len;
+        v[0] *= l;
+        v[1] *= l;
+        v[2] *= l;
+    }
 }

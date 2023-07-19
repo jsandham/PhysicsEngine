@@ -29,10 +29,8 @@ void DeferredRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void DeferredRenderer::update(const Input &input, Camera *camera,
-                              const std::vector<RenderObject> &renderObjects,
-                              const std::vector<glm::mat4> &models,
-                              const std::vector<Id> &transformIds)
+void DeferredRenderer::update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+                              const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginDeferredFrame(camera);
 
@@ -56,8 +54,8 @@ void DeferredRenderer::beginDeferredFrame(Camera *camera)
     // set camera state binding point and update camera state data
     mCameraUniform->copyToUniformsToDevice();
 
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     Framebuffer *framebuffer = nullptr;
 
@@ -95,29 +93,30 @@ void DeferredRenderer::beginDeferredFrame(Camera *camera)
 }
 
 void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObject> &renderObjects,
-                                 const std::vector<glm::mat4> &models)
+                                    const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
     camera->getNativeGraphicsGeometryFBO()->bind();
     camera->getNativeGraphicsGeometryFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
-    
+
     mGBufferShader->bind();
-    //int mGBufferShaderDiffuseTexLoc = Renderer::getRenderer()->findUniformLocation("texture_diffuse1", state.mGBufferShaderProgram);
-    //int mGBufferShaderSpecTexLoc = Renderer::getRenderer()->findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
+    // int mGBufferShaderDiffuseTexLoc = Renderer::getRenderer()->findUniformLocation("texture_diffuse1",
+    // state.mGBufferShaderProgram); int mGBufferShaderSpecTexLoc =
+    // Renderer::getRenderer()->findUniformLocation("texture_specular1", state.mGBufferShaderProgram);
 
-    //std::string message = "mGBufferShaderDiffuseTexLoc: " + std::to_string(mGBufferShaderDiffuseTexLoc) +
-    //                      " mGBufferShaderSpecTexLoc: " + std::to_string(mGBufferShaderSpecTexLoc) + "\n";
-    //Log::info(message.c_str());
+    // std::string message = "mGBufferShaderDiffuseTexLoc: " + std::to_string(mGBufferShaderDiffuseTexLoc) +
+    //                       " mGBufferShaderSpecTexLoc: " + std::to_string(mGBufferShaderSpecTexLoc) + "\n";
+    // Log::info(message.c_str());
 
-    //for (size_t i = 0; i < renderObjects.size(); i++)
+    // for (size_t i = 0; i < renderObjects.size(); i++)
     //{
-    //    Renderer::getRenderer()->setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
-    //    //Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
-    //    Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
-    //}
-    //int currentMaterialIndex = -1;
-    //Material *material = nullptr;
+    //     Renderer::getRenderer()->setMat4(state.mGBufferShaderModelLoc, renderObjects[i].model);
+    //     //Renderer::getRenderer()->render(renderObjects[i], camera->mQuery);
+    //     Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+    // }
+    // int currentMaterialIndex = -1;
+    // Material *material = nullptr;
 
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
@@ -152,11 +151,11 @@ void DeferredRenderer::lightingPass(Camera *camera, const std::vector<RenderObje
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    //Renderer::getRenderer()->use(state.mSimpleLitDeferredShaderProgram);
+    // Renderer::getRenderer()->use(state.mSimpleLitDeferredShaderProgram);
 
-    //Renderer::getRenderer()->setTexture2D(state.mPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
-    //Renderer::getRenderer()->setTexture2D(state.mNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
-    //Renderer::getRenderer()->setTexture2D(state.mAlbedoSpecTexLoc, 2, camera->getNativeGraphicsAlbedoSpecTex());
+    // Renderer::getRenderer()->setTexture2D(state.mPositionTexLoc, 0, camera->getNativeGraphicsPositionTex());
+    // Renderer::getRenderer()->setTexture2D(state.mNormalTexLoc, 1, camera->getNativeGraphicsNormalTex());
+    // Renderer::getRenderer()->setTexture2D(state.mAlbedoSpecTexLoc, 2, camera->getNativeGraphicsAlbedoSpecTex());
 
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Light>(); i++)
     {
@@ -164,22 +163,21 @@ void DeferredRenderer::lightingPass(Camera *camera, const std::vector<RenderObje
         Transform *lightTransform = light->getComponent<Transform>();
         if (lightTransform != nullptr)
         {
-            //Renderer::getRenderer()->setVec3(state->mSimpleLitDeferredShaderLightPosLocs, lightTransform->mPosition);
-            //Renderer::getRenderer()->setVec3(state->mSimpleLitDeferredShaderLightColLocs, light->mAmbient);
+            // Renderer::getRenderer()->setVec3(state->mSimpleLitDeferredShaderLightPosLocs, lightTransform->mPosition);
+            // Renderer::getRenderer()->setVec3(state->mSimpleLitDeferredShaderLightColLocs, light->mAmbient);
         }
     }
 
-    //glBindVertexArray(state.mQuadVAO);
-    //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    //glBindVertexArray(0);
+    // glBindVertexArray(state.mQuadVAO);
+    // glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    // glBindVertexArray(0);
 
     camera->getNativeGraphicsMainFBO()->unbind();
 }
 
-void DeferredRenderer::renderColorPickingDeferred(Camera *camera,
-                                       const std::vector<RenderObject> &renderObjects,
-                                       const std::vector<glm::mat4> &models,
-                                       const std::vector<Id> &transformIds)
+void DeferredRenderer::renderColorPickingDeferred(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                                  const std::vector<glm::mat4> &models,
+                                                  const std::vector<Id> &transformIds)
 {
     camera->setColoringIds(transformIds);
 
@@ -240,8 +238,8 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
     if (camera->mRenderToScreen)
     {
         Renderer::getRenderer()->bindBackBuffer();
-        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                              camera->getViewport().mHeight);
+        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                             camera->getViewport().mWidth, camera->getViewport().mHeight);
 
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());

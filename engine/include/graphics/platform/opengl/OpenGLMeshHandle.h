@@ -21,7 +21,7 @@ class OpenGLMeshHandle : public MeshHandle
 
     void bind() override;
     void unbind() override;
-    void addVertexBuffer(VertexBuffer* buffer, AttribType type, bool instanceBuffer = false) override;
+    void addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer = false) override;
     void addIndexBuffer(IndexBuffer *buffer) override;
     void drawLines(size_t vertexOffset, size_t vertexCount) override;
     void draw(size_t vertexOffset, size_t vertexCount) override;

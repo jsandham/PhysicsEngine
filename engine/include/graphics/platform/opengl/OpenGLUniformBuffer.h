@@ -23,10 +23,10 @@ class OpenGLUniformBuffer : public UniformBuffer
 
     void bind(PipelineStage stage) override;
     void unbind(PipelineStage stage) override;
-    void setData(const void* data, size_t offset, size_t size) override;
-    void getData(void* data, size_t offset, size_t size) override;
+    void setData(const void *data, size_t offset, size_t size) override;
+    void getData(void *data, size_t offset, size_t size) override;
     void copyDataToDevice() override;
 };
-}
+} // namespace PhysicsEngine
 
 #endif

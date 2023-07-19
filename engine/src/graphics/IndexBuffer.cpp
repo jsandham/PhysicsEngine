@@ -1,8 +1,8 @@
 #include "../../include/graphics/IndexBuffer.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLIndexBuffer.h"
 #include "../../include/graphics/platform/directx/DirectXIndexBuffer.h"
+#include "../../include/graphics/platform/opengl/OpenGLIndexBuffer.h"
 
 using namespace PhysicsEngine;
 
@@ -16,18 +16,18 @@ IndexBuffer::~IndexBuffer()
 
 size_t IndexBuffer::getSize() const
 {
-	return mSize;
+    return mSize;
 }
 
-IndexBuffer* IndexBuffer::create()
+IndexBuffer *IndexBuffer::create()
 {
-	switch (RenderContext::getRenderAPI())
-	{
-	case RenderAPI::OpenGL:
-		return new OpenGLIndexBuffer();
-	case RenderAPI::DirectX:
-		return new DirectXIndexBuffer();
-	}
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLIndexBuffer();
+    case RenderAPI::DirectX:
+        return new DirectXIndexBuffer();
+    }
 
-	return nullptr;
+    return nullptr;
 }

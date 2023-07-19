@@ -11,309 +11,309 @@ using namespace PhysicsEditor;
 
 TerrainDrawer::TerrainDrawer()
 {
-    mFBO = PhysicsEngine::Framebuffer::create(256, 256, 1, false);
+	mFBO = PhysicsEngine::Framebuffer::create(256, 256, 1, false);
 }
 
 TerrainDrawer::~TerrainDrawer()
 {
-    delete mFBO;
+	delete mFBO;
 }
 
 void TerrainDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 {
-    ImGui::Separator();
-    mContentMin = ImGui::GetItemRectMin();
+	ImGui::Separator();
+	mContentMin = ImGui::GetItemRectMin();
 
-    if (ImGui::TreeNodeEx("Terrain", ImGuiTreeNodeFlags_DefaultOpen))
-    {
-        PhysicsEngine::Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
+	if (ImGui::TreeNodeEx("Terrain", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		PhysicsEngine::Terrain* terrain = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
 
-        if (terrain != nullptr)
-        {
-            ImGui::Text(("ComponentId: " + id.toString()).c_str());
+		if (terrain != nullptr)
+		{
+			ImGui::Text(("ComponentId: " + id.toString()).c_str());
 
-            // Transform
-            {
-                PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Transform>(terrain->mCameraTransformId);
+			// Transform
+			{
+				PhysicsEngine::Transform* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Transform>(terrain->mCameraTransformId);
 
-                ImVec2 windowSize = ImGui::GetWindowSize();
-                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+				ImVec2 windowSize = ImGui::GetWindowSize();
+				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-                if (ImGui::ButtonEx((transform == nullptr ? "None (Transform)" : transform->getEntity()->getName()).c_str(), ImVec2(windowSize.x, 0)))
-                {
-                }
+				if (ImGui::ButtonEx((transform == nullptr ? "None (Transform)" : transform->getEntity()->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				{
+				}
 
-                if (ImGui::BeginDragDropTarget())
-                {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_GUID");
-                    if (payload != nullptr)
-                    {
-                        const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
+				if (ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_GUID");
+					if (payload != nullptr)
+					{
+						const PhysicsEngine::Guid* data = static_cast<const PhysicsEngine::Guid*>(payload->Data);
 
-                        terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Transform>(*data)->getGuid();
-                    }
-                    ImGui::EndDragDropTarget();
-                }
+						terrain->mCameraTransformId = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Transform>(*data)->getGuid();
+					}
+					ImGui::EndDragDropTarget();
+				}
 
-                ImVec2 size = ImGui::GetItemRectSize();
-                ImVec2 position = ImGui::GetItemRectMin();
+				ImVec2 size = ImGui::GetItemRectSize();
+				ImVec2 position = ImGui::GetItemRectMin();
 
-                ImVec2 topLeft = position;
-                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
-                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
-                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+				ImVec2 topLeft = position;
+				ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+				ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+				ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
 
-                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
-                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
-                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
-                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+				ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
 
-                size.x += position.x;
-                size.y += position.y;
+				size.x += position.x;
+				size.y += position.y;
 
-                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
-                {
-                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
-                }
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+				{
+					ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+				}
 
-                ImGui::SameLine();
-                ImGui::Text("Transform");
-            }
+				ImGui::SameLine();
+				ImGui::Text("Transform");
+			}
 
-            // Material
-            {
-                PhysicsEngine::Material* material = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Material>(terrain->getMaterial());
+			// Material
+			{
+				PhysicsEngine::Material* material = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Material>(terrain->getMaterial());
 
-                ImVec2 windowSize = ImGui::GetWindowSize();
-                windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
+				ImVec2 windowSize = ImGui::GetWindowSize();
+				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-                if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
-                {
-                    clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
-                }
+				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				{
+					clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
+				}
 
-                if (ImGui::BeginDragDropTarget())
-                {
-                    const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
-                    if (payload != nullptr)
-                    {
-                        const char* data = static_cast<const char*>(payload->Data);
+				if (ImGui::BeginDragDropTarget())
+				{
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MATERIAL_PATH");
+					if (payload != nullptr)
+					{
+						const char* data = static_cast<const char*>(payload->Data);
 
-                        terrain->setMaterial(ProjectDatabase::getGuid(data));
-                    }
-                    ImGui::EndDragDropTarget();
-                }
+						terrain->setMaterial(ProjectDatabase::getGuid(data));
+					}
+					ImGui::EndDragDropTarget();
+				}
 
-                ImVec2 size = ImGui::GetItemRectSize();
-                ImVec2 position = ImGui::GetItemRectMin();
+				ImVec2 size = ImGui::GetItemRectSize();
+				ImVec2 position = ImGui::GetItemRectMin();
 
-                ImVec2 topLeft = position;
-                ImVec2 topRight = ImVec2(position.x + size.x, position.y);
-                ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
-                ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
+				ImVec2 topLeft = position;
+				ImVec2 topRight = ImVec2(position.x + size.x, position.y);
+				ImVec2 bottomLeft = ImVec2(position.x, position.y + size.y);
+				ImVec2 bottomRight = ImVec2(position.x + size.x, position.y + size.y);
 
-                ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
-                ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
-                ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
-                ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(topLeft, topRight, 0xFF0A0A0A);
+				ImGui::GetForegroundDrawList()->AddLine(topRight, bottomRight, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(bottomRight, bottomLeft, 0xFF333333);
+				ImGui::GetForegroundDrawList()->AddLine(bottomLeft, topLeft, 0xFF333333);
 
-                size.x += position.x;
-                size.y += position.y;
+				size.x += position.x;
+				size.y += position.y;
 
-                if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
-                {
-                    ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
-                }
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly))
+				{
+					ImGui::GetForegroundDrawList()->AddRectFilled(position, size, 0x44FF0000);
+				}
 
-                ImGui::SameLine();
-                ImGui::Text("Material");
-            }
+				ImGui::SameLine();
+				ImGui::Text("Material");
+			}
 
-            float maxViewDistance = terrain->mMaxViewDistance;
-            if (ImGui::InputFloat("Max View Dist", &maxViewDistance))
-            {
-                terrain->mMaxViewDistance = maxViewDistance;
-            
-                terrain->regenerateTerrain();
-            }
+			float maxViewDistance = terrain->mMaxViewDistance;
+			if (ImGui::InputFloat("Max View Dist", &maxViewDistance))
+			{
+				terrain->mMaxViewDistance = maxViewDistance;
 
-            if (ImGui::SliderFloat("Scale", &terrain->mScale, 0.0f, 1.0f))
-            {
-                terrain->updateTerrainHeight();
-            }
+				terrain->regenerateTerrain();
+			}
 
-            if (ImGui::SliderFloat("Amplitude", &terrain->mAmplitude, 0.0f, 10.0f))
-            {
-                terrain->updateTerrainHeight();
-            }
+			if (ImGui::SliderFloat("Scale", &terrain->mScale, 0.0f, 1.0f))
+			{
+				terrain->updateTerrainHeight();
+			}
 
-            if (ImGui::SliderFloat("OffsetX", &terrain->mOffsetX, 0.0f, 10.0f))
-            {
-                terrain->updateTerrainHeight();
-            }
+			if (ImGui::SliderFloat("Amplitude", &terrain->mAmplitude, 0.0f, 10.0f))
+			{
+				terrain->updateTerrainHeight();
+			}
 
-            if (ImGui::SliderFloat("OffsetZ", &terrain->mOffsetZ, 0.0f, 10.0f))
-            {
-                terrain->updateTerrainHeight();
-            }
+			if (ImGui::SliderFloat("OffsetX", &terrain->mOffsetX, 0.0f, 10.0f))
+			{
+				terrain->updateTerrainHeight();
+			}
 
-            PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("336b168c-3b92-473d-909a-0a2e342d483f"));
-            
-            assert(shader != nullptr);
-            
-            mProgram = shader->getProgramFromVariant(0);
+			if (ImGui::SliderFloat("OffsetZ", &terrain->mOffsetZ, 0.0f, 10.0f))
+			{
+				terrain->updateTerrainHeight();
+			}
 
-            mFBO->bind();
-            mFBO->setViewport(0, 0, 256, 256);
-            mFBO->clearColor(PhysicsEngine::Color::black);
+			PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(PhysicsEngine::Guid("336b168c-3b92-473d-909a-0a2e342d483f"));
 
-            mProgram->bind();
-            terrain->getNativeGraphicsHandle()->draw(0, terrain->getVertices().size() / 3);
-            mProgram->unbind();
-            mFBO->unbind();
+			assert(shader != nullptr);
 
-            if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
-            {
-                if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
-                {
-                    // opengl
-                    ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
-                        ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
-                        ImVec2(0, 0));
-                }
-                else
-                {
-                    // directx
-                    ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
-                        ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
-                        ImVec2(0, 0));
-                }
-            }
+			mProgram = shader->getProgramFromVariant(0);
 
-            if (ImGui::TreeNodeEx("Grass", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                // Grass Meshes
-                int grassMeshCount = terrain->mGrassMeshCount;
-                const int increment = 1;
-                ImGui::PushItemWidth(80);
-                if (ImGui::InputScalar("Mesh Count", ImGuiDataType_S32, &grassMeshCount, &increment, NULL, "%d"))
-                {
-                    grassMeshCount = std::max(0, std::min(grassMeshCount, 8));
+			mFBO->bind();
+			mFBO->setViewport(0, 0, 256, 256);
+			mFBO->clearColor(PhysicsEngine::Color::black);
 
-                    terrain->mGrassMeshCount = grassMeshCount;
-                }
-                ImGui::PopItemWidth();
+			mProgram->bind();
+			terrain->getNativeGraphicsHandle()->draw(0, terrain->getVertices().size() / 3);
+			mProgram->unbind();
+			mFBO->unbind();
 
-                //Guid grassMeshIds[8];
-                //for (int i = 0; i < grassMeshCount; i++)
-                //{
-                //    grassMeshIds[i] = terrain->getGrassMesh(i);
+			if (mFBO->getColorTex()->getIMGUITexture() != nullptr)
+			{
+				if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
+				{
+					// opengl
+					ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(mFBO->getColorTex()->getIMGUITexture())),
+						ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+						ImVec2(0, 0));
+				}
+				else
+				{
+					// directx
+					ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+						ImVec2(std::min(ImGui::GetWindowContentRegionWidth(), 256.0f), 256), ImVec2(1, 1),
+						ImVec2(0, 0));
+				}
+			}
 
-                //    Mesh* grassMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(grassMeshIds[i]);
+			if (ImGui::TreeNodeEx("Grass", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				// Grass Meshes
+				int grassMeshCount = terrain->mGrassMeshCount;
+				const int increment = 1;
+				ImGui::PushItemWidth(80);
+				if (ImGui::InputScalar("Mesh Count", ImGuiDataType_S32, &grassMeshCount, &increment, NULL, "%d"))
+				{
+					grassMeshCount = std::max(0, std::min(grassMeshCount, 8));
 
-                //    ImGui::SlotData data;
-                //    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
-                //    {
-                //        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-                //        {
-                //            grassMeshIds[i] = clipboard.getDraggedId();
-                //            clipboard.clearDraggedItem();
+					terrain->mGrassMeshCount = grassMeshCount;
+				}
+				ImGui::PopItemWidth();
 
-                //            terrain->setGrassMesh(grassMeshIds[i], i);
-                //        }
+				//Guid grassMeshIds[8];
+				//for (int i = 0; i < grassMeshCount; i++)
+				//{
+				//    grassMeshIds[i] = terrain->getGrassMesh(i);
 
-                //        if (data.isClicked && grassMeshIds[i].isValid())
-                //        {
-                //            clipboard.setSelectedItem(InteractionType::Mesh, grassMeshIds[i]);
-                //        }
+				//    Mesh* grassMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(grassMeshIds[i]);
 
-                //        if (data.clearClicked)
-                //        {
-                //            terrain->setGrassMesh(Guid::INVALID, i);
-                //        }
-                //    }
-                //}
+				//    ImGui::SlotData data;
+				//    if (ImGui::Slot2("Mesh", grassMeshIds[i].isValid() ? grassMesh->getName()/*grassMeshIds[i].toString()*/ : "None (Mesh)", &data))
+				//    {
+				//        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
+				//        {
+				//            grassMeshIds[i] = clipboard.getDraggedId();
+				//            clipboard.clearDraggedItem();
 
-                ImGui::TreePop();
-            }
+				//            terrain->setGrassMesh(grassMeshIds[i], i);
+				//        }
 
-            if (ImGui::TreeNodeEx("Trees", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                // Tree Meshes
-                int treeMeshCount = terrain->mTreeMeshCount;
-                const int increment = 1;
-                ImGui::PushItemWidth(80);
-                if (ImGui::InputScalar("Mesh Count", ImGuiDataType_S32, &treeMeshCount, &increment, NULL, "%d"))
-                {
-                    treeMeshCount = std::max(0, std::min(treeMeshCount, 8));
+				//        if (data.isClicked && grassMeshIds[i].isValid())
+				//        {
+				//            clipboard.setSelectedItem(InteractionType::Mesh, grassMeshIds[i]);
+				//        }
 
-                    terrain->mTreeMeshCount = treeMeshCount;
-                }
-                ImGui::PopItemWidth();
+				//        if (data.clearClicked)
+				//        {
+				//            terrain->setGrassMesh(Guid::INVALID, i);
+				//        }
+				//    }
+				//}
 
-                //Guid treeMeshIds[8];
-                //for (int i = 0; i < treeMeshCount; i++)
-                //{
-                //    treeMeshIds[i] = terrain->getTreeMesh(i);
+				ImGui::TreePop();
+			}
 
-                //    Mesh* treeMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(treeMeshIds[i]);
+			if (ImGui::TreeNodeEx("Trees", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				// Tree Meshes
+				int treeMeshCount = terrain->mTreeMeshCount;
+				const int increment = 1;
+				ImGui::PushItemWidth(80);
+				if (ImGui::InputScalar("Mesh Count", ImGuiDataType_S32, &treeMeshCount, &increment, NULL, "%d"))
+				{
+					treeMeshCount = std::max(0, std::min(treeMeshCount, 8));
 
-                //    ImGui::SlotData data;
-                //    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))
-                //    {
-                //        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
-                //        {
-                //            treeMeshIds[i] = clipboard.getDraggedId();
-                //            clipboard.clearDraggedItem();
+					terrain->mTreeMeshCount = treeMeshCount;
+				}
+				ImGui::PopItemWidth();
 
-                //            terrain->setTreeMesh(treeMeshIds[i], i);
-                //        }
+				//Guid treeMeshIds[8];
+				//for (int i = 0; i < treeMeshCount; i++)
+				//{
+				//    treeMeshIds[i] = terrain->getTreeMesh(i);
 
-                //        if (data.isClicked && treeMeshIds[i].isValid())
-                //        {
-                //            clipboard.setSelectedItem(InteractionType::Mesh, treeMeshIds[i]);
-                //        }
+				//    Mesh* treeMesh = clipboard.getWorld()->getAssetByGuid<Mesh>(treeMeshIds[i]);
 
-                //        if (data.clearClicked)
-                //        {
-                //            terrain->setTreeMesh(Guid::INVALID, i);
-                //        }
-                //    }
-                //}
+				//    ImGui::SlotData data;
+				//    if (ImGui::Slot2("Mesh", treeMeshIds[i].isValid() ? treeMesh->getName()/*treeMeshIds[i].toString()*/ : "None (Mesh)", &data))
+				//    {
+				//        if (data.releaseTriggered && clipboard.getDraggedType() == InteractionType::Mesh)
+				//        {
+				//            treeMeshIds[i] = clipboard.getDraggedId();
+				//            clipboard.clearDraggedItem();
 
-                ImGui::TreePop();
-            }
-        }
+				//            terrain->setTreeMesh(treeMeshIds[i], i);
+				//        }
 
-        ImGui::TreePop();
-    }
+				//        if (data.isClicked && treeMeshIds[i].isValid())
+				//        {
+				//            clipboard.setSelectedItem(InteractionType::Mesh, treeMeshIds[i]);
+				//        }
 
-    ImGui::Separator();
-    mContentMax = ImGui::GetItemRectMax();
+				//        if (data.clearClicked)
+				//        {
+				//            terrain->setTreeMesh(Guid::INVALID, i);
+				//        }
+				//    }
+				//}
 
-    if (isHovered())
-    {
-        if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
-        {
-            if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
-            {
-                PhysicsEngine::Terrain* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
-                clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(transform->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::Terrain>::type);
-            }
+				ImGui::TreePop();
+			}
+		}
 
-            ImGui::EndPopup();
-        }
-    }
+		ImGui::TreePop();
+	}
+
+	ImGui::Separator();
+	mContentMax = ImGui::GetItemRectMax();
+
+	if (isHovered())
+	{
+		if (ImGui::BeginPopupContextWindow("RightMouseClickPopup"))
+		{
+			if (ImGui::MenuItem("RemoveComponent", NULL, false, true))
+			{
+				PhysicsEngine::Terrain* transform = clipboard.getWorld()->getActiveScene()->getComponentByGuid<PhysicsEngine::Terrain>(id);
+				clipboard.getWorld()->getActiveScene()->immediateDestroyComponent(transform->getEntityGuid(), id, PhysicsEngine::ComponentType<PhysicsEngine::Terrain>::type);
+			}
+
+			ImGui::EndPopup();
+		}
+	}
 }
 
 bool TerrainDrawer::isHovered() const
 {
-    ImVec2 cursorPos = ImGui::GetMousePos();
+	ImVec2 cursorPos = ImGui::GetMousePos();
 
-    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
-    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+	glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+	glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
 
-    PhysicsEngine::Rect rect(min, max);
+	PhysicsEngine::Rect rect(min, max);
 
-    return rect.contains(cursorPos.x, cursorPos.y);
+	return rect.contains(cursorPos.x, cursorPos.y);
 }

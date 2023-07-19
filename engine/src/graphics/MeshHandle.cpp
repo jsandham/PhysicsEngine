@@ -1,5 +1,5 @@
-#include "../../include/graphics/RenderContext.h"
 #include "../../include/graphics/MeshHandle.h"
+#include "../../include/graphics/RenderContext.h"
 
 #include "../../include/graphics/platform/directx/DirectXMeshHandle.h"
 #include "../../include/graphics/platform/opengl/OpenGLMeshHandle.h"

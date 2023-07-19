@@ -1,15 +1,15 @@
-#include "../../include/core/PlatformDetection.h"
 #include "../../include/graphics/RenderContext.h"
+#include "../../include/core/PlatformDetection.h"
 
 #ifdef PHYSICSENGINE_PLATFORM_WIN32
-#include "../../include/graphics/platform/opengl/OpenGLRenderContext.h"
 #include "../../include/graphics/platform/directx/DirectXRenderContext.h"
+#include "../../include/graphics/platform/opengl/OpenGLRenderContext.h"
 #endif
 
 using namespace PhysicsEngine;
 
 RenderAPI RenderContext::sAPI = RenderAPI::OpenGL; // RenderAPI::DirectX;
-RenderContext* RenderContext::sContext = nullptr;
+RenderContext *RenderContext::sContext = nullptr;
 
 RenderAPI RenderContext::getRenderAPI()
 {
@@ -21,7 +21,7 @@ void RenderContext::setRenderAPI(RenderAPI api)
     sAPI = api;
 }
 
-void RenderContext::createRenderContext(void* window)
+void RenderContext::createRenderContext(void *window)
 {
 #ifdef PHYSICSENGINE_PLATFORM_WIN32
     switch (getRenderAPI())

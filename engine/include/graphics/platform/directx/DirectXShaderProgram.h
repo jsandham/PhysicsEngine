@@ -2,40 +2,38 @@
 #define DIRECTXSHADERPROGRAM_H__
 
 #define NOMINMAX
-#include <windows.h>
 #include <d3d11.h>
 #include <d3d11shader.h>
-
+#include <windows.h>
 
 #include "../../ShaderProgram.h"
 #include "../../UniformBuffer.h"
 
 namespace PhysicsEngine
 {
-    struct ConstantBufferVariable
-    {
-        PipelineStage mStage;
-        int mUniformId;
-        unsigned int mConstantBufferIndex;
-        unsigned int mSize;
-        unsigned int mOffset;
-    };
+struct ConstantBufferVariable
+{
+    PipelineStage mStage;
+    int mUniformId;
+    unsigned int mConstantBufferIndex;
+    unsigned int mSize;
+    unsigned int mOffset;
+};
 
-    //struct ShaderUniform
-    //{
-    //    char mData[64];
-    //    std::string mName;       // variable name (including block name if applicable)
-    //    ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
-    //    void *mTex;              // if data stores a texture id, this is the texture handle
-    //    int mUniformId;          // integer hash of uniform name
+// struct ShaderUniform
+//{
+//     char mData[64];
+//     std::string mName;       // variable name (including block name if applicable)
+//     ShaderUniformType mType; // type of the uniform (float, vec3 or mat4, etc)
+//     void *mTex;              // if data stores a texture id, this is the texture handle
+//     int mUniformId;          // integer hash of uniform name
 
-    //    std::string getShortName() const
-    //    {
-    //        size_t pos = mName.find_first_of('.');
-    //        return mName.substr(pos + 1);
-    //    }
-    //};
-
+//    std::string getShortName() const
+//    {
+//        size_t pos = mName.find_first_of('.');
+//        return mName.substr(pos + 1);
+//    }
+//};
 
 class DirectXShaderProgram : public ShaderProgram
 {
@@ -58,8 +56,9 @@ class DirectXShaderProgram : public ShaderProgram
     DirectXShaderProgram();
     ~DirectXShaderProgram();
 
-    void load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry) override;
-    void load(const std::string& name, const std::string &vertex, const std::string &fragment) override;
+    void load(const std::string &name, const std::string &vertex, const std::string &fragment,
+              const std::string &geometry) override;
+    void load(const std::string &name, const std::string &vertex, const std::string &fragment) override;
     void compile() override;
     void bind() override;
     void unbind() override;
@@ -79,8 +78,9 @@ class DirectXShaderProgram : public ShaderProgram
     void setMat2(const char *name, const glm::mat2 &mat) override;
     void setMat3(const char *name, const glm::mat3 &mat) override;
     void setMat4(const char *name, const glm::mat4 &mat) override;
-    void setTexture2D(const char *name, int texUnit, void* tex) override;
-    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) override;
+    void setTexture2D(const char *name, int texUnit, void *tex) override;
+    void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                       const std::vector<void *> &texs) override;
 
     void setBool(int uniformId, bool value) override;
     void setInt(int uniformId, int value) override;
@@ -101,7 +101,7 @@ class DirectXShaderProgram : public ShaderProgram
     int getInt(const char *name) const override;
     float getFloat(const char *name) const override;
     Color getColor(const char *name) const override;
-    Color32 getColor32(const char* name) const override;
+    Color32 getColor32(const char *name) const override;
     glm::vec2 getVec2(const char *name) const override;
     glm::vec3 getVec3(const char *name) const override;
     glm::vec4 getVec4(const char *name) const override;
@@ -121,9 +121,9 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat3 getMat3(int uniformId) const override;
     glm::mat4 getMat4(int uniformId) const override;
 
-private:
-    void setData(int uniformId, const void* data);
-    void getData(int uniformId, void* data);
+  private:
+    void setData(int uniformId, const void *data);
+    void getData(int uniformId, void *data);
 };
 } // namespace PhysicsEngine
 

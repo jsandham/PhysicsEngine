@@ -28,19 +28,19 @@ void DirectXIndexBuffer::resize(size_t size)
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
     assert(device != nullptr);
 
-    //CHECK_ERROR(device->CreateBuffer(&mBufferDesc, NULL, &mBuffer));
+    // CHECK_ERROR(device->CreateBuffer(&mBufferDesc, NULL, &mBuffer));
 }
 
-void DirectXIndexBuffer::setData(void* data, size_t offset, size_t size)
+void DirectXIndexBuffer::setData(void *data, size_t offset, size_t size)
 {
-	assert(size <= mSize);
+    assert(size <= mSize);
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
     assert(device != nullptr);
 
-    //D3D11_SUBRESOURCE_DATA ibInitData;
-    //ibInitData.pSysMem = data;
-    //CHECK_ERROR(device->CreateBuffer(&mBufferDesc, &ibInitData, &mBuffer));
+    // D3D11_SUBRESOURCE_DATA ibInitData;
+    // ibInitData.pSysMem = data;
+    // CHECK_ERROR(device->CreateBuffer(&mBufferDesc, &ibInitData, &mBuffer));
 }
 
 void DirectXIndexBuffer::bind()
@@ -48,16 +48,15 @@ void DirectXIndexBuffer::bind()
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    //context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    //context->IASetIndexBuffer(mBuffer, DXGI_FORMAT_R32_UINT, 0);
+    // context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    // context->IASetIndexBuffer(mBuffer, DXGI_FORMAT_R32_UINT, 0);
 }
 
 void DirectXIndexBuffer::unbind()
 {
-
 }
 
-void* DirectXIndexBuffer::getBuffer()
+void *DirectXIndexBuffer::getBuffer()
 {
-    return nullptr;//static_cast<void *>(&mBuffer);
+    return nullptr; // static_cast<void *>(&mBuffer);
 }

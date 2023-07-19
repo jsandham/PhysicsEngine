@@ -1,13 +1,13 @@
 ﻿#include "../../../../include/graphics/platform/opengl/OpenGLShaderProgram.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/graphics/Renderer.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 #include "../../../../include/core/Log.h"
 #include "../../../../include/core/Shader.h"
 
 #include <GL/glew.h>
-#include <iostream>
 #include <array>
+#include <iostream>
 
 using namespace PhysicsEngine;
 
@@ -159,16 +159,10 @@ void OpenGLShaderProgram::compile()
         CHECK_ERROR(glUniformBlockBinding(mHandle, blockIndex, 1));
     }
 
-
-
-
-
-
-    
-    //for (int j = 0; j < numBlocks; j++)
+    // for (int j = 0; j < numBlocks; j++)
     //{
-    //    GLint nameLen;
-    //    CHECK_ERROR(glGetActiveUniformBlockiv(mHandle, j, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen));
+    //     GLint nameLen;
+    //     CHECK_ERROR(glGetActiveUniformBlockiv(mHandle, j, GL_UNIFORM_BLOCK_NAME_LENGTH, &nameLen));
 
     //    std::vector<GLchar> name;
     //    name.resize(nameLen);
@@ -181,10 +175,6 @@ void OpenGLShaderProgram::compile()
     //    //nameList.push_back(std::string());
     //    //nameList.back().assign(name.begin(), name.end() - 1); // Remove the null terminator.
     //}
-
-
-
-
 
     // Uniform buffers
     GLint numBlocks;
@@ -202,19 +192,17 @@ void OpenGLShaderProgram::compile()
         // Retrieve name
         std::vector<char> blockName(blockData[0]);
         CHECK_ERROR(glGetProgramResourceName(mHandle, GL_UNIFORM_BLOCK, blockIdx, (GLsizei)blockName.size() + 1,
-                                             nullptr,
-                                            blockName.data()));
+                                             nullptr, blockName.data()));
 
         // Retrieve indices of uniforms that are a member of this block.
         std::vector<GLint> uniformIdxs(blockData[1]);
 
         GLenum member = GL_ACTIVE_VARIABLES;
         CHECK_ERROR(glGetProgramResourceiv(mHandle, GL_UNIFORM_BLOCK, blockIdx, 1, &member, (GLsizei)uniformIdxs.size(),
-                                           nullptr,
-                               uniformIdxs.data()));
+                                           nullptr, uniformIdxs.data()));
 
         std::cout << "blockName: " << std::string(blockName.data()) << " uniform count: " << blockData[1] << std::endl;
-     
+
         std::array<GLenum, 2> uniformProperties{GL_NAME_LENGTH, GL_TYPE};
         std::array<GLint, 2> uniformData{};
         for (int uniformIdx = 0; uniformIdx < blockData[1]; uniformIdx++)
@@ -225,24 +213,16 @@ void OpenGLShaderProgram::compile()
 
             std::vector<char> uniformName(uniformData[0]);
             CHECK_ERROR(glGetProgramResourceName(mHandle, GL_UNIFORM, uniformIdx, (GLsizei)uniformName.size() + 1,
-                                                 nullptr,
-                                                 uniformName.data()));
+                                                 nullptr, uniformName.data()));
 
             std::cout << "uniform name: " << std::string(uniformName.data()) << " type: " << uniformData[1]
                       << std::endl;
 
-            //mUniforms[].mName = std::string(uniformName.data());
-            //mUniforms[].mBufferName = std::string(blockName.data());
-            //mUniforms[].mType = 
+            // mUniforms[].mName = std::string(uniformName.data());
+            // mUniforms[].mBufferName = std::string(blockName.data());
+            // mUniforms[].mType =
         }
     }
-
-
-
-
-
-
-
 
     // Standalone Uniforms
     GLint count;
@@ -259,8 +239,7 @@ void OpenGLShaderProgram::compile()
     {
         GLUniform uniform;
         CHECK_ERROR(glGetActiveUniform(mHandle, (GLuint)uniformIdx, 32, &uniform.nameLength, &uniform.size,
-                                       &uniform.type,
-                                       &uniform.name[0]));
+                                       &uniform.type, &uniform.name[0]));
 
         int loc = findUniformLocation(&uniform.name[0]);
 
@@ -388,9 +367,8 @@ void OpenGLShaderProgram::setColor(const char *name, const Color &color)
 
 void OpenGLShaderProgram::setColor32(const char *name, const Color32 &color)
 {
-    CHECK_ERROR(glUniform4ui(findUniformLocation(name), static_cast<GLuint>(color.mR),
-                             static_cast<GLuint>(color.mG), static_cast<GLuint>(color.mB),
-                             static_cast<GLuint>(color.mA)));
+    CHECK_ERROR(glUniform4ui(findUniformLocation(name), static_cast<GLuint>(color.mR), static_cast<GLuint>(color.mG),
+                             static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
 }
 
 void OpenGLShaderProgram::setVec2(const char *name, const glm::vec2 &vec)
@@ -423,7 +401,7 @@ void OpenGLShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
     CHECK_ERROR(glUniformMatrix4fv(findUniformLocation(name), 1, GL_FALSE, &mat[0][0]));
 }
 
-void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
+void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, void *tex)
 {
     CHECK_ERROR(glUniform1i(findUniformLocation(name), texUnit));
 
@@ -438,7 +416,8 @@ void OpenGLShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
     }
 }
 
-void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
+void OpenGLShaderProgram::setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                                        const std::vector<void *> &texs)
 {
     CHECK_ERROR(glUniform1iv(findUniformLocation(name), count, texUnits.data()));
 
@@ -479,8 +458,8 @@ void OpenGLShaderProgram::setColor(int uniformId, const Color &color)
 void OpenGLShaderProgram::setColor32(int uniformId, const Color32 &color)
 {
     CHECK_ERROR(glUniform4ui(findUniformLocation(uniformId), static_cast<GLuint>(color.mR),
-                             static_cast<GLuint>(color.mG),
-                             static_cast<GLuint>(color.mB), static_cast<GLuint>(color.mA)));
+                             static_cast<GLuint>(color.mG), static_cast<GLuint>(color.mB),
+                             static_cast<GLuint>(color.mA)));
 }
 
 void OpenGLShaderProgram::setVec2(int uniformId, const glm::vec2 &vec)
@@ -670,7 +649,7 @@ Color OpenGLShaderProgram::getColor(int uniformId) const
 {
     Color color = Color(0.0f, 0.0f, 0.0f, 1.0f);
     CHECK_ERROR(glGetnUniformfv(mHandle, findUniformLocation(uniformId), sizeof(Color), &color.mR));
-    
+
     return color;
 }
 
@@ -737,7 +716,7 @@ glm::mat4 OpenGLShaderProgram::getMat4(int uniformId) const
     return value;
 }
 
-int OpenGLShaderProgram::findUniformLocation(const char* name) const
+int OpenGLShaderProgram::findUniformLocation(const char *name) const
 {
     // Returns -1 if uniform is part of uniform block or name does not correspond to a uniform
     return glGetUniformLocation(mHandle, name);

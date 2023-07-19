@@ -43,14 +43,19 @@ bool shader_load(const std::string &sourceFilepath, shader_data &data)
     bool has_fragment_shader = fragment_start_index != std::string::npos;
     bool has_geometry_shader = geometry_start_index != std::string::npos;
 
-    if (!has_vertex_shader){ return false; }
-    if (!has_fragment_shader){ return false; }
+    if (!has_vertex_shader)
+    {
+        return false;
+    }
+    if (!has_fragment_shader)
+    {
+        return false;
+    }
 
     if (has_geometry_shader)
     {
         if (vertex_start_index < fragment_start_index)
         {
-        
         }
     }
     else

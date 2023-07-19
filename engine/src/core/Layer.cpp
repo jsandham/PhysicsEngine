@@ -2,12 +2,11 @@
 
 using namespace PhysicsEngine;
 
-Layer::Layer(const std::string& name)
+Layer::Layer(const std::string &name)
 {
-	mName = name;
+    mName = name;
 }
 
 Layer::~Layer()
 {
-
 }

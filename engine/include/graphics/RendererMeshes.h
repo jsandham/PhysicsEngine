@@ -30,7 +30,7 @@ class RendererMeshes
 
   public:
     static ScreenQuad *getScreenQuad();
-   
+
     static void createInternalMeshes();
 };
 } // namespace PhysicsEngine

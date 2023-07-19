@@ -11,10 +11,10 @@
 
 namespace PhysicsEditor
 {
-    enum class TargetPlatform
-    {
-        Windows = 0,
-    };
+	enum class TargetPlatform
+	{
+		Windows = 0,
+	};
 
 	// Taken from ImGui demo code
 	// Usage:
@@ -121,43 +121,43 @@ namespace PhysicsEditor
 		}
 	};
 
-class BuildWindow
-{
-private:
-    std::string mName;
-    float mX;
-    float mY;
-    float mWidth;
-    float mHeight;
-    bool mOpen;
+	class BuildWindow
+	{
+	private:
+		std::string mName;
+		float mX;
+		float mY;
+		float mWidth;
+		float mHeight;
+		bool mOpen;
 
-    TargetPlatform mTargetPlatform;
-    AppLog mBuildLog;
-     
-    float mBuildCompletion;
-    std::string mBuildStep;
-	std::string mSelectedFolder;
+		TargetPlatform mTargetPlatform;
+		AppLog mBuildLog;
 
-    std::atomic<bool> mLaunchBuild{ false };
-    std::atomic<bool> mBuildInProgress{ false };
-    std::atomic<bool> mBuildComplete{ false };
-    std::thread mBuildWorker;
+		float mBuildCompletion;
+		std::string mBuildStep;
+		std::string mSelectedFolder;
 
-  public:
-    BuildWindow();
-    BuildWindow(const std::string& name, float x, float y, float width, float height);
-    ~BuildWindow();
-    BuildWindow(const BuildWindow &other) = delete;
-    BuildWindow &operator=(const BuildWindow &other) = delete;
+		std::atomic<bool> mLaunchBuild{ false };
+		std::atomic<bool> mBuildInProgress{ false };
+		std::atomic<bool> mBuildComplete{ false };
+		std::thread mBuildWorker;
 
-	void init(Clipboard& clipboard);
-    void update(Clipboard& clipboard, bool isOpenedThisFrame);
+	public:
+		BuildWindow();
+		BuildWindow(const std::string& name, float x, float y, float width, float height);
+		~BuildWindow();
+		BuildWindow(const BuildWindow& other) = delete;
+		BuildWindow& operator=(const BuildWindow& other) = delete;
 
-  private:
-    void build();
-    void doWork();
+		void init(Clipboard& clipboard);
+		void update(Clipboard& clipboard, bool isOpenedThisFrame);
 
-};
+	private:
+		void build();
+		void doWork();
+
+	};
 } // namespace PhysicsEditor
 
 #endif

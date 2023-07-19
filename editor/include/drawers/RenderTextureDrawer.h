@@ -7,21 +7,21 @@
 
 namespace PhysicsEditor
 {
-    class RenderTextureDrawer
-    {
-    private:
-        ImVec2 mContentMin;
-        ImVec2 mContentMax;
+	class RenderTextureDrawer
+	{
+	private:
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-    public:
-        RenderTextureDrawer();
-        ~RenderTextureDrawer();
+	public:
+		RenderTextureDrawer();
+		~RenderTextureDrawer();
 
-        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
 
-    private:
-        bool isHovered() const;
-    };
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

@@ -1,6 +1,6 @@
 #include "../../include/components/Terrain.h"
-#include "../../include/graphics/Renderer.h"
 #include "../../include/core/Log.h"
+#include "../../include/graphics/Renderer.h"
 
 #include "stb_perlin.h"
 
@@ -19,7 +19,7 @@ Terrain::Terrain(World *world, const Id &id) : Component(world, id)
 
     mChunkSize = glm::vec2(10, 10);
     mChunkResolution = glm::ivec2(20, 20);
-    
+
     mTotalChunkCount = 9;
     mGrassMeshCount = 0;
     mTreeMeshCount = 0;
@@ -85,7 +85,7 @@ Terrain::~Terrain()
     delete mHandle;
 }
 
-void Terrain::serialize(YAML::Node& out) const
+void Terrain::serialize(YAML::Node &out) const
 {
     Component::serialize(out);
 
@@ -94,10 +94,9 @@ void Terrain::serialize(YAML::Node& out) const
     out["maxViewDistance"] = mMaxViewDistance;
     out["scale"] = mScale;
     out["amplitude"] = mAmplitude;
-
 }
 
-void Terrain::deserialize(const YAML::Node& in)
+void Terrain::deserialize(const YAML::Node &in)
 {
     Component::deserialize(in);
 
@@ -368,7 +367,7 @@ void Terrain::regenerateTerrain()
         chunkCountX = 5;
         chunkCountZ = 5;
     }
-    
+
     mTotalChunkCount = chunkCountX * chunkCountZ;
 
     // Generate plane mesh centered at (0, 0)

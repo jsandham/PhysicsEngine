@@ -1,16 +1,16 @@
 #pragma once
-#include "PlatformDetection.h"
 #include "Application.h"
+#include "PlatformDetection.h"
 
-extern PhysicsEngine::Application* PhysicsEngine::createApplication();
+extern PhysicsEngine::Application *PhysicsEngine::createApplication();
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-	PhysicsEngine::Application* application = PhysicsEngine::createApplication();
+    PhysicsEngine::Application *application = PhysicsEngine::createApplication();
 
-	application->run();
+    application->run();
 
-	delete application;
+    delete application;
 
-	return 0;
+    return 0;
 }

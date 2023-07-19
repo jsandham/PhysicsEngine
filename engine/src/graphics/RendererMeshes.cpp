@@ -1,13 +1,12 @@
 #include "../../include/core/Log.h"
 
-#include "../../include/graphics/RendererMeshes.h"
 #include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/RendererMeshes.h"
 
 using namespace PhysicsEngine;
 
-// Meshes generated using clockwise triangle winding order. Note: For OpenGL, the default 
+// Meshes generated using clockwise triangle winding order. Note: For OpenGL, the default
 // windng order is counter-clockwise (CCW) while for DirectX the default is clockwise (CW)
-
 
 ScreenQuad::ScreenQuad()
 {

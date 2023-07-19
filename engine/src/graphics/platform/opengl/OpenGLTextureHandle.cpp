@@ -1,6 +1,6 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLTextureHandle.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -96,33 +96,29 @@ OpenGLTextureHandle::OpenGLTextureHandle(int width, int height, TextureFormat fo
 
 OpenGLTextureHandle::~OpenGLTextureHandle()
 {
-	CHECK_ERROR(glDeleteTextures(1, &mHandle));
+    CHECK_ERROR(glDeleteTextures(1, &mHandle));
 }
 
-void OpenGLTextureHandle::load(TextureFormat format,
-	TextureWrapMode wrapMode,
-	TextureFilterMode filterMode,
-	int width,
-	int height,
-	const std::vector<unsigned char>& data)
+void OpenGLTextureHandle::load(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                               int height, const std::vector<unsigned char> &data)
 {
-	mFormat = format;
-	mWrapMode = wrapMode;
-	mFilterMode = filterMode;
-	mAnisoLevel = 1;
-	mWidth = width;
-	mHeight = height;
+    mFormat = format;
+    mWrapMode = wrapMode;
+    mFilterMode = filterMode;
+    mAnisoLevel = 1;
+    mWidth = width;
+    mHeight = height;
 
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 
-	GLenum openglFormat = getTextureFormat(mFormat);
-	GLint openglFilterMode = getTextureFilterMode(mFilterMode);
+    GLenum openglFormat = getTextureFormat(mFormat);
+    GLint openglFilterMode = getTextureFilterMode(mFilterMode);
 
-	// glTexImage2D allows "re-allocating" a texture without having to delete and re-create it first
+    // glTexImage2D allows "re-allocating" a texture without having to delete and re-create it first
     if (mFormat == TextureFormat::Depth)
     {
-        CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_FLOAT,
-                                 data.data()));
+        CHECK_ERROR(
+            glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_FLOAT, data.data()));
     }
     else
     {
@@ -130,18 +126,18 @@ void OpenGLTextureHandle::load(TextureFormat format,
                                  data.data()));
     }
 
-	CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
+    CHECK_ERROR(glGenerateMipmap(GL_TEXTURE_2D));
 
-	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
-	CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-		openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
+    CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                                openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
 
-	// clamp the requested anisotropic filtering level to what is available and set it
-	CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
+    // clamp the requested anisotropic filtering level to what is available and set it
+    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f));
 
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void OpenGLTextureHandle::update(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel)
@@ -151,30 +147,30 @@ void OpenGLTextureHandle::update(TextureWrapMode wrapMode, TextureFilterMode fil
     mAnisoLevel = anisoLevel;
 
     GLint openglFilterMode = getTextureFilterMode(mFilterMode);
-    
+
     CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+                                openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
-    
+
     // Determine how many levels of anisotropic filtering are available
     float aniso = 0.0f;
     CHECK_ERROR(glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &aniso));
-    
+
     // clamp the requested anisotropic filtering level to what is available and set it
-    CHECK_ERROR(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)mAnisoLevel, 1.0f,
-    aniso)));
-    
+    CHECK_ERROR(
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, glm::clamp((float)mAnisoLevel, 1.0f, aniso)));
+
     CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void OpenGLTextureHandle::readPixels(std::vector<unsigned char>& data)
+void OpenGLTextureHandle::readPixels(std::vector<unsigned char> &data)
 {
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 
-	GLenum openglFormat = getTextureFormat(mFormat);
+    GLenum openglFormat = getTextureFormat(mFormat);
 
     int numChannels = 1;
     switch (mFormat)
@@ -193,37 +189,39 @@ void OpenGLTextureHandle::readPixels(std::vector<unsigned char>& data)
         break;
     }
 
-	CHECK_ERROR(glGetTextureImage(mHandle, 0, openglFormat, GL_UNSIGNED_BYTE, mWidth * mHeight * numChannels, &data[0]));
+    CHECK_ERROR(
+        glGetTextureImage(mHandle, 0, openglFormat, GL_UNSIGNED_BYTE, mWidth * mHeight * numChannels, &data[0]));
 
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void OpenGLTextureHandle::writePixels(const std::vector<unsigned char>& data)
+void OpenGLTextureHandle::writePixels(const std::vector<unsigned char> &data)
 {
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 
-	GLenum openglFormat = getTextureFormat(mFormat);
+    GLenum openglFormat = getTextureFormat(mFormat);
 
-	CHECK_ERROR(glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
+    CHECK_ERROR(
+        glTexImage2D(GL_TEXTURE_2D, 0, openglFormat, mWidth, mHeight, 0, openglFormat, GL_UNSIGNED_BYTE, data.data()));
 
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void OpenGLTextureHandle::bind(unsigned int texUnit)
 {
-	CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
+    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, mHandle));
 }
 
 void OpenGLTextureHandle::unbind(unsigned int texUnit)
 {
-	CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
-	CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
+    CHECK_ERROR(glActiveTexture(GL_TEXTURE0 + texUnit));
+    CHECK_ERROR(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
 void *OpenGLTextureHandle::getTexture()
 {
-	return static_cast<void*>(&mHandle);
+    return static_cast<void *>(&mHandle);
 }
 
 void *OpenGLTextureHandle::getIMGUITexture()

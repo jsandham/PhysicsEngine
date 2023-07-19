@@ -1,8 +1,8 @@
 #include "../../include/graphics/UniformBuffer.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLUniformBuffer.h"
 #include "../../include/graphics/platform/directx/DirectXUniformBuffer.h"
+#include "../../include/graphics/platform/opengl/OpenGLUniformBuffer.h"
 
 using namespace PhysicsEngine;
 

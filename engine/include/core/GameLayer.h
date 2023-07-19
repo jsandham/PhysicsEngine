@@ -3,9 +3,8 @@
 
 #include <string>
 
-#include "Time.h"
-#include "World.h"
 #include "Layer.h"
+#include "World.h"
 
 namespace PhysicsEngine
 {
@@ -20,7 +19,7 @@ class GameLayer : public Layer
 
     void init() override;
     void begin() override;
-    void update(const Time& time) override;
+    void update() override;
     void end() override;
     bool quit() override;
 };

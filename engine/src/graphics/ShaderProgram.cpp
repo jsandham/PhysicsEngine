@@ -1,19 +1,17 @@
 #include "../../include/graphics/ShaderProgram.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLShaderProgram.h"
 #include "../../include/graphics/platform/directx/DirectXShaderProgram.h"
+#include "../../include/graphics/platform/opengl/OpenGLShaderProgram.h"
 
 using namespace PhysicsEngine;
 
 ShaderProgram::ShaderProgram()
 {
-
 }
 
 ShaderProgram::~ShaderProgram()
 {
-
 }
 
 std::string ShaderProgram::getVertexShader() const

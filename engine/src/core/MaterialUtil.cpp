@@ -9,20 +9,20 @@ using namespace PhysicsEngine;
 
 void MaterialUtil::copyMaterialTo(World *srcWorld, Material *srcMat, World *destWorld, Material *destMat)
 {
-    //Guid shaderId = srcMat->getShaderId();
+    // Guid shaderId = srcMat->getShaderId();
 
-    //if (destWorld->getAssetByGuid<Shader>(shaderId) == NULL)
+    // if (destWorld->getAssetByGuid<Shader>(shaderId) == NULL)
     //{
-    //    std::string message = "Shader with id: " + shaderId.toString() + " does not exist in destination world\n";
-    //    Log::error(message.c_str());
-    //    return;
-    //}
+    //     std::string message = "Shader with id: " + shaderId.toString() + " does not exist in destination world\n";
+    //     Log::error(message.c_str());
+    //     return;
+    // }
 
-    //destMat->setShaderId(shaderId);
+    // destMat->setShaderId(shaderId);
 
     //// Copy uniforms from source material to destination material
-    //std::vector<ShaderUniform> uniforms = srcMat->getUniforms();
-    //for (size_t i = 0; i < uniforms.size(); i++)
+    // std::vector<ShaderUniform> uniforms = srcMat->getUniforms();
+    // for (size_t i = 0; i < uniforms.size(); i++)
     //{
 
     //    // Note: matrices not supported

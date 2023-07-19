@@ -1,8 +1,8 @@
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 
-#include "../../include/graphics/RendererShaders.h"
 #include "../../include/graphics/InternalShaders.h"
+#include "../../include/graphics/RendererShaders.h"
 
 using namespace PhysicsEngine;
 

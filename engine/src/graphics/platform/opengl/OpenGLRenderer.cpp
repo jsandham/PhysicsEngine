@@ -5,8 +5,8 @@
 #include <random>
 
 #include "../../../../include/core/Log.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLRenderer.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLRenderer.h"
 
 #include "../../../../include/graphics/InternalShaders.h"
 
@@ -32,10 +32,10 @@ void OpenGLRenderer::init_impl()
 {
     mContext = OpenGLRenderContext::get();
 
-    std::string version = (const char*)glGetString(GL_VERSION);
-    std::string shader_version = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-    std::string vendor = (const char*)glGetString(GL_VENDOR);
-    std::string renderer = (const char*)glGetString(GL_RENDERER);
+    std::string version = (const char *)glGetString(GL_VERSION);
+    std::string shader_version = (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+    std::string vendor = (const char *)glGetString(GL_VENDOR);
+    std::string renderer = (const char *)glGetString(GL_RENDERER);
 
     Log::warn(("Version: " + version + "\n").c_str());
     Log::warn(("Shader Version: " + shader_version + "\n").c_str());

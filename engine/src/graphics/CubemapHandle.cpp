@@ -1,15 +1,13 @@
 #include "../../include/graphics/CubemapHandle.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLCubemapHandle.h"
 #include "../../include/graphics/platform/directx/DirectXCubemapHandle.h"
+#include "../../include/graphics/platform/opengl/OpenGLCubemapHandle.h"
 
 using namespace PhysicsEngine;
 
-CubemapHandle::CubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,
-    TextureFilterMode filterMode)
+CubemapHandle::CubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode)
 {
-
 }
 
 CubemapHandle::~CubemapHandle()
@@ -36,8 +34,8 @@ int CubemapHandle::getWidth() const
     return mWidth;
 }
 
-CubemapHandle* CubemapHandle::create(int width, TextureFormat format, TextureWrapMode wrapMode,
-    TextureFilterMode filterMode)
+CubemapHandle *CubemapHandle::create(int width, TextureFormat format, TextureWrapMode wrapMode,
+                                     TextureFilterMode filterMode)
 {
     switch (RenderContext::getRenderAPI())
     {

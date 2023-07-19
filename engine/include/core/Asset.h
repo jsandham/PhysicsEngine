@@ -17,7 +17,7 @@ class Asset : public Object
 
   public:
     Asset(World *world, const Id &id);
-    Asset(World *world, const Guid& guid, const Id& id);
+    Asset(World *world, const Guid &guid, const Id &id);
     ~Asset();
 
     virtual void serialize(YAML::Node &out) const override;

@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 using namespace PhysicsEngine;
 
@@ -56,7 +56,7 @@ static void logError(const std::string &error, const std::string &line, const st
 
 #define LOG_ERROR(ERROR, LINE, FILE) logError(ERROR, LINE, FILE);
 
-void PhysicsEngine::checkError(int line, const char* file)
+void PhysicsEngine::checkError(int line, const char *file)
 {
     GLenum error;
     while ((error = glGetError()) != GL_NO_ERROR)
@@ -91,7 +91,7 @@ void PhysicsEngine::checkError(int line, const char* file)
     }
 }
 
-void PhysicsEngine::checkFrambufferError(int line, const char* file)
+void PhysicsEngine::checkFrambufferError(int line, const char *file)
 {
     GLenum framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
     if (framebufferStatus != GL_FRAMEBUFFER_COMPLETE)

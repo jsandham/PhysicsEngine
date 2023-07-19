@@ -1,8 +1,8 @@
 #include "../../include/graphics/VertexBuffer.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLVertexBuffer.h"
 #include "../../include/graphics/platform/directx/DirectXVertexBuffer.h"
+#include "../../include/graphics/platform/opengl/OpenGLVertexBuffer.h"
 
 using namespace PhysicsEngine;
 
@@ -19,15 +19,15 @@ size_t VertexBuffer::getSize() const
     return mSize;
 }
 
-VertexBuffer* VertexBuffer::create()
+VertexBuffer *VertexBuffer::create()
 {
-	switch (RenderContext::getRenderAPI())
-	{
-	case RenderAPI::OpenGL:
-		return new OpenGLVertexBuffer();
-	case RenderAPI::DirectX:
-		return new DirectXVertexBuffer();
-	}
+    switch (RenderContext::getRenderAPI())
+    {
+    case RenderAPI::OpenGL:
+        return new OpenGLVertexBuffer();
+    case RenderAPI::DirectX:
+        return new DirectXVertexBuffer();
+    }
 
-	return nullptr;
+    return nullptr;
 }

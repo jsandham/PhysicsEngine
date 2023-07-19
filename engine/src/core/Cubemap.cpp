@@ -1,6 +1,6 @@
 #include "../../include/core/Cubemap.h"
-#include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/Texture2D.h"
 #include "../../include/core/World.h"
 #include "../../include/graphics/Renderer.h"
 

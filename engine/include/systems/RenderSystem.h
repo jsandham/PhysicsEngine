@@ -27,12 +27,12 @@ class RenderSystem : public System
     std::vector<Id> mTotalTransformIds;
     std::vector<Sphere> mTotalBoundingSpheres;
     std::vector<RenderObject> mTotalRenderObjects;
-    
+
     std::vector<glm::mat4> mModels;
     std::vector<Id> mTransformIds;
     std::vector<RenderObject> mRenderObjects;
 
-    //std::vector<bool> mCulledObjectFlags;
+    // std::vector<bool> mCulledObjectFlags;
 
   public:
     RenderSystem(World *world, const Id &id);

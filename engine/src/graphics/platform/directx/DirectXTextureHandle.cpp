@@ -1,6 +1,6 @@
 #include "../../../../include/graphics/platform/directx/DirectXTextureHandle.h"
-#include "../../../../include/graphics/platform/directx/DirectXError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
 
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
@@ -88,12 +88,8 @@ DirectXTextureHandle::~DirectXTextureHandle()
     }
 }
 
-void DirectXTextureHandle::load(TextureFormat format,
-	TextureWrapMode wrapMode,
-	TextureFilterMode filterMode,
-	int width,
-	int height,
-	const std::vector<unsigned char>& data)
+void DirectXTextureHandle::load(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
+                                int height, const std::vector<unsigned char> &data)
 {
     mFormat = format;
     mWrapMode = wrapMode;
@@ -189,17 +185,14 @@ void DirectXTextureHandle::load(TextureFormat format,
 
 void DirectXTextureHandle::update(TextureWrapMode wrapMode, TextureFilterMode filterMode, int anisoLevel)
 {
-
 }
 
-void DirectXTextureHandle::readPixels(std::vector<unsigned char>& data)
+void DirectXTextureHandle::readPixels(std::vector<unsigned char> &data)
 {
-
 }
 
-void DirectXTextureHandle::writePixels(const std::vector<unsigned char>& data)
+void DirectXTextureHandle::writePixels(const std::vector<unsigned char> &data)
 {
-
 }
 
 void DirectXTextureHandle::bind(unsigned int texUnit)
@@ -209,7 +202,7 @@ void DirectXTextureHandle::bind(unsigned int texUnit)
     assert(context != nullptr);
 
     context->PSSetShaderResources(texUnit, 1, &mShaderResourceView);
-    //context->PSSetSamplers(texUnit, 1, &mSamplerState);
+    // context->PSSetSamplers(texUnit, 1, &mSamplerState);
 }
 
 void DirectXTextureHandle::unbind(unsigned int texUnit)
@@ -221,11 +214,11 @@ void DirectXTextureHandle::unbind(unsigned int texUnit)
     ID3D11ShaderResourceView *rv = nullptr;
     context->PSSetShaderResources(texUnit, 1, &rv);
 
-    //ID3D11SamplerState *ss = nullptr;
-    //context->PSSetSamplers(texUnit, 1, &ss);
+    // ID3D11SamplerState *ss = nullptr;
+    // context->PSSetSamplers(texUnit, 1, &ss);
 }
 
-void* DirectXTextureHandle::getTexture()
+void *DirectXTextureHandle::getTexture()
 {
     return static_cast<void *>(mTexture);
 }

@@ -8,16 +8,16 @@
 
 namespace PhysicsEngine
 {
-    void checkError(HRESULT result, const std::string &line, const std::string &file);
+void checkError(HRESULT result, const std::string &line, const std::string &file);
 
-    #define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)                                     \
-        do                                                                            \
-        {                                                                             \
-            HRESULT hr = ROUTINE;                                                     \
-            checkError(hr, LINE, FILE);                                               \
-        } while (0)
+#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        HRESULT hr = ROUTINE;                                                                                          \
+        checkError(hr, LINE, FILE);                                                                                    \
+    } while (0)
 
-    #define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
+#define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
 } // namespace PhysicsEngine
 
 #endif

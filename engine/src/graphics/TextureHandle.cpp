@@ -1,18 +1,18 @@
 #include "../../include/graphics/TextureHandle.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLTextureHandle.h"
 #include "../../include/graphics/platform/directx/DirectXTextureHandle.h"
+#include "../../include/graphics/platform/opengl/OpenGLTextureHandle.h"
 
 using namespace PhysicsEngine;
 
 TextureHandle::TextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
-                           TextureFilterMode filterMode)
+                             TextureFilterMode filterMode)
 {
     mWidth = width;
     mHeight = height;
     mAnisoLevel = 1;
-    
+
     mFormat = format;
     mWrapMode = wrapMode;
     mFilterMode = filterMode;

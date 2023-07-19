@@ -1,8 +1,8 @@
 #ifndef RENDERER_SHADERS_H__
 #define RENDERER_SHADERS_H__
 
-#include <string>
 #include "ShaderProgram.h"
+#include <string>
 
 namespace PhysicsEngine
 {
@@ -322,7 +322,6 @@ class GridShader
     void setMVP(const glm::mat4 &mvp);
     void setColor(const Color &color);
 };
-
 
 class RendererShaders
 {

@@ -1,13 +1,13 @@
 #include "../../include/core/WorldPrimitives.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
 
-#include <set>
 #include <glm/glm.hpp>
+#include <set>
 
 using namespace PhysicsEngine;
 
-void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
+void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
 {
     Mesh *plane = world->createAsset<Mesh>(Guid("83a08619-90c8-49a0-af38-9fb3732c6bc3"));
     Mesh *disc = world->createAsset<Mesh>(Guid("a564ec96-bd6f-493a-ad2a-0009a7cb0fb0"));
@@ -31,7 +31,7 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     cone->setName("Cone");
 
     Shader *standardShader = world->createAsset<Shader>(Guid("d875cfa8-d25b-4c5d-a26d-caafd191baf7"));
-    Material* standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
+    Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
 
     assert(standardShader != nullptr);
     assert(standardMaterial != nullptr);
@@ -41,7 +41,7 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         standardShader->setName("Standard");
         standardShader->setVertexShader(RendererShaders::getStandardShader()->getVertexShader());
         standardShader->setFragmentShader(RendererShaders::getStandardShader()->getFragmentShader());
-    
+
         std::set<ShaderMacro> variants[23];
         variants[0].insert(ShaderMacro::None);
 
@@ -214,50 +214,49 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
             planeTexCoords[k++] = (x + 1) * dx;
             planeTexCoords[k++] = (z + 1) * dz;
 
-
             //// first triangle
-            //planeVertices[i++] = xmin + x * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + z * dz;
+            // planeVertices[i++] = xmin + x * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + z * dz;
             //
-            //planeVertices[i++] = xmin + (x + 1) * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + z * dz;
+            // planeVertices[i++] = xmin + (x + 1) * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + z * dz;
 
-            //planeVertices[i++] = xmin + x * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + (z + 1) * dz;
+            // planeVertices[i++] = xmin + x * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + (z + 1) * dz;
 
-            //planeTexCoords[k++] = x * dx;
-            //planeTexCoords[k++] = z * dz;
+            // planeTexCoords[k++] = x * dx;
+            // planeTexCoords[k++] = z * dz;
 
-            //planeTexCoords[k++] = (x + 1) * dx;
-            //planeTexCoords[k++] = z * dz;
+            // planeTexCoords[k++] = (x + 1) * dx;
+            // planeTexCoords[k++] = z * dz;
 
-            //planeTexCoords[k++] = x * dx;
-            //planeTexCoords[k++] = (z + 1) * dz;
+            // planeTexCoords[k++] = x * dx;
+            // planeTexCoords[k++] = (z + 1) * dz;
 
             //// second triangle
-            //planeVertices[i++] = xmin + (x + 1) * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + z * dz;
+            // planeVertices[i++] = xmin + (x + 1) * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + z * dz;
 
-            //planeVertices[i++] = xmin + (x + 1) * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + (z + 1) * dz;
+            // planeVertices[i++] = xmin + (x + 1) * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + (z + 1) * dz;
 
-            //planeVertices[i++] = xmin + x * dx;
-            //planeVertices[i++] = 0.0f;
-            //planeVertices[i++] = zmin + (z + 1) * dz;
+            // planeVertices[i++] = xmin + x * dx;
+            // planeVertices[i++] = 0.0f;
+            // planeVertices[i++] = zmin + (z + 1) * dz;
 
-            //planeTexCoords[k++] = (x + 1) * dx;
-            //planeTexCoords[k++] = z * dz;
+            // planeTexCoords[k++] = (x + 1) * dx;
+            // planeTexCoords[k++] = z * dz;
 
-            //planeTexCoords[k++] = (x + 1) * dx;
-            //planeTexCoords[k++] = (z + 1) * dz;
+            // planeTexCoords[k++] = (x + 1) * dx;
+            // planeTexCoords[k++] = (z + 1) * dz;
 
-            //planeTexCoords[k++] = x * dx;
-            //planeTexCoords[k++] = (z + 1) * dz;
+            // planeTexCoords[k++] = x * dx;
+            // planeTexCoords[k++] = (z + 1) * dz;
 
             for (int n = 0; n < 6; n++)
             {
@@ -274,7 +273,6 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         planeIndices[ii] = ii;
     }
     plane->load(planeVertices, planeNormals, planeTexCoords, planeIndices, {0, vertexCount});
-
 
     // Generate disc
     int discTriangleCount = nx * nz;
@@ -336,7 +334,7 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     std::vector<float> cubeVertices(3 * cubeVertexCount);
     std::vector<float> cubeNormals(3 * cubeVertexCount);
     std::vector<float> cubeTexCoords(2 * cubeVertexCount);
-    
+
     int faceStart = 0;
     int texStart = 0;
 
@@ -353,7 +351,6 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
 
         cubeTexCoords[2 * v + 0 + texStart] = planeTexCoords[2 * v + 0];
         cubeTexCoords[2 * v + 1 + texStart] = planeTexCoords[2 * v + 1];
-
     }
     faceStart += 3 * vertexCount;
     texStart += 2 * vertexCount;
@@ -468,11 +465,11 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
         vx = vx / length;
         vy = vy / length;
         vz = vz / length;
-        
+
         sphereVertices[3 * v + 0] = vx;
         sphereVertices[3 * v + 1] = vy;
         sphereVertices[3 * v + 2] = vz;
-            
+
         sphereNormals[3 * v + 0] = vx;
         sphereNormals[3 * v + 1] = vy;
         sphereNormals[3 * v + 2] = vz;
@@ -491,7 +488,7 @@ void WorldPrimitives::createPrimitiveMeshes(World* world, int nx, int nz)
     // Generate cylinder
     int cylinderTriangleCount = 4 * discTriangleCount;
     int cylinderVertexCount = 3 * cylinderTriangleCount;
-    
+
     std::vector<float> cylinderVertices(3 * cylinderVertexCount);
     std::vector<float> cylinderNormals(3 * cylinderVertexCount);
     std::vector<float> cylinderTexCoords(3 * cylinderVertexCount);

@@ -9,19 +9,17 @@ using namespace PhysicsEngine;
 
 ApplicationWindow::ApplicationWindow()
 {
-
 }
 
 ApplicationWindow::~ApplicationWindow()
 {
-
 }
 
-ApplicationWindow* ApplicationWindow::createApplicationWindow(const std::string& title, int width, int height)
+ApplicationWindow *ApplicationWindow::createApplicationWindow(const std::string &title, int width, int height)
 {
 #ifdef PHYSICSENGINE_PLATFORM_WIN32
-	return new Win32ApplicationWindow(title, width, height);
+    return new Win32ApplicationWindow(title, width, height);
 #elif
-	return nullptr;
+    return nullptr;
 #endif
 }

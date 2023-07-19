@@ -6,8 +6,8 @@
 #include "../../../../include/core/Shader.h"
 
 #include <algorithm>
-#include <iostream>
 #include <d3dcompiler.h>
+#include <iostream>
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -54,7 +54,8 @@ DirectXShaderProgram::~DirectXShaderProgram()
     }
 }
 
-void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry)
+void DirectXShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment,
+                                const std::string &geometry)
 {
     mName = name;
     mVertex = vertex;
@@ -67,7 +68,7 @@ void DirectXShaderProgram::load(const std::string& name, const std::string &vert
     memset(mStatus.mLinkLog, 0, sizeof(mStatus.mLinkLog));
 }
 
-void DirectXShaderProgram::load(const std::string& name, const std::string &vertex, const std::string &fragment)
+void DirectXShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment)
 {
     this->load(name, vertex, fragment, "");
 }
@@ -133,8 +134,8 @@ void DirectXShaderProgram::compile()
 
     // Compile vertex shader shader
     result = D3DCompile(mVertex.data(), mVertex.size(), NULL, NULL, NULL, "VSMain", "vs_5_0", flags, 0,
-                    &mVertexShaderBlob, &errorBlob);
-    
+                        &mVertexShaderBlob, &errorBlob);
+
     if (FAILED(result))
     {
         std::string message = "Shader: Vertex shader compilation failed (" + mName + ")\n";
@@ -143,16 +144,16 @@ void DirectXShaderProgram::compile()
         mStatus.mVertexShaderCompiled = 0;
         if (errorBlob)
         {
-            memcpy(mStatus.mVertexCompileLog, errorBlob->GetBufferPointer(), 
+            memcpy(mStatus.mVertexCompileLog, errorBlob->GetBufferPointer(),
                    std::min((size_t)512, (size_t)errorBlob->GetBufferSize()));
-            Log::error((char*)errorBlob->GetBufferPointer());
+            Log::error((char *)errorBlob->GetBufferPointer());
             errorBlob->Release();
         }
     }
 
     // Compile pixel shader shader
-    result = D3DCompile(mFragment.data(), mFragment.size(), NULL, NULL, NULL, "PSMain", "ps_5_0", flags,
-                    0, &mPixelShaderBlob, &errorBlob);
+    result = D3DCompile(mFragment.data(), mFragment.size(), NULL, NULL, NULL, "PSMain", "ps_5_0", flags, 0,
+                        &mPixelShaderBlob, &errorBlob);
     if (FAILED(result))
     {
         std::string message = "Shader: Pixel shader compilation failed (" + mName + ")\n";
@@ -172,7 +173,7 @@ void DirectXShaderProgram::compile()
     {
         // Compile pixel shader shader
         result = D3DCompile(mGeometry.data(), mGeometry.size(), NULL, NULL, NULL, "GSMain", "ps_5_0", flags, 0,
-                        &mGeometryShaderBlob, &errorBlob);
+                            &mGeometryShaderBlob, &errorBlob);
         if (FAILED(result))
         {
             std::string message = "Shader: Geometry shader compilation failed (" + mName + ")\n";
@@ -196,8 +197,8 @@ void DirectXShaderProgram::compile()
 
     if (mVertexShaderBlob != NULL)
     {
-        CHECK_ERROR(device->CreateVertexShader(
-            mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(), NULL, &mVertexShader));
+        CHECK_ERROR(device->CreateVertexShader(mVertexShaderBlob->GetBufferPointer(),
+                                               mVertexShaderBlob->GetBufferSize(), NULL, &mVertexShader));
         ID3D11ShaderReflection *vertexShaderReflector;
         D3DReflect(mVertexShaderBlob->GetBufferPointer(), mVertexShaderBlob->GetBufferSize(),
                    IID_ID3D11ShaderReflection, (void **)&vertexShaderReflector);
@@ -256,8 +257,8 @@ void DirectXShaderProgram::compile()
 
     if (mPixelShaderBlob != NULL)
     {
-        CHECK_ERROR(device->CreatePixelShader(
-            mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), NULL, &mPixelShader));
+        CHECK_ERROR(device->CreatePixelShader(mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(),
+                                              NULL, &mPixelShader));
         ID3D11ShaderReflection *pixelShaderReflector;
         D3DReflect(mPixelShaderBlob->GetBufferPointer(), mPixelShaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection,
                    (void **)&pixelShaderReflector);
@@ -316,11 +317,11 @@ void DirectXShaderProgram::compile()
 
     if (mGeometryShaderBlob != NULL)
     {
-        CHECK_ERROR(device->CreateGeometryShader(
-            mGeometryShaderBlob->GetBufferPointer(), mGeometryShaderBlob->GetBufferSize(), NULL, &mGeometryShader));
+        CHECK_ERROR(device->CreateGeometryShader(mGeometryShaderBlob->GetBufferPointer(),
+                                                 mGeometryShaderBlob->GetBufferSize(), NULL, &mGeometryShader));
         ID3D11ShaderReflection *geometryShaderReflector;
-        D3DReflect(mGeometryShaderBlob->GetBufferPointer(), mGeometryShaderBlob->GetBufferSize(), IID_ID3D11ShaderReflection,
-                   (void **)&geometryShaderReflector);
+        D3DReflect(mGeometryShaderBlob->GetBufferPointer(), mGeometryShaderBlob->GetBufferSize(),
+                   IID_ID3D11ShaderReflection, (void **)&geometryShaderReflector);
 
         D3D11_SHADER_DESC sd;
         CHECK_ERROR(geometryShaderReflector->GetDesc(&sd));
@@ -493,12 +494,13 @@ void DirectXShaderProgram::setMat4(const char *name, const glm::mat4 &mat)
     this->setMat4(Shader::uniformToId(name), mat);
 }
 
-void DirectXShaderProgram::setTexture2D(const char *name, int texUnit, void* tex)
+void DirectXShaderProgram::setTexture2D(const char *name, int texUnit, void *tex)
 {
     this->setTexture2D(Shader::uniformToId(name), texUnit, tex);
 }
 
-void DirectXShaderProgram::setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs)
+void DirectXShaderProgram::setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                                         const std::vector<void *> &texs)
 {
     this->setTexture2Ds(Shader::uniformToId(name), texUnits, count, texs);
 }
@@ -624,9 +626,9 @@ glm::mat4 DirectXShaderProgram::getMat4(const char *name) const
 
 bool DirectXShaderProgram::getBool(int uniformId) const
 {
-    //bool value = false;
-    //this->getData(uniformId, &value);
-    //return value;
+    // bool value = false;
+    // this->getData(uniformId, &value);
+    // return value;
     return false;
 }
 
@@ -711,8 +713,6 @@ void DirectXShaderProgram::setData(int uniformId, const void *data)
         }
     }
 }
-
-
 
 void DirectXShaderProgram::getData(int uniformId, void *data)
 {

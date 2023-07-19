@@ -1,6 +1,6 @@
+#include "../../../../include/graphics/platform/opengl/OpenGLFramebuffer.h"
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLFramebuffer.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -15,12 +15,12 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height) : Framebuffer(width,
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, mHandle));
 
     mColorTex[0] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
-                                          TextureFilterMode::Nearest);
+                                               TextureFilterMode::Nearest);
     mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
-                                          TextureFilterMode::Nearest);   
+                                            TextureFilterMode::Nearest);
 
     CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                                           *reinterpret_cast<unsigned int *>(mColorTex[0]->getTexture()), 0));
+                                       *reinterpret_cast<unsigned int *>(mColorTex[0]->getTexture()), 0));
     CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                                        *reinterpret_cast<unsigned int *>(mDepthTex->getTexture()), 0));
 
@@ -33,7 +33,8 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height) : Framebuffer(width,
     CHECK_ERROR(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 }
 
-OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, bool addDepthTex) : Framebuffer(width, height, numColorTex, addDepthTex)
+OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, bool addDepthTex)
+    : Framebuffer(width, height, numColorTex, addDepthTex)
 {
     mColorTex.resize(mNumColorTex);
 
@@ -43,7 +44,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
     for (size_t i = 0; i < mColorTex.size(); i++)
     {
         mColorTex[i] = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::RGBA, TextureWrapMode::ClampToEdge,
-                                             TextureFilterMode::Nearest);
+                                                   TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, static_cast<GLenum>(GL_COLOR_ATTACHMENT0 + i), GL_TEXTURE_2D,
                                            *reinterpret_cast<unsigned int *>(mColorTex[i]->getTexture()), 0));
@@ -52,7 +53,7 @@ OpenGLFramebuffer::OpenGLFramebuffer(int width, int height, int numColorTex, boo
     if (mAddDepthTex)
     {
         mDepthTex = RenderTextureHandle::create(mWidth, mHeight, TextureFormat::Depth, TextureWrapMode::ClampToEdge,
-                                          TextureFilterMode::Nearest);
+                                                TextureFilterMode::Nearest);
 
         CHECK_ERROR(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                                            *reinterpret_cast<unsigned int *>(mDepthTex->getTexture()), 0));
@@ -91,10 +92,10 @@ OpenGLFramebuffer::~OpenGLFramebuffer()
     {
         delete mColorTex[i];
     }
-    
+
     if (mAddDepthTex)
     {
-        delete mDepthTex;   
+        delete mDepthTex;
     }
 }
 

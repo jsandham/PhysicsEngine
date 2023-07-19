@@ -189,7 +189,7 @@ void BuildWindow::build()
 	mBuildLog.AddLog("Copying source files...\n");
 
 	std::filesystem::path executablePath = buildPath / "main.exe";
-	
+
 	const std::string ENGINE_INC = "..\\..\\..\\engine\\include";
 	const std::string YAML_INC = "..\\..\\..\\external\\yaml-cpp\\include";
 	const std::string GLEW_INC = "..\\..\\..\\external\\glew-2.1.0";
@@ -204,7 +204,7 @@ void BuildWindow::build()
 	const std::string FREETYPE_LIB = "..\\..\\..\\external\\freetype\\lib\\debug\\freetype.lib";
 
 	const std::string LIBS = "kernel32.lib user32.lib gdi32.lib ole32.lib opengl32.lib " + ENGINE_LIB + " " + YAML_LIB + " " + GLEW_LIB + " " + FREETYPE_LIB;
-	
+
 	const std::string OPT = "/Od";
 	const std::string WARN = "-W4 -wd4100 -wd4996 -wd4211";
 	const std::string FLAGS = "/MDd -Zi -nologo /EHsc";
@@ -222,7 +222,7 @@ void BuildWindow::build()
 		if (std::filesystem::is_regular_file(entry, error_code))
 		{
 			includeFiles.push_back(entry.path().string());
-			if(!INCLUDE_FILES.empty())
+			if (!INCLUDE_FILES.empty())
 			{
 				INCLUDE_FILES += " ";
 			}
@@ -251,19 +251,19 @@ void BuildWindow::build()
 		BUILD_STEP("Compile file...", exec(command.c_str()), 0.0f);
 	}*/
 
-	const std::string command = "..\\..\\..\\shell.bat && " + 
-								COMPILER + " /std:c++17 -o " + 
-								EXECUTABLE + " " + 
-								SRC_FILES + " " +
-								INCLUDE_FILES + " " + 
-								INCLUDES + " " + 
-								OPT + " " + 
-								WARN + " " + 
-								FLAGS + " " + 
-								LIBS;
+	const std::string command = "..\\..\\..\\shell.bat && " +
+		COMPILER + " /std:c++17 -o " +
+		EXECUTABLE + " " +
+		SRC_FILES + " " +
+		INCLUDE_FILES + " " +
+		INCLUDES + " " +
+		OPT + " " +
+		WARN + " " +
+		FLAGS + " " +
+		LIBS;
 
 	BUILD_STEP("Compile game...", mBuildLog.AddLog(exec(command.c_str()).c_str()), 0.9f);
-	
+
 	BUILD_STEP("Done!", mBuildLog.AddLog("Done!\n"), 1.0f);
 
 	mBuildComplete = true;
@@ -276,7 +276,7 @@ void BuildWindow::doWork()
 		if (mLaunchBuild)
 		{
 			mLaunchBuild = false;
-			
+
 			try
 			{
 				build();

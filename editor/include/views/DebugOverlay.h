@@ -6,25 +6,25 @@
 
 namespace PhysicsEditor
 {
-    class DebugOverlay
-    {
-    private:
-        float mMaxFPS;
-        PerformanceQueue mPerfQueue;
+	class DebugOverlay
+	{
+	private:
+		float mMaxFPS;
+		PerformanceQueue mPerfQueue;
 
-    public:
-        DebugOverlay();
-        ~DebugOverlay();
-        DebugOverlay(const DebugOverlay& other) = delete;
-        DebugOverlay& operator=(const DebugOverlay& other) = delete;
+	public:
+		DebugOverlay();
+		~DebugOverlay();
+		DebugOverlay(const DebugOverlay& other) = delete;
+		DebugOverlay& operator=(const DebugOverlay& other) = delete;
 
-        void init(Clipboard& clipboard);
-        void update(Clipboard& clipboard);
+		void init(Clipboard& clipboard);
+		void update(Clipboard& clipboard);
 
-    private:
-        void sceneTab(Clipboard& clipboard);
-        void shaderTab(Clipboard& clipboard);
-    };
+	private:
+		void sceneTab(Clipboard& clipboard);
+		void shaderTab(Clipboard& clipboard);
+	};
 } // namespace PhysicsEditor
 
 #endif

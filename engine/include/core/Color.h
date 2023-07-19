@@ -31,7 +31,7 @@ class Color
   public:
     Color();
     Color(float r, float g, float b, float a);
-    Color(const glm::vec4& rgba);
+    Color(const glm::vec4 &rgba);
     ~Color();
 };
 
@@ -60,7 +60,7 @@ class Color32
     ~Color32();
 
     // Allows use of Color32 as key in unordered_map
-    bool operator==(const Color32& other) const
+    bool operator==(const Color32 &other) const
     {
         return ((mR == other.mR) && (mG == other.mG) && (mB == other.mB) && (mA == other.mA));
     }
@@ -70,27 +70,26 @@ class Color32
 };
 } // namespace PhysicsEngine
 
-namespace std 
+namespace std
 {
-    // Allows use of Color32 as key in unordered_map
-    template <>
-    struct hash<PhysicsEngine::Color32>
+// Allows use of Color32 as key in unordered_map
+template <> struct hash<PhysicsEngine::Color32>
+{
+    std::size_t operator()(const PhysicsEngine::Color32 &color) const
     {
-        std::size_t operator()(const PhysicsEngine::Color32& color) const
-        {
-            using std::size_t;
-            using std::hash;
-            using std::string;
+        using std::hash;
+        using std::size_t;
+        using std::string;
 
-            size_t r = color.mR;
-            size_t g = color.mG;
-            size_t b = color.mB;
-            size_t a = color.mA;
+        size_t r = color.mR;
+        size_t g = color.mG;
+        size_t b = color.mB;
+        size_t a = color.mA;
 
-            return r + 255 * g + 255 * 255 * b + 255 * 255 * 255 * a;
-        }
-    };
-}
+        return r + 255 * g + 255 * 255 * b + 255 * 255 * 255 * a;
+    }
+};
+} // namespace std
 
 namespace YAML
 {

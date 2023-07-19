@@ -77,7 +77,7 @@ class Cubemap : public Texture
     void setRawCubemapData(CubemapFace face, const std::vector<unsigned char> &data);
     void setPixels(CubemapFace face, int x, int y, const Color32 &color);
     void setPixel(CubemapFace face, int x, int y, const Color32 &color);
-    void setTexId(CubemapFace face, const Guid& texId);
+    void setTexId(CubemapFace face, const Guid &texId);
 
     void fillCubemapFromAttachedTexture(CubemapFace face);
 

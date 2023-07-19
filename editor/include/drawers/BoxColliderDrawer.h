@@ -7,21 +7,21 @@
 
 namespace PhysicsEditor
 {
-class BoxColliderDrawer
-{
-  private:
-    ImVec2 mContentMin;
-    ImVec2 mContentMax;
- 
-  public:
-    BoxColliderDrawer();
-    ~BoxColliderDrawer();
+	class BoxColliderDrawer
+	{
+	private:
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+	public:
+		BoxColliderDrawer();
+		~BoxColliderDrawer();
 
-private:
-    bool isHovered() const;
-};
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

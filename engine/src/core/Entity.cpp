@@ -12,7 +12,7 @@ Entity::Entity(World *world, const Id &id) : Object(world, id)
     mDoNotDestroy = false;
 }
 
-Entity::Entity(World *world, const Guid& guid, const Id& id) : Object(world, guid, id)
+Entity::Entity(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;

@@ -8,21 +8,21 @@
 
 namespace PhysicsEditor
 {
-class TransformDrawer
-{
-  private:
-    ImVec2 mContentMin;
-    ImVec2 mContentMax;
+	class TransformDrawer
+	{
+	private:
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-  public:
-    TransformDrawer();
-    ~TransformDrawer();
+	public:
+		TransformDrawer();
+		~TransformDrawer();
 
-    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
 
-private:
-    bool isHovered() const;
-};
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

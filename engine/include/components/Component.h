@@ -16,7 +16,7 @@ class Component : public Object
 
   public:
     Component(World *world, const Id &id);
-    Component(World *world, const Guid& guid, const Id& id);
+    Component(World *world, const Guid &guid, const Id &id);
     ~Component();
 
     virtual void serialize(YAML::Node &out) const override;

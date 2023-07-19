@@ -3,10 +3,10 @@
 
 #define NOMINMAX
 
-#include <vector>
-#include <unordered_map>
-#include <set>
 #include <cstdint>
+#include <set>
+#include <unordered_map>
+#include <vector>
 
 #define GLM_FORCE_RADIANS
 
@@ -88,14 +88,14 @@ class Shader : public Asset
   private:
     std::string mSource;
     std::string mSourceFilepath;
-      
+
     std::string mVertexShader;
     std::string mFragmentShader;
     std::string mGeometryShader;
 
     std::unordered_map<int, std::set<ShaderMacro>> mVariantMacroMap;
 
-    std::vector<ShaderProgram*> mPrograms;
+    std::vector<ShaderProgram *> mPrograms;
     std::vector<int64_t> mVariants;
 
     std::vector<ShaderUniform> mUniforms;
@@ -115,11 +115,11 @@ class Shader : public Asset
     virtual int getType() const override;
     virtual std::string getObjectName() const override;
 
-    void load(const ShaderCreationAttrib& attrib);
+    void load(const ShaderCreationAttrib &attrib);
 
     bool isCompiled() const;
 
-    void addVariant(int variantId, const std::set<ShaderMacro>& macros);
+    void addVariant(int variantId, const std::set<ShaderMacro> &macros);
     void removeVariant(int variantId);
     void preprocess();
     void compile();
@@ -128,11 +128,11 @@ class Shader : public Asset
     void setVertexShader(const std::string &vertexShader);
     void setGeometryShader(const std::string &geometryShader);
     void setFragmentShader(const std::string &fragmentShader);
-    
-    ShaderProgram* getProgramFromVariant(int64_t variant) const;
-    ShaderProgram* getActiveProgram() const;
 
-    std::vector<ShaderProgram*> getPrograms() const;
+    ShaderProgram *getProgramFromVariant(int64_t variant) const;
+    ShaderProgram *getActiveProgram() const;
+
+    std::vector<ShaderProgram *> getPrograms() const;
     std::vector<ShaderUniform> getUniforms() const;
     std::vector<ShaderUniform> getMaterialUniforms() const;
     std::string getVertexShader() const;
@@ -151,8 +151,9 @@ class Shader : public Asset
     void setMat2(const char *name, const glm::mat2 &mat) const;
     void setMat3(const char *name, const glm::mat3 &mat) const;
     void setMat4(const char *name, const glm::mat4 &mat) const;
-    void setTexture2D(const char *name, int texUnit, void* tex) const;
-    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
+    void setTexture2D(const char *name, int texUnit, void *tex) const;
+    void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                       const std::vector<void *> &texs) const;
 
     void setBool(int uniformId, bool value) const;
     void setInt(int uniformId, int value) const;
@@ -164,8 +165,9 @@ class Shader : public Asset
     void setMat2(int uniformId, const glm::mat2 &mat) const;
     void setMat3(int uniformId, const glm::mat3 &mat) const;
     void setMat4(int uniformId, const glm::mat4 &mat) const;
-    void setTexture2D(int uniformId, int texUnit, void* tex) const;
-    void setTexture2Ds(int uniformId, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) const;
+    void setTexture2D(int uniformId, int texUnit, void *tex) const;
+    void setTexture2Ds(int uniformId, const std::vector<int> &texUnits, int count,
+                       const std::vector<void *> &texs) const;
 
     bool getBool(const char *name) const;
     int getInt(const char *name) const;
@@ -189,7 +191,7 @@ class Shader : public Asset
     glm::mat3 getMat3(int uniformId) const;
     glm::mat4 getMat4(int uniformId) const;
 
-    static int uniformToId(const char* property);
+    static int uniformToId(const char *property);
 
     static int MODEL_UNIFORM_ID;
     static int SHADOW_MAP_UNIFORM_ID;
@@ -245,7 +247,7 @@ template <> struct convert<PhysicsEngine::RenderQueue>
 // ShaderUniformType
 template <> struct convert<PhysicsEngine::ShaderUniformType>
 {
-    static Node encode(const PhysicsEngine::ShaderUniformType& rhs)
+    static Node encode(const PhysicsEngine::ShaderUniformType &rhs)
     {
         Node node;
 
@@ -288,51 +290,62 @@ template <> struct convert<PhysicsEngine::ShaderUniformType>
             node = "Invalid";
             break;
         }
-      
+
         return node;
     }
 
-    static bool decode(const Node& node, PhysicsEngine::ShaderUniformType& rhs)
+    static bool decode(const Node &node, PhysicsEngine::ShaderUniformType &rhs)
     {
         std::string type = node.as<std::string>();
-        if (type == "Int") {
+        if (type == "Int")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Int;
         }
-        else if (type == "Float"){
+        else if (type == "Float")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Float;
         }
         else if (type == "Color")
         {
             rhs = PhysicsEngine::ShaderUniformType::Color;
         }
-        else if (type == "Vec2"){
+        else if (type == "Vec2")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Vec2;
         }
-        else if (type == "Vec3"){
+        else if (type == "Vec3")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Vec3;
         }
-        else if (type == "Vec4"){
+        else if (type == "Vec4")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Vec4;
         }
-        else if (type == "Mat2"){
+        else if (type == "Mat2")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Mat2;
         }
-        else if (type == "Mat3"){
+        else if (type == "Mat3")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Mat3;
         }
-        else if (type == "Mat4"){
+        else if (type == "Mat4")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Mat4;
         }
-        else if (type == "Sampler2D"){
+        else if (type == "Sampler2D")
+        {
             rhs = PhysicsEngine::ShaderUniformType::Sampler2D;
         }
-        else if (type == "SamplerCube"){
+        else if (type == "SamplerCube")
+        {
             rhs = PhysicsEngine::ShaderUniformType::SamplerCube;
         }
-        else {
+        else
+        {
             rhs = PhysicsEngine::ShaderUniformType::Invalid;
         }
-        
+
         return true;
     }
 };
@@ -340,7 +353,7 @@ template <> struct convert<PhysicsEngine::ShaderUniformType>
 // ShaderMacro
 template <> struct convert<PhysicsEngine::ShaderMacro>
 {
-    static Node encode(const PhysicsEngine::ShaderMacro& rhs)
+    static Node encode(const PhysicsEngine::ShaderMacro &rhs)
     {
         Node node;
 
@@ -378,35 +391,43 @@ template <> struct convert<PhysicsEngine::ShaderMacro>
         return node;
     }
 
-    static bool decode(const Node& node, PhysicsEngine::ShaderMacro& rhs)
+    static bool decode(const Node &node, PhysicsEngine::ShaderMacro &rhs)
     {
         std::string type = node.as<std::string>();
-        if (type == "Directional") {
+        if (type == "Directional")
+        {
             rhs = PhysicsEngine::ShaderMacro::Directional;
         }
-        else if (type == "Spot") {
+        else if (type == "Spot")
+        {
             rhs = PhysicsEngine::ShaderMacro::Spot;
         }
-        else if (type == "Point") {
+        else if (type == "Point")
+        {
             rhs = PhysicsEngine::ShaderMacro::Point;
         }
-        else if (type == "HardShadows") {
+        else if (type == "HardShadows")
+        {
             rhs = PhysicsEngine::ShaderMacro::HardShadows;
         }
-        else if (type == "SoftShadows") {
+        else if (type == "SoftShadows")
+        {
             rhs = PhysicsEngine::ShaderMacro::SoftShadows;
         }
-        else if (type == "SSAO") {
+        else if (type == "SSAO")
+        {
             rhs = PhysicsEngine::ShaderMacro::SSAO;
         }
-        else if (type == "ShowCascades") {
+        else if (type == "ShowCascades")
+        {
             rhs = PhysicsEngine::ShaderMacro::ShowCascades;
         }
         else if (type == "Instancing")
         {
             rhs = PhysicsEngine::ShaderMacro::Instancing;
         }
-        else {
+        else
+        {
             rhs = PhysicsEngine::ShaderMacro::None;
         }
 
@@ -517,7 +538,7 @@ template <> struct convert<PhysicsEngine::ShaderUniform>
 // std::set<ShaderMacro>
 template <> struct convert<std::set<PhysicsEngine::ShaderMacro>>
 {
-    static Node encode(const std::set<PhysicsEngine::ShaderMacro>& rhs)
+    static Node encode(const std::set<PhysicsEngine::ShaderMacro> &rhs)
     {
         Node node = YAML::Load("[]");
 
@@ -529,7 +550,7 @@ template <> struct convert<std::set<PhysicsEngine::ShaderMacro>>
         return node;
     }
 
-    static bool decode(const Node& node, std::set<PhysicsEngine::ShaderMacro>& rhs)
+    static bool decode(const Node &node, std::set<PhysicsEngine::ShaderMacro> &rhs)
     {
         if (!node.IsSequence())
         {
@@ -548,7 +569,7 @@ template <> struct convert<std::set<PhysicsEngine::ShaderMacro>>
 // std::unordered_map<int, std::set<ShaderMacro>>
 template <> struct convert<std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>>
 {
-    static Node encode(const std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>& rhs)
+    static Node encode(const std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>> &rhs)
     {
         Node node;
 
@@ -560,7 +581,7 @@ template <> struct convert<std::unordered_map<int, std::set<PhysicsEngine::Shade
         return node;
     }
 
-    static bool decode(const Node& node, std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>>& rhs)
+    static bool decode(const Node &node, std::unordered_map<int, std::set<PhysicsEngine::ShaderMacro>> &rhs)
     {
         if (!node.IsMap())
         {

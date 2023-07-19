@@ -34,7 +34,6 @@ void LineRenderer::serialize(YAML::Node &out) const
     out["start"] = mStart;
     out["end"] = mEnd;
     out["enabled"] = mEnabled;
-
 }
 
 void LineRenderer::deserialize(const YAML::Node &in)

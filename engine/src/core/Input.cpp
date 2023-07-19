@@ -4,7 +4,7 @@ using namespace PhysicsEngine;
 
 Input global_input = {};
 
-Input& PhysicsEngine::getInput()
+Input &PhysicsEngine::getInput()
 {
     return global_input;
 }

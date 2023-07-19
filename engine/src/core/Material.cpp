@@ -1,6 +1,6 @@
 #include "../../include/core/Material.h"
-#include "../../include/core/World.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
@@ -101,8 +101,8 @@ void Material::apply()
     assert(shaderProgram != nullptr);
 
     // Possible replacement for above code if we are willing to cache shader
-    //ShaderProgram *shaderProgram = mShader->getActiveProgram();
-    //assert(shaderProgram != nullptr);
+    // ShaderProgram *shaderProgram = mShader->getActiveProgram();
+    // assert(shaderProgram != nullptr);
 
     int textureUnit = 0;
     for (size_t i = 0; i < mUniforms.size(); i++)
@@ -207,7 +207,7 @@ bool Material::hasTextureChanged() const
     return mTextureChanged;
 }
 
-void Material::setShaderId(const Guid& shaderId)
+void Material::setShaderId(const Guid &shaderId)
 {
     // If current shader on material was valid, cache its uniforms before setting new shader
     if (mShaderGuid.isValid())

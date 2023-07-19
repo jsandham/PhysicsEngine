@@ -1,10 +1,10 @@
 #include "../../../include/core/platform/Win32ApplicationWindow.h"
 #include "../../../include/core/Input.h"
-#include "../../../include/graphics/Renderer.h"
 #include "../../../include/graphics/RenderContext.h"
+#include "../../../include/graphics/Renderer.h"
 
-#include <tchar.h>
 #include <algorithm>
+#include <tchar.h>
 
 using namespace PhysicsEngine;
 
@@ -45,7 +45,7 @@ KeyCode getKeyCode(WPARAM wParam, LPARAM lParam)
     case VK_RIGHT:
         return KeyCode::Right;
     case VK_DOWN:
-        return KeyCode::Down;   
+        return KeyCode::Down;
     case VK_SNAPSHOT:
         return KeyCode::PrintScreen;
     case VK_INSERT:
@@ -193,16 +193,31 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     // Update input (but do not consume messages to allow application to also see and use them)
     switch (msg)
     {
-    case WM_LBUTTONDOWN: case WM_LBUTTONDBLCLK:
-    case WM_RBUTTONDOWN: case WM_RBUTTONDBLCLK:
-    case WM_MBUTTONDOWN: case WM_MBUTTONDBLCLK:
-    case WM_XBUTTONDOWN: case WM_XBUTTONDBLCLK:
-    {
+    case WM_LBUTTONDOWN:
+    case WM_LBUTTONDBLCLK:
+    case WM_RBUTTONDOWN:
+    case WM_RBUTTONDBLCLK:
+    case WM_MBUTTONDOWN:
+    case WM_MBUTTONDBLCLK:
+    case WM_XBUTTONDOWN:
+    case WM_XBUTTONDBLCLK: {
         MouseButton button = MouseButton::LButton;
-        if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK) { button = MouseButton::LButton; }
-        if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK) { button = MouseButton::RButton; }
-        if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK) { button = MouseButton::MButton; }
-        if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK) { button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button; }
+        if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONDBLCLK)
+        {
+            button = MouseButton::LButton;
+        }
+        if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONDBLCLK)
+        {
+            button = MouseButton::RButton;
+        }
+        if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONDBLCLK)
+        {
+            button = MouseButton::MButton;
+        }
+        if (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONDBLCLK)
+        {
+            button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button;
+        }
         input.mMouseButtonIsDown[static_cast<int>(button)] = 1;
 
         break;
@@ -210,13 +225,24 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONUP:
     case WM_RBUTTONUP:
     case WM_MBUTTONUP:
-    case WM_XBUTTONUP:
-    {
+    case WM_XBUTTONUP: {
         MouseButton button = MouseButton::LButton;
-        if (msg == WM_LBUTTONUP) { button = MouseButton::LButton; }
-        if (msg == WM_RBUTTONUP) { button = MouseButton::RButton; }
-        if (msg == WM_MBUTTONUP) { button = MouseButton::MButton; }
-        if (msg == WM_XBUTTONUP) { button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button; }
+        if (msg == WM_LBUTTONUP)
+        {
+            button = MouseButton::LButton;
+        }
+        if (msg == WM_RBUTTONUP)
+        {
+            button = MouseButton::RButton;
+        }
+        if (msg == WM_MBUTTONUP)
+        {
+            button = MouseButton::MButton;
+        }
+        if (msg == WM_XBUTTONUP)
+        {
+            button = (GET_XBUTTON_WPARAM(wParam) == XBUTTON1) ? MouseButton::Alt0Button : MouseButton::Alt1Button;
+        }
         input.mMouseButtonIsDown[static_cast<int>(button)] = 0;
         break;
     }
@@ -247,25 +273,25 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
-        if (wParam < 256) 
+        if (wParam < 256)
         {
             input.mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 1;
         }
         break;
     case WM_KEYUP:
     case WM_SYSKEYUP:
-        if (wParam < 256) 
+        if (wParam < 256)
         {
             input.mKeyIsDown[static_cast<int>(getKeyCode(wParam, lParam))] = 0;
         }
         break;
-    //case WM_CHAR:
-    //    if (wParam > 0 && wParam < 0x10000) 
-    //    {
-    //        std::cout << "BBB" << std::endl;
-    //    }
-    //    //io.AddInputCharacterUTF16((unsigned short)wParam);
-    //    break;
+        // case WM_CHAR:
+        //     if (wParam > 0 && wParam < 0x10000)
+        //     {
+        //         std::cout << "BBB" << std::endl;
+        //     }
+        //     //io.AddInputCharacterUTF16((unsigned short)wParam);
+        //     break;
     }
 
     // Call application win proc handler
@@ -275,8 +301,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     // Window resize and quit messages
     switch (msg)
     {
-    case WM_SIZING: 
-        {
+    case WM_SIZING: {
         RECT rect;
         if (GetClientRect(hWnd, &rect))
         {
@@ -284,7 +309,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             sHeight = rect.bottom - rect.top;
         }
         return true;
-        }
+    }
     case WM_SIZE:
         RECT rect;
         if (GetClientRect(hWnd, &rect))
@@ -316,16 +341,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-Win32ApplicationWindow::Win32ApplicationWindow(const std::string& title, int width, int height) : ApplicationWindow()
+Win32ApplicationWindow::Win32ApplicationWindow(const std::string &title, int width, int height) : ApplicationWindow()
 {
-	init(title, width, height);
+    init(title, width, height);
 
     RenderContext::createRenderContext(mWindow);
 }
 
 Win32ApplicationWindow::~Win32ApplicationWindow()
 {
-	cleanup();
+    cleanup();
 }
 
 void Win32ApplicationWindow::update()
@@ -380,9 +405,9 @@ int Win32ApplicationWindow::getHeight() const
     return sHeight;
 }
 
-void* Win32ApplicationWindow::getNativeWindow() const
+void *Win32ApplicationWindow::getNativeWindow() const
 {
-    return static_cast<void*>(mWindow);
+    return static_cast<void *>(mWindow);
 }
 
 bool Win32ApplicationWindow::isRunning() const
@@ -395,7 +420,7 @@ bool Win32ApplicationWindow::isMinimized() const
     return sIsMinimized;
 }
 
-void Win32ApplicationWindow::init(const std::string& title, int width, int height)
+void Win32ApplicationWindow::init(const std::string &title, int width, int height)
 {
     mTitle = title;
     sWidth = width;
@@ -412,7 +437,7 @@ void Win32ApplicationWindow::init(const std::string& title, int width, int heigh
     if (!RegisterClass(&mWC))
         return;
     mWindow = CreateWindowEx(0, mWC.lpszClassName, _T(mTitle.c_str()), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT,
-        CW_USEDEFAULT, sWidth, sHeight, 0, 0, mWC.hInstance, 0);
+                             CW_USEDEFAULT, sWidth, sHeight, 0, 0, mWC.hInstance, 0);
 
     // Show the window
     ShowWindow(mWindow, SW_SHOWDEFAULT);

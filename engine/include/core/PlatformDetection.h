@@ -1,11 +1,11 @@
 // Platform detection using predefined macros
 #ifdef _WIN32
-	/* Windows x64/x86 */
+/* Windows x64/x86 */
 #ifdef _WIN64
-	/* Windows x64  */
+/* Windows x64  */
 #define PHYSICSENGINE_PLATFORM_WIN32
 #else
-	/* Windows x86 */
+/* Windows x86 */
 #error "x86 Builds are not supported!"
 #endif
 #elif defined(__APPLE__) || defined(__MACH__)
@@ -25,9 +25,9 @@
 #else
 #error "Unknown Apple platform!"
 #endif
- /* We also have to check __ANDROID__ before __linux__
-  * since android is based on the linux kernel
-  * it has __linux__ defined */
+/* We also have to check __ANDROID__ before __linux__
+ * since android is based on the linux kernel
+ * it has __linux__ defined */
 #elif defined(__ANDROID__)
 #define PHYSICSENGINE_PLATFORM_ANDROID
 #error "Android is not supported!"
@@ -35,6 +35,6 @@
 #define PHYSICSENGINE_PLATFORM_LINUX
 #error "Linux is not supported!"
 #else
-	/* Unknown compiler/platform */
+/* Unknown compiler/platform */
 #error "Unknown platform!"
 #endif // End of platform detection

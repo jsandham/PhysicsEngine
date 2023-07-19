@@ -3,8 +3,8 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "../core/Id.h"
 #include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Sphere.h"
 #include "../graphics/MeshHandle.h"
 
@@ -32,8 +32,8 @@ typedef struct RenderObject
         return this->instanceStart == object.instanceStart && this->instanceCount == object.instanceCount &&
                this->materialIndex == object.materialIndex && this->shaderIndex == object.shaderIndex &&
                this->start == object.start && this->size == object.size && this->instanced == object.instanced &&
-               this->indexed == object.indexed &&
-               this->meshHandle == object.meshHandle && this->instanceModelBuffer == object.instanceModelBuffer && 
+               this->indexed == object.indexed && this->meshHandle == object.meshHandle &&
+               this->instanceModelBuffer == object.instanceModelBuffer &&
                this->instanceColorBuffer == object.instanceColorBuffer;
     }
 } RenderObject;

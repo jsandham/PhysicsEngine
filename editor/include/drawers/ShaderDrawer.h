@@ -7,23 +7,23 @@
 
 namespace PhysicsEditor
 {
-class ShaderDrawer
-{
-    private:
-        PhysicsEngine::Guid mShaderId;
+	class ShaderDrawer
+	{
+	private:
+		PhysicsEngine::Guid mShaderId;
 
-        ImVec2 mContentMin;
-        ImVec2 mContentMax;
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-    public:
-        ShaderDrawer();
-        ~ShaderDrawer();
+	public:
+		ShaderDrawer();
+		~ShaderDrawer();
 
-    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
 
-    private:
-        bool isHovered() const;
-};
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

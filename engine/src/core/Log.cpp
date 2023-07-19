@@ -22,7 +22,7 @@ void Log::info(const char *format, ...)
     va_end(args);
 
     messages.push(message);
-    //messages.push("[Info]: " + message);
+    // messages.push("[Info]: " + message);
 }
 
 void Log::warn(const char *format, ...)
@@ -72,63 +72,63 @@ std::queue<std::string> Log::getMessages()
     return messages;
 }
 
-//std::string Log::convertToString(Level level, const char *format, va_list args)
+// std::string Log::convertToString(Level level, const char *format, va_list args)
 //{
-//    std::string message = "";
+//     std::string message = "";
 //
-//    const char *c = format;
-//    while (*c != '\0')
-//    {
-//        if (*c != '%')
-//        {
-//            message += *c;
-//            c++;
-//        }
-//        else
-//        {
-//            c++;
-//            if (*c == '\0')
-//            {
-//                break;
-//            }
+//     const char *c = format;
+//     while (*c != '\0')
+//     {
+//         if (*c != '%')
+//         {
+//             message += *c;
+//             c++;
+//         }
+//         else
+//         {
+//             c++;
+//             if (*c == '\0')
+//             {
+//                 break;
+//             }
 //
-//            switch (*c)
-//            {
-//            case 'd':
-//                message += std::to_string(va_arg(args, int));
-//                break;
-//            case 'i':
-//                message += std::to_string(va_arg(args, int));
-//                break;
-//            case 'u':
-//                message += std::to_string(va_arg(args, int));
-//                break;
-//            case 'c':
-//                message += static_cast<char>(va_arg(args, int));
-//                break;
-//            case 'f':
-//                message += std::to_string(va_arg(args, double));
-//                break;
-//            case 'p':
-//                char text[255];
-//                sprintf(text, "%p\n", va_arg(args, void *));
-//                int t = 0;
-//                while (t <= 255 && text[t] != '\n')
-//                {
-//                    message += text[t];
-//                    t++;
-//                }
-//                break;
-//            }
+//             switch (*c)
+//             {
+//             case 'd':
+//                 message += std::to_string(va_arg(args, int));
+//                 break;
+//             case 'i':
+//                 message += std::to_string(va_arg(args, int));
+//                 break;
+//             case 'u':
+//                 message += std::to_string(va_arg(args, int));
+//                 break;
+//             case 'c':
+//                 message += static_cast<char>(va_arg(args, int));
+//                 break;
+//             case 'f':
+//                 message += std::to_string(va_arg(args, double));
+//                 break;
+//             case 'p':
+//                 char text[255];
+//                 sprintf(text, "%p\n", va_arg(args, void *));
+//                 int t = 0;
+//                 while (t <= 255 && text[t] != '\n')
+//                 {
+//                     message += text[t];
+//                     t++;
+//                 }
+//                 break;
+//             }
 //
-//            c++;
-//        }
-//    }
+//             c++;
+//         }
+//     }
 //
-//    return message;
-//}
+//     return message;
+// }
 
-std::string Log::convertToString(Level level, const char* format, va_list args)
+std::string Log::convertToString(Level level, const char *format, va_list args)
 {
     size_t i = 0;
     char buffer[16384];
@@ -149,7 +149,7 @@ std::string Log::convertToString(Level level, const char* format, va_list args)
         break;
     }
 
-    const char* c = format;
+    const char *c = format;
     while (*c != '\0')
     {
         if (*c != '%')

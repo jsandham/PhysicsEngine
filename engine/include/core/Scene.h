@@ -6,9 +6,9 @@
 
 #include "Object.h"
 
+#include "Entity.h"
 #include "Guid.h"
 #include "PoolAllocator.h"
-#include "Entity.h"
 #include "WorldPrimitives.h"
 
 #include "../components/BoxCollider.h"
@@ -20,8 +20,8 @@
 #include "../components/MeshRenderer.h"
 #include "../components/Rigidbody.h"
 #include "../components/SphereCollider.h"
-#include "../components/Transform.h"
 #include "../components/Terrain.h"
+#include "../components/Transform.h"
 
 namespace PhysicsEngine
 {
@@ -119,7 +119,7 @@ class Scene : public Object
 
   public:
     Scene(World *world, const Id &id);
-    Scene(World *world, const Guid& guid, const Id& id);
+    Scene(World *world, const Guid &guid, const Id &id);
     ~Scene();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -166,7 +166,6 @@ class Scene : public Object
     bool isMarkedForLatentDestroy(const Guid &guid);
     void clearIdsMarkedCreatedOrDestroyed();
 
-
     std::vector<std::pair<Guid, int>> getComponentsOnEntity(const Guid &entityGuid) const;
 
     std::vector<Guid> getEntityIdsMarkedCreated() const;
@@ -175,12 +174,12 @@ class Scene : public Object
     std::vector<std::tuple<Guid, Guid, int>> getComponentIdsMarkedLatentDestroy() const;
 
     template <typename T> size_t getNumberOfComponents() const;
-    template <typename T> T* getComponentByIndex(size_t index) const;
-    template <typename T> T* getComponentById(const Id& componentId) const;
-    template <typename T> T* getComponentByGuid(const Guid &componentGuid) const;
-    template <typename T> T* getComponent(const Guid& entityGuid) const;
-    template <typename T> T* addComponent(const Guid& entityGuid);
-    template <typename T> T* addComponent(const YAML::Node& in);
+    template <typename T> T *getComponentByIndex(size_t index) const;
+    template <typename T> T *getComponentById(const Id &componentId) const;
+    template <typename T> T *getComponentByGuid(const Guid &componentGuid) const;
+    template <typename T> T *getComponent(const Guid &entityGuid) const;
+    template <typename T> T *addComponent(const Guid &entityGuid);
+    template <typename T> T *addComponent(const YAML::Node &in);
 
   private:
     void addToIdState(const Guid &guid, const Id &id, int index, int type);
@@ -189,12 +188,13 @@ class Scene : public Object
     template <typename T> void addToIdState_impl(const Guid &guid, const Id &id, int index, int type);
     template <typename T> void removeFromIdState_impl(const Guid &guid, const Id &id);
     template <typename T>
-    T* getComponentById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator, const Id& id) const;
+    T *getComponentById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
+                             const Id &id) const;
     template <typename T>
     T *getComponentByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
-                             const Guid &guid) const;
+                               const Guid &guid) const;
     template <typename T> T *getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityGuid) const;
-    template <typename T> T* addComponent_impl(PoolAllocator<T>* allocator, const YAML::Node& in);
+    template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const YAML::Node &in);
     template <typename T> T *addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityGuid);
 };
 

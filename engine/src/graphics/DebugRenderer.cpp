@@ -32,10 +32,8 @@ void DebugRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void DebugRenderer::update(const Input &input, Camera *camera,
-    const std::vector<RenderObject>& renderObjects,
-    const std::vector<glm::mat4> &models,
-    const std::vector<Id> &transformIds)
+void DebugRenderer::update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+                           const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginDebugFrame(camera);
 
@@ -55,13 +53,13 @@ void DebugRenderer::beginDebugFrame(Camera *camera)
     mCameraUniform->setViewProjection(camera->getProjMatrix() * camera->getViewMatrix());
     mCameraUniform->setCameraPos(camera->getComponent<Transform>()->getPosition());
 
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     // update camera state data
     mCameraUniform->copyToUniformsToDevice();
 
-    Framebuffer* framebuffer = nullptr;
+    Framebuffer *framebuffer = nullptr;
 
     if (camera->mRenderTextureId.isValid())
     {
@@ -91,7 +89,8 @@ void DebugRenderer::beginDebugFrame(Camera *camera)
     camera->getNativeGraphicsColorPickingFBO()->unbind();
 }
 
-void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>& renderObjects, const std::vector<glm::mat4> &models)
+void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                const std::vector<glm::mat4> &models)
 {
     Framebuffer *framebuffer = nullptr;
 
@@ -167,10 +166,8 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject>&
     framebuffer->unbind();
 }
 
-void DebugRenderer::renderDebugColorPicking(Camera *camera,
-                                       const std::vector<RenderObject> &renderObjects,
-                                       const std::vector<glm::mat4> &models,
-                                       const std::vector<Id> &transformIds)
+void DebugRenderer::renderDebugColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                            const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     camera->setColoringIds(transformIds);
 
@@ -231,8 +228,8 @@ void DebugRenderer::endDebugFrame(Camera *camera)
     if (camera->mRenderToScreen)
     {
         Renderer::getRenderer()->bindBackBuffer();
-        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                              camera->getViewport().mHeight);
+        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                             camera->getViewport().mWidth, camera->getViewport().mHeight);
 
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());

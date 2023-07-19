@@ -5,7 +5,7 @@
 
 using namespace PhysicsEngine;
 
-OpenGLRenderContext::OpenGLRenderContext(void* window)
+OpenGLRenderContext::OpenGLRenderContext(void *window)
 {
     // Prepare OpenGlContext
     PIXELFORMATDESCRIPTOR desiredPixelFormat = {};
@@ -21,8 +21,7 @@ OpenGLRenderContext::OpenGLRenderContext(void* window)
     int suggestedPixelFormatIndex = ChoosePixelFormat(mWindowDC, &desiredPixelFormat);
 
     PIXELFORMATDESCRIPTOR suggestedPixelFormat;
-    DescribePixelFormat(mWindowDC, suggestedPixelFormatIndex, sizeof(suggestedPixelFormat),
-        &suggestedPixelFormat);
+    DescribePixelFormat(mWindowDC, suggestedPixelFormatIndex, sizeof(suggestedPixelFormat), &suggestedPixelFormat);
     SetPixelFormat(mWindowDC, suggestedPixelFormatIndex, &suggestedPixelFormat);
 
     mOpenGLRC = wglCreateContext(mWindowDC);
@@ -36,7 +35,7 @@ OpenGLRenderContext::OpenGLRenderContext(void* window)
         return;
     }
 
-    //ReleaseDC(static_cast<HWND>(window), mWindowDC);
+    // ReleaseDC(static_cast<HWND>(window), mWindowDC);
 
     GLenum err = glewInit();
     if (GLEW_OK != err)
@@ -81,14 +80,15 @@ void OpenGLRenderContext::clearBackBufferColor(float r, float g, float b, float 
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC)(int interval);
-typedef const char* (WINAPI* PFNWGLGETEXTENSIONSSTRINGEXTPROC)(void);
+typedef BOOL(WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
+typedef const char *(WINAPI *PFNWGLGETEXTENSIONSSTRINGEXTPROC)(void);
 
 // Got from https://stackoverflow.com/questions/589064/how-to-enable-vertical-sync-in-opengl/589232
-static bool WGLExtensionSupported(const char* extension_name)
+static bool WGLExtensionSupported(const char *extension_name)
 {
     // determine pointer to wglGetExtensionsStringEXT function
-    PFNWGLGETEXTENSIONSSTRINGEXTPROC wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+    PFNWGLGETEXTENSIONSSTRINGEXTPROC wglGetExtensionsStringEXT =
+        (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
 
     if (wglGetExtensionsStringEXT)
     {
@@ -111,11 +111,11 @@ void OpenGLRenderContext::SetSwapInterval(int interval)
 {
     if (WGLExtensionSupported("WGL_EXT_swap_control"))
     {
-        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+        PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT =
+            (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
         if (wglSwapIntervalEXT)
         {
             wglSwapIntervalEXT(interval);
         }
     }
 }
-

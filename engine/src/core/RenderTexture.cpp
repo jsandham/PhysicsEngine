@@ -53,7 +53,8 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) 
     mRawTextureData.resize(width * height * mNumChannels);
 }
 
-RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format) : Texture(world, id)
+RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format)
+    : Texture(world, id)
 {
     mWidth = width;
     mHeight = height;
@@ -75,7 +76,7 @@ RenderTexture::~RenderTexture()
     delete mTargets.mMainFBO;
 }
 
-void RenderTexture::serialize(YAML::Node& out) const
+void RenderTexture::serialize(YAML::Node &out) const
 {
     Texture::serialize(out);
 
@@ -83,7 +84,7 @@ void RenderTexture::serialize(YAML::Node& out) const
     out["height"] = mHeight;
 }
 
-void RenderTexture::deserialize(const YAML::Node& in)
+void RenderTexture::deserialize(const YAML::Node &in)
 {
     Texture::deserialize(in);
 
@@ -101,7 +102,7 @@ std::string RenderTexture::getObjectName() const
     return PhysicsEngine::RENDER_TEXTURE_NAME;
 }
 
-void RenderTexture::writeToPNG(const std::string& filepath) const
+void RenderTexture::writeToPNG(const std::string &filepath) const
 {
     int success = stbi_write_png(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), mWidth);
     if (!success)
@@ -112,7 +113,7 @@ void RenderTexture::writeToPNG(const std::string& filepath) const
     }
 }
 
-void RenderTexture::writeToJPG(const std::string& filepath) const
+void RenderTexture::writeToJPG(const std::string &filepath) const
 {
     int success = stbi_write_jpg(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data(), 100);
     if (!success)
@@ -123,7 +124,7 @@ void RenderTexture::writeToJPG(const std::string& filepath) const
     }
 }
 
-void RenderTexture::writeToBMP(const std::string& filepath) const
+void RenderTexture::writeToBMP(const std::string &filepath) const
 {
     int success = stbi_write_bmp(filepath.c_str(), mWidth, mHeight, mNumChannels, mRawTextureData.data());
     if (!success)
@@ -146,25 +147,21 @@ int RenderTexture::getHeight() const
 
 void RenderTexture::copyTextureToDevice()
 {
-   
 }
 
 void RenderTexture::updateTextureParameters()
 {
-
 }
 
 void RenderTexture::readPixels()
 {
-
 }
 
 void RenderTexture::writePixels()
 {
-
 }
 
-Framebuffer* RenderTexture::getNativeGraphicsMainFBO() const
+Framebuffer *RenderTexture::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;
 }

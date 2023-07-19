@@ -7,28 +7,31 @@
 
 namespace PhysicsEngine
 {
-	class OpenGLRenderContext : public RenderContext
-	{
-	private:
-		HGLRC mOpenGLRC;
-		HDC mWindowDC;
+class OpenGLRenderContext : public RenderContext
+{
+  private:
+    HGLRC mOpenGLRC;
+    HDC mWindowDC;
 
-	public:
-		OpenGLRenderContext(void* window);
-		~OpenGLRenderContext();
+  public:
+    OpenGLRenderContext(void *window);
+    ~OpenGLRenderContext();
 
-		void present();
-		void turnVsyncOn();
-		void turnVsyncOff();
-        void bindBackBuffer();
-        void unBindBackBuffer();
-        void clearBackBufferColor(float r, float g, float b, float a);
+    void present();
+    void turnVsyncOn();
+    void turnVsyncOff();
+    void bindBackBuffer();
+    void unBindBackBuffer();
+    void clearBackBufferColor(float r, float g, float b, float a);
 
-		static OpenGLRenderContext* get() { return (OpenGLRenderContext*)sContext; }
+    static OpenGLRenderContext *get()
+    {
+        return (OpenGLRenderContext *)sContext;
+    }
 
-	private:
-		static void SetSwapInterval(int interval);
-	};
-}
+  private:
+    static void SetSwapInterval(int interval);
+};
+} // namespace PhysicsEngine
 
 #endif // RENDER_CONTEXT_OPENGL_H__

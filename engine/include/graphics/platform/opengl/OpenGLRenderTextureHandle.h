@@ -5,19 +5,19 @@
 
 namespace PhysicsEngine
 {
-	class OpenGLRenderTextureHandle : public RenderTextureHandle
-	{
-	private:
-		unsigned int mHandle;
+class OpenGLRenderTextureHandle : public RenderTextureHandle
+{
+  private:
+    unsigned int mHandle;
 
-	public:
-        OpenGLRenderTextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
-                                  TextureFilterMode filterMode);
-        ~OpenGLRenderTextureHandle();
-		
-		void* getTexture() override;
-		void* getIMGUITexture() override;
-	};
-}
+  public:
+    OpenGLRenderTextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
+                              TextureFilterMode filterMode);
+    ~OpenGLRenderTextureHandle();
+
+    void *getTexture() override;
+    void *getIMGUITexture() override;
+};
+} // namespace PhysicsEngine
 
 #endif

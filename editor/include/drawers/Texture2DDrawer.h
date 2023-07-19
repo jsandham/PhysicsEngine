@@ -11,33 +11,33 @@
 
 namespace PhysicsEditor
 {
-class Texture2DDrawer
-{
-  private:
-    PhysicsEngine::Framebuffer* mFBO;
+	class Texture2DDrawer
+	{
+	private:
+		PhysicsEngine::Framebuffer* mFBO;
 
-    PhysicsEngine::ShaderProgram* mProgramR;
-    PhysicsEngine::ShaderProgram* mProgramG;
-    PhysicsEngine::ShaderProgram* mProgramB;
-    PhysicsEngine::ShaderProgram* mProgramA;
+		PhysicsEngine::ShaderProgram* mProgramR;
+		PhysicsEngine::ShaderProgram* mProgramG;
+		PhysicsEngine::ShaderProgram* mProgramB;
+		PhysicsEngine::ShaderProgram* mProgramA;
 
-    PhysicsEngine::ScreenQuad* mScreenQuad;
+		PhysicsEngine::ScreenQuad* mScreenQuad;
 
-    PhysicsEngine::Guid mCurrentTexId;
-    void* mDrawTex;
+		PhysicsEngine::Guid mCurrentTexId;
+		void* mDrawTex;
 
-    ImVec2 mContentMin;
-    ImVec2 mContentMax;
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-  public:
-    Texture2DDrawer();
-    ~Texture2DDrawer();
+	public:
+		Texture2DDrawer();
+		~Texture2DDrawer();
 
-    void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
 
-private:
-    bool isHovered() const;
-};
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

@@ -20,7 +20,7 @@ class Entity : public Object
 
   public:
     Entity(World *world, const Id &id);
-    Entity(World *world, const Guid& guid, const Id& id);
+    Entity(World *world, const Guid &guid, const Id &id);
     ~Entity();
 
     virtual void serialize(YAML::Node &out) const override;

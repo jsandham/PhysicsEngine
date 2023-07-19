@@ -27,7 +27,7 @@ void OpenGLMeshHandle::unbind()
     CHECK_ERROR(glBindVertexArray(0));
 }
 
-void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type, bool instanceBuffer)
+void OpenGLMeshHandle::addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer)
 {
     assert(buffer != nullptr);
 
@@ -100,8 +100,7 @@ void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type, bo
         break;
     case AttribType::UVec4:
         CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
-        CHECK_ERROR(
-            glVertexAttribIPointer(mVertexAttribIndex, 4, GL_UNSIGNED_INT, 4 * sizeof(GL_UNSIGNED_INT), 0));
+        CHECK_ERROR(glVertexAttribIPointer(mVertexAttribIndex, 4, GL_UNSIGNED_INT, 4 * sizeof(GL_UNSIGNED_INT), 0));
         CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
         mVertexAttribIndex++;
         break;
@@ -109,7 +108,8 @@ void OpenGLMeshHandle::addVertexBuffer(VertexBuffer* buffer, AttribType type, bo
         for (int i = 0; i < 4; i++)
         {
             CHECK_ERROR(glEnableVertexAttribArray(mVertexAttribIndex));
-            CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void *)(sizeof(glm::vec4) * i)));
+            CHECK_ERROR(glVertexAttribPointer(mVertexAttribIndex, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                              (void *)(sizeof(glm::vec4) * i)));
             CHECK_ERROR(glVertexAttribDivisor(mVertexAttribIndex, divisor));
             mVertexAttribIndex++;
         }

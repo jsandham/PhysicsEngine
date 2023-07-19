@@ -7,21 +7,21 @@
 
 namespace PhysicsEditor
 {
-class MeshRendererDrawer
-{
-    private:
-        ImVec2 mContentMin;
-        ImVec2 mContentMax;
-  
-    public:
-        MeshRendererDrawer();
-        ~MeshRendererDrawer();
+	class MeshRendererDrawer
+	{
+	private:
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+	public:
+		MeshRendererDrawer();
+		~MeshRendererDrawer();
 
-    private:
-        bool isHovered() const;
-};
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif

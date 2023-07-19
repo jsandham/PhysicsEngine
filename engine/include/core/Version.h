@@ -3,8 +3,8 @@
 
 namespace PhysicsEngine
 {
-    // Version
-    constexpr char SCENE_VERSION[] = "0.1";
+// Version
+constexpr char SCENE_VERSION[] = "0.1";
 } // namespace PhysicsEngine
 
 #endif

@@ -4,8 +4,8 @@
 
 #include "tiny_obj_loader.h"
 
-#include <filesystem>
 #include <emmintrin.h>
+#include <filesystem>
 #include <iostream>
 
 using namespace PhysicsEngine;
@@ -37,7 +37,7 @@ bool operator<(const index_t &l, const index_t &r)
         return l.vertex_index < r.vertex_index;
     }
 }
-}
+} // namespace tinyobj
 
 Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
 {
@@ -416,7 +416,6 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
     mIndices = indices;
     mSubMeshStartIndices = subMeshStartIndices;
 
-
     if (mVertices.size() != mNormals.size())
     {
         mNormals.resize(mVertices.size());
@@ -427,7 +426,7 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
         mTexCoords.resize(2 * mVertices.size() / 3);
     }
 
-    //computeBoundingSphere();
+    // computeBoundingSphere();
     computeBoundingSphere_SIMD128();
 
     mDeviceUpdateRequired = true;
@@ -498,17 +497,17 @@ Sphere Mesh::getBounds() const
     return mBounds;
 }
 
-MeshHandle* Mesh::getNativeGraphicsHandle() const
+MeshHandle *Mesh::getNativeGraphicsHandle() const
 {
     return mHandle;
 }
 
-VertexBuffer* Mesh::getNativeGraphicsInstanceModelBuffer() const
+VertexBuffer *Mesh::getNativeGraphicsInstanceModelBuffer() const
 {
     return mInstanceModelBuffer;
 }
 
-VertexBuffer* Mesh::getNativeGraphicsInstanceColorBuffer() const
+VertexBuffer *Mesh::getNativeGraphicsInstanceColorBuffer() const
 {
     return mInstanceColorBuffer;
 }
@@ -516,7 +515,7 @@ VertexBuffer* Mesh::getNativeGraphicsInstanceColorBuffer() const
 void Mesh::setVertices(const std::vector<float> &vertices)
 {
     mVertices = vertices;
-    //computeBoundingSphere();
+    // computeBoundingSphere();
     computeBoundingSphere_SIMD128();
 
     mDeviceUpdateRequired = true;
@@ -554,7 +553,7 @@ void Mesh::copyMeshToDevice()
         }
         mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
         mVertexBuffer->unbind();
-        
+
         mNormalBuffer->bind();
         if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
         {
@@ -562,7 +561,7 @@ void Mesh::copyMeshToDevice()
         }
         mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
         mNormalBuffer->unbind();
-        
+
         mTexCoordsBuffer->bind();
         if (mTexCoordsBuffer->getSize() < sizeof(float) * mTexCoords.size())
         {
@@ -570,21 +569,21 @@ void Mesh::copyMeshToDevice()
         }
         mTexCoordsBuffer->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size());
         mTexCoordsBuffer->unbind();
-        
+
         mInstanceModelBuffer->bind();
         if (mInstanceModelBuffer->getSize() < sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
         {
             mInstanceModelBuffer->resize(sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        //mInstanceModelBuffer->setData(nullptr, 0, sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+        // mInstanceModelBuffer->setData(nullptr, 0, sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceModelBuffer->unbind();
-        
+
         mInstanceColorBuffer->bind();
         if (mInstanceColorBuffer->getSize() < sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
         {
             mInstanceColorBuffer->resize(sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        //mInstanceColorBuffer->setData(nullptr, 0, sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
+        // mInstanceColorBuffer->setData(nullptr, 0, sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceColorBuffer->unbind();
 
         mIndexBuffer->bind();
@@ -631,7 +630,7 @@ void Mesh::computeNormals()
         float qz = vz3 - vz1;
 
         // Calculate normal (p x q)
-        // i  j  k 
+        // i  j  k
         // px py pz
         // qx qy qz
         float nx = py * qz - pz * qy;
@@ -717,21 +716,31 @@ void Mesh::computeNormals_SIMD128()
     size_t numTriangles = mVertices.size() / 9;
     size_t numSimdTriangles = numTriangles - (numTriangles % 4);
 
-    std::cout << "numTriangles: " << numTriangles << " numSimdTriangles: " << numSimdTriangles << " mName: " << getName() << std::endl;
+    std::cout << "numTriangles: " << numTriangles << " numSimdTriangles: " << numSimdTriangles
+              << " mName: " << getName() << std::endl;
 
-    for (size_t t = 0; t < numSimdTriangles;  t += 4)
+    for (size_t t = 0; t < numSimdTriangles; t += 4)
     {
-        __m128 vx1 = _mm_set_ps(mVertices[9 * t + 0], mVertices[9 * t + 9], mVertices[9 * t + 18], mVertices[9 * t + 27]);
-        __m128 vy1 = _mm_set_ps(mVertices[9 * t + 1], mVertices[9 * t + 10], mVertices[9 * t + 19], mVertices[9 * t + 28]);
-        __m128 vz1 = _mm_set_ps(mVertices[9 * t + 2], mVertices[9 * t + 11], mVertices[9 * t + 20], mVertices[9 * t + 29]);
+        __m128 vx1 =
+            _mm_set_ps(mVertices[9 * t + 0], mVertices[9 * t + 9], mVertices[9 * t + 18], mVertices[9 * t + 27]);
+        __m128 vy1 =
+            _mm_set_ps(mVertices[9 * t + 1], mVertices[9 * t + 10], mVertices[9 * t + 19], mVertices[9 * t + 28]);
+        __m128 vz1 =
+            _mm_set_ps(mVertices[9 * t + 2], mVertices[9 * t + 11], mVertices[9 * t + 20], mVertices[9 * t + 29]);
 
-        __m128 vx2 = _mm_set_ps(mVertices[9 * t + 3], mVertices[9 * t + 12], mVertices[9 * t + 21], mVertices[9 * t + 30]);
-        __m128 vy2 = _mm_set_ps(mVertices[9 * t + 4], mVertices[9 * t + 13], mVertices[9 * t + 22], mVertices[9 * t + 31]);
-        __m128 vz2 = _mm_set_ps(mVertices[9 * t + 5], mVertices[9 * t + 14], mVertices[9 * t + 23], mVertices[9 * t + 32]);
+        __m128 vx2 =
+            _mm_set_ps(mVertices[9 * t + 3], mVertices[9 * t + 12], mVertices[9 * t + 21], mVertices[9 * t + 30]);
+        __m128 vy2 =
+            _mm_set_ps(mVertices[9 * t + 4], mVertices[9 * t + 13], mVertices[9 * t + 22], mVertices[9 * t + 31]);
+        __m128 vz2 =
+            _mm_set_ps(mVertices[9 * t + 5], mVertices[9 * t + 14], mVertices[9 * t + 23], mVertices[9 * t + 32]);
 
-        __m128 vx3 = _mm_set_ps(mVertices[9 * t + 6], mVertices[9 * t + 15], mVertices[9 * t + 24], mVertices[9 * t + 33]);
-        __m128 vy3 = _mm_set_ps(mVertices[9 * t + 7], mVertices[9 * t + 16], mVertices[9 * t + 25], mVertices[9 * t + 34]);
-        __m128 vz3 = _mm_set_ps(mVertices[9 * t + 8], mVertices[9 * t + 17], mVertices[9 * t + 26], mVertices[9 * t + 35]);
+        __m128 vx3 =
+            _mm_set_ps(mVertices[9 * t + 6], mVertices[9 * t + 15], mVertices[9 * t + 24], mVertices[9 * t + 33]);
+        __m128 vy3 =
+            _mm_set_ps(mVertices[9 * t + 7], mVertices[9 * t + 16], mVertices[9 * t + 25], mVertices[9 * t + 34]);
+        __m128 vz3 =
+            _mm_set_ps(mVertices[9 * t + 8], mVertices[9 * t + 17], mVertices[9 * t + 26], mVertices[9 * t + 35]);
 
         // Calculate p vector
         __m128 px = _mm_sub_ps(vx2, vx1);
@@ -743,7 +752,7 @@ void Mesh::computeNormals_SIMD128()
         __m128 qz = _mm_sub_ps(vz3, vz1);
 
         // Calculate normal (p x q)
-        // i  j  k 
+        // i  j  k
         // px py pz
         // qx qy qz
         __m128 nx = _mm_sub_ps(_mm_mul_ps(py, qz), _mm_mul_ps(pz, qy));
@@ -755,7 +764,7 @@ void Mesh::computeNormals_SIMD128()
         nx = _mm_div_ps(nx, s);
         ny = _mm_div_ps(ny, s);
         nz = _mm_div_ps(nz, s);
-        
+
         // Add the normal 3 times (once for each vertex in triangle)
         alignas(16) float nx_t[4];
         alignas(16) float ny_t[4];
@@ -830,7 +839,7 @@ void Mesh::computeNormals_SIMD128()
         float qz = vz3 - vz1;
 
         // Calculate normal (p x q)
-        // i  j  k 
+        // i  j  k
         // px py pz
         // qx qy qz
         float nx = py * qz - pz * qy;
@@ -841,7 +850,7 @@ void Mesh::computeNormals_SIMD128()
         nx /= s;
         ny /= s;
         nz /= s;
-        
+
         // Add the normal 3 times (once for each vertex in triangle)
         mNormals[9 * t + 0] = nx;
         mNormals[9 * t + 1] = ny;
@@ -862,7 +871,10 @@ void Mesh::computeBoundingSphere_SIMD128()
 
     size_t numVertices = mVertices.size() / 3;
 
-    if (numVertices == 0){ return; }
+    if (numVertices == 0)
+    {
+        return;
+    }
 
     size_t numSimdVertices = numVertices - (numVertices % 4);
 
@@ -888,9 +900,12 @@ void Mesh::computeBoundingSphere_SIMD128()
         // float temp_x = mVertices[3 * i];
         // float temp_y = mVertices[3 * i + 1];
         // float temp_z = mVertices[3 * i + 2];
-        __m128 temp_x = _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
-        __m128 temp_y = _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
-        __m128 temp_z = _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
+        __m128 temp_x =
+            _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
+        __m128 temp_y =
+            _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
+        __m128 temp_z =
+            _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
 
         // calculate distance between x and temp
         __m128 xmt_x = _mm_sub_ps(x_x, temp_x);
@@ -951,7 +966,7 @@ void Mesh::computeBoundingSphere_SIMD128()
         {
             y = temp;
             maxDistance2 = distance;
-        }   
+        }
     }
 
     y_x = _mm_set_ps(y.x, y.x, y.x, y.x);
@@ -972,9 +987,12 @@ void Mesh::computeBoundingSphere_SIMD128()
         // float temp_x = mVertices[3 * i];
         // float temp_y = mVertices[3 * i + 1];
         // float temp_z = mVertices[3 * i + 2];
-        __m128 temp_x = _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
-        __m128 temp_y = _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
-        __m128 temp_z = _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
+        __m128 temp_x =
+            _mm_set_ps(mVertices[3 * i + 0], mVertices[3 * i + 3], mVertices[3 * i + 6], mVertices[3 * i + 9]);
+        __m128 temp_y =
+            _mm_set_ps(mVertices[3 * i + 1], mVertices[3 * i + 4], mVertices[3 * i + 7], mVertices[3 * i + 10]);
+        __m128 temp_z =
+            _mm_set_ps(mVertices[3 * i + 2], mVertices[3 * i + 5], mVertices[3 * i + 8], mVertices[3 * i + 11]);
 
         // calculate distance between y and temp
         __m128 ymt_x = _mm_sub_ps(y_x, temp_x);

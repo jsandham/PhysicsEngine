@@ -1,8 +1,8 @@
 #include "../../include/graphics/Framebuffer.h"
 #include "../../include/graphics/RenderContext.h"
 
-#include "../../include/graphics/platform/opengl/OpenGLFramebuffer.h"
 #include "../../include/graphics/platform/directx/DirectXFramebuffer.h"
+#include "../../include/graphics/platform/opengl/OpenGLFramebuffer.h"
 
 using namespace PhysicsEngine;
 

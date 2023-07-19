@@ -50,7 +50,7 @@ void CameraUniform::copyToUniformsToDevice()
     mBuffer->setData(glm::value_ptr(mView), 64, 64);
     mBuffer->setData(glm::value_ptr(mViewProjection), 128, 64);
     mBuffer->setData(glm::value_ptr(mCameraPos), 192, 12);
-    
+
     mBuffer->bind(PipelineStage::VS);
     mBuffer->bind(PipelineStage::PS);
     mBuffer->copyDataToDevice();
@@ -60,7 +60,7 @@ void CameraUniform::copyToUniformsToDevice()
 
 LightUniform::LightUniform()
 {
-    //mBuffer = UniformBuffer::create(824, 1);
+    // mBuffer = UniformBuffer::create(824, 1);
     mBuffer = UniformBuffer::create(800, 1);
 
     for (int i = 0; i < 5; i++)
@@ -193,7 +193,7 @@ void LightUniform::copyToUniformsToDevice()
     mBuffer->setData(&mShadowBias, 788, 4);
     mBuffer->setData(&mShadowRadius, 792, 4);
     mBuffer->setData(&mShadowStrength, 796, 4);
-    
+
     mBuffer->bind(PipelineStage::VS);
     mBuffer->bind(PipelineStage::PS);
     mBuffer->copyDataToDevice();

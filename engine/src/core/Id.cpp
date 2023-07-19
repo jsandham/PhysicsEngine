@@ -6,7 +6,6 @@ const Id Id::INVALID = Id(-1);
 
 Id::Id() : mId(-1)
 {
-  
 }
 
 Id::Id(int id) : mId(id)
@@ -15,7 +14,6 @@ Id::Id(int id) : mId(id)
 
 Id::~Id()
 {
-
 }
 
 Id &Id::operator=(const Id &id)

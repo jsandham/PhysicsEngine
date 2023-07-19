@@ -1,6 +1,6 @@
 #include "../../../../include/graphics/platform/directx/DirectXRenderTextureHandle.h"
-#include "../../../../include/graphics/platform/directx/DirectXError.h"
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
 
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
@@ -38,7 +38,7 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
     {
         mSamplerState->Release();
     }
-    
+
     // Setup the render target texture description.
     ZeroMemory(&mTextureDesc, sizeof(D3D11_TEXTURE2D_DESC));
     mTextureDesc.Width = width;
@@ -59,7 +59,7 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
         mTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
         break;
-    }    
+    }
     mTextureDesc.CPUAccessFlags = 0;
     mTextureDesc.MiscFlags = 0;
 
@@ -67,7 +67,6 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
     assert(device != nullptr);
 
     CHECK_ERROR(device->CreateTexture2D(&mTextureDesc, NULL, &mTexture));
-
 
     switch (format)
     {
@@ -84,7 +83,7 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
 
         CHECK_ERROR(device->CreateShaderResourceView(mTexture, &mShaderResourceViewDesc, &mShaderResourceView));
         break;
-    }    
+    }
 }
 
 DirectXRenderTextureHandle::~DirectXRenderTextureHandle()
@@ -105,10 +104,10 @@ DirectXRenderTextureHandle::~DirectXRenderTextureHandle()
 
 void *DirectXRenderTextureHandle::getTexture()
 {
-    return static_cast<void*>(mTexture);
+    return static_cast<void *>(mTexture);
 }
 
 void *DirectXRenderTextureHandle::getIMGUITexture()
 {
-    return static_cast<void*>(mShaderResourceView);
+    return static_cast<void *>(mShaderResourceView);
 }

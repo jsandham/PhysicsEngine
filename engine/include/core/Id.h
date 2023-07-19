@@ -5,28 +5,28 @@
 
 namespace PhysicsEngine
 {
-    class Id
-    {
-    private:
-        int mId;
+class Id
+{
+  private:
+    int mId;
 
-    public:
-        Id();
-        Id(int id);
-        ~Id();
+  public:
+    Id();
+    Id(int id);
+    ~Id();
 
-        Id &operator=(const Id &id);
-        bool operator==(const Id &id) const;
-        bool operator!=(const Id &id) const;
-        bool operator<(const Id &id) const;
+    Id &operator=(const Id &id);
+    bool operator==(const Id &id) const;
+    bool operator!=(const Id &id) const;
+    bool operator<(const Id &id) const;
 
-        bool isValid() const;
-        bool isInvalid() const;
+    bool isValid() const;
+    bool isInvalid() const;
 
-        static Id newId();
-        static const Id INVALID;
-    };
-}
+    static Id newId();
+    static const Id INVALID;
+};
+} // namespace PhysicsEngine
 
 // allow use of Guid in unordered_set and unordered_map
 namespace std

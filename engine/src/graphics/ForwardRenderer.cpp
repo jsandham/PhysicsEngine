@@ -31,10 +31,8 @@ void ForwardRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void ForwardRenderer::update(const Input &input, Camera *camera,
-                             const std::vector<RenderObject> &renderObjects,
-                             const std::vector<glm::mat4> &models,
-                             const std::vector<Id> &transformIds)
+void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginFrame(camera);
 
@@ -46,10 +44,10 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
     for (size_t j = 0; j < mWorld->getActiveScene()->getNumberOfComponents<Light>(); j++)
     {
         Light *light = mWorld->getActiveScene()->getComponentByIndex<Light>(j);
-        
+
         if (light->mEnabled)
         {
-            Transform* lightTransform = light->getComponent<Transform>();
+            Transform *lightTransform = light->getComponent<Transform>();
 
             if (lightTransform != nullptr)
             {
@@ -57,9 +55,9 @@ void ForwardRenderer::update(const Input &input, Camera *camera,
                 {
                     renderShadows(camera, light, lightTransform, renderObjects, models);
                 }
-                
+
                 renderOpaques(camera, light, lightTransform, renderObjects, models);
-                
+
                 renderTransparents();
             }
         }
@@ -83,8 +81,8 @@ void ForwardRenderer::beginFrame(Camera *camera)
     mCameraUniform->setViewProjection(camera->getProjMatrix() * camera->getViewMatrix());
     mCameraUniform->setCameraPos(camera->getComponent<Transform>()->getPosition());
 
-    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                          camera->getViewport().mHeight);
+    Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                         camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     // update camera state data
     mCameraUniform->copyToUniformsToDevice();
@@ -118,7 +116,7 @@ void ForwardRenderer::beginFrame(Camera *camera)
     camera->getNativeGraphicsColorPickingFBO()->clearDepth(1.0f);
     camera->getNativeGraphicsColorPickingFBO()->unbind();
 
-    if(camera->mSSAO == CameraSSAO::SSAO_On)
+    if (camera->mSSAO == CameraSSAO::SSAO_On)
     {
         camera->getNativeGraphicsSSAOFBO()->bind();
         camera->getNativeGraphicsSSAOFBO()->clearColor(Color::black);
@@ -126,7 +124,8 @@ void ForwardRenderer::beginFrame(Camera *camera)
     }
 }
 
-void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models)
+void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                                  const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
     camera->getNativeGraphicsGeometryFBO()->bind();
@@ -174,8 +173,8 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
 }
 
 void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lightTransform,
-                                  const std::vector<RenderObject> &renderObjects, 
-                                  const std::vector<glm::mat4> &models)
+                                    const std::vector<RenderObject> &renderObjects,
+                                    const std::vector<glm::mat4> &models)
 {
     if (light->mLightType == LightType::Directional)
     {
@@ -204,7 +203,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             {
                 if (renderObjects[j].instanced)
                 {
-                    modelIndex += renderObjects[j].instanceCount;                    
+                    modelIndex += renderObjects[j].instanceCount;
                 }
                 else
                 {
@@ -243,7 +242,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             else
             {
                 mDepthShader->setModel(models[modelIndex]);
-                
+
                 Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
@@ -299,12 +298,12 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         {
             if (renderObjects[i].instanced)
             {
-                modelIndex += renderObjects[i].instanceCount;              
+                modelIndex += renderObjects[i].instanceCount;
             }
             else
             {
                 mDepthCubemapShader->setModel(models[modelIndex]);
-                
+
                 Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
                 modelIndex++;
             }
@@ -315,8 +314,8 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
 }
 
 void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
-                                  const std::vector<RenderObject> &renderObjects, 
-                                  const std::vector<glm::mat4> &models)
+                                    const std::vector<RenderObject> &renderObjects,
+                                    const std::vector<glm::mat4> &models)
 {
     // Configure light uniform
     mLightUniform->setLightPosition(lightTransform->getPosition());
@@ -336,7 +335,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
 
             glm::vec4 cascadeEnd = glm::vec4(0.0f, 0.0f, mCascadeEnds[i + 1], 1.0f);
             glm::vec4 clipSpaceCascadeEnd = camera->getProjMatrix() * cascadeEnd;
-            
+
             mLightUniform->setDirLightCascadeEnd(i, clipSpaceCascadeEnd.z);
             mLightUniform->setDirLightCascadeView(i, mCascadeLightView[i]);
         }
@@ -351,7 +350,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
 
     // Configure shader variant
     int64_t variant = static_cast<int64_t>(ShaderMacro::None);
- 
+
     switch (light->mLightType)
     {
     case LightType::Directional:
@@ -419,7 +418,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         if (currentShaderIndex != renderObjects[i].shaderIndex)
         {
             shader = mWorld->getAssetByIndex<Shader>(renderObjects[i].shaderIndex);
-          
+
             if (renderObjects[i].instanced)
             {
                 shader->bind(variant | static_cast<int64_t>(ShaderMacro::Instancing));
@@ -430,7 +429,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             }
 
             currentShaderIndex = renderObjects[i].shaderIndex;
-        
+
             if (light->mShadowType != ShadowType::None)
             {
                 if (light->mLightType == LightType::Directional)
@@ -463,7 +462,8 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         if (renderObjects[i].instanced)
         {
             renderObjects[i].instanceModelBuffer->bind();
-            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0, sizeof(glm::mat4) * renderObjects[i].instanceCount);
+            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
             renderObjects[i].instanceModelBuffer->unbind();
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -485,7 +485,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             }
             else
             {
-                 Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
+                Renderer::getRenderer()->draw(renderObjects[i], camera->mQuery);
             }
         }
     }
@@ -563,8 +563,8 @@ void ForwardRenderer::endFrame(Camera *camera)
     if (camera->mRenderToScreen)
     {
         Renderer::getRenderer()->bindBackBuffer();
-        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
-                              camera->getViewport().mHeight);
+        Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                             camera->getViewport().mWidth, camera->getViewport().mHeight);
 
         mQuadShader->bind();
         mQuadShader->setScreenTexture(0, camera->getNativeGraphicsColorTex());

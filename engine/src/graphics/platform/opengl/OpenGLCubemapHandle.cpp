@@ -1,7 +1,7 @@
+#include "../../../../include/graphics/platform/opengl/OpenGLCubemapHandle.h"
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLTextureHandle.h"
-#include "../../../../include/graphics/platform/opengl/OpenGLCubemapHandle.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -135,11 +135,11 @@ void OpenGLCubemapHandle::update(TextureWrapMode wrapMode, TextureFilterMode fil
     mFilterMode = filterMode;
 
     GLint openglFilterMode = getTextureFilterMode(mFilterMode);
-    
+
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,
-                    openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
+                                openglFilterMode == GL_LINEAR_MIPMAP_LINEAR ? GL_LINEAR : openglFilterMode));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, getTextureWrapMode(mWrapMode)));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, getTextureWrapMode(mWrapMode)));
     CHECK_ERROR(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, getTextureWrapMode(mWrapMode)));
@@ -149,9 +149,9 @@ void OpenGLCubemapHandle::update(TextureWrapMode wrapMode, TextureFilterMode fil
 void OpenGLCubemapHandle::readPixels(std::vector<unsigned char> &data)
 {
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
-    
+
     GLenum openglFormat = getTextureFormat(mFormat);
-    
+
     int numChannels = 1;
     switch (mFormat)
     {
@@ -172,24 +172,24 @@ void OpenGLCubemapHandle::readPixels(std::vector<unsigned char> &data)
     for (unsigned int i = 0; i < 6; i++)
     {
         CHECK_ERROR(glGetTexImage(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, GL_UNSIGNED_BYTE,
-                        &data[i * mWidth * mWidth * numChannels]));
+                                  &data[i * mWidth * mWidth * numChannels]));
     }
-    
+
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 }
 
 void OpenGLCubemapHandle::writePixels(const std::vector<unsigned char> &data)
 {
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, mHandle));
-    
+
     GLenum openglFormat = getTextureFormat(mFormat);
-    
+
     for (unsigned int i = 0; i < 6; i++)
     {
         CHECK_ERROR(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, openglFormat, mWidth, mWidth, 0, openglFormat,
-                        GL_UNSIGNED_BYTE, data.data()));
+                                 GL_UNSIGNED_BYTE, data.data()));
     }
-    
+
     CHECK_ERROR(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
 }
 

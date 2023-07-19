@@ -41,7 +41,7 @@ class Material : public Asset
     void onTextureChanged();
     bool hasShaderChanged() const;
     bool hasTextureChanged() const;
-    void setShaderId(const Guid& shaderId);
+    void setShaderId(const Guid &shaderId);
     Guid getShaderId() const;
     std::vector<ShaderUniform> getUniforms() const;
 

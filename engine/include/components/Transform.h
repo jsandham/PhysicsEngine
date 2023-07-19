@@ -18,8 +18,8 @@ class Transform : public Component
     glm::vec3 mScale;
 
   public:
-    Transform(World *world, const Id& id);
-    Transform(World *world, const Guid& guid, const Id& id);
+    Transform(World *world, const Id &id);
+    Transform(World *world, const Guid &guid, const Id &id);
     ~Transform();
 
     virtual void serialize(YAML::Node &out) const override;

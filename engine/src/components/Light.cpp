@@ -9,9 +9,9 @@ Light::Light(World *world, const Id &id) : Component(world, id)
 {
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
-    mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));
+    mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
 
-    mInnerSpotAngle = 12.5f;// glm::cos(glm::radians(12.5f));
+    mInnerSpotAngle = 12.5f; // glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mShadowNearPlane = 1.0f;
     mShadowFarPlane = 100.0f;
@@ -36,9 +36,9 @@ Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, gu
 {
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
-    mSpotAngle = 15.0f;// glm::cos(glm::radians(15.0f));
+    mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
 
-    mInnerSpotAngle = 12.5f;//glm::cos(glm::radians(12.5f));
+    mInnerSpotAngle = 12.5f; // glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mShadowNearPlane = 1.0f;
     mShadowFarPlane = 100.0f;
@@ -119,7 +119,7 @@ std::string Light::getObjectName() const
 
 void ::Light::resizeTargets()
 {
-    //Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
+    // Renderer::getRenderer()->resizeTargets(&mTargets, mShadowMapResolution);
 }
 
 void Light::setShadowMapResolution(ShadowMapResolution resolution)
@@ -140,7 +140,7 @@ glm::mat4 Light::getProjMatrix() const
     {
         return glm::perspective(2.0f * glm::radians(mSpotAngle), 1.0f, mShadowNearPlane, mShadowFarPlane);
     }
-    else if (mLightType == LightType::Point) 
+    else if (mLightType == LightType::Point)
     {
         return glm::perspective(glm::radians(90.0f), 1.0f, mShadowNearPlane, mShadowFarPlane);
     }
@@ -148,17 +148,17 @@ glm::mat4 Light::getProjMatrix() const
     return glm::mat4(1.0f);
 }
 
-Framebuffer* Light::getNativeGraphicsShadowCascadeFBO(int index) const
+Framebuffer *Light::getNativeGraphicsShadowCascadeFBO(int index) const
 {
     return mTargets.mShadowCascadeFBO[std::min(4, std::max(0, index))];
 }
 
-Framebuffer* Light::getNativeGraphicsShadowSpotlightFBO() const
+Framebuffer *Light::getNativeGraphicsShadowSpotlightFBO() const
 {
     return mTargets.mShadowSpotlightFBO;
 }
 
-Framebuffer* Light::getNativeGraphicsShadowCubemapFBO() const
+Framebuffer *Light::getNativeGraphicsShadowCubemapFBO() const
 {
     return mTargets.mShadowCubemapFBO;
 }

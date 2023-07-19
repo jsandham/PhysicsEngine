@@ -1,5 +1,5 @@
-#include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/directx/DirectXCubemapHandle.h"
+#include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/directx/DirectXTextureHandle.h"
 
 #include <glm/glm.hpp>
@@ -17,7 +17,7 @@ DirectXCubemapHandle::~DirectXCubemapHandle()
 }
 
 void DirectXCubemapHandle::load(TextureFormat format, TextureWrapMode wrapMode, TextureFilterMode filterMode, int width,
-                               const std::vector<unsigned char> &data)
+                                const std::vector<unsigned char> &data)
 {
 }
 

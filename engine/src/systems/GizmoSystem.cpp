@@ -71,7 +71,7 @@ void GizmoSystem::addToDrawList(const Ray &ray, float t, const Color &color)
     mGizmoRenderer.addToDrawList(ray, t, color);
 }
 
-void GizmoSystem::addToDrawList(const Sphere& sphere, const Color& color)
+void GizmoSystem::addToDrawList(const Sphere &sphere, const Color &color)
 {
     mGizmoRenderer.addToDrawList(sphere, color);
 }

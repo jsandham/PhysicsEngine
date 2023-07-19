@@ -34,30 +34,29 @@ TODO:
 ------------ add pot processing render pass
 ------------ implement drag and drop for editor hierarchy
 ------------ display entity name instead of guid in editor 
-- COMPLETE - implement basic undo/redo in editor
+------------ implement basic undo/redo in editor
 - COMPLETE - create engine build directory and bat file for debug and release builds
 - COMPLETE - fix scene view mouse movement as it is currently inverted and not working correctly
 ------------ fix undo/redo bug so that you dont have to click on the scene view for input to work
 ------------ fix logging so I dont need to construct a string first before calling log function
 ------------ create pre-render systems that handles all the registering of cameras, assets, and lights
+------------ In project view window, dont show meta files and when a source file is moved to a different directory, move its meta file as well.
+------------ When files in a project are moved outside the editor, make sure the project tree is updated
+------------ Directories in project view should be in alphabetical order
+------------ fix bug when increasing terrain max range
+------------ come up with better system of compiling and getting interal shaders in Graphics.cpp. Maybe using enum for internal shaders?
+------------ add scene to world so that multiple scenes can be loaded each with their own id and index state
+------------ fix editor cascade shadow map seeting of cascades
+------------ add light gizmos
+------------ add ability to only turn on certain gizmos in editor instead of always showing all of them
+------------ add skybox to scene view background
+------------ move glew dll to eternal/glew-2.1.0/bin folder?
+------------ figure out what is causing window close button to flicker (has something to do with imgui)
+------------ improve compilation time
+------------ add debug layer that shows all color framebuffers 
+------------ remove self-shadowing when shadows are turned on
+------------ add directx
+------------ Add SDL for window creation
 
 clang-format -i -style=microsoft *.cpp
 clang-tidy src\core\*.cpp -- -Iinclude\glew-2.1.0
-
-
-
-
-
-
--fix bug when increasing terrain max range
--come up with better system of compiling and getting interal shaders in Graphics.cpp. Maybe using enum for internal shaders?
--add scene to world so that multiple scenes can be loaded each with their own id and index state
--fix editor cascade shadow map seeting of cascades
--add light gizmos
--add ability to only turn on certain gizmos in editor instead of always showing all of them
--add skybox to scene view background
--move glew dll to eternal/glew-2.1.0/bin folder?
--figure out what is causing window close button to flicker (has something to do with imgui)
--improve compilation time
--add debug layer that shows all color framebuffers 
--remove self-shadowing when shadows are turned on

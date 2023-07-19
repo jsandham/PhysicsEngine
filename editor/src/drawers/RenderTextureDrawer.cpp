@@ -17,41 +17,41 @@ RenderTextureDrawer::~RenderTextureDrawer()
 
 void RenderTextureDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 {
-    ImGui::Separator();
-    mContentMin = ImGui::GetItemRectMin();
+	ImGui::Separator();
+	mContentMin = ImGui::GetItemRectMin();
 
-    PhysicsEngine::RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(id);
+	PhysicsEngine::RenderTexture* texture = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::RenderTexture>(id);
 
-    if (texture != nullptr)
-    {
-        ImGui::Separator();
+	if (texture != nullptr)
+	{
+		ImGui::Separator();
 
-        // Draw texture child window
-        {
-            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
-            ImGui::BeginChild("DrawTextureWindow",
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
-                window_flags);
+		// Draw texture child window
+		{
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoScrollbar;
+			ImGui::BeginChild("DrawTextureWindow",
+				ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,
+				window_flags);
 
-            ImGui::Image((void*)(intptr_t)texture->getNativeGraphicsColorTex(),
-                ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::Image((void*)(intptr_t)texture->getNativeGraphicsColorTex(),
+				ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(0, 1), ImVec2(1, 0));
 
-            ImGui::EndChild();
-        }
-    }
+			ImGui::EndChild();
+		}
+	}
 
-    ImGui::Separator();
-    mContentMax = ImGui::GetItemRectMax();
+	ImGui::Separator();
+	mContentMax = ImGui::GetItemRectMax();
 }
 
 bool RenderTextureDrawer::isHovered() const
 {
-    ImVec2 cursorPos = ImGui::GetMousePos();
+	ImVec2 cursorPos = ImGui::GetMousePos();
 
-    glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
-    glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
+	glm::vec2 min = glm::vec2(mContentMin.x, mContentMin.y);
+	glm::vec2 max = glm::vec2(mContentMax.x, mContentMax.y);
 
-    PhysicsEngine::Rect rect(min, max);
+	PhysicsEngine::Rect rect(min, max);
 
-    return rect.contains(cursorPos.x, cursorPos.y);
+	return rect.contains(cursorPos.x, cursorPos.y);
 }

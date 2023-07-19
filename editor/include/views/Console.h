@@ -5,20 +5,20 @@
 
 namespace PhysicsEditor
 {
-class Console
-{
-private:
-    bool mOpen;
+	class Console
+	{
+	private:
+		bool mOpen;
 
-  public:
-    Console();
-    ~Console();
-    Console(const Console &other) = delete;
-    Console &operator=(const Console &other) = delete;
+	public:
+		Console();
+		~Console();
+		Console(const Console& other) = delete;
+		Console& operator=(const Console& other) = delete;
 
-    void init(Clipboard& clipboard);
-    void update(Clipboard &clipboard, bool isOpenedThisFrame);
-};
+		void init(Clipboard& clipboard);
+		void update(Clipboard& clipboard, bool isOpenedThisFrame);
+	};
 } // namespace PhysicsEditor
 
 #endif

@@ -16,8 +16,9 @@ class OpenGLShaderProgram : public ShaderProgram
     OpenGLShaderProgram();
     ~OpenGLShaderProgram();
 
-    void load(const std::string& name, const std::string &vertex, const std::string &fragment, const std::string &geometry) override;
-    void load(const std::string& name, const std::string &vertex, const std::string &fragment) override;
+    void load(const std::string &name, const std::string &vertex, const std::string &fragment,
+              const std::string &geometry) override;
+    void load(const std::string &name, const std::string &vertex, const std::string &fragment) override;
     void compile() override;
     void bind() override;
     void unbind() override;
@@ -37,8 +38,9 @@ class OpenGLShaderProgram : public ShaderProgram
     void setMat2(const char *name, const glm::mat2 &mat) override;
     void setMat3(const char *name, const glm::mat3 &mat) override;
     void setMat4(const char *name, const glm::mat4 &mat) override;
-    void setTexture2D(const char *name, int texUnit, void* tex) override;
-    void setTexture2Ds(const char *name, const std::vector<int>& texUnits, int count, const std::vector<void*>& texs) override;
+    void setTexture2D(const char *name, int texUnit, void *tex) override;
+    void setTexture2Ds(const char *name, const std::vector<int> &texUnits, int count,
+                       const std::vector<void *> &texs) override;
 
     void setBool(int uniformId, bool value) override;
     void setInt(int uniformId, int value) override;
@@ -59,7 +61,7 @@ class OpenGLShaderProgram : public ShaderProgram
     int getInt(const char *name) const override;
     float getFloat(const char *name) const override;
     Color getColor(const char *name) const override;
-    Color32 getColor32(const char* name) const override;
+    Color32 getColor32(const char *name) const override;
     glm::vec2 getVec2(const char *name) const override;
     glm::vec3 getVec3(const char *name) const override;
     glm::vec4 getVec4(const char *name) const override;
@@ -79,11 +81,9 @@ class OpenGLShaderProgram : public ShaderProgram
     glm::mat3 getMat3(int uniformId) const override;
     glm::mat4 getMat4(int uniformId) const override;
 
-private:
-    int findUniformLocation(const char* name) const;
+  private:
+    int findUniformLocation(const char *name) const;
     int findUniformLocation(int uniformId) const;
-    
-
 };
 } // namespace PhysicsEngine
 

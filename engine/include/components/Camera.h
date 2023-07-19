@@ -19,12 +19,12 @@
 #include "../core/Color.h"
 #include "../core/Frustum.h"
 #include "../core/Ray.h"
-#include "../core/Viewport.h"
 #include "../core/RenderTexture.h"
+#include "../core/Viewport.h"
 
 #include "../graphics/Framebuffer.h"
-#include "../graphics/RenderTextureHandle.h"
 #include "../graphics/GraphicsQuery.h"
+#include "../graphics/RenderTextureHandle.h"
 
 namespace PhysicsEngine
 {
@@ -198,8 +198,8 @@ class Camera : public Component
   public:
     Camera(World *world, const Id &id);
     Camera(World *world, const Guid &guid, const Id &id);
-    //Camera(const Camera&) = delete;  
-    //Camera &operator=(const Camera&) =delete;
+    // Camera(const Camera&) = delete;
+    // Camera &operator=(const Camera&) =delete;
     ~Camera();
 
     virtual void serialize(YAML::Node &out) const override;
@@ -212,8 +212,9 @@ class Camera : public Component
     void beginQuery();
     void endQuery();
 
-    void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right);
-    void setColoringIds(const std::vector<Id>& ids);
+    void computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up,
+                           const glm::vec3 &right);
+    void setColoringIds(const std::vector<Id> &ids);
 
     bool isCreated() const;
     bool isViewportChanged() const;
@@ -234,15 +235,15 @@ class Camera : public Component
     std::array<int, 5> getCascadeSplits() const;
     void setCascadeSplit(size_t splitIndex, int splitValue);
     std::array<float, 6> calcViewSpaceCascadeEnds() const;
-    std::array<Frustum, 5> calcCascadeFrustums(const std::array<float, 6>& cascadeEnds) const;
+    std::array<Frustum, 5> calcCascadeFrustums(const std::array<float, 6> &cascadeEnds) const;
 
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
     Ray screenSpaceToRay(int x, int y) const;
 
-    Framebuffer* getNativeGraphicsMainFBO() const;
-    Framebuffer* getNativeGraphicsColorPickingFBO() const;
-    Framebuffer* getNativeGraphicsGeometryFBO() const;
-    Framebuffer* getNativeGraphicsSSAOFBO() const;
+    Framebuffer *getNativeGraphicsMainFBO() const;
+    Framebuffer *getNativeGraphicsColorPickingFBO() const;
+    Framebuffer *getNativeGraphicsGeometryFBO() const;
+    Framebuffer *getNativeGraphicsSSAOFBO() const;
 
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
@@ -338,7 +339,7 @@ template <> struct convert<PhysicsEngine::RenderPath>
 // ColorTarget
 template <> struct convert<PhysicsEngine::ColorTarget>
 {
-    static Node encode(const PhysicsEngine::ColorTarget& rhs)
+    static Node encode(const PhysicsEngine::ColorTarget &rhs)
     {
         Node node;
         node = static_cast<int>(rhs);
@@ -355,14 +356,14 @@ template <> struct convert<PhysicsEngine::ColorTarget>
 // ShadowCascades
 template <> struct convert<PhysicsEngine::ShadowCascades>
 {
-    static Node encode(const PhysicsEngine::ShadowCascades& rhs)
+    static Node encode(const PhysicsEngine::ShadowCascades &rhs)
     {
         Node node;
         node = static_cast<int>(rhs);
         return node;
     }
 
-    static bool decode(const Node& node, PhysicsEngine::ShadowCascades& rhs)
+    static bool decode(const Node &node, PhysicsEngine::ShadowCascades &rhs)
     {
         rhs = static_cast<PhysicsEngine::ShadowCascades>(node.as<int>());
         return true;

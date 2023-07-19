@@ -51,8 +51,8 @@ void CleanUpSystem::update(const Input &input, const Time &time)
     {
 
         mWorld->getActiveScene()->immediateDestroyComponent(std::get<0>(componentIdsMarkedLatentDestroy[i]),
-                                          std::get<1>(componentIdsMarkedLatentDestroy[i]),
-                                          std::get<2>(componentIdsMarkedLatentDestroy[i]));
+                                                            std::get<1>(componentIdsMarkedLatentDestroy[i]),
+                                                            std::get<2>(componentIdsMarkedLatentDestroy[i]));
     }
 
     std::vector<Guid> entityIdsMarkedForLatentDestroy = mWorld->getActiveScene()->getEntityIdsMarkedLatentDestroy();

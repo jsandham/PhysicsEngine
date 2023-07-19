@@ -36,12 +36,12 @@ FreeLookCameraSystem::~FreeLookCameraSystem()
 {
 }
 
-void FreeLookCameraSystem::serialize(YAML::Node& out) const
+void FreeLookCameraSystem::serialize(YAML::Node &out) const
 {
     System::serialize(out);
 }
 
-void FreeLookCameraSystem::deserialize(const YAML::Node& in)
+void FreeLookCameraSystem::deserialize(const YAML::Node &in)
 {
     System::deserialize(in);
 }
@@ -56,7 +56,7 @@ std::string FreeLookCameraSystem::getObjectName() const
     return PhysicsEngine::FREELOOKCAMERASYSTEM_NAME;
 }
 
-void FreeLookCameraSystem::init(World* world)
+void FreeLookCameraSystem::init(World *world)
 {
     mWorld = world;
 
@@ -76,7 +76,7 @@ void FreeLookCameraSystem::init(World* world)
 
         transform = entity->getComponent<Transform>();
         transform->setPosition(glm::vec3(0, 2, -10));
-        transform->mHide = HideFlag::DontSave;  
+        transform->mHide = HideFlag::DontSave;
     }
     else
     {
@@ -90,7 +90,7 @@ void FreeLookCameraSystem::init(World* world)
     mTransformId = transform->getGuid();
 }
 
-void FreeLookCameraSystem::update(const Input& input, const Time& time)
+void FreeLookCameraSystem::update(const Input &input, const Time &time)
 {
     Camera *camera = getCamera();
     Transform *transform = getTransform();
@@ -173,10 +173,10 @@ void FreeLookCameraSystem::update(const Input& input, const Time& time)
         float pitch = FreeLookCameraSystem::PITCH_PAN_SENSITIVITY * (mMousePosYOnRightClick - mMousePosY);
 
         // https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
-        //mTransform->mRotation =
+        // mTransform->mRotation =
         //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
         transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick *
-                                glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
+                               glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
     }
 
     camera->computeViewMatrix(position, front, up, right);
@@ -196,12 +196,12 @@ void FreeLookCameraSystem::configureCamera(CameraSystemConfig config)
     mSpawnCameraOnInit = config.mSpawnCameraOnInit;
 }
 
-void FreeLookCameraSystem::setViewport(const Viewport& viewport)
+void FreeLookCameraSystem::setViewport(const Viewport &viewport)
 {
     getCamera()->setViewport(viewport.mX, viewport.mY, viewport.mWidth, viewport.mHeight);
 }
 
-void FreeLookCameraSystem::setFrustum(const Frustum& frustum)
+void FreeLookCameraSystem::setFrustum(const Frustum &frustum)
 {
     getCamera()->setFrustum(frustum.mFov, frustum.mAspectRatio, frustum.mNearPlane, frustum.mFarPlane);
 }
@@ -256,7 +256,7 @@ CameraGizmos FreeLookCameraSystem::getGizmos() const
     return getCamera()->mGizmos;
 }
 
-Camera* FreeLookCameraSystem::getCamera() const
+Camera *FreeLookCameraSystem::getCamera() const
 {
     return mWorld->getActiveScene()->getComponentByGuid<Camera>(mCameraId);
 }

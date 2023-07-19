@@ -81,13 +81,13 @@ std::string MeshRenderer::getObjectName() const
     return PhysicsEngine::MESHRENDERER_NAME;
 }
 
-void MeshRenderer::setMesh(const Guid& meshId)
+void MeshRenderer::setMesh(const Guid &meshId)
 {
     mMeshId = meshId;
     mMeshChanged = true;
 }
 
-void MeshRenderer::setMaterial(const Guid& materialId)
+void MeshRenderer::setMaterial(const Guid &materialId)
 {
     mMaterialIds[0] = materialId;
     mMaterialChanged = true;
@@ -97,7 +97,7 @@ void MeshRenderer::setMaterial(const Guid& materialId)
     }
 }
 
-void MeshRenderer::setMaterial(const Guid& materialId, int index)
+void MeshRenderer::setMaterial(const Guid &materialId, int index)
 {
     if (index >= 0 && index < 8)
     {

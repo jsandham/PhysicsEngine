@@ -95,44 +95,38 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mRenderToScreen = false;
 }
 
-
-
 //// 1. copy constructor
-//Camera::Camera(const Camera &that)
+// Camera::Camera(const Camera &that)
 //{
-//    name = new char[strlen(that.name) + 1];
-//    strcpy(name, that.name);
-//    age = that.age;
-//}
+//     name = new char[strlen(that.name) + 1];
+//     strcpy(name, that.name);
+//     age = that.age;
+// }
 //
 //// 2. copy assignment operator
-//Camera& Camera::operator=(const Camera &that)
+// Camera& Camera::operator=(const Camera &that)
 //{
-//    if (this != &that)
-//    {
-//        delete mTargets.mMainFBO;
-//        delete mTargets.mColorPickingFBO;
-//        delete mTargets.mGeometryFBO;
-//        delete mTargets.mSsaoFBO;
-//        // This is a dangerous point in the flow of execution!
-//        // We have temporarily invalidated the class invariants,
-//        // and the next statement might throw an exception,
-//        // leaving the object in an invalid state :(
+//     if (this != &that)
+//     {
+//         delete mTargets.mMainFBO;
+//         delete mTargets.mColorPickingFBO;
+//         delete mTargets.mGeometryFBO;
+//         delete mTargets.mSsaoFBO;
+//         // This is a dangerous point in the flow of execution!
+//         // We have temporarily invalidated the class invariants,
+//         // and the next statement might throw an exception,
+//         // leaving the object in an invalid state :(
 //
 //
 //
 //
 //
-//        name = new char[strlen(that.name) + 1];
-//        strcpy(name, that.name);
-//        age = that.age;
-//    }
-//    return *this;
-//}
-
-
-
-
+//         name = new char[strlen(that.name) + 1];
+//         strcpy(name, that.name);
+//         age = that.age;
+//     }
+//     return *this;
+// }
 
 Camera::~Camera()
 {
@@ -140,7 +134,7 @@ Camera::~Camera()
     delete mTargets.mColorPickingFBO;
     delete mTargets.mGeometryFBO;
     delete mTargets.mSsaoFBO;
-} 
+}
 
 void Camera::serialize(YAML::Node &out) const
 {
@@ -218,9 +212,9 @@ void Camera::beginQuery()
 void Camera::endQuery()
 {
     unsigned long long elapsedTime = 0; // in nanoseconds
-    
-    //Renderer::getRenderer()->endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
-    
+
+    // Renderer::getRenderer()->endQuery(mQuery.mQueryId[mQuery.mQueryFront], &elapsedTime);
+
     mQuery.mTotalElapsedTime += elapsedTime / 1000000.0f;
 
     // swap which query is active
@@ -236,7 +230,8 @@ void Camera::endQuery()
     }
 }
 
-void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up, const glm::vec3 &right)
+void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up,
+                               const glm::vec3 &right)
 {
     mPosition = position;
     mForward = forward;
@@ -361,7 +356,7 @@ std::array<float, 6> Camera::calcViewSpaceCascadeEnds() const
     return cascadeEnds;
 }
 
-std::array<Frustum, 5> Camera::calcCascadeFrustums(const std::array<float, 6>& cascadeEnds) const
+std::array<Frustum, 5> Camera::calcCascadeFrustums(const std::array<float, 6> &cascadeEnds) const
 {
     float fov = mFrustum.mFov;
     float aspect = mFrustum.mAspectRatio;
@@ -436,7 +431,7 @@ Ray Camera::screenSpaceToRay(int x, int y) const
     return normalizedDeviceSpaceToRay(ndcX, ndcY);
 }
 
-Framebuffer* Camera::getNativeGraphicsMainFBO() const
+Framebuffer *Camera::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;
 }

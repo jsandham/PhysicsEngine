@@ -15,14 +15,14 @@
 #include "../core/Mesh.h"
 #include "../core/Texture2D.h"
 
+#include "../systems/AssetLoadingSystem.h"
 #include "../systems/CleanUpSystem.h"
 #include "../systems/DebugSystem.h"
+#include "../systems/FreeLookCameraSystem.h"
 #include "../systems/GizmoSystem.h"
 #include "../systems/PhysicsSystem.h"
 #include "../systems/RenderSystem.h"
-#include "../systems/FreeLookCameraSystem.h"
 #include "../systems/TerrainSystem.h"
-#include "../systems/AssetLoadingSystem.h"
 
 #include "WorldPrimitives.h"
 
@@ -152,10 +152,11 @@ class World
     bool writeAssetToYAML(const std::string &filePath, const Guid &assetGuid) const;
     bool writeSceneToYAML(const std::string &filePath, const Guid &sceneGuid) const;
 
-    void copyDoNotDestroyEntities(Scene* from, Scene* to);
+    void copyDoNotDestroyEntities(Scene *from, Scene *to);
 
     std::vector<ShaderUniform> getCachedMaterialUniforms(const Guid &materialGuid, const Guid &shaderGuid);
-    void cacheMaterialUniforms(const Guid &materialGuid, const Guid &shaderGuid, const std::vector<ShaderUniform>& uniforms);
+    void cacheMaterialUniforms(const Guid &materialGuid, const Guid &shaderGuid,
+                               const std::vector<ShaderUniform> &uniforms);
 
     size_t getNumberOfScenes() const;
     size_t getNumberOfUpdatingSystems() const;
@@ -185,34 +186,46 @@ class World
 
     template <typename T> size_t getNumberOfSystems() const;
     template <typename T> size_t getNumberOfAssets() const;
-    template <typename T> T* getSystem() const;
-    template <typename T> T* addSystem(size_t order);
-    template <typename T> T* getSystemByIndex(size_t index) const;
-    template <typename T> T* getSystemById(const Id& systemId) const;
-    template <typename T> T* getSystemByGuid(const Guid &systemGuid) const;
-    template <typename T> T* getAssetByIndex(size_t index) const;
-    template <typename T> T* getAssetById(const Id& assetId) const;
-    template <typename T> T* getAssetByGuid(const Guid &assetGuid) const;
-    template <typename T> T* createAsset();
-    template <typename T> T* createAsset(const Guid& assetGuid);
-    template <typename T> T* createAsset(const YAML::Node& in);
+    template <typename T> T *getSystem() const;
+    template <typename T> T *addSystem(size_t order);
+    template <typename T> T *getSystemByIndex(size_t index) const;
+    template <typename T> T *getSystemById(const Id &systemId) const;
+    template <typename T> T *getSystemByGuid(const Guid &systemGuid) const;
+    template <typename T> T *getAssetByIndex(size_t index) const;
+    template <typename T> T *getAssetById(const Id &assetId) const;
+    template <typename T> T *getAssetByGuid(const Guid &assetGuid) const;
+    template <typename T> T *createAsset();
+    template <typename T> T *createAsset(const Guid &assetGuid);
+    template <typename T> T *createAsset(const YAML::Node &in);
 
   private:
-    void generateSourcePaths(const std::string& filepath, YAML::Node &in);
+    void generateSourcePaths(const std::string &filepath, YAML::Node &in);
     void addToIdState(const Guid &guid, const Id &id, int index, int type);
     void removeFromIdState(const Guid &guid, const Id &id);
 
     template <typename T> void addToIdState_impl(const Guid &guid, const Id &id, int index, int type);
     template <typename T> void removeFromIdState_impl(const Guid &guid, const Id &id);
-    template <typename T> T* addSystem_impl(PoolAllocator<T>* allocator, size_t order);
-    template <typename T> T* getSystemById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator, const Id& systemId) const;
-    template <typename T> T* getSystemByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator, const Guid &systemGuid) const;
-    template <typename T> T* getAssetById_impl(const std::unordered_map<Id, int>& idToIndexMap, const PoolAllocator<T>* allocator, const Id& assetId) const;
-    template <typename T> T* getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator, const Guid &assetGuid) const;
+    template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, size_t order);
+    template <typename T>
+    T *getSystemById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
+                          const Id &systemId) const;
+    template <typename T>
+    T *getSystemByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                            const Guid &systemGuid) const;
+    template <typename T>
+    T *getAssetById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
+                         const Id &assetId) const;
+    template <typename T>
+    T *getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                           const Guid &assetGuid) const;
     template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const Guid &assetGuid);
-    template <typename T> T* createAsset_impl(PoolAllocator<T>* allocator, const YAML::Node& in);
-    template <typename T> T* getById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator, const Id &id) const;
-    template <typename T> T *getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator, const Guid &guid) const;
+    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const YAML::Node &in);
+    template <typename T>
+    T *getById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
+                    const Id &id) const;
+    template <typename T>
+    T *getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
+                      const Guid &guid) const;
 };
 } // namespace PhysicsEngine
 

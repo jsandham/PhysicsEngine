@@ -8,20 +8,14 @@
 
 using namespace PhysicsEngine;
 
-#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)           \
-    do{                                                 \
-        HRESULT hr = ROUTINE;                           \
-        LPTSTR lpBuf = NULL;                            \
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |  \
-                      FORMAT_MESSAGE_FROM_SYSTEM |      \
-                      FORMAT_MESSAGE_IGNORE_INSERTS,    \
-                      NULL,                             \
-                      hr,                               \
-                      0,                                \
-                      (LPTSTR)&lpBuf,                   \
-                      0,                                \
-                      NULL);                            \
-    }while(0)
+#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)                                                                          \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        HRESULT hr = ROUTINE;                                                                                          \
+        LPTSTR lpBuf = NULL;                                                                                           \
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,     \
+                      NULL, hr, 0, (LPTSTR)&lpBuf, 0, NULL);                                                           \
+    } while (0)
 
 #define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
 
@@ -32,7 +26,7 @@ void DirectXRenderer::init_impl()
     DXGI_ADAPTER_DESC descr;
     mContext->getAdapter()->GetDesc(&descr);
 
-    //Log::warn(("Vender: " + vender + "\n").c_str());
+    // Log::warn(("Vender: " + vender + "\n").c_str());
     Log::warn(("Dedicated video memory: " + std::to_string(descr.DedicatedVideoMemory) + "\n").c_str());
 }
 void DirectXRenderer::present_impl()
@@ -62,7 +56,7 @@ void DirectXRenderer::unbindBackBuffer_impl()
 
 void DirectXRenderer::clearBackBufferColor_impl(const Color &color)
 {
-     this->clearBackBufferColor_impl(color.mR, color.mG, color.mB, color.mA);
+    this->clearBackBufferColor_impl(color.mR, color.mG, color.mB, color.mA);
 }
 
 void DirectXRenderer::clearBackBufferColor_impl(float r, float g, float b, float a)
@@ -110,5 +104,9 @@ void DirectXRenderer::drawIndexedInstanced_impl(const RenderObject &renderObject
     assert(renderObject.instanced == true);
 };
 
-void DirectXRenderer::beginQuery_impl(unsigned int queryId){}
-void DirectXRenderer::endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime){}
+void DirectXRenderer::beginQuery_impl(unsigned int queryId)
+{
+}
+void DirectXRenderer::endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime)
+{
+}

@@ -1,10 +1,10 @@
 #ifndef GUID_H__
 #define GUID_H__
 
+#include <assert.h>
 #include <ostream>
 #include <string>
 #include <vector>
-#include <assert.h>
 
 #include "yaml-cpp/yaml.h"
 
@@ -33,7 +33,7 @@ class Guid
     bool isValid() const;
     bool isInvalid() const;
     std::string toString() const;
-    const char* c_str() const;
+    const char *c_str() const;
 
     static Guid newGuid();
 

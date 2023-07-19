@@ -3,8 +3,8 @@
 
 #include "../../UniformBuffer.h"
 
-#include <windows.h>
 #include <d3d11.h>
+#include <windows.h>
 
 namespace PhysicsEngine
 {
@@ -33,6 +33,6 @@ class DirectXUniformBuffer : public UniformBuffer
     void getData(void *data, size_t offset, size_t size) override;
     void copyDataToDevice() override;
 };
-}
+} // namespace PhysicsEngine
 
 #endif

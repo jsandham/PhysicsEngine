@@ -1,6 +1,6 @@
-#include "../../include/core/Log.h"
-#include "../../include/core/Input.h"
 #include "../../include/core/GameLayer.h"
+#include "../../include/core/Input.h"
+#include "../../include/core/Log.h"
 
 #include <filesystem>
 #include <stack>
@@ -39,7 +39,7 @@ void GameLayer::init()
 
     mWorld.loadSceneFromYAML(scenePath.string());
 
-    FreeLookCameraSystem* cameraSystem = mWorld.addSystem<FreeLookCameraSystem>(0);
+    FreeLookCameraSystem *cameraSystem = mWorld.addSystem<FreeLookCameraSystem>(0);
     mWorld.addSystem<TerrainSystem>(1);
     mWorld.addSystem<RenderSystem>(2);
     mWorld.addSystem<CleanUpSystem>(3);
@@ -56,7 +56,7 @@ void GameLayer::init()
 
     for (size_t i = 0; i < mWorld.getNumberOfUpdatingSystems(); i++)
     {
-        System* system = mWorld.getSystemByUpdateOrder(i);
+        System *system = mWorld.getSystemByUpdateOrder(i);
 
         system->init(&mWorld);
     }
@@ -64,22 +64,20 @@ void GameLayer::init()
 
 void GameLayer::begin()
 {
-
 }
 
-void GameLayer::update(const Time& time)
+void GameLayer::update()
 {
     for (size_t i = 0; i < mWorld.getNumberOfUpdatingSystems(); i++)
     {
-        System* system = mWorld.getSystemByUpdateOrder(i);
+        System *system = mWorld.getSystemByUpdateOrder(i);
 
-        system->update(getInput(), time);
+        system->update(getInput(), getTime());
     }
 }
 
 void GameLayer::end()
 {
-
 }
 
 bool GameLayer::quit()

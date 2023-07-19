@@ -5,32 +5,32 @@
 
 namespace PhysicsEngine
 {
-    enum class PrimitiveType
-    {
-        Plane,
-        Disc,
-        Cube,
-        Sphere,
-        Cylinder,
-        Cone
-    };
-    
-    class World;
+enum class PrimitiveType
+{
+    Plane,
+    Disc,
+    Cube,
+    Sphere,
+    Cylinder,
+    Cone
+};
 
-	struct WorldPrimitives
-	{
-        Guid mPlaneMeshGuid;
-        Guid mDiscMeshGuid;
-        Guid mCubeMeshGuid;
-        Guid mSphereMeshGuid;
-        Guid mCylinderMeshGuid;
-        Guid mConeMeshGuid;
+class World;
 
-        Guid mStandardShaderGuid;
-        Guid mStandardMaterialGuid;
+struct WorldPrimitives
+{
+    Guid mPlaneMeshGuid;
+    Guid mDiscMeshGuid;
+    Guid mCubeMeshGuid;
+    Guid mSphereMeshGuid;
+    Guid mCylinderMeshGuid;
+    Guid mConeMeshGuid;
 
-        void createPrimitiveMeshes(World* world, int nx, int nz);
-	};
-}
+    Guid mStandardShaderGuid;
+    Guid mStandardMaterialGuid;
+
+    void createPrimitiveMeshes(World *world, int nx, int nz);
+};
+} // namespace PhysicsEngine
 
 #endif

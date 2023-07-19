@@ -12,72 +12,72 @@
 
 namespace PhysicsEditor
 {
-class MenuBar
-{
-  private:
-    // File
-    bool mNewSceneClicked;
-    bool mOpenSceneClicked;
-    bool mSaveClicked;
-    bool mSaveAsClicked;
-    bool mNewProjectClicked;
-    bool mOpenProjectClicked;
-    bool mSaveProjectClicked;
-    bool mBuildClicked;
-    bool mQuitClicked;
+	class MenuBar
+	{
+	private:
+		// File
+		bool mNewSceneClicked;
+		bool mOpenSceneClicked;
+		bool mSaveClicked;
+		bool mSaveAsClicked;
+		bool mNewProjectClicked;
+		bool mOpenProjectClicked;
+		bool mSaveProjectClicked;
+		bool mBuildClicked;
+		bool mQuitClicked;
 
-    // Edit
-    bool mPreferencesClicked;
-    bool mPopulateTestScene;
+		// Edit
+		bool mPreferencesClicked;
+		bool mPopulateTestScene;
 
-    // Windows
-    bool mOpenInspectorClicked;
-    bool mOpenHierarchyClicked;
-    bool mOpenConsoleClicked;
-    bool mOpenSceneViewClicked;
-    bool mOpenProjectViewClicked;
+		// Windows
+		bool mOpenInspectorClicked;
+		bool mOpenHierarchyClicked;
+		bool mOpenConsoleClicked;
+		bool mOpenSceneViewClicked;
+		bool mOpenProjectViewClicked;
 
-    // About
-    bool mAboutClicked;
+		// About
+		bool mAboutClicked;
 
-    //Filebrowser mFilebrowser;
-    
-    ProjectWindow mProjectWindow;
-    BuildWindow mBuildWindow;
-    PreferencesWindow mPreferencesWindow;
-    AboutPopup mAboutPopup;
+		//Filebrowser mFilebrowser;
 
-  public:
-    MenuBar();
-    ~MenuBar();
+		ProjectWindow mProjectWindow;
+		BuildWindow mBuildWindow;
+		PreferencesWindow mPreferencesWindow;
+		AboutPopup mAboutPopup;
 
-    void init(Clipboard& clipboard);
-    void update(Clipboard &clipboard);
+	public:
+		MenuBar();
+		~MenuBar();
 
-    bool isNewSceneClicked() const;
-    bool isOpenSceneClicked() const;
-    bool isSaveClicked() const;
-    bool isSaveAsClicked() const;
-    bool isBuildClicked() const;
-    bool isQuitClicked() const;
-    bool isNewProjectClicked() const;
-    bool isOpenProjectClicked() const;
-    bool isSaveProjectClicked() const;
-    bool isOpenInspectorCalled() const;
-    bool isOpenHierarchyCalled() const;
-    bool isOpenConsoleCalled() const;
-    bool isOpenSceneViewCalled() const;
-    bool isOpenProjectViewCalled() const;
-    bool isAboutClicked() const;
-    bool isPreferencesClicked() const;
-    bool isPopulateTestSceneClicked() const;
+		void init(Clipboard& clipboard);
+		void update(Clipboard& clipboard);
 
-  private:
-    void showMenuFile(const Clipboard& clipboard);
-    void showMenuEdit(const Clipboard& clipboard);
-    void showMenuWindow(const Clipboard& clipboard);
-    void showMenuHelp(const Clipboard& clipboard);
-};
+		bool isNewSceneClicked() const;
+		bool isOpenSceneClicked() const;
+		bool isSaveClicked() const;
+		bool isSaveAsClicked() const;
+		bool isBuildClicked() const;
+		bool isQuitClicked() const;
+		bool isNewProjectClicked() const;
+		bool isOpenProjectClicked() const;
+		bool isSaveProjectClicked() const;
+		bool isOpenInspectorCalled() const;
+		bool isOpenHierarchyCalled() const;
+		bool isOpenConsoleCalled() const;
+		bool isOpenSceneViewCalled() const;
+		bool isOpenProjectViewCalled() const;
+		bool isAboutClicked() const;
+		bool isPreferencesClicked() const;
+		bool isPopulateTestSceneClicked() const;
+
+	private:
+		void showMenuFile(const Clipboard& clipboard);
+		void showMenuEdit(const Clipboard& clipboard);
+		void showMenuWindow(const Clipboard& clipboard);
+		void showMenuHelp(const Clipboard& clipboard);
+	};
 } // namespace PhysicsEditor
 
 #endif

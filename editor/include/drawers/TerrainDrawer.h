@@ -9,24 +9,24 @@
 
 namespace PhysicsEditor
 {
-    class TerrainDrawer
-    {
-    private:
-        PhysicsEngine::Framebuffer* mFBO;
-        PhysicsEngine::ShaderProgram* mProgram;
+	class TerrainDrawer
+	{
+	private:
+		PhysicsEngine::Framebuffer* mFBO;
+		PhysicsEngine::ShaderProgram* mProgram;
 
-        ImVec2 mContentMin;
-        ImVec2 mContentMax;
+		ImVec2 mContentMin;
+		ImVec2 mContentMax;
 
-    public:
-        TerrainDrawer();
-        ~TerrainDrawer();
+	public:
+		TerrainDrawer();
+		~TerrainDrawer();
 
-        void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
+		void render(Clipboard& clipboard, const PhysicsEngine::Guid& id);
 
-    private:
-        bool isHovered() const;
-    };
+	private:
+		bool isHovered() const;
+	};
 } // namespace PhysicsEditor
 
 #endif
