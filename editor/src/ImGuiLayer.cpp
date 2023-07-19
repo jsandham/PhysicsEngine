@@ -104,7 +104,6 @@ void ImGuiLayer::update()
 {
 	ImGui::ShowDemoWindow();
 	ImGui::ShowMetricsWindow();
-	ImGui::ShowStyleEditor();
 }
 
 void ImGuiLayer::end()
