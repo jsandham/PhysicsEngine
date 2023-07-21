@@ -43,7 +43,7 @@ void EditorLayer::update()
 
 	mDebugOverlay.update(mClipboard);
 
-	mClipboard.mTime = PhysicsEngine::getTime();//time;
+	mClipboard.mTime = PhysicsEngine::getTime();
 }
 
 void EditorLayer::begin()

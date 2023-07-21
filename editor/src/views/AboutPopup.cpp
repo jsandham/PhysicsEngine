@@ -32,6 +32,11 @@ void AboutPopup::update(Clipboard& clipboard, bool isOpenedThisFrame)
 		ImGui::Text("About PhysicsEngine");
 		ImGui::TextWrapped("About engine text goes here");
 
+		ImGui::Text(ImGui::GetVersion());
+		ImGui::Text(IMGUI_VERSION);
+		ImGui::Text(std::to_string(IMGUI_VERSION_NUM).c_str());
+
+
 		if (ImGui::Button("Ok"))
 		{
 			ImGui::CloseCurrentPopup();

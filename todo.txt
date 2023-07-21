@@ -57,6 +57,7 @@ TODO:
 ------------ remove self-shadowing when shadows are turned on
 ------------ add directx
 ------------ Add SDL for window creation
+------------ Fix File->Quit in editor
 
 clang-format -i -style=microsoft *.cpp
 clang-tidy src\core\*.cpp -- -Iinclude\glew-2.1.0

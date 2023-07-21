@@ -130,6 +130,7 @@ namespace PhysicsEditor
 		float mWidth;
 		float mHeight;
 		bool mOpen;
+		bool mDoWork;
 
 		TargetPlatform mTargetPlatform;
 		AppLog mBuildLog;

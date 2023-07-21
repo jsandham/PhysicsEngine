@@ -61,6 +61,7 @@ BuildWindow::BuildWindow(const std::string& name, float x, float y, float width,
 	mWidth = width;
 	mHeight = height;
 	mOpen = true;
+	mDoWork = true;
 
 	mTargetPlatform = TargetPlatform::Windows;
 
@@ -71,6 +72,7 @@ BuildWindow::BuildWindow(const std::string& name, float x, float y, float width,
 
 BuildWindow::~BuildWindow()
 {
+	mDoWork = false;
 	mBuildWorker.join();
 }
 
@@ -271,7 +273,7 @@ void BuildWindow::build()
 
 void BuildWindow::doWork()
 {
-	while (true)
+	while (mDoWork)
 	{
 		if (mLaunchBuild)
 		{

@@ -13,6 +13,15 @@ namespace ImGui
 	void StyleColorsGrey(ImGuiStyle* dst = NULL);
 	void StyleColorsCharcoal(ImGuiStyle* dst = NULL);
 	void StyleColorsCorporate(ImGuiStyle* dst = NULL);
+	void StyleColorsCinder(ImGuiStyle* dst = NULL);
+	void StyleColorsEnemyMouse(ImGuiStyle* dst = NULL);
+	void StyleColorsDougBlinks(ImGuiStyle* dst = NULL);
+	void StyleColorsGreenBlue(ImGuiStyle* dst = NULL);
+	void StyleColorsRedDark(ImGuiStyle* dst = NULL);
+	void StyleColorsDeepDark(ImGuiStyle* dst = NULL);
+
+	void SetStyle(ImGuiStyle* src);
+
 } // namespace ImGui
 
 namespace PhysicsEditor
@@ -29,12 +38,59 @@ namespace PhysicsEditor
 		Grey,
 		Charcoal,
 		Corporate,
+		EnemyMouse,
+		Cinder,
+		DougBlinks,
+		GreenBlue,
+		RedDark,
+		DeepDark,
 		Count
 	};
+
+	constexpr auto EditorStyleToString(EditorStyle style)
+	{
+		switch (style)
+		{
+		case EditorStyle::Classic:
+			return "Classic";
+		case EditorStyle::Light:
+			return "Light";
+		case EditorStyle::Dark:
+			return "Dark";
+		case EditorStyle::Dracula:
+			return "Dracula";
+		case EditorStyle::Cherry:
+			return "Cherry";
+		case EditorStyle::LightGreen:
+			return "LightGreen";
+		case EditorStyle::Yellow:
+			return "Yellow";
+		case EditorStyle::Grey:
+			return "Grey";
+		case EditorStyle::Charcoal:
+			return "Charcoal";
+		case EditorStyle::Corporate:
+			return "Corporate";
+		case EditorStyle::EnemyMouse:
+			return "EnemyMouse";
+		case EditorStyle::Cinder:
+			return "Cinder";
+		case EditorStyle::DougBlinks:
+			return "DougBlinks";
+		case EditorStyle::GreenBlue:
+			return "GreenBlue";
+		case EditorStyle::RedDark:
+			return "RedDark";
+		case EditorStyle::DeepDark:
+			return "DeepDark";
+		}
+	}
 
 	class PreferencesWindow
 	{
 	private:
+		EditorStyle mCurrentStyle;
+		ImGuiStyle mStyles[EditorStyle::Count];
 		bool mOpen;
 
 	public:

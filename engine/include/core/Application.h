@@ -24,7 +24,7 @@ class Application
     Application(const std::string &name = "App", int width = 1920, int height = 1080);
     Application(const Application &other) = delete;
     Application &operator=(const Application &other) = delete;
-    virtual ~Application();
+    virtual ~Application() = 0;
 
     void run();
     void close();

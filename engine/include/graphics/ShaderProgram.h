@@ -68,7 +68,7 @@ struct ShaderUniform
     char mData[64];
     void *mTex; // if data stores a texture id, this is the texture handle
 
-    std::string getShortName() const
+    std::string getShortName() const //getDisplayName?
     {
         size_t pos = mName.find_first_of('.');
         return mName.substr(pos + 1);
