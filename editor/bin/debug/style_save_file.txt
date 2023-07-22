@@ -1,5 +1,5 @@
 IMGUI_VERSION: 1.89.7
-Current_Style: 11
+Current_Style: 7
 Style: Classic
 ImGuiCol_Text: 0.9 0.9 0.9 1
 ImGuiCol_TextDisabled: 0.6 0.6 0.6 1
@@ -80,7 +80,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 0 8
+WindowPadding: 8 8
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 4 3
@@ -174,7 +174,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 0 8
+WindowPadding: 8 8
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 4 3
@@ -268,7 +268,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 0 8
+WindowPadding: 12 8
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 4 3
@@ -342,9 +342,9 @@ Alpha: 1
 DisabledAlpha: 0.6
 WindowRounding: 5.3
 WindowBorderSize: 1 
-ChildRounding: 0
+ChildRounding: 8
 ChildBorderSize: 1
-PopupRounding: 0
+PopupRounding: 9
 PopupBorderSize: 1
 FrameRounding: 2.3
 FrameBorderSize: 1
@@ -352,7 +352,7 @@ IndentSpacing: 21
 ColumnsMinSpacing: 6
 ScrollbarSize: 14
 ScrollbarRounding: 5
-GrabMinSize: 12
+GrabMinSize: 6
 GrabRounding: 2.3
 LogSliderDeadzone: 4
 TabRounding: 4
@@ -362,20 +362,20 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 0 8
+WindowPadding: 14 19
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
-FramePadding: 4 3
+FramePadding: 13 3
 ItemSpacing: 8 6.5
 ItemInnerSpacing: 4 4
 CellPadding: 4 2
-TouchExtraPadding: 0 0
+TouchExtraPadding: 9 0
 ButtonTextAlign: 0.5 0.5
 SelectableTextAlign: 0 0
 SeparatorTextAlign: 0 0.5
 SeparatorTextPadding: 20 3
 DisplayWindowPadding: 19 19
-DisplaySafeAreaPadding: 3 3
+DisplaySafeAreaPadding: 22 3
 Style: Cherry
 ImGuiCol_Text: 0.86 0.93 0.89 0.78
 ImGuiCol_TextDisabled: 0.86 0.93 0.89 0.28
@@ -442,7 +442,7 @@ PopupRounding: 0
 PopupBorderSize: 1
 FrameRounding: 3
 FrameBorderSize: 0
-IndentSpacing: 1
+IndentSpacing: 6
 ColumnsMinSpacing: 6
 ScrollbarSize: 12
 ScrollbarRounding: 16
@@ -456,13 +456,13 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 0 4
+WindowPadding: 6 4
 WindowMinSize: 32 32
 WindowTitleAlign: 0.5 0.5
-FramePadding: 3 2
-ItemSpacing: 4 1
-ItemInnerSpacing: 10 1
-CellPadding: 11 2
+FramePadding: 5 2
+ItemSpacing: 7 1
+ItemInnerSpacing: 1 1
+CellPadding: 4 2
 TouchExtraPadding: 0 0
 ButtonTextAlign: 0.5 0.5
 SelectableTextAlign: 0 0
@@ -550,7 +550,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 20 8
+WindowPadding: 8 8
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 6 4
@@ -644,7 +644,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 20 15
+WindowPadding: 15 15
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 5 5
@@ -738,7 +738,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 20 8
+WindowPadding: 8 8
 WindowMinSize: 32 32
 WindowTitleAlign: 0 0.5
 FramePadding: 4 3
@@ -1114,7 +1114,7 @@ SeparatorTextBorderSize: 3
 MouseCursorScale: 1
 CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
-WindowPadding: 20 8
+WindowPadding: 8 8
 WindowMinSize: 160 20
 WindowTitleAlign: 0 0.5
 FramePadding: 4 2

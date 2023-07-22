@@ -17,8 +17,6 @@ SceneView::SceneView() : mOpen(true), mFocused(false), mHovered(false), mHovered
 	mOperation = ImGuizmo::OPERATION::TRANSLATE;
 	mCoordinateMode = ImGuizmo::MODE::LOCAL;
 
-	mPerfQueue.setNumberOfSamples(100);
-
 	mSceneContentMin = ImVec2(0, 0);
 	mSceneContentMax = ImVec2(0, 0);
 	mSceneContentSize = ImVec2(0, 0);
@@ -565,12 +563,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Free
 
 		ImGui::Text("Camera Position: %f %f %f\n", cameraSystem->getCameraPosition().x, cameraSystem->getCameraPosition().y, cameraSystem->getCameraPosition().z);
 
-		ImGui::GetForegroundDrawList()->AddRect(mSceneContentMin, mSceneContentMax, 0xFFFF0000);
-
-		mPerfQueue.addSample(cameraSystem->getQuery().mTotalElapsedTime);
-
-		std::vector<float> perfData = mPerfQueue.getData();
-		ImGui::PlotHistogram("##PerfPlot", &perfData[0], (int)perfData.size(), 0, nullptr, 0, 1.0f);
+		//ImGui::GetForegroundDrawList()->AddRect(mSceneContentMin, mSceneContentMax, 0xFFFF0000);
 	}
 	ImGui::End();
 }

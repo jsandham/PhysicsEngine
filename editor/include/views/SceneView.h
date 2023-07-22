@@ -7,7 +7,6 @@
 #include "systems/FreeLookCameraSystem.h"
 
 #include "../EditorClipboard.h"
-#include "../PerformanceQueue.h"
 
 #include "imgui.h"
 #include "ImGuizmo.h"
@@ -35,8 +34,6 @@ namespace PhysicsEditor
 		DebugTargets mActiveDebugTarget;
 		ImGuizmo::OPERATION mOperation;
 		ImGuizmo::MODE mCoordinateMode;
-
-		PerformanceQueue mPerfQueue;
 
 		ImVec2 mWindowPos;
 		ImVec2 mContentMin;

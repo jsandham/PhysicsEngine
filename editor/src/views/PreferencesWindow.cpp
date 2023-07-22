@@ -81,7 +81,7 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 	if (isOpenedThisFrame)
 	{
 		ImGui::SetNextWindowPos(ImVec2(400.0f, 100.0f));
-		ImGui::SetNextWindowSize(ImVec2(600.0f, 500.0f));
+		ImGui::SetNextWindowSize(ImVec2(600.0f, 380.0f));
 
 		ImGui::OpenPopup("##Preferences...");
 		mOpen = true;
@@ -126,22 +126,14 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 			ImGui::EndCombo();
 		}
 
-		ImGuiStyle& style = mStyles[(int)mCurrentStyle];// ImGui::GetStyle();
-
-		// Simplified Settings (expose floating-pointer border sizes as boolean representing 0.0f or 1.0f)
-		{ bool border = (style.WindowBorderSize > 0.0f); if (ImGui::Checkbox("WindowBorder", &border)) { style.WindowBorderSize = border ? 1.0f : 0.0f; } }
-		ImGui::SameLine();
-		{ bool border = (style.FrameBorderSize > 0.0f);  if (ImGui::Checkbox("FrameBorder", &border)) { style.FrameBorderSize = border ? 1.0f : 0.0f; } }
-		ImGui::SameLine();
-		{ bool border = (style.PopupBorderSize > 0.0f);  if (ImGui::Checkbox("PopupBorder", &border)) { style.PopupBorderSize = border ? 1.0f : 0.0f; } }
+		ImGuiStyle& style = mStyles[(int)mCurrentStyle];
 
 		ImGui::Separator();
 
 		if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
 		{
-			if (ImGui::BeginTabItem("Sizes"))
+			if (ImGui::BeginTabItem("Padding"))
 			{
-				ImGui::SeparatorText("Main");
 				ImGui::SliderFloat2("WindowPadding", (float*)&style.WindowPadding, 0.0f, 20.0f, "%.0f");
 				ImGui::SliderFloat2("FramePadding", (float*)&style.FramePadding, 0.0f, 20.0f, "%.0f");
 				ImGui::SliderFloat2("CellPadding", (float*)&style.CellPadding, 0.0f, 20.0f, "%.0f");
@@ -152,14 +144,24 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 				ImGui::SliderFloat("ScrollbarSize", &style.ScrollbarSize, 1.0f, 20.0f, "%.0f");
 				ImGui::SliderFloat("GrabMinSize", &style.GrabMinSize, 1.0f, 20.0f, "%.0f");
 
-				ImGui::SeparatorText("Borders");
+				ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&style.DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f"); ImGui::SameLine(); HelpMarker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
+
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Borders"))
+			{
 				ImGui::SliderFloat("WindowBorderSize", &style.WindowBorderSize, 0.0f, 1.0f, "%.0f");
 				ImGui::SliderFloat("ChildBorderSize", &style.ChildBorderSize, 0.0f, 1.0f, "%.0f");
 				ImGui::SliderFloat("PopupBorderSize", &style.PopupBorderSize, 0.0f, 1.0f, "%.0f");
 				ImGui::SliderFloat("FrameBorderSize", &style.FrameBorderSize, 0.0f, 1.0f, "%.0f");
 				ImGui::SliderFloat("TabBorderSize", &style.TabBorderSize, 0.0f, 1.0f, "%.0f");
 
-				ImGui::SeparatorText("Rounding");
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Rounding"))
+			{
 				ImGui::SliderFloat("WindowRounding", &style.WindowRounding, 0.0f, 12.0f, "%.0f");
 				ImGui::SliderFloat("ChildRounding", &style.ChildRounding, 0.0f, 12.0f, "%.0f");
 				ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f");
@@ -168,7 +170,11 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 				ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0f, 12.0f, "%.0f");
 				ImGui::SliderFloat("TabRounding", &style.TabRounding, 0.0f, 12.0f, "%.0f");
 
-				ImGui::SeparatorText("Widgets");
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Widgets"))
+			{
 				ImGui::SliderFloat2("WindowTitleAlign", (float*)&style.WindowTitleAlign, 0.0f, 1.0f, "%.2f");
 				int window_menu_button_position = style.WindowMenuButtonPosition + 1;
 				if (ImGui::Combo("WindowMenuButtonPosition", (int*)&window_menu_button_position, "None\0Left\0Right\0"))
@@ -183,8 +189,13 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 				ImGui::SliderFloat2("SeparatorTextPadding", (float*)&style.SeparatorTextPadding, 0.0f, 40.0f, "%.0f");
 				ImGui::SliderFloat("LogSliderDeadzone", &style.LogSliderDeadzone, 0.0f, 12.0f, "%.0f");
 
-				ImGui::SeparatorText("Tooltips");
+				ImGui::EndTabItem();
+			}
+
+			if (ImGui::BeginTabItem("Tooltips"))
+			{
 				for (int n = 0; n < 2; n++)
+				{
 					if (ImGui::TreeNodeEx(n == 0 ? "HoverFlagsForTooltipMouse" : "HoverFlagsForTooltipNav"))
 					{
 						ImGuiHoveredFlags* p = (n == 0) ? &style.HoverFlagsForTooltipMouse : &style.HoverFlagsForTooltipNav;
@@ -195,9 +206,7 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 						ImGui::CheckboxFlags("ImGuiHoveredFlags_NoSharedDelay", p, ImGuiHoveredFlags_NoSharedDelay);
 						ImGui::TreePop();
 					}
-
-				ImGui::SeparatorText("Misc");
-				ImGui::SliderFloat2("DisplaySafeAreaPadding", (float*)&style.DisplaySafeAreaPadding, 0.0f, 30.0f, "%.0f"); ImGui::SameLine(); HelpMarker("Adjust if you cannot see the edges of your screen (e.g. on a TV where scaling has not been configured).");
+				}
 
 				ImGui::EndTabItem();
 			}
@@ -276,7 +285,27 @@ void PreferencesWindow::update(Clipboard& clipboard, bool isOpenedThisFrame)
 
 		if (ImGui::Button("Reset to default"))
 		{
-			//ImGui::StyleColorsCorporate();
+			switch (mCurrentStyle)
+			{
+			case EditorStyle::Classic: { ImGui::StyleColorsClassic(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Light: { ImGui::StyleColorsLight(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Dark: { ImGui::StyleColorsDark(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Dracula: { ImGui::StyleColorsDracula(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Cherry: { ImGui::StyleColorsCherry(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::LightGreen: { ImGui::StyleColorsLightGreen(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Yellow: { ImGui::StyleColorsYellow(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Grey: { ImGui::StyleColorsGrey(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Charcoal: { ImGui::StyleColorsCharcoal(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Corporate: { ImGui::StyleColorsCorporate(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::EnemyMouse: { ImGui::StyleColorsEnemyMouse(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::Cinder: { ImGui::StyleColorsCinder(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::DougBlinks: { ImGui::StyleColorsDougBlinks(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::GreenBlue: { ImGui::StyleColorsGreenBlue(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::RedDark: { ImGui::StyleColorsRedDark(&mStyles[(int)mCurrentStyle]); break; }
+			case EditorStyle::DeepDark: { ImGui::StyleColorsDeepDark(&mStyles[(int)mCurrentStyle]); break; }
+			}
+
+			ImGui::SetStyle(&mStyles[(int)mCurrentStyle]);
 		}
 
 		ImGui::EndPopup();
