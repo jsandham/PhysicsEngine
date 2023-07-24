@@ -1,5 +1,5 @@
 IMGUI_VERSION: 1.89.7
-Current_Style: 7
+Current_Style: 4
 Style: Classic
 ImGuiCol_Text: 0.9 0.9 0.9 1
 ImGuiCol_TextDisabled: 0.6 0.6 0.6 1

@@ -1,14 +1,15 @@
 #include "../../include/systems/GizmoSystem.h"
 
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
-GizmoSystem::GizmoSystem(World *world, const Id &id) : System(world, id)
+GizmoSystem::GizmoSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
 }
 
-GizmoSystem::GizmoSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+GizmoSystem::GizmoSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
 }
 
@@ -18,12 +19,15 @@ GizmoSystem::~GizmoSystem()
 
 void GizmoSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void GizmoSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int GizmoSystem::getType() const
@@ -34,6 +38,16 @@ int GizmoSystem::getType() const
 std::string GizmoSystem::getObjectName() const
 {
     return PhysicsEngine::GIZMOSYSTEM_NAME;
+}
+
+Guid GizmoSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id GizmoSystem::getId() const
+{
+    return mId;
 }
 
 void GizmoSystem::init(World *world)

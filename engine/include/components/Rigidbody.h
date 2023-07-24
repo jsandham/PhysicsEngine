@@ -1,17 +1,32 @@
 #ifndef RIGIDBODY_H__
 #define RIGIDBODY_H__
 
-#include "Component.h"
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
 
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+
+#include "ComponentEnums.h"
+
 namespace PhysicsEngine
 {
-class Rigidbody : public Component
-{
+class World;
+
+class Rigidbody
+{ 
+  private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
   public:
+    HideFlag mHide;
+
     float mMass;
     float mDrag;
     float mAngularDrag;
@@ -31,21 +46,18 @@ class Rigidbody : public Component
     Rigidbody(World *world, const Guid &guid, const Id &id);
     ~Rigidbody();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
-};
+    int getType() const;
+    std::string getObjectName() const;
 
-template <> struct ComponentType<Rigidbody>
-{
-    static constexpr int type = PhysicsEngine::RIGIDBODY_TYPE;
-};
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
-template <> struct IsComponentInternal<Rigidbody>
-{
-    static constexpr bool value = true;
+  private:
+    friend class Scene;
 };
 } // namespace PhysicsEngine
 

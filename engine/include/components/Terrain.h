@@ -1,15 +1,19 @@
 #ifndef TERRAIN_H__
 #define TERRAIN_H__
 
-#include "../core/Rect.h"
-#include "../core/Sphere.h"
-#include "Component.h"
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
 
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+#include "../core/Rect.h"
+#include "../core/Sphere.h"
+
 #include "../graphics/MeshHandle.h"
+
+#include "ComponentEnums.h"
 
 namespace PhysicsEngine
 {
@@ -29,9 +33,17 @@ struct TerrainCoverMesh
     int mMaterialCount;
 };
 
-class Terrain : public Component
+class World;
+
+class Terrain
 {
   private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     TerrainChunk mTerrainChunks[81];
     TerrainCoverMesh mGrassMeshes[8];
     TerrainCoverMesh mTreeMeshes[8];
@@ -62,6 +74,9 @@ class Terrain : public Component
     bool mTreeMeshChanged;
 
   public:
+     HideFlag mHide;
+     bool mEnabled;
+
     float mMaxViewDistance;
 
     float mScale;
@@ -78,11 +93,15 @@ class Terrain : public Component
     Terrain(World *world, const Guid &guid, const Id &id);
     ~Terrain();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
     void generateTerrain();
     void regenerateTerrain();
@@ -117,16 +136,9 @@ class Terrain : public Component
     Rect getCentreChunkRect() const;
 
     int getTotalChunkCount() const;
-};
 
-template <> struct ComponentType<Terrain>
-{
-    static constexpr int type = PhysicsEngine::TERRAIN_TYPE;
-};
-
-template <> struct IsComponentInternal<Terrain>
-{
-    static constexpr bool value = true;
+  private:
+    friend class Scene;
 };
 } // namespace PhysicsEngine
 

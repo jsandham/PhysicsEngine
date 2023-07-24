@@ -1,5 +1,7 @@
 #include <fstream>
 
+#include "../../include/core/SerializationEnums.h"
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Entity.h"
 #include "../../include/core/GLM.h"
 #include "../../include/core/Log.h"
@@ -7,6 +9,8 @@
 #include "../../include/core/Types.h"
 #include "../../include/core/Version.h"
 #include "../../include/core/World.h"
+
+#include "../../include/components/ComponentTypes.h"
 
 using namespace PhysicsEngine;
 
@@ -652,7 +656,7 @@ T *Scene::getComponentByGuid_impl(const std::unordered_map<Guid, int> &guidToInd
 
 template <typename T> T *Scene::getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityGuid) const
 {
-    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+    //static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
     assert(allocator != nullptr);
 
@@ -678,7 +682,7 @@ template <typename T> T *Scene::getComponent_impl(const PoolAllocator<T> *alloca
 
 template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, const YAML::Node &in)
 {
-    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+    //static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
     assert(allocator != nullptr);
 
@@ -703,7 +707,7 @@ template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, c
 
 template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityGuid)
 {
-    static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
+    //static_assert(std::is_base_of<Component, T>(), "'T' is not of type Component");
 
     assert(allocator != nullptr);
 
@@ -732,13 +736,13 @@ template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, c
     return component;
 }
 
-Scene::Scene(World *world, const Id &id) : Object(world, id)
+Scene::Scene(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mName = "Unnamed scene";
     mVersion = SCENE_VERSION;
 }
 
-Scene::Scene(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
+Scene::Scene(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mName = "Unnamed scene";
     mVersion = SCENE_VERSION;
@@ -750,7 +754,9 @@ Scene::~Scene()
 
 void Scene::serialize(YAML::Node &out) const
 {
-    Object::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 
     out["name"] = mName;
     out["version"] = mVersion;
@@ -758,7 +764,8 @@ void Scene::serialize(YAML::Node &out) const
 
 void Scene::deserialize(const YAML::Node &in)
 {
-    Object::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 
     mName = YAML::getValue<std::string>(in, "name");
     mVersion = YAML::getValue<std::string>(in, "version");
@@ -797,20 +804,225 @@ void Scene::deserialize(const YAML::Node &in)
                 {
                     Guid entityId = YAML::getValue<Guid>(it->second, "entityId");
 
-                    Component *component = getComponentByGuid(objectGuid, objectType);
-                    if (component == nullptr)
+                    switch (objectType)
                     {
-                        component = addComponent(it->second, objectType);
+                    case ComponentType<Transform>::type: 
+                    {
+                        Transform *transform = getComponentByGuid<Transform>(objectGuid);
+                        if (transform == nullptr)
+                        {
+                            transform = addComponent<Transform>(it->second);
+                        }
+
+                        if (transform != nullptr)
+                        {
+                            transform->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene transform could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<Rigidbody>::type: 
+                    {
+                        Rigidbody *rigidbody = getComponentByGuid<Rigidbody>(objectGuid);
+                        if (rigidbody == nullptr)
+                        {
+                            rigidbody = addComponent<Rigidbody>(it->second);
+                        }
+
+                        if (rigidbody != nullptr)
+                        {
+                            rigidbody->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene rigidbody could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<Camera>::type: 
+                    {
+                        Camera *camera = getComponentByGuid<Camera>(objectGuid);
+                        if (camera == nullptr)
+                        {
+                            camera = addComponent<Camera>(it->second);
+                        }
+
+                        if (camera != nullptr)
+                        {
+                            camera->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene camera could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<MeshRenderer>::type: 
+                    {
+                        MeshRenderer *renderer = getComponentByGuid<MeshRenderer>(objectGuid);
+                        if (renderer == nullptr)
+                        {
+                            renderer = addComponent<MeshRenderer>(it->second);
+                        }
+
+                        if (renderer != nullptr)
+                        {
+                            renderer->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene mesh renderer could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<LineRenderer>::type: 
+                    {
+                        LineRenderer *renderer = getComponentByGuid<LineRenderer>(objectGuid);
+                        if (renderer == nullptr)
+                        {
+                            renderer = addComponent<LineRenderer>(it->second);
+                        }
+
+                        if (renderer != nullptr)
+                        {
+                            renderer->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene line renderer could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<Light>::type: 
+                    {
+                        Light *light = getComponentByGuid<Light>(objectGuid);
+                        if (light == nullptr)
+                        {
+                            light = addComponent<Light>(it->second);
+                        }
+
+                        if (light != nullptr)
+                        {
+                            light->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene light could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<BoxCollider>::type: 
+                    {
+                        BoxCollider *collider = getComponentByGuid<BoxCollider>(objectGuid);
+                        if (collider == nullptr)
+                        {
+                            collider = addComponent<BoxCollider>(it->second);
+                        }
+
+                        if (collider != nullptr)
+                        {
+                            collider->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene box collider could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<SphereCollider>::type: 
+                    {
+                        SphereCollider *collider = getComponentByGuid<SphereCollider>(objectGuid);
+                        if (collider == nullptr)
+                        {
+                            collider = addComponent<SphereCollider>(it->second);
+                        }
+
+                        if (collider != nullptr)
+                        {
+                            collider->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene sphere collider could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<MeshCollider>::type: 
+                    {
+                        MeshCollider *collider = getComponentByGuid<MeshCollider>(objectGuid);
+                        if (collider == nullptr)
+                        {
+                            collider = addComponent<MeshCollider>(it->second);
+                        }
+
+                        if (collider != nullptr)
+                        {
+                            collider->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene mesh collider could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<CapsuleCollider>::type: 
+                    {
+                        CapsuleCollider *collider = getComponentByGuid<CapsuleCollider>(objectGuid);
+                        if (collider == nullptr)
+                        {
+                            collider = addComponent<CapsuleCollider>(it->second);
+                        }
+
+                        if (collider != nullptr)
+                        {
+                            collider->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene capsule collider could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
+                    case ComponentType<Terrain>::type: 
+                    {
+                        Terrain *terrain = getComponentByGuid<Terrain>(objectGuid);
+                        if (terrain == nullptr)
+                        {
+                            terrain = addComponent<Terrain>(it->second);
+                        }
+
+                        if (terrain != nullptr)
+                        {
+                            terrain->deserialize(it->second);
+                        }
+                        else
+                        {
+                            Log::warn("A scene terrain could not be loaded from scene file. Skipping it.\n");
+                        }
+                        break;
+                    }
                     }
 
-                    if (component != nullptr)
-                    {
-                        component->deserialize(it->second);
-                    }
-                    else
-                    {
-                        Log::warn("A scene component could not be loaded from scene file. Skipping it.\n");
-                    }
+
+
+
+                    // Component *component = getComponentByGuid(objectGuid, objectType);
+                    // if (component == nullptr)
+                    // {
+                    //     component = addComponent(it->second, objectType);
+                    // }
+
+                    // if (component != nullptr)
+                    // {
+                    //     component->deserialize(it->second);
+                    // }
+                    // else
+                    // {
+                    //     Log::warn("A scene component could not be loaded from scene file. Skipping it.\n");
+                    // }
                 }
             }
         }
@@ -825,6 +1037,16 @@ int Scene::getType() const
 std::string Scene::getObjectName() const
 {
     return PhysicsEngine::SCENE_NAME;
+}
+
+Guid Scene::getGuid() const
+{
+    return mGuid;
+}
+
+Id Scene::getId() const
+{
+    return mId;
 }
 
 bool Scene::writeToYAML(const std::string &filepath) const
@@ -863,19 +1085,211 @@ bool Scene::writeToYAML(const std::string &filepath) const
             std::vector<std::pair<Guid, int>> temp = entity->getComponentsOnEntity();
             for (size_t j = 0; j < temp.size(); j++)
             {
-                Component *component = getComponentByGuid(temp[j].first, temp[j].second);
-
-                if (component->mHide == HideFlag::None)
+                switch (temp[j].second)
                 {
-                    YAML::Node cn;
-                    component->serialize(cn);
+                case ComponentType<Transform>::type: 
+                {
+                    Transform *transform = getComponentByGuid<Transform>(temp[j].first);
 
-                    YAML::Node componentNode;
-                    componentNode[component->getObjectName()] = cn;
+                    if (transform->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        transform->serialize(cn);
 
-                    out << componentNode;
-                    out << "\n";
+                        YAML::Node transformNode;
+                        transformNode[transform->getObjectName()] = cn;
+
+                        out << transformNode;
+                        out << "\n";
+                    }
+                    break;
                 }
+                case ComponentType<Rigidbody>::type: 
+                {
+                    Rigidbody *rigidbody = getComponentByGuid<Rigidbody>(temp[j].first);
+
+                    if (rigidbody->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        rigidbody->serialize(cn);
+
+                        YAML::Node rigidbodyNode;
+                        rigidbodyNode[rigidbody->getObjectName()] = cn;
+
+                        out << rigidbodyNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<Camera>::type: 
+                {
+                    Camera *camera = getComponentByGuid<Camera>(temp[j].first);
+
+                    if (camera->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        camera->serialize(cn);
+
+                        YAML::Node cameraNode;
+                        cameraNode[camera->getObjectName()] = cn;
+
+                        out << cameraNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<MeshRenderer>::type: 
+                {
+                    MeshRenderer *renderer = getComponentByGuid<MeshRenderer>(temp[j].first);
+
+                    if (renderer->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        renderer->serialize(cn);
+
+                        YAML::Node rendererNode;
+                        rendererNode[renderer->getObjectName()] = cn;
+
+                        out << rendererNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<LineRenderer>::type: 
+                {
+                    LineRenderer *renderer = getComponentByGuid<LineRenderer>(temp[j].first);
+
+                    if (renderer->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        renderer->serialize(cn);
+
+                        YAML::Node rendererNode;
+                        rendererNode[renderer->getObjectName()] = cn;
+
+                        out << rendererNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<Light>::type: 
+                {
+                    Light *light = getComponentByGuid<Light>(temp[j].first);
+
+                    if (light->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        light->serialize(cn);
+
+                        YAML::Node lightNode;
+                        lightNode[light->getObjectName()] = cn;
+
+                        out << lightNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<BoxCollider>::type: 
+                {
+                    BoxCollider *collider = getComponentByGuid<BoxCollider>(temp[j].first);
+
+                    if (collider->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        collider->serialize(cn);
+
+                        YAML::Node colliderNode;
+                        colliderNode[collider->getObjectName()] = cn;
+
+                        out << colliderNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<SphereCollider>::type: 
+                {
+                    SphereCollider *collider = getComponentByGuid<SphereCollider>(temp[j].first);
+
+                    if (collider->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        collider->serialize(cn);
+
+                        YAML::Node colliderNode;
+                        colliderNode[collider->getObjectName()] = cn;
+
+                        out << colliderNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<MeshCollider>::type: 
+                {
+                    MeshCollider *collider = getComponentByGuid<MeshCollider>(temp[j].first);
+
+                    if (collider->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        collider->serialize(cn);
+
+                        YAML::Node colliderNode;
+                        colliderNode[collider->getObjectName()] = cn;
+
+                        out << colliderNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<CapsuleCollider>::type: 
+                {
+                    CapsuleCollider *collider = getComponentByGuid<CapsuleCollider>(temp[j].first);
+
+                    if (collider->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        collider->serialize(cn);
+
+                        YAML::Node colliderNode;
+                        colliderNode[collider->getObjectName()] = cn;
+
+                        out << colliderNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                case ComponentType<Terrain>::type: 
+                {
+                    Terrain *terrain = getComponentByGuid<Terrain>(temp[j].first);
+
+                    if (terrain->mHide == HideFlag::None)
+                    {
+                        YAML::Node cn;
+                        terrain->serialize(cn);
+
+                        YAML::Node terrainNode;
+                        terrainNode[terrain->getObjectName()] = cn;
+
+                        out << terrainNode;
+                        out << "\n";
+                    }
+                    break;
+                }
+                }
+
+
+                // Component *component = getComponentByGuid(temp[j].first, temp[j].second);
+
+                // if (component->mHide == HideFlag::None)
+                // {
+                //     YAML::Node cn;
+                //     component->serialize(cn);
+
+                //     YAML::Node componentNode;
+                //     componentNode[component->getObjectName()] = cn;
+
+                //     out << componentNode;
+                //     out << "\n";
+                // }
             }
         }
     }
@@ -883,11 +1297,6 @@ bool Scene::writeToYAML(const std::string &filepath) const
     out.close();
 
     return true;
-}
-
-std::string Scene::getName() const
-{
-    return mName;
 }
 
 size_t Scene::getNumberOfEntities() const
@@ -941,131 +1350,131 @@ Entity *Scene::getEntityByGuid(const Guid &entityGuid) const
     }
 }
 
-Component *Scene::getComponentById(const Id &componentId, int type) const
-{
-    switch (type)
-    {
-    case ComponentType<Transform>::type: {
-        return getComponentById<Transform>(componentId);
-    }
-    case ComponentType<Rigidbody>::type: {
-        return getComponentById<Rigidbody>(componentId);
-    }
-    case ComponentType<Camera>::type: {
-        return getComponentById<Camera>(componentId);
-    }
-    case ComponentType<MeshRenderer>::type: {
-        return getComponentById<MeshRenderer>(componentId);
-    }
-    case ComponentType<LineRenderer>::type: {
-        return getComponentById<LineRenderer>(componentId);
-    }
-    case ComponentType<Light>::type: {
-        return getComponentById<Light>(componentId);
-    }
-    case ComponentType<BoxCollider>::type: {
-        return getComponentById<BoxCollider>(componentId);
-    }
-    case ComponentType<SphereCollider>::type: {
-        return getComponentById<SphereCollider>(componentId);
-    }
-    case ComponentType<MeshCollider>::type: {
-        return getComponentById<MeshCollider>(componentId);
-    }
-    case ComponentType<CapsuleCollider>::type: {
-        return getComponentById<CapsuleCollider>(componentId);
-    }
-    case ComponentType<Terrain>::type: {
-        return getComponentById<Terrain>(componentId);
-    }
-    }
+// Component *Scene::getComponentById(const Id &componentId, int type) const
+// {
+//     switch (type)
+//     {
+//     case ComponentType<Transform>::type: {
+//         return getComponentById<Transform>(componentId);
+//     }
+//     case ComponentType<Rigidbody>::type: {
+//         return getComponentById<Rigidbody>(componentId);
+//     }
+//     case ComponentType<Camera>::type: {
+//         return getComponentById<Camera>(componentId);
+//     }
+//     case ComponentType<MeshRenderer>::type: {
+//         return getComponentById<MeshRenderer>(componentId);
+//     }
+//     case ComponentType<LineRenderer>::type: {
+//         return getComponentById<LineRenderer>(componentId);
+//     }
+//     case ComponentType<Light>::type: {
+//         return getComponentById<Light>(componentId);
+//     }
+//     case ComponentType<BoxCollider>::type: {
+//         return getComponentById<BoxCollider>(componentId);
+//     }
+//     case ComponentType<SphereCollider>::type: {
+//         return getComponentById<SphereCollider>(componentId);
+//     }
+//     case ComponentType<MeshCollider>::type: {
+//         return getComponentById<MeshCollider>(componentId);
+//     }
+//     case ComponentType<CapsuleCollider>::type: {
+//         return getComponentById<CapsuleCollider>(componentId);
+//     }
+//     case ComponentType<Terrain>::type: {
+//         return getComponentById<Terrain>(componentId);
+//     }
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
-Component *Scene::getComponentByGuid(const Guid &componentGuid, int type) const
-{
-    switch (type)
-    {
-    case ComponentType<Transform>::type: {
-        return getComponentByGuid<Transform>(componentGuid);
-    }
-    case ComponentType<Rigidbody>::type: {
-        return getComponentByGuid<Rigidbody>(componentGuid);
-    }
-    case ComponentType<Camera>::type: {
-        return getComponentByGuid<Camera>(componentGuid);
-    }
-    case ComponentType<MeshRenderer>::type: {
-        return getComponentByGuid<MeshRenderer>(componentGuid);
-    }
-    case ComponentType<LineRenderer>::type: {
-        return getComponentByGuid<LineRenderer>(componentGuid);
-    }
-    case ComponentType<Light>::type: {
-        return getComponentByGuid<Light>(componentGuid);
-    }
-    case ComponentType<BoxCollider>::type: {
-        return getComponentByGuid<BoxCollider>(componentGuid);
-    }
-    case ComponentType<SphereCollider>::type: {
-        return getComponentByGuid<SphereCollider>(componentGuid);
-    }
-    case ComponentType<MeshCollider>::type: {
-        return getComponentByGuid<MeshCollider>(componentGuid);
-    }
-    case ComponentType<CapsuleCollider>::type: {
-        return getComponentByGuid<CapsuleCollider>(componentGuid);
-    }
-    case ComponentType<Terrain>::type: {
-        return getComponentByGuid<Terrain>(componentGuid);
-    }
-    }
+// Component *Scene::getComponentByGuid(const Guid &componentGuid, int type) const
+// {
+//     switch (type)
+//     {
+//     case ComponentType<Transform>::type: {
+//         return getComponentByGuid<Transform>(componentGuid);
+//     }
+//     case ComponentType<Rigidbody>::type: {
+//         return getComponentByGuid<Rigidbody>(componentGuid);
+//     }
+//     case ComponentType<Camera>::type: {
+//         return getComponentByGuid<Camera>(componentGuid);
+//     }
+//     case ComponentType<MeshRenderer>::type: {
+//         return getComponentByGuid<MeshRenderer>(componentGuid);
+//     }
+//     case ComponentType<LineRenderer>::type: {
+//         return getComponentByGuid<LineRenderer>(componentGuid);
+//     }
+//     case ComponentType<Light>::type: {
+//         return getComponentByGuid<Light>(componentGuid);
+//     }
+//     case ComponentType<BoxCollider>::type: {
+//         return getComponentByGuid<BoxCollider>(componentGuid);
+//     }
+//     case ComponentType<SphereCollider>::type: {
+//         return getComponentByGuid<SphereCollider>(componentGuid);
+//     }
+//     case ComponentType<MeshCollider>::type: {
+//         return getComponentByGuid<MeshCollider>(componentGuid);
+//     }
+//     case ComponentType<CapsuleCollider>::type: {
+//         return getComponentByGuid<CapsuleCollider>(componentGuid);
+//     }
+//     case ComponentType<Terrain>::type: {
+//         return getComponentByGuid<Terrain>(componentGuid);
+//     }
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
-Component *Scene::addComponent(const YAML::Node &in, int type)
-{
-    switch (type)
-    {
-    case ComponentType<Transform>::type: {
-        return addComponent<Transform>(in);
-    }
-    case ComponentType<Rigidbody>::type: {
-        return addComponent<Rigidbody>(in);
-    }
-    case ComponentType<Camera>::type: {
-        return addComponent<Camera>(in);
-    }
-    case ComponentType<MeshRenderer>::type: {
-        return addComponent<MeshRenderer>(in);
-    }
-    case ComponentType<LineRenderer>::type: {
-        return addComponent<LineRenderer>(in);
-    }
-    case ComponentType<Light>::type: {
-        return addComponent<Light>(in);
-    }
-    case ComponentType<BoxCollider>::type: {
-        return addComponent<BoxCollider>(in);
-    }
-    case ComponentType<SphereCollider>::type: {
-        return addComponent<SphereCollider>(in);
-    }
-    case ComponentType<MeshCollider>::type: {
-        return addComponent<MeshCollider>(in);
-    }
-    case ComponentType<CapsuleCollider>::type: {
-        return addComponent<CapsuleCollider>(in);
-    }
-    case ComponentType<Terrain>::type: {
-        return addComponent<Terrain>(in);
-    }
-    }
+// Component *Scene::addComponent(const YAML::Node &in, int type)
+// {
+//     switch (type)
+//     {
+//     case ComponentType<Transform>::type: {
+//         return addComponent<Transform>(in);
+//     }
+//     case ComponentType<Rigidbody>::type: {
+//         return addComponent<Rigidbody>(in);
+//     }
+//     case ComponentType<Camera>::type: {
+//         return addComponent<Camera>(in);
+//     }
+//     case ComponentType<MeshRenderer>::type: {
+//         return addComponent<MeshRenderer>(in);
+//     }
+//     case ComponentType<LineRenderer>::type: {
+//         return addComponent<LineRenderer>(in);
+//     }
+//     case ComponentType<Light>::type: {
+//         return addComponent<Light>(in);
+//     }
+//     case ComponentType<BoxCollider>::type: {
+//         return addComponent<BoxCollider>(in);
+//     }
+//     case ComponentType<SphereCollider>::type: {
+//         return addComponent<SphereCollider>(in);
+//     }
+//     case ComponentType<MeshCollider>::type: {
+//         return addComponent<MeshCollider>(in);
+//     }
+//     case ComponentType<CapsuleCollider>::type: {
+//         return addComponent<CapsuleCollider>(in);
+//     }
+//     case ComponentType<Terrain>::type: {
+//         return addComponent<Terrain>(in);
+//     }
+//     }
 
-    return nullptr;
-}
+//     return nullptr;
+// }
 
 int Scene::getIndexOf(const Id &id) const
 {
@@ -1226,7 +1635,7 @@ Entity *Scene::createEntity(const std::string &name)
     Entity *entity = createEntity();
     if (entity != nullptr)
     {
-        entity->setName(name);
+        entity->mName = name;
         return entity;
     }
 
@@ -1246,7 +1655,7 @@ Entity *Scene::createPrimitive(PrimitiveType type)
     Transform *transform = entity->getComponent<Transform>();
     assert(transform != nullptr);
 
-    entity->setName(mesh->getName());
+    entity->mName = mesh->mName;
 
     transform->setPosition(glm::vec3(0, 0, 0));
     transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
@@ -1274,7 +1683,7 @@ Entity *Scene::createNonPrimitive(const Guid &meshGuid)
     Transform *transform = entity->getComponent<Transform>();
     assert(transform != nullptr);
 
-    entity->setName(mesh->getName());
+    entity->mName = mesh->mName;
 
     transform->setPosition(glm::vec3(0, 0, 0));
     transform->setRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f));
@@ -1385,11 +1794,10 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
 
     // Destroy component
     int index = getIndexOf(componentGuid);
-    Component *swap = nullptr;
 
     if (componentType == ComponentType<Transform>::type)
     {
-        swap = mAllocators.mTransformAllocator.destruct(index);
+        Transform* swap = mAllocators.mTransformAllocator.destruct(index);
 
         mIdState.mTransformGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1402,7 +1810,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<Rigidbody>::type)
     {
-        swap = mAllocators.mRigidbodyAllocator.destruct(index);
+        Rigidbody* swap = mAllocators.mRigidbodyAllocator.destruct(index);
 
         mIdState.mRigidbodyGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1415,7 +1823,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<Camera>::type)
     {
-        swap = mAllocators.mCameraAllocator.destruct(index);
+        Camera* swap = mAllocators.mCameraAllocator.destruct(index);
 
         mIdState.mCameraGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1428,7 +1836,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<MeshRenderer>::type)
     {
-        swap = mAllocators.mMeshRendererAllocator.destruct(index);
+        MeshRenderer* swap = mAllocators.mMeshRendererAllocator.destruct(index);
 
         mIdState.mMeshRendererGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1441,7 +1849,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<LineRenderer>::type)
     {
-        swap = mAllocators.mLineRendererAllocator.destruct(index);
+        LineRenderer* swap = mAllocators.mLineRendererAllocator.destruct(index);
 
         mIdState.mLineRendererGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1454,7 +1862,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<Light>::type)
     {
-        swap = mAllocators.mLightAllocator.destruct(index);
+        Light* swap = mAllocators.mLightAllocator.destruct(index);
 
         mIdState.mLightGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1467,7 +1875,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<BoxCollider>::type)
     {
-        swap = mAllocators.mBoxColliderAllocator.destruct(index);
+        BoxCollider* swap = mAllocators.mBoxColliderAllocator.destruct(index);
 
         mIdState.mBoxColliderGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1480,7 +1888,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<SphereCollider>::type)
     {
-        swap = mAllocators.mSphereColliderAllocator.destruct(index);
+        SphereCollider* swap = mAllocators.mSphereColliderAllocator.destruct(index);
 
         mIdState.mSphereColliderGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1493,7 +1901,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<MeshCollider>::type)
     {
-        swap = mAllocators.mMeshColliderAllocator.destruct(index);
+        MeshCollider* swap = mAllocators.mMeshColliderAllocator.destruct(index);
 
         mIdState.mMeshColliderGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1506,7 +1914,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<CapsuleCollider>::type)
     {
-        swap = mAllocators.mCapsuleColliderAllocator.destruct(index);
+        CapsuleCollider* swap = mAllocators.mCapsuleColliderAllocator.destruct(index);
 
         mIdState.mCapsuleColliderGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);
@@ -1519,7 +1927,7 @@ void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &compon
     }
     else if (componentType == ComponentType<Terrain>::type)
     {
-        swap = mAllocators.mTerrainAllocator.destruct(index);
+        Terrain* swap = mAllocators.mTerrainAllocator.destruct(index);
 
         mIdState.mTerrainGuidToGlobalIndex.erase(componentGuid);
         mIdState.mGuidToGlobalIndex.erase(componentGuid);

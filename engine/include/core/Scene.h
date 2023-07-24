@@ -4,8 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "Object.h"
-
 #include "Entity.h"
 #include "Guid.h"
 #include "PoolAllocator.h"
@@ -105,32 +103,40 @@ struct SceneAllocators
     PoolAllocator<Terrain> mTerrainAllocator;
 };
 
-class Scene : public Object
+class Scene
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World *mWorld;
+
     // allocators for entities and components
     SceneAllocators mAllocators;
 
     // id state for entities and components
     SceneIdState mIdState;
 
-    std::string mName;
     std::string mVersion;
+
+  public:
+    std::string mName;
+    HideFlag mHide;
 
   public:
     Scene(World *world, const Id &id);
     Scene(World *world, const Guid &guid, const Id &id);
     ~Scene();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     bool writeToYAML(const std::string &filepath) const;
-
-    std::string getName() const;
 
     size_t getNumberOfEntities() const;
     size_t getNumberOfNonHiddenEntities() const;
@@ -142,10 +148,10 @@ class Scene : public Object
     Entity *getEntityByIndex(size_t index) const;
     Entity *getEntityById(const Id &entityId) const;
     Entity *getEntityByGuid(const Guid &entityGuid) const;
-    Component *getComponentById(const Id &componentId, int type) const;
-    Component *getComponentByGuid(const Guid &componentGuid, int type) const;
-    Component *addComponent(const Guid &entityGuid, int type);
-    Component *addComponent(const YAML::Node &in, int type);
+    // Component *getComponentById(const Id &componentId, int type) const;
+    // Component *getComponentByGuid(const Guid &componentGuid, int type) const;
+    // Component *addComponent(const Guid &entityGuid, int type);
+    // Component *addComponent(const YAML::Node &in, int type);
 
     Entity *createEntity();
     Entity *createEntity(const YAML::Node &in);
@@ -203,15 +209,6 @@ template <typename T> struct SceneType
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
 
-template <typename> struct IsSceneInternal
-{
-    static constexpr bool value = false;
-};
-
-template <> struct IsSceneInternal<Scene>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

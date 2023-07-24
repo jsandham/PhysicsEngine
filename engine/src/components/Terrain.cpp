@@ -1,4 +1,7 @@
 #include "../../include/components/Terrain.h"
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
 #include "../../include/core/Log.h"
 #include "../../include/graphics/Renderer.h"
 
@@ -6,8 +9,9 @@
 
 using namespace PhysicsEngine;
 
-Terrain::Terrain(World *world, const Id &id) : Component(world, id)
+Terrain::Terrain(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mMaterialId = Guid::INVALID;
     mCameraTransformId = Guid::INVALID;
 
@@ -41,8 +45,9 @@ Terrain::Terrain(World *world, const Id &id) : Component(world, id)
     mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
 }
 
-Terrain::Terrain(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+Terrain::Terrain(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mMaterialId = Guid::INVALID;
     mCameraTransformId = Guid::INVALID;
 
@@ -87,7 +92,11 @@ Terrain::~Terrain()
 
 void Terrain::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["cameraTransformId"] = mCameraTransformId;
     out["materialId"] = mMaterialId;
@@ -98,7 +107,10 @@ void Terrain::serialize(YAML::Node &out) const
 
 void Terrain::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mCameraTransformId = YAML::getValue<Guid>(in, "cameraTransformId");
     mMaterialId = YAML::getValue<Guid>(in, "materialId");
@@ -117,6 +129,21 @@ int Terrain::getType() const
 std::string Terrain::getObjectName() const
 {
     return PhysicsEngine::TERRAIN_NAME;
+}
+
+Guid Terrain::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid Terrain::getGuid() const
+{
+    return mGuid;
+}
+
+Id Terrain::getId() const
+{
+    return mId;
 }
 
 void Terrain::generateTerrain()

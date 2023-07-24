@@ -1,5 +1,8 @@
 #include "../../include/components/Transform.h"
 
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
 #include "../../include/core/GLM.h"
 
 #include "glm/gtx/matrix_decompose.hpp"
@@ -8,15 +11,17 @@ using namespace PhysicsEngine;
 
 #define GLM_ENABLE_EXPERIMENTAL
 
-Transform::Transform(World *world, const Id &id) : Component(world, id)
+Transform::Transform(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
-Transform::Transform(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+Transform::Transform(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     mScale = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -28,7 +33,11 @@ Transform::~Transform()
 
 void Transform::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["position"] = mPosition;
     out["rotation"] = mRotation;
@@ -37,7 +46,10 @@ void Transform::serialize(YAML::Node &out) const
 
 void Transform::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mPosition = YAML::getValue<glm::vec3>(in, "position");
     mRotation = YAML::getValue<glm::quat>(in, "rotation");
@@ -52,6 +64,21 @@ int Transform::getType() const
 std::string Transform::getObjectName() const
 {
     return PhysicsEngine::TRANSFORM_NAME;
+}
+
+Guid Transform::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid Transform::getGuid() const
+{
+    return mGuid;
+}
+
+Id Transform::getId() const
+{
+    return mId;
 }
 
 void Transform::setPosition(const glm::vec3 &position)

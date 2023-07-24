@@ -3,37 +3,44 @@
 
 #include <vector>
 
-#include "System.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Input.h"
+#include "../core/Time.h"
 
 namespace PhysicsEngine
 {
-class CleanUpSystem : public System
+class World;
+
+class CleanUpSystem
 {
+  private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
+  public:
+    HideFlag mHide;
+
   public:
     CleanUpSystem(World *world, const Id &id);
     CleanUpSystem(World *world, const Guid &guid, const Id &id);
     ~CleanUpSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 };
 
-template <> struct SystemType<CleanUpSystem>
-{
-    static constexpr int type = PhysicsEngine::CLEANUPSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<CleanUpSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

@@ -1,5 +1,6 @@
 #include "../../include/systems/FreeLookCameraSystem.h"
 
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
@@ -9,7 +10,7 @@ const float FreeLookCameraSystem::PITCH_PAN_SENSITIVITY = 0.0025f;
 const float FreeLookCameraSystem::ZOOM_SENSITIVITY = 0.2f;      // 125.0f;
 const float FreeLookCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 
-FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : System(world, id)
+FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mTransformId = Guid::INVALID;
     mCameraId = Guid::INVALID;
@@ -21,7 +22,7 @@ FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : System(
     rotationOnClick = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mTransformId = Guid::INVALID;
     mCameraId = Guid::INVALID;
@@ -38,12 +39,15 @@ FreeLookCameraSystem::~FreeLookCameraSystem()
 
 void FreeLookCameraSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void FreeLookCameraSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int FreeLookCameraSystem::getType() const
@@ -54,6 +58,16 @@ int FreeLookCameraSystem::getType() const
 std::string FreeLookCameraSystem::getObjectName() const
 {
     return PhysicsEngine::FREELOOKCAMERASYSTEM_NAME;
+}
+
+Guid FreeLookCameraSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id FreeLookCameraSystem::getId() const
+{
+    return mId;
 }
 
 void FreeLookCameraSystem::init(World *world)

@@ -6,79 +6,17 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "Component.h"
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 
 #include "../graphics/Framebuffer.h"
 #include "../graphics/RenderTextureHandle.h"
 
+#include "ComponentEnums.h"
+
 namespace PhysicsEngine
 {
-enum class LightType
-{
-    Directional,
-    Spot,
-    Point,
-    None
-};
-
-enum class ShadowType
-{
-    Hard,
-    Soft,
-    None
-};
-
-enum class ShadowMapResolution
-{
-    Low512x512 = 512,
-    Medium1024x1024 = 1024,
-    High2048x2048 = 2048,
-    VeryHigh4096x4096 = 4096
-};
-
-constexpr auto LightTypeToString(LightType type)
-{
-    switch (type)
-    {
-    case LightType::Directional:
-        return "Directional";
-    case LightType::Spot:
-        return "Spot";
-    case LightType::Point:
-        return "Point";
-    case LightType::None:
-        return "None";
-    }
-}
-
-constexpr auto ShadowTypeToString(ShadowType type)
-{
-    switch (type)
-    {
-    case ShadowType::Hard:
-        return "Hard";
-    case ShadowType::Soft:
-        return "Soft";
-    case ShadowType::None:
-        return "None";
-    }
-}
-
-constexpr auto ShadowTypeToString(ShadowMapResolution resolution)
-{
-    switch (resolution)
-    {
-    case ShadowMapResolution::Low512x512:
-        return "Low512x512";
-    case ShadowMapResolution::Medium1024x1024:
-        return "Medium1024x1024";
-    case ShadowMapResolution::High2048x2048:
-        return "High2048x2048";
-    case ShadowMapResolution::VeryHigh4096x4096:
-        return "VeryHigh4096x4096";
-    }
-}
-
 struct LightTargets
 {
     Framebuffer *mShadowCascadeFBO[5];
@@ -86,9 +24,13 @@ struct LightTargets
     Framebuffer *mShadowCubemapFBO;
 };
 
-class Light : public Component
+class World;
+
+class Light
 {
   public:
+    HideFlag mHide;
+
     glm::vec4 mColor;
     float mIntensity;
     float mSpotAngle;
@@ -102,6 +44,12 @@ class Light : public Component
     bool mEnabled;
 
   private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     ShadowMapResolution mShadowMapResolution;
     LightTargets mTargets;
 
@@ -110,11 +58,15 @@ class Light : public Component
     Light(World *world, const Guid &guid, const Id &id);
     ~Light();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
     void resizeTargets();
 
@@ -131,71 +83,10 @@ class Light : public Component
     RenderTextureHandle *getNativeGraphicsShadowCascadeDepthTex(int index) const;
     RenderTextureHandle *getNativeGrpahicsShadowSpotlightDepthTex() const;
     RenderTextureHandle *getNativeGraphicsShadowCubemapDepthTex() const;
-};
 
-template <> struct ComponentType<Light>
-{
-    static constexpr int type = PhysicsEngine::LIGHT_TYPE;
-};
-
-template <> struct IsComponentInternal<Light>
-{
-    static constexpr bool value = true;
+  private:
+    friend class Scene;
 };
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// LightType
-template <> struct convert<PhysicsEngine::LightType>
-{
-    static Node encode(const PhysicsEngine::LightType &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::LightType &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::LightType>(node.as<int>());
-        return true;
-    }
-};
-
-// ShadowType
-template <> struct convert<PhysicsEngine::ShadowType>
-{
-    static Node encode(const PhysicsEngine::ShadowType &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::ShadowType &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::ShadowType>(node.as<int>());
-        return true;
-    }
-};
-
-// ShadowMapResolution
-template <> struct convert<PhysicsEngine::ShadowMapResolution>
-{
-    static Node encode(const PhysicsEngine::ShadowMapResolution &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::ShadowMapResolution &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::ShadowMapResolution>(node.as<int>());
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif

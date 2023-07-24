@@ -3,12 +3,14 @@
 
 #include <vector>
 
-#include "System.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/AABB.h"
 #include "../core/Color.h"
 #include "../core/Frustum.h"
 #include "../core/Input.h"
+#include "../core/Time.h"
 #include "../core/Line.h"
 #include "../core/Plane.h"
 #include "../core/Ray.h"
@@ -20,24 +22,34 @@
 
 namespace PhysicsEngine
 {
-class GizmoSystem : public System
+class GizmoSystem
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
     GizmoRenderer mGizmoRenderer;
+
+  public:
+    HideFlag mHide;
 
   public:
     GizmoSystem(World *world, const Id &id);
     GizmoSystem(World *world, const Guid &guid, const Id &id);
     ~GizmoSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 
     void addToDrawList(const Line &line, const Color &color);
     void addToDrawList(const Ray &ray, float t, const Color &color);
@@ -49,14 +61,6 @@ class GizmoSystem : public System
     void clearDrawList();
 };
 
-template <> struct SystemType<GizmoSystem>
-{
-    static constexpr int type = PhysicsEngine::GIZMOSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<GizmoSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

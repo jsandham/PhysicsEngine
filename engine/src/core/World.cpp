@@ -4,49 +4,13 @@
 
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
+#include "../../include/core/AssetTypes.h"
+
+#include "../../include/components/ComponentTypes.h"
 
 #include "../../include/graphics/RenderContext.h"
 
 using namespace PhysicsEngine;
-
-template <> size_t World::getNumberOfSystems<RenderSystem>() const
-{
-    return mAllocators.mRenderSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<PhysicsSystem>() const
-{
-    return mAllocators.mPhysicsSystemAllocator.getCount();
-}
-template <> size_t World::getNumberOfSystems<CleanUpSystem>() const
-{
-    return mAllocators.mCleanupSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<DebugSystem>() const
-{
-    return mAllocators.mDebugSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<GizmoSystem>() const
-{
-    return mAllocators.mGizmoSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<FreeLookCameraSystem>() const
-{
-    return mAllocators.mFreeLookCameraSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<TerrainSystem>() const
-{
-    return mAllocators.mTerrainSystemAllocator.getCount();
-}
-
-template <> size_t World::getNumberOfSystems<AssetLoadingSystem>() const
-{
-    return mAllocators.mAssetLoadingSystemAllocator.getCount();
-}
 
 template <> size_t World::getNumberOfAssets<Mesh>() const
 {
@@ -79,205 +43,41 @@ template <> size_t World::getNumberOfAssets<RenderTexture>() const
 
 template <> RenderSystem *World::getSystem<RenderSystem>() const
 {
-    return mAllocators.mRenderSystemAllocator.get(0);
+    return mRenderSystem;
 }
 
 template <> PhysicsSystem *World::getSystem<PhysicsSystem>() const
 {
-    return mAllocators.mPhysicsSystemAllocator.get(0);
+    return mPhysicsSystem;
 }
 template <> CleanUpSystem *World::getSystem<CleanUpSystem>() const
 {
-    return mAllocators.mCleanupSystemAllocator.get(0);
+    return mCleanUpSystem;
 }
 
 template <> DebugSystem *World::getSystem<DebugSystem>() const
 {
-    return mAllocators.mDebugSystemAllocator.get(0);
+    return mDebugSystem;
 }
 
 template <> GizmoSystem *World::getSystem<GizmoSystem>() const
 {
-    return mAllocators.mGizmoSystemAllocator.get(0);
+    return mGizmoSystem;
 }
 
 template <> FreeLookCameraSystem *World::getSystem<FreeLookCameraSystem>() const
 {
-    return mAllocators.mFreeLookCameraSystemAllocator.get(0);
+    return mFreeLookCameraSystem;
 }
 
 template <> TerrainSystem *World::getSystem<TerrainSystem>() const
 {
-    return mAllocators.mTerrainSystemAllocator.get(0);
+    return mTerrainSystem;
 }
 
 template <> AssetLoadingSystem *World::getSystem<AssetLoadingSystem>() const
 {
-    return mAllocators.mAssetLoadingSystemAllocator.get(0);
-}
-
-template <> RenderSystem *World::addSystem<RenderSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mRenderSystemAllocator, order);
-}
-
-template <> PhysicsSystem *World::addSystem<PhysicsSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mPhysicsSystemAllocator, order);
-}
-template <> CleanUpSystem *World::addSystem<CleanUpSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mCleanupSystemAllocator, order);
-}
-
-template <> DebugSystem *World::addSystem<DebugSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mDebugSystemAllocator, order);
-}
-
-template <> GizmoSystem *World::addSystem<GizmoSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mGizmoSystemAllocator, order);
-}
-
-template <> FreeLookCameraSystem *World::addSystem<FreeLookCameraSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mFreeLookCameraSystemAllocator, order);
-}
-
-template <> TerrainSystem *World::addSystem<TerrainSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mTerrainSystemAllocator, order);
-}
-
-template <> AssetLoadingSystem *World::addSystem<AssetLoadingSystem>(size_t order)
-{
-    return addSystem_impl(&mAllocators.mAssetLoadingSystemAllocator, order);
-}
-
-template <> RenderSystem *World::getSystemByIndex<RenderSystem>(size_t index) const
-{
-    return mAllocators.mRenderSystemAllocator.get(index);
-}
-
-template <> PhysicsSystem *World::getSystemByIndex<PhysicsSystem>(size_t index) const
-{
-    return mAllocators.mPhysicsSystemAllocator.get(index);
-}
-template <> CleanUpSystem *World::getSystemByIndex<CleanUpSystem>(size_t index) const
-{
-    return mAllocators.mCleanupSystemAllocator.get(index);
-}
-
-template <> DebugSystem *World::getSystemByIndex<DebugSystem>(size_t index) const
-{
-    return mAllocators.mDebugSystemAllocator.get(index);
-}
-
-template <> GizmoSystem *World::getSystemByIndex<GizmoSystem>(size_t index) const
-{
-    return mAllocators.mGizmoSystemAllocator.get(index);
-}
-
-template <> FreeLookCameraSystem *World::getSystemByIndex<FreeLookCameraSystem>(size_t index) const
-{
-    return mAllocators.mFreeLookCameraSystemAllocator.get(index);
-}
-
-template <> TerrainSystem *World::getSystemByIndex<TerrainSystem>(size_t index) const
-{
-    return mAllocators.mTerrainSystemAllocator.get(index);
-}
-
-template <> AssetLoadingSystem *World::getSystemByIndex<AssetLoadingSystem>(size_t index) const
-{
-    return mAllocators.mAssetLoadingSystemAllocator.get(index);
-}
-
-template <> RenderSystem *World::getSystemById<RenderSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mRenderSystemIdToGlobalIndex, &mAllocators.mRenderSystemAllocator, systemId);
-}
-
-template <> PhysicsSystem *World::getSystemById<PhysicsSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mPhysicsSystemIdToGlobalIndex, &mAllocators.mPhysicsSystemAllocator, systemId);
-}
-template <> CleanUpSystem *World::getSystemById<CleanUpSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mCleanupSystemIdToGlobalIndex, &mAllocators.mCleanupSystemAllocator, systemId);
-}
-
-template <> DebugSystem *World::getSystemById<DebugSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mDebugSystemIdToGlobalIndex, &mAllocators.mDebugSystemAllocator, systemId);
-}
-
-template <> GizmoSystem *World::getSystemById<GizmoSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mGizmoSystemIdToGlobalIndex, &mAllocators.mGizmoSystemAllocator, systemId);
-}
-
-template <> FreeLookCameraSystem *World::getSystemById<FreeLookCameraSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mFreeLookCameraSystemIdToGlobalIndex,
-                              &mAllocators.mFreeLookCameraSystemAllocator, systemId);
-}
-
-template <> TerrainSystem *World::getSystemById<TerrainSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mTerrainSystemIdToGlobalIndex, &mAllocators.mTerrainSystemAllocator, systemId);
-}
-
-template <> AssetLoadingSystem *World::getSystemById<AssetLoadingSystem>(const Id &systemId) const
-{
-    return getSystemById_impl(mIdState.mAssetLoadingSystemIdToGlobalIndex, &mAllocators.mAssetLoadingSystemAllocator,
-                              systemId);
-}
-
-template <> RenderSystem *World::getSystemByGuid<RenderSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mRenderSystemGuidToGlobalIndex, &mAllocators.mRenderSystemAllocator,
-                                systemGuid);
-}
-
-template <> PhysicsSystem *World::getSystemByGuid<PhysicsSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mPhysicsSystemGuidToGlobalIndex, &mAllocators.mPhysicsSystemAllocator,
-                                systemGuid);
-}
-template <> CleanUpSystem *World::getSystemByGuid<CleanUpSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mCleanupSystemGuidToGlobalIndex, &mAllocators.mCleanupSystemAllocator,
-                                systemGuid);
-}
-
-template <> DebugSystem *World::getSystemByGuid<DebugSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mDebugSystemGuidToGlobalIndex, &mAllocators.mDebugSystemAllocator, systemGuid);
-}
-
-template <> GizmoSystem *World::getSystemByGuid<GizmoSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mGizmoSystemGuidToGlobalIndex, &mAllocators.mGizmoSystemAllocator, systemGuid);
-}
-
-template <> FreeLookCameraSystem *World::getSystemByGuid<FreeLookCameraSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mFreeLookCameraSystemGuidToGlobalIndex,
-                                &mAllocators.mFreeLookCameraSystemAllocator, systemGuid);
-}
-
-template <> TerrainSystem *World::getSystemByGuid<TerrainSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mTerrainSystemGuidToGlobalIndex, &mAllocators.mTerrainSystemAllocator,
-                                systemGuid);
-}
-
-template <> AssetLoadingSystem *World::getSystemByGuid<AssetLoadingSystem>(const Guid &systemGuid) const
-{
-    return getSystemByGuid_impl(mIdState.mAssetLoadingSystemGuidToGlobalIndex,
-                                &mAllocators.mAssetLoadingSystemAllocator, systemGuid);
+    return mAssetLoadingSystem;
 }
 
 template <> Mesh *World::getAssetByIndex<Mesh>(size_t index) const
@@ -541,70 +341,6 @@ template <> void World::addToIdState_impl<RenderTexture>(const Guid &guid, const
     addToIdState(guid, id, index, type);
 }
 
-template <> void World::addToIdState_impl<RenderSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mRenderSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mRenderSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<PhysicsSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mPhysicsSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mPhysicsSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<CleanUpSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mCleanupSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mCleanupSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<DebugSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mDebugSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mDebugSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<GizmoSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mGizmoSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mGizmoSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<FreeLookCameraSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mFreeLookCameraSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mFreeLookCameraSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<TerrainSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mTerrainSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mTerrainSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void World::addToIdState_impl<AssetLoadingSystem>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mAssetLoadingSystemGuidToGlobalIndex[guid] = index;
-    mIdState.mAssetLoadingSystemIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
 template <> void World::removeFromIdState_impl<Scene>(const Guid &guid, const Id &id)
 {
     mIdState.mSceneGuidToGlobalIndex.erase(guid);
@@ -661,132 +397,11 @@ template <> void World::removeFromIdState_impl<RenderTexture>(const Guid &guid, 
     removeFromIdState(guid, id);
 }
 
-template <> void World::removeFromIdState_impl<RenderSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mRenderSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mRenderSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<PhysicsSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mPhysicsSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mPhysicsSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<CleanUpSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mCleanupSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mCleanupSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<DebugSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mDebugSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mDebugSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<GizmoSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mGizmoSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mGizmoSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<FreeLookCameraSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mFreeLookCameraSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mFreeLookCameraSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<TerrainSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mTerrainSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mTerrainSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void World::removeFromIdState_impl<AssetLoadingSystem>(const Guid &guid, const Id &id)
-{
-    mIdState.mAssetLoadingSystemGuidToGlobalIndex.erase(guid);
-    mIdState.mAssetLoadingSystemIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <typename T> T *World::addSystem_impl(PoolAllocator<T> *allocator, size_t order)
-{
-    static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
-
-    int systemGlobalIndex = (int)allocator->getCount();
-    int systemType = SystemType<T>::type;
-
-    T *system = allocator->construct(this, Guid::newGuid(), Id::newId());
-
-    if (system != nullptr)
-    {
-        addToIdState_impl<T>(system->getGuid(), system->getId(), systemGlobalIndex, systemType);
-
-        size_t locationToInsert = mSystems.size();
-        for (size_t i = 0; i < mSystems.size(); i++)
-        {
-            if (order < mSystems[i]->getOrder())
-            {
-                locationToInsert = i;
-                break;
-            }
-        }
-
-        mSystems.insert(mSystems.begin() + locationToInsert, system);
-    }
-
-    return system;
-}
-
-template <typename T>
-T *World::getSystemById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                             const Id &systemId) const
-{
-    static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
-
-    if (allocator == nullptr || SystemType<T>::type != getTypeOf(systemId))
-    {
-        return nullptr;
-    }
-
-    return getById_impl<T>(idToIndexMap, allocator, systemId);
-}
-
-template <typename T>
-T *World::getSystemByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
-                               const Guid &systemGuid) const
-{
-    static_assert(std::is_base_of<System, T>(), "'T' is not of type System");
-
-    if (allocator == nullptr || SystemType<T>::type != getTypeOf(systemGuid))
-    {
-        return nullptr;
-    }
-
-    return getByGuid_impl<T>(guidToIndexMap, allocator, systemGuid);
-}
-
 template <typename T>
 T *World::getAssetById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
                             const Id &assetId) const
 {
-    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+    //static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     if (allocator == nullptr || AssetType<T>::type != getTypeOf(assetId))
     {
@@ -800,7 +415,7 @@ template <typename T>
 T *World::getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
                               const Guid &assetGuid) const
 {
-    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+    //static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     if (allocator == nullptr || AssetType<T>::type != getTypeOf(assetGuid))
     {
@@ -812,7 +427,7 @@ T *World::getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMa
 
 template <typename T> T *World::createAsset_impl(PoolAllocator<T> *allocator, const Guid &assetGuid)
 {
-    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+    //static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     int index = (int)allocator->getCount();
     int type = AssetType<T>::type;
@@ -829,7 +444,7 @@ template <typename T> T *World::createAsset_impl(PoolAllocator<T> *allocator, co
 
 template <typename T> T *World::createAsset_impl(PoolAllocator<T> *allocator, const YAML::Node &in)
 {
-    static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
+    //static_assert(std::is_base_of<Asset, T>(), "'T' is not of type Asset");
 
     int index = (int)allocator->getCount();
     int type = AssetType<T>::type;
@@ -848,8 +463,8 @@ template <typename T>
 T *World::getById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
                        const Id &id) const
 {
-    static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
-                  "'T' is not of type Asset or System");
+    //static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
+    //              "'T' is not of type Asset or System");
 
     std::unordered_map<Id, int>::const_iterator it = idToIndexMap.find(id);
     if (it != idToIndexMap.end())
@@ -866,8 +481,8 @@ template <typename T>
 T *World::getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
                          const Guid &guid) const
 {
-    static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
-                  "'T' is not of type Asset or System");
+    //static_assert(std::is_base_of<Scene, T>() || std::is_base_of<Asset, T>() || std::is_base_of<System, T>(),
+    //              "'T' is not of type Asset or System");
 
     std::unordered_map<Guid, int>::const_iterator it = guidToIndexMap.find(guid);
     if (it != guidToIndexMap.end())
@@ -882,6 +497,8 @@ T *World::getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, co
 
 World::World()
 {
+    //mAssetLoadingSystem = new AssetLoadingSystem();
+
     mActiveScene = createScene();
     mPrimitives.createPrimitiveMeshes(this, 10, 10);
 }
@@ -890,7 +507,7 @@ World::~World()
 {
 }
 
-void World::loadAssetsInPath(const std::filesystem::path &filePath)
+void World::loadAllAssetsInPath(const std::filesystem::path &filePath)
 {
     if (std::filesystem::is_directory(filePath))
     {
@@ -913,15 +530,26 @@ void World::loadAssetsInPath(const std::filesystem::path &filePath)
                 else if (std::filesystem::is_regular_file(entry, error_code))
                 {
                     std::string extension = entry.path().extension().string();
-                    if (extension == MESH_EXT || extension == SHADER_EXT || extension == MATERIAL_EXT ||
-                        extension == TEXTURE2D_EXT)
-                    {
-                        std::filesystem::path relativeDataPath =
+                    
+                    std::filesystem::path relativeDataPath =
                             entry.path().lexically_relative(std::filesystem::current_path());
 
-                        std::cout << "relative data path: " << relativeDataPath.string() << std::endl;
-
-                        loadAssetFromYAML(relativeDataPath.string());
+                    std::cout << "relative data path: " << relativeDataPath.string() << std::endl;
+                    if(extension == MESH_EXT)
+                    {
+                        loadMeshFromYAML(relativeDataPath.string());
+                    }
+                    else if(extension == SHADER_EXT)
+                    {
+                        loadShaderFromYAML(relativeDataPath.string());
+                    }
+                    else if(extension == MATERIAL_EXT)
+                    {
+                        loadMaterialFromYAML(relativeDataPath.string());
+                    }
+                    else if(extension == TEXTURE2D_EXT)
+                    {
+                        loadTexture2DFromYAML(relativeDataPath.string());
                     }
                 }
             }
@@ -929,9 +557,8 @@ void World::loadAssetsInPath(const std::filesystem::path &filePath)
     }
 }
 
-Asset *World::loadAssetFromYAML(const std::string &filePath)
+bool World::loadAssetYAML(const std::string &filePath, YAML::Node &in, Guid& guid, int& type)
 {
-    YAML::Node in;
     try
     {
         in = YAML::LoadFile(filePath);
@@ -939,39 +566,181 @@ Asset *World::loadAssetFromYAML(const std::string &filePath)
     catch (YAML::Exception e /*YAML::BadFile e*/)
     {
         Log::error("YAML exception hit when trying to load file");
-        return nullptr;
+        return false;
     }
 
     if (!in.IsMap() || in.begin() == in.end())
     {
-        return nullptr;
+        return false;
     }
 
     if (in.begin()->first.IsScalar() && in.begin()->second.IsMap())
     {
-        int type = YAML::getValue<int>(in.begin()->second, "type");
-        Guid guid = YAML::getValue<Guid>(in.begin()->second, "id");
+        type = YAML::getValue<int>(in.begin()->second, "type");
+        guid = YAML::getValue<Guid>(in.begin()->second, "id");
 
         if (PhysicsEngine::isAsset(type) && guid.isValid())
         {
             generateSourcePaths(filePath, in.begin()->second);
-
-            Asset *asset = getAssetByGuid(guid, type);
-            if (asset != nullptr)
-            {
-                asset->deserialize(in.begin()->second);
-            }
-            else
-            {
-                asset = createAsset(in.begin()->second, type);
-            }
-
-            return asset;
+            return true;
         }
+
+    }
+    
+    return false;
+}
+
+Cubemap* World::loadCubemapFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        Cubemap *cubemap = getAssetByGuid<Cubemap>(guid);
+        if (cubemap != nullptr)
+        {
+            cubemap->deserialize(in.begin()->second);
+        }
+        else
+        {
+            cubemap = createAsset<Cubemap>(in.begin()->second);
+        }
+
+        return cubemap;
+    }
+    
+    return nullptr;
+}
+
+Material* World::loadMaterialFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        Material *material = getAssetByGuid<Material>(guid);
+        if (material != nullptr)
+        {
+            material->deserialize(in.begin()->second);
+        }
+        else
+        {
+            material = createAsset<Material>(in.begin()->second);
+        }
+
+        return material;
     }
 
     return nullptr;
 }
+
+Mesh* World::loadMeshFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        Mesh *mesh = getAssetByGuid<Mesh>(guid);
+        if (mesh != nullptr)
+        {
+            mesh->deserialize(in.begin()->second);
+        }
+        else
+        {
+            mesh = createAsset<Mesh>(in.begin()->second);
+        }
+
+        return mesh;
+    }
+
+    return nullptr;
+}
+
+RenderTexture* World::loadRenderTextureFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        RenderTexture *texture = getAssetByGuid<RenderTexture>(guid);
+        if (texture != nullptr)
+        {
+            texture->deserialize(in.begin()->second);
+        }
+        else
+        {
+            texture = createAsset<RenderTexture>(in.begin()->second);
+        }
+
+        return texture;
+    }
+
+    return nullptr;
+}
+
+Shader* World::loadShaderFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        Shader *shader = getAssetByGuid<Shader>(guid);
+        if (shader != nullptr)
+        {
+            shader->deserialize(in.begin()->second);
+        }
+        else
+        {
+            shader = createAsset<Shader>(in.begin()->second);
+        }
+
+        return shader;
+    }
+
+    return nullptr;
+}
+
+Texture2D* World::loadTexture2DFromYAML(const std::string &filePath)
+{
+    YAML::Node in;
+
+    Guid guid = Guid::INVALID;
+    int type = -1;
+    if(loadAssetYAML(filePath, in, guid, type))
+    {
+        Texture2D *texture = getAssetByGuid<Texture2D>(guid);
+        if (texture != nullptr)
+        {
+            texture->deserialize(in.begin()->second);
+        }
+        else
+        {
+            texture = createAsset<Texture2D>(in.begin()->second);
+        }
+
+        return texture;
+    }
+
+    return nullptr;
+}
+
+
+
+Material* loadMaterialFromYAML(const std::string &filePath);
+Mesh* loadMeshFromYAML(const std::string &filePath);
+RenderTexture* loadRenderTextureFromYAML(const std::string &filePath);
+Texture2D* loadTexture2DFromYAML(const std::string &filePath);
+
 
 Scene *World::loadSceneFromYAML(const std::string &filePath)
 {
@@ -1019,13 +788,53 @@ bool World::writeAssetToYAML(const std::string &filePath, const Guid &assetGuid)
 {
     int type = getTypeOf(assetGuid);
 
-    Asset *asset = getAssetByGuid(assetGuid, type);
-    if (asset == nullptr)
+    switch(type)
     {
-        return false;
+        case AssetType<Cubemap>::type:
+        {
+            Cubemap *cubemap = getCubemapByGuid(assetGuid);
+            if (cubemap == nullptr){ return false; }
+
+            return cubemap->writeToYAML(filePath);
+        }
+        case AssetType<Material>::type:
+        {
+            Material *material = getMaterialByGuid(assetGuid);
+            if (material == nullptr){ return false; }
+
+            return material->writeToYAML(filePath);
+        }
+        case AssetType<Mesh>::type:
+        {
+            Mesh *mesh = getMeshByGuid(assetGuid);
+            if (mesh == nullptr){ return false; }
+
+            return mesh->writeToYAML(filePath);
+        }
+        case AssetType<RenderTexture>::type:
+        {
+            RenderTexture *texture = getRenderTextureByGuid(assetGuid);
+            if (texture == nullptr){ return false; }
+
+            return texture->writeToYAML(filePath);
+        }
+        case AssetType<Shader>::type:
+        {
+            Shader *shader = getShaderByGuid(assetGuid);
+            if (shader == nullptr){ return false; }
+
+            return shader->writeToYAML(filePath);
+        }
+        case AssetType<Texture2D>::type:
+        {
+            Texture2D *texture = getTexture2DByGuid(assetGuid);
+            if (texture == nullptr){ return false; }
+
+            return texture->writeToYAML(filePath);
+        } 
     }
 
-    return asset->writeToYAML(filePath);
+    return false;
 }
 
 bool World::writeSceneToYAML(const std::string &filePath, const Guid &sceneGuid) const
@@ -1064,20 +873,227 @@ void World::copyDoNotDestroyEntities(Scene *from, Scene *to)
             std::vector<std::pair<Guid, int>> components = entity->getComponentsOnEntity();
             for (size_t j = 0; j < components.size(); j++)
             {
-                Component *component = from->getComponentByGuid(components[j].first, components[j].second);
-
-                YAML::Node componentNode;
-                component->serialize(componentNode);
-
-                Component *newComponent = to->getComponentByGuid(components[j].first, components[j].second);
-                if (newComponent != nullptr)
+                switch (components[j].second)
                 {
-                    newComponent->deserialize(componentNode);
-                }
-                else
+                case ComponentType<Transform>::type: 
                 {
-                    to->addComponent(componentNode, component->getType());
+                    Transform *component = from->getComponentByGuid<Transform>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    Transform *newComponent = to->getComponentByGuid<Transform>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<Transform>(componentNode);
+                    }
+                    break;
                 }
+                case ComponentType<Rigidbody>::type: 
+                {
+                    Rigidbody *component = from->getComponentByGuid<Rigidbody>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    Rigidbody *newComponent = to->getComponentByGuid<Rigidbody>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<Rigidbody>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<Camera>::type: 
+                {
+                    Camera *component = from->getComponentByGuid<Camera>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    Camera *newComponent = to->getComponentByGuid<Camera>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<Camera>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<MeshRenderer>::type: 
+                {
+                    MeshRenderer *component = from->getComponentByGuid<MeshRenderer>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    MeshRenderer *newComponent = to->getComponentByGuid<MeshRenderer>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<MeshRenderer>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<LineRenderer>::type: 
+                {
+                    LineRenderer *component = from->getComponentByGuid<LineRenderer>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    LineRenderer *newComponent = to->getComponentByGuid<LineRenderer>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<LineRenderer>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<Light>::type: 
+                {
+                    Light *component = from->getComponentByGuid<Light>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    Light *newComponent = to->getComponentByGuid<Light>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<Light>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<BoxCollider>::type: 
+                {
+                    BoxCollider *component = from->getComponentByGuid<BoxCollider>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    BoxCollider *newComponent = to->getComponentByGuid<BoxCollider>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<BoxCollider>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<SphereCollider>::type: 
+                {
+                    SphereCollider *component = from->getComponentByGuid<SphereCollider>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    SphereCollider *newComponent = to->getComponentByGuid<SphereCollider>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<SphereCollider>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<MeshCollider>::type: 
+                {
+                    MeshCollider *component = from->getComponentByGuid<MeshCollider>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    MeshCollider *newComponent = to->getComponentByGuid<MeshCollider>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<MeshCollider>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<CapsuleCollider>::type: 
+                {
+                    CapsuleCollider *component = from->getComponentByGuid<CapsuleCollider>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    CapsuleCollider *newComponent = to->getComponentByGuid<CapsuleCollider>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<CapsuleCollider>(componentNode);
+                    }
+                    break;
+                }
+                case ComponentType<Terrain>::type: 
+                {
+                    Terrain *component = from->getComponentByGuid<Terrain>(components[j].first);
+
+                    YAML::Node componentNode;
+                    component->serialize(componentNode);
+
+                    Terrain *newComponent = to->getComponentByGuid<Terrain>(components[j].first);
+                    if (newComponent != nullptr)
+                    {
+                        newComponent->deserialize(componentNode);
+                    }
+                    else
+                    {
+                        to->addComponent<Terrain>(componentNode);
+                    }
+                    break;
+                }
+                }
+
+
+
+
+
+
+                // Component *component = from->getComponentByGuid(components[j].first, components[j].second);
+
+                // YAML::Node componentNode;
+                // component->serialize(componentNode);
+
+                // Component *newComponent = to->getComponentByGuid(components[j].first, components[j].second);
+                // if (newComponent != nullptr)
+                // {
+                //     newComponent->deserialize(componentNode);
+                // }
+                // else
+                // {
+                //     to->addComponent(componentNode, component->getType());
+                // }
             }
         }
     }
@@ -1139,11 +1155,6 @@ size_t World::getNumberOfScenes() const
     return mAllocators.mSceneAllocator.getCount();
 }
 
-size_t World::getNumberOfUpdatingSystems() const
-{
-    return mSystems.size();
-}
-
 Mesh *World::getPrimtiveMesh(PrimitiveType type) const
 {
     switch (type)
@@ -1170,58 +1181,64 @@ Material *World::getPrimtiveMaterial() const
     return getAssetByGuid<Material>(mPrimitives.mStandardMaterialGuid);
 }
 
-Asset *World::getAssetByGuid(const Guid &assetGuid, int type) const
+Cubemap* World::getCubemapById(const Id &assetId) const
 {
-    switch (type)
-    {
-    case AssetType<Mesh>::type: {
-        return getAssetByGuid<Mesh>(assetGuid);
-    }
-    case AssetType<Material>::type: {
-        return getAssetByGuid<Material>(assetGuid);
-    }
-    case AssetType<Shader>::type: {
-        return getAssetByGuid<Shader>(assetGuid);
-    }
-    case AssetType<Texture2D>::type: {
-        return getAssetByGuid<Texture2D>(assetGuid);
-    }
-    case AssetType<Cubemap>::type: {
-        return getAssetByGuid<Cubemap>(assetGuid);
-    }
-    case AssetType<RenderTexture>::type: {
-        return getAssetByGuid<RenderTexture>(assetGuid);
-    }
-    }
-
-    return nullptr;
+    return getAssetById<Cubemap>(assetId);
 }
 
-Asset *World::getAssetById(const Id &assetId, int type) const
+Material* World::getMaterialById(const Id &assetId) const
 {
-    switch (type)
-    {
-    case AssetType<Mesh>::type: {
-        return getAssetById<Mesh>(assetId);
-    }
-    case AssetType<Material>::type: {
-        return getAssetById<Material>(assetId);
-    }
-    case AssetType<Shader>::type: {
-        return getAssetById<Shader>(assetId);
-    }
-    case AssetType<Texture2D>::type: {
-        return getAssetById<Texture2D>(assetId);
-    }
-    case AssetType<Cubemap>::type: {
-        return getAssetById<Cubemap>(assetId);
-    }
-    case AssetType<RenderTexture>::type: {
-        return getAssetById<RenderTexture>(assetId);
-    }
-    }
+    return getAssetById<Material>(assetId);
+}
 
-    return nullptr;
+Mesh* World::getMeshById(const Id &assetId) const
+{
+    return getAssetById<Mesh>(assetId);
+}
+
+RenderTexture* World::getRenderTexutreById(const Id &assetId) const
+{
+    return getAssetById<RenderTexture>(assetId);
+}
+
+Shader* World::getShaderById(const Id &assetId) const
+{
+    return getAssetById<Shader>(assetId);
+}
+
+Texture2D* World::getTexture2DById(const Id &assetId) const
+{
+    return getAssetById<Texture2D>(assetId);
+}
+
+Cubemap* World::getCubemapByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<Cubemap>(assetGuid);
+}
+
+Material* World::getMaterialByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<Material>(assetGuid);
+}
+
+Mesh* World::getMeshByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<Mesh>(assetGuid);
+}
+
+RenderTexture* World::getRenderTextureByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<RenderTexture>(assetGuid);
+}
+
+Shader* World::getShaderByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<Shader>(assetGuid);
+}
+
+Texture2D* World::getTexture2DByGuid(const Guid &assetGuid) const
+{
+    return getAssetByGuid<Texture2D>(assetGuid);
 }
 
 Scene *World::getSceneById(const Id &sceneId) const
@@ -1237,16 +1254,6 @@ Scene *World::getSceneByGuid(const Guid &sceneGuid) const
 Scene *World::getSceneByIndex(size_t index) const
 {
     return mAllocators.mSceneAllocator.get(index);
-}
-
-System *World::getSystemByUpdateOrder(size_t order) const
-{
-    if (order >= mSystems.size())
-    {
-        return nullptr;
-    }
-
-    return mSystems[order];
 }
 
 int World::getIndexOf(const Id &id) const
@@ -1323,31 +1330,34 @@ Scene *World::createScene(const YAML::Node &in)
     return scene;
 }
 
-Asset *World::createAsset(const YAML::Node &in, int type)
+Cubemap *World::createCubemap(const YAML::Node &in)
 {
-    switch (type)
-    {
-    case AssetType<Mesh>::type: {
-        return createAsset<Mesh>(in);
-    }
-    case AssetType<Material>::type: {
-        return createAsset<Material>(in);
-    }
-    case AssetType<Shader>::type: {
-        return createAsset<Shader>(in);
-    }
-    case AssetType<Texture2D>::type: {
-        return createAsset<Texture2D>(in);
-    }
-    case AssetType<Cubemap>::type: {
-        return createAsset<Cubemap>(in);
-    }
-    case AssetType<RenderTexture>::type: {
-        return createAsset<RenderTexture>(in);
-    }
-    }
+    return createAsset<Cubemap>(in);
+}
 
-    return nullptr;
+Material *World::createMaterial(const YAML::Node &in)
+{
+    return createAsset<Material>(in);
+}
+
+Mesh *World::createMesh(const YAML::Node &in)
+{
+    return createAsset<Mesh>(in);
+}
+
+RenderTexture *World::createRenderTexture(const YAML::Node &in)
+{
+    return createAsset<RenderTexture>(in);
+}
+
+Shader *World::createShader(const YAML::Node &in)
+{
+    return createAsset<Shader>(in);
+}
+
+Texture2D *World::createTexture2D(const YAML::Node &in)
+{
+    return createAsset<Texture2D>(in);
 }
 
 void World::latentDestroyAsset(const Guid &assetGuid, int assetType)
@@ -1363,7 +1373,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
 
     if (assetType == AssetType<Material>::type)
     {
-        Asset *swap = mAllocators.mMaterialAllocator.destruct(index);
+        Material *swap = mAllocators.mMaterialAllocator.destruct(index);
 
         removeFromIdState_impl<Material>(assetGuid, assetId);
 
@@ -1374,7 +1384,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
     }
     else if (assetType == AssetType<Mesh>::type)
     {
-        Asset *swap = mAllocators.mMeshAllocator.destruct(index);
+        Mesh *swap = mAllocators.mMeshAllocator.destruct(index);
 
         removeFromIdState_impl<Mesh>(assetGuid, assetId);
 
@@ -1385,7 +1395,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
     }
     else if (assetType == AssetType<Shader>::type)
     {
-        Asset *swap = mAllocators.mShaderAllocator.destruct(index);
+        Shader *swap = mAllocators.mShaderAllocator.destruct(index);
 
         removeFromIdState_impl<Shader>(assetGuid, assetId);
 
@@ -1396,7 +1406,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
     }
     else if (assetType == AssetType<Texture2D>::type)
     {
-        Asset *swap = mAllocators.mTexture2DAllocator.destruct(index);
+        Texture2D *swap = mAllocators.mTexture2DAllocator.destruct(index);
 
         removeFromIdState_impl<Texture2D>(assetGuid, assetId);
 
@@ -1407,7 +1417,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
     }
     else if (assetType == AssetType<Cubemap>::type)
     {
-        Asset *swap = mAllocators.mCubemapAllocator.destruct(index);
+        Cubemap *swap = mAllocators.mCubemapAllocator.destruct(index);
 
         removeFromIdState_impl<Cubemap>(assetGuid, assetId);
 
@@ -1418,7 +1428,7 @@ void World::immediateDestroyAsset(const Guid &assetGuid, int assetType)
     }
     else if (assetType == AssetType<RenderTexture>::type)
     {
-        Asset *swap = mAllocators.mRenderTextureAllocator.destruct(index);
+        RenderTexture *swap = mAllocators.mRenderTextureAllocator.destruct(index);
 
         removeFromIdState_impl<RenderTexture>(assetGuid, assetId);
 

@@ -3,40 +3,45 @@
 
 #include <vector>
 
-#include "System.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Input.h"
+#include "../core/Time.h"
 
 #include "../components/Camera.h"
 
 namespace PhysicsEngine
 {
-class TerrainSystem : public System
+class World;
+
+class TerrainSystem
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
+  public:
+    HideFlag mHide;
+
   public:
     TerrainSystem(World *world, const Id &id);
     TerrainSystem(World *world, const Guid &guid, const Id &id);
     ~TerrainSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+    Guid getGuid() const;
+    Id getId() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 };
 
-template <> struct SystemType<TerrainSystem>
-{
-    static constexpr int type = PhysicsEngine::TERRAINSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<TerrainSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

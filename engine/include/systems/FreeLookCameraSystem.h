@@ -8,9 +8,14 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+#include "../core/Input.h"
+#include "../core/Time.h"
+
 #include "../components/Camera.h"
 #include "../components/Transform.h"
-#include "System.h"
 
 namespace PhysicsEngine
 {
@@ -20,7 +25,9 @@ struct CameraSystemConfig
     bool mSpawnCameraOnInit;
 };
 
-class FreeLookCameraSystem : public System
+class World;
+
+class FreeLookCameraSystem
 {
   private:
     static const float YAW_PAN_SENSITIVITY;
@@ -29,6 +36,10 @@ class FreeLookCameraSystem : public System
     static const float TRANSLATE_SENSITIVITY;
 
   private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
     Guid mTransformId;
     Guid mCameraId;
 
@@ -48,18 +59,24 @@ class FreeLookCameraSystem : public System
     bool mSpawnCameraOnInit;
 
   public:
+    HideFlag mHide;
+
+  public:
     FreeLookCameraSystem(World *world, const Id &id);
     FreeLookCameraSystem(World *world, const Guid &guid, const Id &id);
     ~FreeLookCameraSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 
     void resetCamera();
     void configureCamera(CameraSystemConfig config);
@@ -109,15 +126,6 @@ class FreeLookCameraSystem : public System
     glm::mat4 getProjMatrix() const;
 
     Ray normalizedDeviceSpaceToRay(float x, float y) const;
-};
-
-template <> struct SystemType<FreeLookCameraSystem>
-{
-    static constexpr int type = PhysicsEngine::FREELOOKCAMERASYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<FreeLookCameraSystem>
-{
-    static constexpr bool value = true;
 };
 
 } // namespace PhysicsEngine

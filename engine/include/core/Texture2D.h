@@ -4,21 +4,47 @@
 #include <string>
 #include <vector>
 
+#include "SerializationEnums.h"
+#include "AssetEnums.h"
 #include "Color.h"
-#include "Texture.h"
+#include "Guid.h"
+#include "Id.h"
 
 #include "../graphics/TextureHandle.h"
 
 namespace PhysicsEngine
 {
-class Texture2D : public Texture
+class World;
+
+class Texture2D
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World *mWorld;
+
+    std::vector<unsigned char> mRawTextureData;
+    int mNumChannels;
+    int mAnisoLevel;
+    TextureDimension mDimension;
+    TextureFormat mFormat;
+    TextureWrapMode mWrapMode;
+    TextureFilterMode mFilterMode;
+
+    bool mDeviceUpdateRequired;
+    bool mUpdateRequired;
+    
     std::string mSource;
     int mWidth;
     int mHeight;
 
     TextureHandle *mTex;
+
+    friend class World;
+
+  public:
+    std::string mName;
+    HideFlag mHide;
 
   public:
     Texture2D(World *world, const Id &id);
@@ -27,11 +53,17 @@ class Texture2D : public Texture
     Texture2D(World *world, const Id &id, int width, int height, TextureFormat format);
     ~Texture2D();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    bool writeToYAML(const std::string &filepath) const;
+    void loadFromYAML(const std::string &filepath);
+
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     void load(const std::string &filepath);
     void writeToPNG(const std::string &filepath) const;
@@ -51,23 +83,14 @@ class Texture2D : public Texture
     void setPixels(const std::vector<Color32> &colors);
     void setPixel(int x, int y, const Color32 &color);
 
-    void copyTextureToDevice() override;
-    void updateTextureParameters() override;
-    void readPixels() override;
-    void writePixels() override;
+    void copyTextureToDevice();
+    void updateTextureParameters();
+    void readPixels();
+    void writePixels();
 
     TextureHandle *getNativeGraphics() const;
 };
 
-template <> struct AssetType<Texture2D>
-{
-    static constexpr int type = PhysicsEngine::TEXTURE2D_TYPE;
-};
-
-template <> struct IsAssetInternal<Texture2D>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

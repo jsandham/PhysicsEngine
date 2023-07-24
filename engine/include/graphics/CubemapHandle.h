@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "../core/Texture.h"
+#include "../core/AssetEnums.h"
 
 namespace PhysicsEngine
 {

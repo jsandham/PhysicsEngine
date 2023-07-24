@@ -3,9 +3,11 @@
 
 #include <vector>
 
-#include "System.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Input.h"
+#include "../core/Time.h"
 
 #include "../components/Camera.h"
 
@@ -16,9 +18,15 @@
 
 namespace PhysicsEngine
 {
-class RenderSystem : public System
+class World;
+
+class RenderSystem
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
     ForwardRenderer mForwardRenderer;
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
@@ -35,18 +43,24 @@ class RenderSystem : public System
     // std::vector<bool> mCulledObjectFlags;
 
   public:
+    HideFlag mHide;
+
+  public:
     RenderSystem(World *world, const Id &id);
     RenderSystem(World *world, const Guid &guid, const Id &id);
     ~RenderSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 
   private:
     void registerRenderAssets(World *world);
@@ -57,14 +71,6 @@ class RenderSystem : public System
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
 };
 
-template <> struct SystemType<RenderSystem>
-{
-    static constexpr int type = PhysicsEngine::RENDERSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<RenderSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

@@ -1,15 +1,21 @@
 #include "../../include/components/BoxCollider.h"
 
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Intersect.h"
+#include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
-BoxCollider::BoxCollider(World *world, const Id &id) : Collider(world, id)
+BoxCollider::BoxCollider(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
+    mEnabled = true;
 }
 
-BoxCollider::BoxCollider(World *world, const Guid &guid, const Id &id) : Collider(world, guid, id)
+BoxCollider::BoxCollider(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
+    mEnabled = true;
 }
 
 BoxCollider::~BoxCollider()
@@ -18,14 +24,25 @@ BoxCollider::~BoxCollider()
 
 void BoxCollider::serialize(YAML::Node &out) const
 {
-    Collider::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
+
+    out["enabled"] = mEnabled;
 
     out["AABB"] = mAABB;
 }
 
 void BoxCollider::deserialize(const YAML::Node &in)
 {
-    Collider::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
+
+    mEnabled = YAML::getValue<bool>(in, "enabled");
 
     mAABB = YAML::getValue<AABB>(in, "AABB");
 }
@@ -38,6 +55,21 @@ int BoxCollider::getType() const
 std::string BoxCollider::getObjectName() const
 {
     return PhysicsEngine::BOXCOLLIDER_NAME;
+}
+
+Guid BoxCollider::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid BoxCollider::getGuid() const
+{
+    return mGuid;
+}
+
+Id BoxCollider::getId() const
+{
+    return mId;
 }
 
 bool BoxCollider::intersect(AABB aabb) const

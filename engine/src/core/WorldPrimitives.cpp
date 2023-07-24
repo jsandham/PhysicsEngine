@@ -23,12 +23,12 @@ void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
     assert(cylinder != nullptr);
     assert(cone != nullptr);
 
-    plane->setName("Plane");
-    disc->setName("Disc");
-    cube->setName("Cube");
-    sphere->setName("Sphere");
-    cylinder->setName("Cylinder");
-    cone->setName("Cone");
+    plane->mName = "Plane";
+    disc->mName = "Disc";
+    cube->mName = "Cube";
+    sphere->mName = "Sphere";
+    cylinder->mName= "Cylinder";
+    cone->mName = "Cone";
 
     Shader *standardShader = world->createAsset<Shader>(Guid("d875cfa8-d25b-4c5d-a26d-caafd191baf7"));
     Material *standardMaterial = world->createAsset<Material>(Guid("1d83f0b2-f16d-48e6-9cbd-20be8115179b"));
@@ -38,7 +38,7 @@ void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
 
     if (RendererShaders::getStandardShader() != nullptr)
     {
-        standardShader->setName("Standard");
+        standardShader->mName = "Standard";
         standardShader->setVertexShader(RendererShaders::getStandardShader()->getVertexShader());
         standardShader->setFragmentShader(RendererShaders::getStandardShader()->getFragmentShader());
 
@@ -131,7 +131,7 @@ void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
         standardShader->preprocess();
         standardShader->compile();
 
-        standardMaterial->setName("Standard");
+        standardMaterial->mName = "Standard";
         standardMaterial->setShaderId(standardShader->getGuid());
         standardMaterial->onShaderChanged();
 

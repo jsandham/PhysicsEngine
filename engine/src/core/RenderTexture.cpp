@@ -1,13 +1,46 @@
+#include <fstream>
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetYaml.h"
 #include "../../include/core/RenderTexture.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 #include "stb_image_write.h"
 
 using namespace PhysicsEngine;
 
-RenderTexture::RenderTexture(World *world, const Id &id) : Texture(world, id)
+static int calcNumChannels(TextureFormat format)
 {
+    int nChannels = 0;
+
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        nChannels = 1;
+        break;
+    case TextureFormat::RG:
+        nChannels = 2;
+        break;
+    case TextureFormat::RGB:
+        nChannels = 3;
+        break;
+    case TextureFormat::RGBA:
+        nChannels = 4;
+        break;
+    default:
+        Log::error("Error: Texture: Invalid texture format\n");
+    }
+
+    return nChannels;
+}
+
+RenderTexture::RenderTexture(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
+{
+    mName = "Unnamed Asset";
+
     mWidth = 1920;
     mHeight = 1080;
     mFormat = TextureFormat::RGBA;
@@ -21,8 +54,10 @@ RenderTexture::RenderTexture(World *world, const Id &id) : Texture(world, id)
     mDeviceUpdateRequired = false;
 }
 
-RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
+RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mWidth = 1920;
     mHeight = 1080;
     mFormat = TextureFormat::RGBA;
@@ -36,8 +71,10 @@ RenderTexture::RenderTexture(World *world, const Guid &guid, const Id &id) : Tex
     mDeviceUpdateRequired = false;
 }
 
-RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) : Texture(world, id)
+RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mWidth = width;
     mHeight = height;
     mFormat = TextureFormat::RGBA;
@@ -53,9 +90,10 @@ RenderTexture::RenderTexture(World *world, const Id &id, int width, int height) 
     mRawTextureData.resize(width * height * mNumChannels);
 }
 
-RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format)
-    : Texture(world, id)
+RenderTexture::RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format) : mWorld(world), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mWidth = width;
     mHeight = height;
     mFormat = format;
@@ -78,7 +116,18 @@ RenderTexture::~RenderTexture()
 
 void RenderTexture::serialize(YAML::Node &out) const
 {
-    Texture::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
+
+    out["dimension"] = mDimension;
+    out["format"] = mFormat;
+    out["wrapMode"] = mWrapMode;
+    out["filterMode"] = mFilterMode;
+    out["numChannels"] = mNumChannels;
+    out["anisoLevel"] = mAnisoLevel;
 
     out["width"] = mWidth;
     out["height"] = mHeight;
@@ -86,10 +135,67 @@ void RenderTexture::serialize(YAML::Node &out) const
 
 void RenderTexture::deserialize(const YAML::Node &in)
 {
-    Texture::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
+
+    mDimension = YAML::getValue<TextureDimension>(in, "dimension");
+    mFormat = YAML::getValue<TextureFormat>(in, "format");
+    mWrapMode = YAML::getValue<TextureWrapMode>(in, "wrapMode");
+    mFilterMode = YAML::getValue<TextureFilterMode>(in, "filterMode");
+    mNumChannels = YAML::getValue<int>(in, "numChannels");
+    mAnisoLevel = YAML::getValue<int>(in, "anisoLevel");
+
+    mDeviceUpdateRequired = false;
+    mUpdateRequired = false;
 
     mWidth = YAML::getValue<int>(in, "width");
     mHeight = YAML::getValue<int>(in, "height");
+}
+
+bool RenderTexture::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void RenderTexture::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
 }
 
 int RenderTexture::getType() const
@@ -100,6 +206,16 @@ int RenderTexture::getType() const
 std::string RenderTexture::getObjectName() const
 {
     return PhysicsEngine::RENDER_TEXTURE_NAME;
+}
+
+Guid RenderTexture::getGuid() const
+{
+    return mGuid;
+}
+
+Id RenderTexture::getId() const
+{
+    return mId;
 }
 
 void RenderTexture::writeToPNG(const std::string &filepath) const

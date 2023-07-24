@@ -1,12 +1,19 @@
+#include <fstream>
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetYaml.h"
 #include "../../include/core/Material.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
-Material::Material(World *world, const Id &id) : Asset(world, id)
+Material::Material(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mShaderGuid = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
 
@@ -17,8 +24,10 @@ Material::Material(World *world, const Id &id) : Asset(world, id)
     mShader = nullptr;
 }
 
-Material::Material(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
+Material::Material(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mShaderGuid = Guid::INVALID;
     mRenderQueue = RenderQueue::Opaque;
 
@@ -35,7 +44,11 @@ Material::~Material()
 
 void Material::serialize(YAML::Node &out) const
 {
-    Asset::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
 
     out["shaderId"] = mShaderGuid;
     out["renderQueue"] = mRenderQueue;
@@ -49,7 +62,10 @@ void Material::serialize(YAML::Node &out) const
 
 void Material::deserialize(const YAML::Node &in)
 {
-    Asset::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
 
     mShaderGuid = YAML::getValue<Guid>(in, "shaderId");
     mRenderQueue = YAML::getValue<RenderQueue>(in, "renderQueue");
@@ -82,6 +98,50 @@ void Material::deserialize(const YAML::Node &in)
     mTextureChanged = true;
 }
 
+bool Material::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void Material::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
+}
+
 int Material::getType() const
 {
     return PhysicsEngine::MATERIAL_TYPE;
@@ -90,6 +150,16 @@ int Material::getType() const
 std::string Material::getObjectName() const
 {
     return PhysicsEngine::MATERIAL_NAME;
+}
+
+Guid Material::getGuid() const
+{
+    return mGuid;
+}
+
+Id Material::getId() const
+{
+    return mId;
 }
 
 void Material::apply()

@@ -25,7 +25,7 @@ void GameLayer::init()
         std::cout << "cwd: " << cwd.string() << std::endl;
         std::cout << "dataPath: " << dataPath[i].string() << std::endl;
 
-        mWorld.loadAssetsInPath(dataPath[i]);
+        mWorld.loadAllAssetsInPath(dataPath[i]);
     }
 
     std::cout << "mesh count: " << mWorld.getNumberOfAssets<Mesh>() << std::endl;
@@ -39,27 +39,20 @@ void GameLayer::init()
 
     mWorld.loadSceneFromYAML(scenePath.string());
 
-    FreeLookCameraSystem *cameraSystem = mWorld.addSystem<FreeLookCameraSystem>(0);
-    mWorld.addSystem<TerrainSystem>(1);
-    mWorld.addSystem<RenderSystem>(2);
-    mWorld.addSystem<CleanUpSystem>(3);
-
-    std::cout << "camerasystem count: " << mWorld.getNumberOfSystems<FreeLookCameraSystem>() << std::endl;
-    std::cout << "terrainsystem count: " << mWorld.getNumberOfSystems<TerrainSystem>() << std::endl;
-    std::cout << "rendersystem count: " << mWorld.getNumberOfSystems<RenderSystem>() << std::endl;
-    std::cout << "cleanupsystem count: " << mWorld.getNumberOfSystems<CleanUpSystem>() << std::endl;
+    FreeLookCameraSystem *cameraSystem = mWorld.getSystem<FreeLookCameraSystem>();
+    TerrainSystem *terrainSystem = mWorld.getSystem<TerrainSystem>();
+    RenderSystem *renderSystem = mWorld.getSystem<RenderSystem>();
+    CleanUpSystem *cleanUpSystem = mWorld.getSystem<CleanUpSystem>();
 
     CameraSystemConfig config;
     config.mRenderToScreen = true;
     config.mSpawnCameraOnInit = false;
     cameraSystem->configureCamera(config);
 
-    for (size_t i = 0; i < mWorld.getNumberOfUpdatingSystems(); i++)
-    {
-        System *system = mWorld.getSystemByUpdateOrder(i);
-
-        system->init(&mWorld);
-    }
+    cameraSystem->init(&mWorld);
+    terrainSystem->init(&mWorld);
+    renderSystem->init(&mWorld);
+    cleanUpSystem->init(&mWorld);
 }
 
 void GameLayer::begin()
@@ -68,12 +61,15 @@ void GameLayer::begin()
 
 void GameLayer::update()
 {
-    for (size_t i = 0; i < mWorld.getNumberOfUpdatingSystems(); i++)
-    {
-        System *system = mWorld.getSystemByUpdateOrder(i);
+    FreeLookCameraSystem *cameraSystem = mWorld.getSystem<FreeLookCameraSystem>();
+    TerrainSystem *terrainSystem = mWorld.getSystem<TerrainSystem>();
+    RenderSystem *renderSystem = mWorld.getSystem<RenderSystem>();
+    CleanUpSystem *cleanUpSystem = mWorld.getSystem<CleanUpSystem>();
 
-        system->update(getInput(), getTime());
-    }
+    cameraSystem->update(getInput(), getTime());
+    terrainSystem->update(getInput(), getTime());
+    renderSystem->update(getInput(), getTime());
+    cleanUpSystem->update(getInput(), getTime());
 }
 
 void GameLayer::end()

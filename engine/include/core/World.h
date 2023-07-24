@@ -43,17 +43,7 @@ struct WorldIdState
     std::unordered_map<Guid, int> mCubemapGuidToGlobalIndex;
     std::unordered_map<Guid, int> mRenderTextureGuidToGlobalIndex;
 
-    // world system guid state
-    std::unordered_map<Guid, int> mRenderSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mPhysicsSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mCleanupSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mDebugSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mGizmoSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mFreeLookCameraSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mTerrainSystemGuidToGlobalIndex;
-    std::unordered_map<Guid, int> mAssetLoadingSystemGuidToGlobalIndex;
-
-    // world id state for all scenes, systems, and assets
+    // world id state for all scenes, and assets
     std::unordered_map<Guid, int> mGuidToGlobalIndex;
     std::unordered_map<Guid, int> mGuidToType;
 
@@ -74,17 +64,7 @@ struct WorldIdState
     std::unordered_map<Id, int> mCubemapIdToGlobalIndex;
     std::unordered_map<Id, int> mRenderTextureIdToGlobalIndex;
 
-    // world system id state
-    std::unordered_map<Id, int> mRenderSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mPhysicsSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mCleanupSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mDebugSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mGizmoSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mFreeLookCameraSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mTerrainSystemIdToGlobalIndex;
-    std::unordered_map<Id, int> mAssetLoadingSystemIdToGlobalIndex;
-
-    // world id state for all scenes, systems, and assets
+    // world id state for all scenes, and assets
     std::unordered_map<Id, int> mIdToGlobalIndex;
     std::unordered_map<Id, int> mIdToType;
 
@@ -95,35 +75,25 @@ struct WorldIdState
 // Simple structs used for grouping world allocators when passing to functions
 struct WorldAllocators
 {
-    // internal scene allocator
+    // scene allocator
     PoolAllocator<Scene> mSceneAllocator;
 
-    // internal asset allocators
+    // asset allocators
     PoolAllocator<Mesh> mMeshAllocator;
     PoolAllocator<Material> mMaterialAllocator;
     PoolAllocator<Shader> mShaderAllocator;
     PoolAllocator<Texture2D> mTexture2DAllocator;
     PoolAllocator<Cubemap> mCubemapAllocator;
     PoolAllocator<RenderTexture> mRenderTextureAllocator;
-
-    // internal system allocators
-    PoolAllocator<RenderSystem> mRenderSystemAllocator;
-    PoolAllocator<PhysicsSystem> mPhysicsSystemAllocator;
-    PoolAllocator<CleanUpSystem> mCleanupSystemAllocator;
-    PoolAllocator<DebugSystem> mDebugSystemAllocator;
-    PoolAllocator<GizmoSystem> mGizmoSystemAllocator;
-    PoolAllocator<FreeLookCameraSystem> mFreeLookCameraSystemAllocator;
-    PoolAllocator<TerrainSystem> mTerrainSystemAllocator;
-    PoolAllocator<AssetLoadingSystem> mAssetLoadingSystemAllocator;
 };
 
 class World
 {
   private:
-    // allocators for scenes, assets, and systems
+    // allocators for scenes and assets
     WorldAllocators mAllocators;
 
-    // id state for scenes, assets, and systems
+    // id state for scenes and assets
     WorldIdState mIdState;
 
     // Primitive meshes all worlds have access to
@@ -132,8 +102,14 @@ class World
     // active scene
     Scene *mActiveScene;
 
-    // all systems in world listed in order they should be updated
-    std::vector<System *> mSystems;
+    AssetLoadingSystem* mAssetLoadingSystem;
+    CleanUpSystem* mCleanUpSystem;
+    DebugSystem* mDebugSystem;
+    FreeLookCameraSystem* mFreeLookCameraSystem;
+    GizmoSystem* mGizmoSystem;
+    PhysicsSystem* mPhysicsSystem;
+    RenderSystem* mRenderSystem;
+    TerrainSystem* mTerrainSystem;
 
     std::unordered_map<Guid, std::unordered_map<Guid, std::vector<ShaderUniform>>> mMaterialUniformCache;
 
@@ -146,8 +122,14 @@ class World
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
 
-    void loadAssetsInPath(const std::filesystem::path &filePath);
-    Asset *loadAssetFromYAML(const std::string &filePath);
+    void loadAllAssetsInPath(const std::filesystem::path &filePath);
+    Cubemap* loadCubemapFromYAML(const std::string &filePath);
+    Material* loadMaterialFromYAML(const std::string &filePath);
+    Mesh* loadMeshFromYAML(const std::string &filePath);
+    RenderTexture* loadRenderTextureFromYAML(const std::string &filePath);
+    Shader* loadShaderFromYAML(const std::string &filePath);
+    Texture2D* loadTexture2DFromYAML(const std::string &filePath);
+
     Scene *loadSceneFromYAML(const std::string &filePath);
     bool writeAssetToYAML(const std::string &filePath, const Guid &assetGuid) const;
     bool writeSceneToYAML(const std::string &filePath, const Guid &sceneGuid) const;
@@ -159,20 +141,35 @@ class World
                                const std::vector<ShaderUniform> &uniforms);
 
     size_t getNumberOfScenes() const;
-    size_t getNumberOfUpdatingSystems() const;
     Mesh *getPrimtiveMesh(PrimitiveType type) const;
     Material *getPrimtiveMaterial() const;
 
     Scene *getActiveScene();
 
-    Asset *getAssetById(const Id &assetId, int type) const;
-    Asset *getAssetByGuid(const Guid &assetGuid, int type) const;
+    Cubemap* getCubemapById(const Id &assetId) const;
+    Material* getMaterialById(const Id &assetId) const;
+    Mesh* getMeshById(const Id &assetId) const;
+    RenderTexture* getRenderTexutreById(const Id &assetId) const;
+    Shader* getShaderById(const Id &assetId) const;
+    Texture2D* getTexture2DById(const Id &assetId) const;
+
+    Cubemap* getCubemapByGuid(const Guid &assetGuid) const;
+    Material* getMaterialByGuid(const Guid &assetGuid) const;
+    Mesh* getMeshByGuid(const Guid &assetGuid) const;
+    RenderTexture* getRenderTextureByGuid(const Guid &assetGuid) const;
+    Shader* getShaderByGuid(const Guid &assetGuid) const;
+    Texture2D* getTexture2DByGuid(const Guid &assetGuid) const;
+
     Scene *getSceneByIndex(size_t index) const;
     Scene *getSceneById(const Id &sceneId) const;
     Scene *getSceneByGuid(const Guid &sceneGuid) const;
-    System *getSystemByUpdateOrder(size_t order) const;
 
-    Asset *createAsset(const YAML::Node &in, int type);
+    Cubemap *createCubemap(const YAML::Node &in);
+    Material *createMaterial(const YAML::Node &in);
+    Mesh *createMesh(const YAML::Node &in);
+    RenderTexture *createRenderTexture(const YAML::Node &in);
+    Shader *createShader(const YAML::Node &in);
+    Texture2D *createTexture2D(const YAML::Node &in);
 
     int getIndexOf(const Id &id) const;
     int getIndexOf(const Guid &guid) const;
@@ -184,13 +181,8 @@ class World
     void latentDestroyAsset(const Guid &assetGuid, int assetType);
     void immediateDestroyAsset(const Guid &assetGuid, int assetType);
 
-    template <typename T> size_t getNumberOfSystems() const;
     template <typename T> size_t getNumberOfAssets() const;
     template <typename T> T *getSystem() const;
-    template <typename T> T *addSystem(size_t order);
-    template <typename T> T *getSystemByIndex(size_t index) const;
-    template <typename T> T *getSystemById(const Id &systemId) const;
-    template <typename T> T *getSystemByGuid(const Guid &systemGuid) const;
     template <typename T> T *getAssetByIndex(size_t index) const;
     template <typename T> T *getAssetById(const Id &assetId) const;
     template <typename T> T *getAssetByGuid(const Guid &assetGuid) const;
@@ -199,19 +191,18 @@ class World
     template <typename T> T *createAsset(const YAML::Node &in);
 
   private:
+    bool loadAssetYAML(const std::string &filePath, YAML::Node &in, Guid& guid, int& type);
     void generateSourcePaths(const std::string &filepath, YAML::Node &in);
     void addToIdState(const Guid &guid, const Id &id, int index, int type);
     void removeFromIdState(const Guid &guid, const Id &id);
 
+
+
+
+
+
     template <typename T> void addToIdState_impl(const Guid &guid, const Id &id, int index, int type);
     template <typename T> void removeFromIdState_impl(const Guid &guid, const Id &id);
-    template <typename T> T *addSystem_impl(PoolAllocator<T> *allocator, size_t order);
-    template <typename T>
-    T *getSystemById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                          const Id &systemId) const;
-    template <typename T>
-    T *getSystemByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
-                            const Guid &systemGuid) const;
     template <typename T>
     T *getAssetById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
                          const Id &assetId) const;

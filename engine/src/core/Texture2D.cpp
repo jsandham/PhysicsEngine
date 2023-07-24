@@ -1,15 +1,48 @@
+#include <filesystem>
+#include <fstream>
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetYaml.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
+
 #include "stb_image.h"
 #include "stb_image_write.h"
 
-#include <filesystem>
-
 using namespace PhysicsEngine;
 
-Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
+static int calcNumChannels(TextureFormat format)
 {
+    int nChannels = 0;
+
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        nChannels = 1;
+        break;
+    case TextureFormat::RG:
+        nChannels = 2;
+        break;
+    case TextureFormat::RGB:
+        nChannels = 3;
+        break;
+    case TextureFormat::RGBA:
+        nChannels = 4;
+        break;
+    default:
+        Log::error("Error: Texture: Invalid texture format\n");
+    }
+
+    return nChannels;
+}
+
+Texture2D::Texture2D(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
+{
+    mName = "Unnamed Asset";
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -27,8 +60,10 @@ Texture2D::Texture2D(World *world, const Id &id) : Texture(world, id)
     mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
-Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
+Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -46,8 +81,10 @@ Texture2D::Texture2D(World *world, const Guid &guid, const Id &id) : Texture(wor
     mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
-Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Texture(world, id)
+Texture2D::Texture2D(World *world, const Id &id, int width, int height) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -67,8 +104,10 @@ Texture2D::Texture2D(World *world, const Id &id, int width, int height) : Textur
     mTex = TextureHandle::create(mWidth, mHeight, mFormat, mWrapMode, mFilterMode);
 }
 
-Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureFormat format) : Texture(world, id)
+Texture2D::Texture2D(World *world, const Id &id, int width, int height, TextureFormat format) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mDimension = TextureDimension::Tex2D;
 
     mSource = "";
@@ -96,7 +135,18 @@ Texture2D::~Texture2D()
 
 void Texture2D::serialize(YAML::Node &out) const
 {
-    Texture::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
+
+    out["dimension"] = mDimension;
+    out["format"] = mFormat;
+    out["wrapMode"] = mWrapMode;
+    out["filterMode"] = mFilterMode;
+    out["numChannels"] = mNumChannels;
+    out["anisoLevel"] = mAnisoLevel;
 
     out["width"] = mWidth;
     out["height"] = mHeight;
@@ -105,13 +155,70 @@ void Texture2D::serialize(YAML::Node &out) const
 
 void Texture2D::deserialize(const YAML::Node &in)
 {
-    Texture::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
+
+    mDimension = YAML::getValue<TextureDimension>(in, "dimension");
+    mFormat = YAML::getValue<TextureFormat>(in, "format");
+    mWrapMode = YAML::getValue<TextureWrapMode>(in, "wrapMode");
+    mFilterMode = YAML::getValue<TextureFilterMode>(in, "filterMode");
+    mNumChannels = YAML::getValue<int>(in, "numChannels");
+    mAnisoLevel = YAML::getValue<int>(in, "anisoLevel");
+
+    mDeviceUpdateRequired = false;
+    mUpdateRequired = false;
 
     mWidth = YAML::getValue<int>(in, "width");
     mHeight = YAML::getValue<int>(in, "height");
 
     mSource = YAML::getValue<std::string>(in, "source");
     load(YAML::getValue<std::string>(in, "sourceFilepath"));
+}
+
+bool Texture2D::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void Texture2D::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
 }
 
 int Texture2D::getType() const
@@ -122,6 +229,16 @@ int Texture2D::getType() const
 std::string Texture2D::getObjectName() const
 {
     return PhysicsEngine::TEXTURE2D_NAME;
+}
+
+Guid Texture2D::getGuid() const
+{
+    return mGuid;
+}
+
+Id Texture2D::getId() const
+{
+    return mId;
 }
 
 void Texture2D::load(const std::string &filepath)

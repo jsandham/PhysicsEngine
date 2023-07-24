@@ -3,39 +3,46 @@
 
 #include <vector>
 
-#include "System.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Input.h"
+#include "../core/Time.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
 
 namespace PhysicsEngine
 {
-class DebugSystem : public System
+class World;
+
+class DebugSystem
 {
+  private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
+  public:
+    HideFlag mHide;
+
   public:
     DebugSystem(World *world, const Id &id);
     DebugSystem(World *world, const Guid &guid, const Id &id);
     ~DebugSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 };
 
-template <> struct SystemType<DebugSystem>
-{
-    static constexpr int type = PhysicsEngine::DEBUGSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<DebugSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

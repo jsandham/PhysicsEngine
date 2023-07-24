@@ -2,6 +2,7 @@
 
 #include "../../include/systems/DebugSystem.h"
 
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Input.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
@@ -14,11 +15,11 @@
 
 using namespace PhysicsEngine;
 
-DebugSystem::DebugSystem(World *world, const Id &id) : System(world, id)
+DebugSystem::DebugSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
 }
 
-DebugSystem::DebugSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+DebugSystem::DebugSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
 }
 
@@ -28,12 +29,15 @@ DebugSystem::~DebugSystem()
 
 void DebugSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void DebugSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int DebugSystem::getType() const
@@ -44,6 +48,16 @@ int DebugSystem::getType() const
 std::string DebugSystem::getObjectName() const
 {
     return PhysicsEngine::DEBUGSYSTEM_NAME;
+}
+
+Guid DebugSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id DebugSystem::getId() const
+{
+    return mId;
 }
 
 void DebugSystem::init(World *world)

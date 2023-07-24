@@ -9,22 +9,23 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "../../include/systems/RenderSystem.h"
+
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Intersect.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
-
-#include "../../include/systems/RenderSystem.h"
 
 #include "../../include/graphics/DeferredRenderer.h"
 #include "../../include/graphics/ForwardRenderer.h"
 
 using namespace PhysicsEngine;
 
-RenderSystem::RenderSystem(World *world, const Id &id) : System(world, id)
+RenderSystem::RenderSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
 }
 
-RenderSystem::RenderSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+RenderSystem::RenderSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
 }
 
@@ -34,12 +35,15 @@ RenderSystem::~RenderSystem()
 
 void RenderSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void RenderSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int RenderSystem::getType() const
@@ -50,6 +54,16 @@ int RenderSystem::getType() const
 std::string RenderSystem::getObjectName() const
 {
     return PhysicsEngine::RENDERSYSTEM_NAME;
+}
+
+Guid RenderSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id RenderSystem::getId() const
+{
+    return mId;
 }
 
 void RenderSystem::init(World *world)
@@ -143,7 +157,7 @@ void RenderSystem::registerRenderAssets(World *world)
             if (!shader->isCompiled())
             {
                 std::string errorMessage =
-                    "Shader failed to compile " + shader->getName() + " " + shader->getGuid().toString() + "\n";
+                    "Shader failed to compile " + shader->mName + " " + shader->getGuid().toString() + "\n";
                 Log::error(&errorMessage[0]);
             }
 

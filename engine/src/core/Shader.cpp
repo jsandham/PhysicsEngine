@@ -1,14 +1,21 @@
 #include <filesystem>
+#include <fstream>
 
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetYaml.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/Shader.h"
 #include "../../include/core/shader_load.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
-Shader::Shader(World *world, const Id &id) : Asset(world, id)
+Shader::Shader(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mSource = "";
     mSourceFilepath = "";
     mVertexShader = "";
@@ -19,8 +26,10 @@ Shader::Shader(World *world, const Id &id) : Asset(world, id)
     mActiveProgram = nullptr;
 }
 
-Shader::Shader(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
+Shader::Shader(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mSource = "";
     mSourceFilepath = "";
     mVertexShader = "";
@@ -41,7 +50,11 @@ Shader::~Shader()
 
 void Shader::serialize(YAML::Node &out) const
 {
-    Asset::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
 
     out["source"] = mSource;
     out["variants"] = mVariantMacroMap;
@@ -49,7 +62,10 @@ void Shader::serialize(YAML::Node &out) const
 
 void Shader::deserialize(const YAML::Node &in)
 {
-    Asset::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
 
     mVariantMacroMap = YAML::getValue<std::unordered_map<int, std::set<ShaderMacro>>>(in, "variants");
     mSource = YAML::getValue<std::string>(in, "source");
@@ -63,6 +79,50 @@ void Shader::deserialize(const YAML::Node &in)
     load(attrib);
 }
 
+bool Shader::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void Shader::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
+}
+
 int Shader::getType() const
 {
     return PhysicsEngine::SHADER_TYPE;
@@ -71,6 +131,16 @@ int Shader::getType() const
 std::string Shader::getObjectName() const
 {
     return PhysicsEngine::SHADER_NAME;
+}
+
+Guid Shader::getGuid() const
+{
+    return mGuid;
+}
+
+Id Shader::getId() const
+{
+    return mId;
 }
 
 void Shader::load(const ShaderCreationAttrib &attrib)

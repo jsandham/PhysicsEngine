@@ -1,13 +1,45 @@
+#include <fstream>
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetYaml.h"
 #include "../../include/core/Cubemap.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/Texture2D.h"
 #include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
-Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
+static int calcNumChannels(TextureFormat format)
 {
+    int nChannels = 0;
+
+    switch (format)
+    {
+    case TextureFormat::Depth:
+        nChannels = 1;
+        break;
+    case TextureFormat::RG:
+        nChannels = 2;
+        break;
+    case TextureFormat::RGB:
+        nChannels = 3;
+        break;
+    case TextureFormat::RGBA:
+        nChannels = 4;
+        break;
+    default:
+        Log::error("Error: Texture: Invalid texture format\n");
+    }
+
+    return nChannels;
+}
+
+Cubemap::Cubemap(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
+{
+    mName = "Unnamed Asset";
+
     mLeftTexGuid = Guid::INVALID;
     mRightTexGuid = Guid::INVALID;
     mBottomTexGuid = Guid::INVALID;
@@ -30,8 +62,10 @@ Cubemap::Cubemap(World *world, const Id &id) : Texture(world, id)
     mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
-Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, guid, id)
+Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mLeftTexGuid = Guid::INVALID;
     mRightTexGuid = Guid::INVALID;
     mBottomTexGuid = Guid::INVALID;
@@ -54,8 +88,10 @@ Cubemap::Cubemap(World *world, const Guid &guid, const Id &id) : Texture(world, 
     mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
-Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
+Cubemap::Cubemap(World *world, const Id &id, int width) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mLeftTexGuid = Guid::INVALID;
     mRightTexGuid = Guid::INVALID;
     mBottomTexGuid = Guid::INVALID;
@@ -80,8 +116,10 @@ Cubemap::Cubemap(World *world, const Id &id, int width) : Texture(world, id)
     mCube = CubemapHandle::create(mWidth, mFormat, mWrapMode, mFilterMode);
 }
 
-Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : Texture(world, id)
+Cubemap::Cubemap(World *world, const Id &id, int width, TextureFormat format) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mLeftTexGuid = Guid::INVALID;
     mRightTexGuid = Guid::INVALID;
     mBottomTexGuid = Guid::INVALID;
@@ -113,7 +151,18 @@ Cubemap::~Cubemap()
 
 void Cubemap::serialize(YAML::Node &out) const
 {
-    Texture::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
+
+    out["dimension"] = mDimension;
+    out["format"] = mFormat;
+    out["wrapMode"] = mWrapMode;
+    out["filterMode"] = mFilterMode;
+    out["numChannels"] = mNumChannels;
+    out["anisoLevel"] = mAnisoLevel;
 
     out["leftTexId"] = mLeftTexGuid;
     out["rightTexId"] = mRightTexGuid;
@@ -127,7 +176,20 @@ void Cubemap::serialize(YAML::Node &out) const
 
 void Cubemap::deserialize(const YAML::Node &in)
 {
-    Texture::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
+
+    mDimension = YAML::getValue<TextureDimension>(in, "dimension");
+    mFormat = YAML::getValue<TextureFormat>(in, "format");
+    mWrapMode = YAML::getValue<TextureWrapMode>(in, "wrapMode");
+    mFilterMode = YAML::getValue<TextureFilterMode>(in, "filterMode");
+    mNumChannels = YAML::getValue<int>(in, "numChannels");
+    mAnisoLevel = YAML::getValue<int>(in, "anisoLevel");
+
+    mDeviceUpdateRequired = false;
+    mUpdateRequired = false;
 
     mLeftTexGuid = YAML::getValue<Guid>(in, "leftTexId");
     mRightTexGuid = YAML::getValue<Guid>(in, "rightTexId");
@@ -139,6 +201,50 @@ void Cubemap::deserialize(const YAML::Node &in)
     mWidth = YAML::getValue<int>(in, "width");
 }
 
+bool Cubemap::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void Cubemap::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
+}
+
 int Cubemap::getType() const
 {
     return PhysicsEngine::CUBEMAP_TYPE;
@@ -147,6 +253,16 @@ int Cubemap::getType() const
 std::string Cubemap::getObjectName() const
 {
     return PhysicsEngine::CUBEMAP_NAME;
+}
+
+Guid Cubemap::getGuid() const
+{
+    return mGuid;
+}
+
+Id Cubemap::getId() const
+{
+    return mId;
 }
 
 int Cubemap::getWidth() const

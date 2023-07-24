@@ -5,8 +5,12 @@
 #include <thread>
 #include <vector>
 
-#include "../core/Texture.h"
-#include "System.h"
+#include "../core/SerializationEnums.h"
+#include "../core/AssetEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+#include "../core/Input.h"
+#include "../core/Time.h"
 
 namespace PhysicsEngine
 {
@@ -21,9 +25,15 @@ struct Texture2DLoadingRequest
     std::atomic<bool> mDone;
 };
 
-class AssetLoadingSystem : public System
+class World;
+
+class AssetLoadingSystem
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World* mWorld;
+
     std::queue<std::string> mTextureQueue;
     // std::vector<Texture2DLoadingRequest> mWorkerRequests;
     // std::vector<std::thread> mWorkers;
@@ -33,32 +43,30 @@ class AssetLoadingSystem : public System
     unsigned int mNumThreads;
 
   public:
+    HideFlag mHide;
+
+  public:
     AssetLoadingSystem(World *world, const Id &id);
     AssetLoadingSystem(World *world, const Guid &guid, const Id &id);
     ~AssetLoadingSystem();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    void init(World *world) override;
-    void update(const Input &input, const Time &time) override;
+    Guid getGuid() const;
+    Id getId() const;
+
+    void init(World *world);
+    void update(const Input &input, const Time &time);
 
     void loadTexture2DAsync(const std::string &filepath);
 
     void doWork(int slot);
 };
 
-template <> struct SystemType<AssetLoadingSystem>
-{
-    static constexpr int type = PhysicsEngine::ASSETLOADINGSYSTEM_TYPE;
-};
-template <> struct IsSystemInternal<AssetLoadingSystem>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

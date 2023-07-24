@@ -4,17 +4,26 @@
 #include <string>
 #include <vector>
 
-#include "Object.h"
+#include "Guid.h"
+#include "Id.h"
 #include "Types.h"
+#include "SerializationEnums.h"
 
 namespace PhysicsEngine
 {
-class Entity : public Object
+class World;
+
+class Entity
 {
   private:
-    std::string mName;
+    Guid mGuid;
+    Id mId;
+    World *mWorld;
 
   public:
+    HideFlag mHide;
+    std::string mName;
+
     bool mDoNotDestroy;
     bool mEnabled;
 
@@ -23,11 +32,14 @@ class Entity : public Object
     Entity(World *world, const Guid &guid, const Id &id);
     ~Entity();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     void latentDestroy();
     void immediateDestroy();
@@ -44,9 +56,6 @@ class Entity : public Object
 
     std::vector<std::pair<Guid, int>> getComponentsOnEntity() const;
 
-    std::string getName() const;
-    void setName(const std::string &name);
-
   private:
     friend class Scene;
 };
@@ -56,15 +65,6 @@ template <typename T> struct EntityType
     static constexpr int type = PhysicsEngine::INVALID_TYPE;
 };
 
-template <typename> struct IsEntityInternal
-{
-    static constexpr bool value = false;
-};
-
-template <> struct IsEntityInternal<Entity>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

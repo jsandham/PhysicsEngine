@@ -14,8 +14,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#include "Component.h"
-
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
 #include "../core/Color.h"
 #include "../core/Frustum.h"
 #include "../core/Ray.h"
@@ -26,128 +27,10 @@
 #include "../graphics/GraphicsQuery.h"
 #include "../graphics/RenderTextureHandle.h"
 
+#include "ComponentEnums.h"
+
 namespace PhysicsEngine
 {
-enum class CameraMode
-{
-    Main,
-    Secondary
-};
-
-enum class CameraSSAO
-{
-    SSAO_On,
-    SSAO_Off,
-};
-
-enum class CameraGizmos
-{
-    Gizmos_On,
-    Gizmos_Off,
-};
-
-enum class RenderPath
-{
-    Forward,
-    Deferred
-};
-
-enum class ColorTarget
-{
-    Color,
-    Normal,
-    Position,
-    LinearDepth,
-    ShadowCascades
-};
-
-enum class ShadowCascades
-{
-    NoCascades = 0,
-    TwoCascades = 1,
-    ThreeCascades = 2,
-    FourCascades = 3,
-    FiveCascades = 4,
-};
-
-constexpr auto CameraModeToString(CameraMode mode)
-{
-    switch (mode)
-    {
-    case CameraMode::Main:
-        return "Main";
-    case CameraMode::Secondary:
-        return "Secondary";
-    }
-}
-
-constexpr auto CameraSSAOToString(CameraSSAO ssao)
-{
-    switch (ssao)
-    {
-    case CameraSSAO::SSAO_On:
-        return "SSAO On";
-    case CameraSSAO::SSAO_Off:
-        return "SSAO Off";
-    }
-}
-
-constexpr auto CameraGizmosToString(CameraGizmos gizmo)
-{
-    switch (gizmo)
-    {
-    case CameraGizmos::Gizmos_On:
-        return "Gizmos On";
-    case CameraGizmos::Gizmos_Off:
-        return "Gizmos Off";
-    }
-}
-
-constexpr auto RenderPathToString(RenderPath renderPath)
-{
-    switch (renderPath)
-    {
-    case RenderPath::Forward:
-        return "Forward";
-    case RenderPath::Deferred:
-        return "Deferred";
-    }
-}
-
-constexpr auto ColorTargetToString(ColorTarget target)
-{
-    switch (target)
-    {
-    case ColorTarget::Color:
-        return "Color";
-    case ColorTarget::LinearDepth:
-        return "LinearDepth";
-    case ColorTarget::Normal:
-        return "Normal";
-    case ColorTarget::Position:
-        return "Position";
-    case ColorTarget::ShadowCascades:
-        return "ShadowCascades";
-    }
-}
-
-constexpr auto ShadowCascadesToString(ShadowCascades cascade)
-{
-    switch (cascade)
-    {
-    case ShadowCascades::NoCascades:
-        return "NoCascades";
-    case ShadowCascades::TwoCascades:
-        return "TwoCascades";
-    case ShadowCascades::ThreeCascades:
-        return "ThreeCascades";
-    case ShadowCascades::FourCascades:
-        return "FourCascades";
-    case ShadowCascades::FiveCascades:
-        return "FiveCascades";
-    }
-}
-
 struct CameraTargets
 {
     Framebuffer *mMainFBO;
@@ -156,9 +39,13 @@ struct CameraTargets
     Framebuffer *mSsaoFBO;
 };
 
-class Camera : public Component
+class World;
+
+class Camera
 {
   public:
+    HideFlag mHide;
+
     Guid mRenderTextureId;
 
     RenderPath mRenderPath;
@@ -176,6 +63,12 @@ class Camera : public Component
     bool mRenderToScreen;
 
   private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     Frustum mFrustum;
     Viewport mViewport;
     CameraTargets mTargets;
@@ -198,15 +91,17 @@ class Camera : public Component
   public:
     Camera(World *world, const Id &id);
     Camera(World *world, const Guid &guid, const Id &id);
-    // Camera(const Camera&) = delete;
-    // Camera &operator=(const Camera&) =delete;
     ~Camera();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
     void resizeTargets();
     void beginQuery();
@@ -253,122 +148,11 @@ class Camera : public Component
     RenderTextureHandle *getNativeGraphicsAlbedoSpecTex() const;
     RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
     RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
+
+  private:
+    friend class Scene;
 };
 
-template <> struct ComponentType<Camera>
-{
-    static constexpr int type = CAMERA_TYPE;
-};
-
-template <> struct IsComponentInternal<Camera>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// CameraMode
-template <> struct convert<PhysicsEngine::CameraMode>
-{
-    static Node encode(const PhysicsEngine::CameraMode &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::CameraMode &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::CameraMode>(node.as<int>());
-        return true;
-    }
-};
-
-// CameraSSAO
-template <> struct convert<PhysicsEngine::CameraSSAO>
-{
-    static Node encode(const PhysicsEngine::CameraSSAO &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::CameraSSAO &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::CameraSSAO>(node.as<int>());
-        return true;
-    }
-};
-
-// CameraGizmos
-template <> struct convert<PhysicsEngine::CameraGizmos>
-{
-    static Node encode(const PhysicsEngine::CameraGizmos &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::CameraGizmos &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::CameraGizmos>(node.as<int>());
-        return true;
-    }
-};
-
-// RenderPath
-template <> struct convert<PhysicsEngine::RenderPath>
-{
-    static Node encode(const PhysicsEngine::RenderPath &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::RenderPath &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::RenderPath>(node.as<int>());
-        return true;
-    }
-};
-
-// ColorTarget
-template <> struct convert<PhysicsEngine::ColorTarget>
-{
-    static Node encode(const PhysicsEngine::ColorTarget &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::ColorTarget &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::ColorTarget>(node.as<int>());
-        return true;
-    }
-};
-
-// ShadowCascades
-template <> struct convert<PhysicsEngine::ShadowCascades>
-{
-    static Node encode(const PhysicsEngine::ShadowCascades &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::ShadowCascades &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::ShadowCascades>(node.as<int>());
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif

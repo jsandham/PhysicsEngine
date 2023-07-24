@@ -1,7 +1,10 @@
 #ifndef MATERIAL_H__
 #define MATERIAL_H__
 
-#include "Asset.h"
+#include "SerializationEnums.h"
+#include "AssetEnums.h"
+#include "Guid.h"
+#include "Id.h"
 #include "Shader.h"
 #include "Texture2D.h"
 
@@ -11,9 +14,16 @@
 
 namespace PhysicsEngine
 {
-class Material : public Asset
+class World;
+
+class Material
 {
   private:
+    Guid mGuid;
+    Id mId;
+
+    World *mWorld;
+
     Guid mShaderGuid;
     std::vector<ShaderUniform> mUniforms;
     bool mShaderChanged;
@@ -21,7 +31,11 @@ class Material : public Asset
 
     Shader *mShader;
 
+    friend class World;
+
   public:
+    HideFlag mHide;
+    std::string mName;
     RenderQueue mRenderQueue;
     bool mEnableInstancing;
 
@@ -30,11 +44,17 @@ class Material : public Asset
     Material(World *world, const Guid &guid, const Id &id);
     ~Material();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    bool writeToYAML(const std::string &filepath) const;
+    void loadFromYAML(const std::string &filepath);
+
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     void apply();
     void onShaderChanged();
@@ -100,15 +120,6 @@ class Material : public Asset
     int findIndexOfUniform(int uniformId) const;
 };
 
-template <> struct AssetType<Material>
-{
-    static constexpr int type = PhysicsEngine::MATERIAL_TYPE;
-};
-
-template <> struct IsAssetInternal<Material>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

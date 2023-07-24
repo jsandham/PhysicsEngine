@@ -3,45 +3,35 @@
 
 #include <vector>
 
+#include "SerializationEnums.h"
+#include "Guid.h"
+#include "Id.h"
 #include "Color.h"
-#include "Texture.h"
 
 #include "../graphics/CubemapHandle.h"
 
 namespace PhysicsEngine
 {
-enum class CubemapFace
-{
-    PositiveX,
-    NegativeX,
-    PositiveY,
-    NegativeY,
-    PositiveZ,
-    NegativeZ
-};
+class World;
 
-constexpr auto CubemapFaceToString(CubemapFace face)
-{
-    switch (face)
-    {
-    case CubemapFace::NegativeX:
-        return "NegativeX";
-    case CubemapFace::NegativeY:
-        return "NegativeY";
-    case CubemapFace::NegativeZ:
-        return "NegativeZ";
-    case CubemapFace::PositiveX:
-        return "PositiveX";
-    case CubemapFace::PositiveY:
-        return "PositiveY";
-    case CubemapFace::PositiveZ:
-        return "PositiveZ";
-    }
-}
-
-class Cubemap : public Texture
+class Cubemap
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World *mWorld;
+
+    std::vector<unsigned char> mRawTextureData;
+    int mNumChannels;
+    int mAnisoLevel;
+    TextureDimension mDimension;
+    TextureFormat mFormat;
+    TextureWrapMode mWrapMode;
+    TextureFilterMode mFilterMode;
+
+    bool mDeviceUpdateRequired;
+    bool mUpdateRequired;
+
     Guid mLeftTexGuid;
     Guid mRightTexGuid;
     Guid mBottomTexGuid;
@@ -54,17 +44,27 @@ class Cubemap : public Texture
     CubemapHandle *mCube;
 
   public:
+    std::string mName;
+    HideFlag mHide;
+
+  public:
     Cubemap(World *world, const Id &id);
     Cubemap(World *world, const Guid &guid, const Id &id);
     Cubemap(World *world, const Id &id, int width);
     Cubemap(World *world, const Id &id, int width, TextureFormat format);
     ~Cubemap();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    bool writeToYAML(const std::string &filepath) const;
+    void loadFromYAML(const std::string &filepath);
+
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     int getWidth() const;
 
@@ -81,22 +81,14 @@ class Cubemap : public Texture
 
     void fillCubemapFromAttachedTexture(CubemapFace face);
 
-    void copyTextureToDevice() override;
-    void updateTextureParameters() override;
-    void readPixels() override;
-    void writePixels() override;
+    void copyTextureToDevice();
+    void updateTextureParameters();
+    void readPixels();
+    void writePixels();
 
     CubemapHandle *getNativeGraphics() const;
 };
 
-template <> struct AssetType<Cubemap>
-{
-    static constexpr int type = PhysicsEngine::CUBEMAP_TYPE;
-};
-template <> struct IsAssetInternal<Cubemap>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

@@ -1,12 +1,18 @@
 #include <algorithm>
 
 #include "../../include/components/Light.h"
+#include "../../include/components/ComponentYaml.h"
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
-Light::Light(World *world, const Id &id) : Component(world, id)
+Light::Light(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
@@ -32,8 +38,9 @@ Light::Light(World *world, const Id &id) : Component(world, id)
     mTargets.mShadowCubemapFBO = Framebuffer::create(1024, 1024);
 }
 
-Light::Light(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+Light::Light(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
@@ -73,7 +80,11 @@ Light::~Light()
 
 void Light::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["color"] = mColor;
     out["intensity"] = mIntensity;
@@ -91,7 +102,10 @@ void Light::serialize(YAML::Node &out) const
 
 void Light::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mColor = YAML::getValue<glm::vec4>(in, "color");
     mIntensity = YAML::getValue<float>(in, "intensity");
@@ -115,6 +129,21 @@ int Light::getType() const
 std::string Light::getObjectName() const
 {
     return PhysicsEngine::LIGHT_NAME;
+}
+
+Guid Light::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid Light::getGuid() const
+{
+    return mGuid;
+}
+
+Id Light::getId() const
+{
+    return mId;
 }
 
 void ::Light::resizeTargets()

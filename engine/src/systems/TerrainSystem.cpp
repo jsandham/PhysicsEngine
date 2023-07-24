@@ -1,15 +1,18 @@
 #include "../../include/systems/TerrainSystem.h"
+
 #include "../../include/components/Terrain.h"
 #include "../../include/components/Transform.h"
+
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
-TerrainSystem::TerrainSystem(World *world, const Id &id) : System(world, id)
+TerrainSystem::TerrainSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
 }
 
-TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
 }
 
@@ -19,12 +22,15 @@ TerrainSystem::~TerrainSystem()
 
 void TerrainSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void TerrainSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int TerrainSystem::getType() const
@@ -36,6 +42,17 @@ std::string TerrainSystem::getObjectName() const
 {
     return PhysicsEngine::TERRAINSYSTEM_NAME;
 }
+
+Guid TerrainSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id TerrainSystem::getId() const
+{
+    return mId;
+}
+
 
 void TerrainSystem::init(World *world)
 {

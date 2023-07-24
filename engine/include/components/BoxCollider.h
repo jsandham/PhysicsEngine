@@ -1,19 +1,34 @@
 #ifndef BOXCOLLIDER_H__
 #define BOXCOLLIDER_H__
 
-#include "Collider.h"
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
 
+#include "../core/SerializationEnums.h"
 #include "../core/AABB.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+
+#include "ComponentEnums.h"
 
 namespace PhysicsEngine
 {
-class BoxCollider : public Collider
+class World;
+
+class BoxCollider
 {
+  private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
   public:
+    HideFlag mHide;
+    bool mEnabled;
+
     AABB mAABB;
 
   public:
@@ -21,26 +36,24 @@ class BoxCollider : public Collider
     BoxCollider(World *world, const Guid &guid, const Id &id);
     ~BoxCollider();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
 
-    bool intersect(AABB aabb) const override;
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
+
+    bool intersect(AABB aabb) const;
 
     std::vector<float> getLines() const;
+
+  private:
+    friend class Scene;
 };
 
-template <> struct ComponentType<BoxCollider>
-{
-    static constexpr int type = BOXCOLLIDER_TYPE;
-};
-
-template <> struct IsComponentInternal<BoxCollider>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

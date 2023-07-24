@@ -3,30 +3,50 @@
 
 #define GLM_FORCE_RADIANS
 
-#include "Component.h"
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+
+#include "ComponentEnums.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 
 namespace PhysicsEngine
 {
-class Transform : public Component
+class World;
+
+class Transform
 {
   private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     glm::vec3 mPosition;
     glm::quat mRotation;
     glm::vec3 mScale;
+
+  public:
+     HideFlag mHide;
+     bool mEnabled;
 
   public:
     Transform(World *world, const Id &id);
     Transform(World *world, const Guid &guid, const Id &id);
     ~Transform();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
     void setPosition(const glm::vec3 &position);
     void setRotation(const glm::quat &rotation);
@@ -45,17 +65,10 @@ class Transform : public Component
 
   private:
     static void v3Scale(glm::vec3 &v, float desiredLength);
+
+    friend class Scene;
 };
 
-template <> struct ComponentType<Transform>
-{
-    static constexpr int type = PhysicsEngine::TRANSFORM_TYPE;
-};
-
-template <> struct IsComponentInternal<Transform>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

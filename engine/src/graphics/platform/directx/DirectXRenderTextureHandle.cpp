@@ -4,6 +4,8 @@
 
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
+#include <assert.h>
+
 using namespace PhysicsEngine;
 
 DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, TextureFormat format,

@@ -1,11 +1,14 @@
 #include "../../include/components/MeshRenderer.h"
 
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
 #include "../../include/core/GLM.h"
 
 using namespace PhysicsEngine;
 
-MeshRenderer::MeshRenderer(World *world, const Id &id) : Component(world, id)
+MeshRenderer::MeshRenderer(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mMeshId = Guid::INVALID;
 
     for (int i = 0; i < 8; i++)
@@ -20,8 +23,9 @@ MeshRenderer::MeshRenderer(World *world, const Id &id) : Component(world, id)
     mEnabled = true;
 }
 
-MeshRenderer::MeshRenderer(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+MeshRenderer::MeshRenderer(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mMeshId = Guid::INVALID;
 
     for (int i = 0; i < 8; i++)
@@ -42,7 +46,11 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["meshId"] = mMeshId;
     out["materialCount"] = mMaterialCount;
@@ -56,7 +64,10 @@ void MeshRenderer::serialize(YAML::Node &out) const
 
 void MeshRenderer::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mMeshId = YAML::getValue<Guid>(in, "meshId");
     mMaterialCount = YAML::getValue<int>(in, "materialCount");
@@ -79,6 +90,21 @@ int MeshRenderer::getType() const
 std::string MeshRenderer::getObjectName() const
 {
     return PhysicsEngine::MESHRENDERER_NAME;
+}
+
+Guid MeshRenderer::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid MeshRenderer::getGuid() const
+{
+    return mGuid;
+}
+
+Id MeshRenderer::getId() const
+{
+    return mId;
 }
 
 void MeshRenderer::setMesh(const Guid &meshId)

@@ -2,16 +2,22 @@
 
 #include "../../include/components/SphereCollider.h"
 
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
 #include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
 
-SphereCollider::SphereCollider(World *world, const Id &id) : Collider(world, id)
+SphereCollider::SphereCollider(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
+    mEnabled = true;
 }
 
-SphereCollider::SphereCollider(World *world, const Guid &guid, const Id &id) : Collider(world, guid, id)
+SphereCollider::SphereCollider(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
+    mEnabled = true;
 }
 
 SphereCollider::~SphereCollider()
@@ -20,14 +26,25 @@ SphereCollider::~SphereCollider()
 
 void SphereCollider::serialize(YAML::Node &out) const
 {
-    Collider::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
+
+    out["enabled"] = mEnabled;
 
     out["sphere"] = mSphere;
 }
 
 void SphereCollider::deserialize(const YAML::Node &in)
 {
-    Collider::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
+
+    mEnabled = YAML::getValue<bool>(in, "enabled");
 
     mSphere = YAML::getValue<Sphere>(in, "sphere");
 }
@@ -40,6 +57,21 @@ int SphereCollider::getType() const
 std::string SphereCollider::getObjectName() const
 {
     return PhysicsEngine::SPHERECOLLIDER_NAME;
+}
+
+Guid SphereCollider::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid SphereCollider::getGuid() const
+{
+    return mGuid;
+}
+
+Id SphereCollider::getId() const
+{
+    return mId;
 }
 
 bool SphereCollider::intersect(AABB aabb) const

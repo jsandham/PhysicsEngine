@@ -1,7 +1,9 @@
+#include "../../include/systems/AssetLoadingSystem.h"
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetEnums.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
-
-#include "../../include/systems/AssetLoadingSystem.h"
 
 #include "stb_image.h"
 #include "stb_image_write.h"
@@ -133,7 +135,7 @@ void AssetLoadingSystem::doWork(int slot)
     }
 }
 
-AssetLoadingSystem::AssetLoadingSystem(World *world, const Id &id) : System(world, id)
+AssetLoadingSystem::AssetLoadingSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mNumThreads = std::thread::hardware_concurrency();
 
@@ -148,7 +150,7 @@ AssetLoadingSystem::AssetLoadingSystem(World *world, const Id &id) : System(worl
     }
 }
 
-AssetLoadingSystem::AssetLoadingSystem(World *world, const Guid &guid, const Id &id) : System(world, guid, id)
+AssetLoadingSystem::AssetLoadingSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mNumThreads = std::thread::hardware_concurrency();
 
@@ -173,12 +175,15 @@ AssetLoadingSystem::~AssetLoadingSystem()
 
 void AssetLoadingSystem::serialize(YAML::Node &out) const
 {
-    System::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 }
 
 void AssetLoadingSystem::deserialize(const YAML::Node &in)
 {
-    System::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 }
 
 int AssetLoadingSystem::getType() const
@@ -189,6 +194,16 @@ int AssetLoadingSystem::getType() const
 std::string AssetLoadingSystem::getObjectName() const
 {
     return PhysicsEngine::ASSETLOADINGSYSTEM_NAME;
+}
+
+Guid AssetLoadingSystem::getGuid() const
+{
+    return mGuid;
+}
+
+Id AssetLoadingSystem::getId() const
+{
+    return mId;
 }
 
 void AssetLoadingSystem::init(World *world)

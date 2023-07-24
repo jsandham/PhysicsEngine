@@ -1,11 +1,14 @@
 #include "../../include/components/Rigidbody.h"
 
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
 #include "../../include/core/GLM.h"
 
 using namespace PhysicsEngine;
 
-Rigidbody::Rigidbody(World *world, const Id &id) : Component(world, id)
+Rigidbody::Rigidbody(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mUseGravity = true;
     mEnabled = true;
     mMass = 1.0f;
@@ -20,8 +23,9 @@ Rigidbody::Rigidbody(World *world, const Id &id) : Component(world, id)
     mHalfVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-Rigidbody::Rigidbody(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+Rigidbody::Rigidbody(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mUseGravity = true;
     mEnabled = true;
     mMass = 1.0f;
@@ -42,7 +46,11 @@ Rigidbody::~Rigidbody()
 
 void Rigidbody::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["useGravity"] = mUseGravity;
     out["enabled"] = mEnabled;
@@ -56,7 +64,10 @@ void Rigidbody::serialize(YAML::Node &out) const
 
 void Rigidbody::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mUseGravity = YAML::getValue<bool>(in, "useGravity");
     mEnabled = YAML::getValue<bool>(in, "enabled");
@@ -76,4 +87,19 @@ int Rigidbody::getType() const
 std::string Rigidbody::getObjectName() const
 {
     return PhysicsEngine::RIGIDBODY_NAME;
+}
+
+Guid Rigidbody::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid Rigidbody::getGuid() const
+{
+    return mGuid;
+}
+
+Id Rigidbody::getId() const
+{
+    return mId;
 }

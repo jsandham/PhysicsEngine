@@ -1,17 +1,31 @@
 #ifndef MESHRENDERER_H__
 #define MESHRENDERER_H__
 
-#include "Component.h"
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+
+#include "ComponentEnums.h"
 
 namespace PhysicsEngine
 {
-class MeshRenderer : public Component
+class World;
+
+class MeshRenderer
 {
   private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     Guid mMeshId;
     Guid mMaterialIds[8];
 
   public:
+    HideFlag mHide;
+
     int mMaterialCount;
     bool mMeshChanged;
     bool mMaterialChanged;
@@ -23,11 +37,15 @@ class MeshRenderer : public Component
     MeshRenderer(World *world, const Guid &guid, const Id &id);
     ~MeshRenderer();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
 
     void setMesh(const Guid &meshId);
     void setMaterial(const Guid &materialId);
@@ -37,16 +55,9 @@ class MeshRenderer : public Component
     Guid getMaterial() const;
     Guid getMaterial(int index) const;
     std::vector<Guid> getMaterials() const;
-};
 
-template <> struct ComponentType<MeshRenderer>
-{
-    static constexpr int type = PhysicsEngine::MESHRENDERER_TYPE;
-};
-
-template <> struct IsComponentInternal<MeshRenderer>
-{
-    static constexpr bool value = true;
+  private:
+    friend class Scene;
 };
 } // namespace PhysicsEngine
 

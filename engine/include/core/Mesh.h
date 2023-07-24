@@ -3,11 +3,15 @@
 
 #include <vector>
 
+#include "SerializationEnums.h"
+#include "Sphere.h"
+#include "AssetEnums.h"
+#include "Guid.h"
+#include "Id.h"
+
 #include "../graphics/IndexBuffer.h"
 #include "../graphics/MeshHandle.h"
 #include "../graphics/VertexBuffer.h"
-#include "Asset.h"
-#include "Sphere.h"
 
 #define GLM_FORCE_RADIANS
 
@@ -15,9 +19,15 @@
 
 namespace PhysicsEngine
 {
-class Mesh : public Asset
+class World;
+
+class Mesh
 {
   private:
+    Guid mGuid;
+    Id mId;
+    World *mWorld;
+
     std::string mSource;
     std::string mSourceFilepath;
 
@@ -41,16 +51,28 @@ class Mesh : public Asset
     IndexBuffer *mIndexBuffer;
     bool mDeviceUpdateRequired;
 
+    friend class World;
+
+  public:
+    std::string mName;
+    HideFlag mHide;
+
   public:
     Mesh(World *world, const Id &id);
     Mesh(World *world, const Guid &guid, const Id &id);
     ~Mesh();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
+    bool writeToYAML(const std::string &filepath) const;
+    void loadFromYAML(const std::string &filepath);
+
+    int getType() const;
+    std::string getObjectName() const;
+
+    Guid getGuid() const;
+    Id getId() const;
 
     void load(const std::string &filename);
     void load(std::vector<float> vertices, std::vector<float> normals, std::vector<float> texCoords,
@@ -89,15 +111,6 @@ class Mesh : public Asset
     void computeBoundingSphere_SIMD128();
 };
 
-template <> struct AssetType<Mesh>
-{
-    static constexpr int type = PhysicsEngine::MESH_TYPE;
-};
-
-template <> struct IsAssetInternal<Mesh>
-{
-    static constexpr bool value = true;
-};
 } // namespace PhysicsEngine
 
 #endif

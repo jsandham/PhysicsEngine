@@ -1,5 +1,10 @@
+#include <fstream>
+
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Mesh.h"
 #include "../../include/core/Log.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 #include "tiny_obj_loader.h"
@@ -39,8 +44,10 @@ bool operator<(const index_t &l, const index_t &r)
 }
 } // namespace tinyobj
 
-Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
+Mesh::Mesh(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mSource = "";
     mSourceFilepath = "";
     mDeviceUpdateRequired = false;
@@ -64,8 +71,10 @@ Mesh::Mesh(World *world, const Id &id) : Asset(world, id)
     mHandle->addIndexBuffer(mIndexBuffer);
 }
 
-Mesh::Mesh(World *world, const Guid &guid, const Id &id) : Asset(world, guid, id)
+Mesh::Mesh(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mName = "Unnamed Asset";
+
     mSource = "";
     mSourceFilepath = "";
     mDeviceUpdateRequired = false;
@@ -104,18 +113,69 @@ Mesh::~Mesh()
 
 void Mesh::serialize(YAML::Node &out) const
 {
-    Asset::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["name"] = mName;
 
     out["source"] = mSource;
 }
 
 void Mesh::deserialize(const YAML::Node &in)
 {
-    Asset::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mName = YAML::getValue<std::string>(in, "name");
 
     mSource = YAML::getValue<std::string>(in, "source");
     mSourceFilepath = YAML::getValue<std::string>(in, "sourceFilepath"); // dont serialize out
     load(mSourceFilepath);
+}
+
+bool Mesh::writeToYAML(const std::string &filepath) const
+{
+    std::ofstream out;
+    out.open(filepath);
+
+    if (!out.is_open())
+    {
+        return false;
+    }
+
+    if (mHide == HideFlag::None)
+    {
+        YAML::Node n;
+        serialize(n);
+
+        YAML::Node assetNode;
+        assetNode[getObjectName()] = n;
+
+        out << assetNode;
+        out << "\n";
+    }
+    out.close();
+
+    return true;
+}
+
+void Mesh::loadFromYAML(const std::string &filepath)
+{
+    YAML::Node in = YAML::LoadFile(filepath);
+
+    if (!in.IsMap())
+    {
+        return;
+    }
+
+    for (YAML::const_iterator it = in.begin(); it != in.end(); ++it)
+    {
+        if (it->first.IsScalar() && it->second.IsMap())
+        {
+            deserialize(it->second);
+        }
+    }
 }
 
 int Mesh::getType() const
@@ -126,6 +186,16 @@ int Mesh::getType() const
 std::string Mesh::getObjectName() const
 {
     return PhysicsEngine::MESH_NAME;
+}
+
+Guid Mesh::getGuid() const
+{
+    return mGuid;
+}
+
+Id Mesh::getId() const
+{
+    return mId;
 }
 
 /*void Mesh::load(const std::string &filepath)
@@ -717,7 +787,7 @@ void Mesh::computeNormals_SIMD128()
     size_t numSimdTriangles = numTriangles - (numTriangles % 4);
 
     std::cout << "numTriangles: " << numTriangles << " numSimdTriangles: " << numSimdTriangles
-              << " mName: " << getName() << std::endl;
+              << " mName: " << mName << std::endl;
 
     for (size_t t = 0; t < numSimdTriangles; t += 4)
     {

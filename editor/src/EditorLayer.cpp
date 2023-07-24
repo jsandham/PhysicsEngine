@@ -18,7 +18,7 @@ void EditorLayer::init()
 	std::filesystem::path cwd = std::filesystem::current_path();
 	std::filesystem::path dataPath = cwd / "data";
 
-	mClipboard.getWorld()->loadAssetsInPath(dataPath);
+	mClipboard.getWorld()->loadAllAssetsInPath(dataPath);
 
 	mMenuBar.init(mClipboard);
 	mInspector.init(mClipboard);

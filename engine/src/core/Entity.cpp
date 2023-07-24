@@ -1,18 +1,20 @@
 #include <algorithm>
 #include <iostream>
 
+#include "../../include/core/SerializationEnums.h"
+#include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Entity.h"
 #include "../../include/core/World.h"
 
 using namespace PhysicsEngine;
 
-Entity::Entity(World *world, const Id &id) : Object(world, id)
+Entity::Entity(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
 }
 
-Entity::Entity(World *world, const Guid &guid, const Id &id) : Object(world, guid, id)
+Entity::Entity(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mName = "Unnamed Entity";
     mDoNotDestroy = false;
@@ -24,7 +26,9 @@ Entity::~Entity()
 
 void Entity::serialize(YAML::Node &out) const
 {
-    Object::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
 
     out["doNotDestroy"] = mDoNotDestroy;
     out["name"] = mName;
@@ -32,7 +36,8 @@ void Entity::serialize(YAML::Node &out) const
 
 void Entity::deserialize(const YAML::Node &in)
 {
-    Object::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
 
     mDoNotDestroy = YAML::getValue<bool>(in, "doNotDestroy");
     mName = YAML::getValue<std::string>(in, "name");
@@ -48,6 +53,16 @@ std::string Entity::getObjectName() const
     return PhysicsEngine::ENTITY_NAME;
 }
 
+Guid Entity::getGuid() const
+{
+    return mGuid;
+}
+
+Id Entity::getId() const
+{
+    return mId;
+}
+
 void Entity::latentDestroy()
 {
     mWorld->getActiveScene()->latentDestroyEntity(getGuid());
@@ -61,14 +76,4 @@ void Entity::immediateDestroy()
 std::vector<std::pair<Guid, int>> Entity::getComponentsOnEntity() const
 {
     return mWorld->getActiveScene()->getComponentsOnEntity(getGuid());
-}
-
-std::string Entity::getName() const
-{
-    return mName;
-}
-
-void Entity::setName(const std::string &name)
-{
-    mName = name;
 }

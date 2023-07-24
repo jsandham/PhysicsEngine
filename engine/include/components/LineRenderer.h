@@ -1,17 +1,32 @@
 #ifndef LINERENDERER_H__
 #define LINERENDERER_H__
 
-#include "Component.h"
-
 #define GLM_FORCE_RADIANS
 
 #include "glm/glm.hpp"
 
+#include "../core/SerializationEnums.h"
+#include "../core/Guid.h"
+#include "../core/Id.h"
+
+#include "ComponentEnums.h"
+
 namespace PhysicsEngine
 {
-class LineRenderer : public Component
+class World;
+
+class LineRenderer
 {
   public:
+    HideFlag mHide;
+
+  private:
+    Guid mGuid;
+    Id mId;
+    Guid mEntityGuid;
+
+    World *mWorld;
+
     glm::vec3 mStart;
     glm::vec3 mEnd;
     bool mEnabled;
@@ -23,21 +38,18 @@ class LineRenderer : public Component
     LineRenderer(World *world, const Guid &guid, const Id &id);
     ~LineRenderer();
 
-    virtual void serialize(YAML::Node &out) const override;
-    virtual void deserialize(const YAML::Node &in) override;
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
 
-    virtual int getType() const override;
-    virtual std::string getObjectName() const override;
-};
+    int getType() const;
+    std::string getObjectName() const;
 
-template <> struct ComponentType<LineRenderer>
-{
-    static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;
-};
-
-template <> struct IsComponentInternal<LineRenderer>
-{
-    static constexpr bool value = true;
+    Guid getEntityGuid() const;
+    Guid getGuid() const;
+    Id getId() const;
+  
+  private:
+    friend class Scene;
 };
 } // namespace PhysicsEngine
 

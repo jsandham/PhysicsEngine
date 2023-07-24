@@ -1,12 +1,18 @@
 #include <algorithm>
 
 #include "../../include/components/Camera.h"
+#include "../../include/components/ComponentYaml.h"
+
+#include "../../include/core/SerializationYaml.h"
+#include "../../include/core/World.h"
+
 #include "../../include/graphics/Renderer.h"
 
 using namespace PhysicsEngine;
 
-Camera::Camera(World *world, const Id &id) : Component(world, id)
+Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
@@ -50,8 +56,9 @@ Camera::Camera(World *world, const Id &id) : Component(world, id)
     mRenderToScreen = false;
 }
 
-Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, guid, id)
+Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEntityGuid = Guid::INVALID;
     mRenderTextureId = Guid::INVALID;
 
     mQuery.mQueryBack = 0;
@@ -94,39 +101,6 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : Component(world, 
     mIsViewportChanged = false;
     mRenderToScreen = false;
 }
-
-//// 1. copy constructor
-// Camera::Camera(const Camera &that)
-//{
-//     name = new char[strlen(that.name) + 1];
-//     strcpy(name, that.name);
-//     age = that.age;
-// }
-//
-//// 2. copy assignment operator
-// Camera& Camera::operator=(const Camera &that)
-//{
-//     if (this != &that)
-//     {
-//         delete mTargets.mMainFBO;
-//         delete mTargets.mColorPickingFBO;
-//         delete mTargets.mGeometryFBO;
-//         delete mTargets.mSsaoFBO;
-//         // This is a dangerous point in the flow of execution!
-//         // We have temporarily invalidated the class invariants,
-//         // and the next statement might throw an exception,
-//         // leaving the object in an invalid state :(
-//
-//
-//
-//
-//
-//         name = new char[strlen(that.name) + 1];
-//         strcpy(name, that.name);
-//         age = that.age;
-//     }
-//     return *this;
-// }
 
 Camera::~Camera()
 {
@@ -138,7 +112,11 @@ Camera::~Camera()
 
 void Camera::serialize(YAML::Node &out) const
 {
-    Component::serialize(out);
+    out["type"] = getType();
+    out["hide"] = mHide;
+    out["id"] = mGuid;
+
+    out["entityId"] = mEntityGuid;
 
     out["renderTextureId"] = mRenderTextureId;
     out["renderPath"] = mRenderPath;
@@ -156,7 +134,10 @@ void Camera::serialize(YAML::Node &out) const
 
 void Camera::deserialize(const YAML::Node &in)
 {
-    Component::deserialize(in);
+    mHide = YAML::getValue<HideFlag>(in, "hide");
+    mGuid = YAML::getValue<Guid>(in, "id");
+
+    mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mRenderTextureId = YAML::getValue<Guid>(in, "renderTextureId");
     mRenderPath = YAML::getValue<RenderPath>(in, "renderPath");
@@ -185,6 +166,21 @@ int Camera::getType() const
 std::string Camera::getObjectName() const
 {
     return PhysicsEngine::CAMERA_NAME;
+}
+
+Guid Camera::getEntityGuid() const
+{
+    return mEntityGuid;
+}
+
+Guid Camera::getGuid() const
+{
+    return mGuid;
+}
+
+Id Camera::getId() const
+{
+    return mId;
 }
 
 bool Camera::isViewportChanged() const
