@@ -14,6 +14,28 @@
 
 namespace PhysicsEngine
 {
+    template <typename T> struct IsSystem
+    {
+        static constexpr bool value = false;
+    };
+
+#define INSTANTIATE(T)                          \
+    template <> struct IsSystem<T>           \
+    {                                           \
+        static constexpr bool value = true;     \
+    };
+
+    INSTANTIATE(AssetLoadingSystem);
+    INSTANTIATE(CleanUpSystem);
+    INSTANTIATE(DebugSystem);
+    INSTANTIATE(FreeLookCameraSystem);
+    INSTANTIATE(GizmoSystem);
+    INSTANTIATE(PhysicsSystem);
+    INSTANTIATE(RenderSystem);
+    INSTANTIATE(TerrainSystem);
+
+#undef INSTANTIATE
+
     template <typename T> struct SystemType
     {
         static constexpr int type = PhysicsEngine::INVALID_TYPE;

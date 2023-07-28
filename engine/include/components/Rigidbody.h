@@ -56,6 +56,11 @@ class Rigidbody
     Guid getGuid() const;
     Id getId() const;
 
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
   private:
     friend class Scene;
 };

@@ -551,6 +551,72 @@ void Texture2D::writePixels()
     mTex->writePixels(mRawTextureData);
 }
 
+
+
+
+ bool Texture2D::deviceUpdateRequired() const
+ {
+     return mDeviceUpdateRequired;
+ }
+
+ bool Texture2D::updateRequired() const
+ {
+     return mUpdateRequired;
+ }
+
+ int Texture2D::getNumChannels() const
+ {
+     return mNumChannels;
+ }
+
+ int Texture2D::getAnisoLevel() const
+ {
+     return mAnisoLevel;
+ }
+
+ TextureDimension Texture2D::getDimension() const
+ {
+     return mDimension;
+ }
+
+ TextureFormat Texture2D::getFormat() const
+ {
+     return mFormat;
+ }
+
+ TextureWrapMode Texture2D::getWrapMode() const
+ {
+     return mWrapMode;
+ }
+
+ TextureFilterMode Texture2D::getFilterMode() const
+ {
+     return mFilterMode;
+ }
+
+ void Texture2D::setAnisoLevel(int anisoLevel)
+ {
+     mAnisoLevel = anisoLevel;
+     mUpdateRequired = true;
+ }
+
+ void Texture2D::setWrapMode(TextureWrapMode wrapMode)
+ {
+     mWrapMode = wrapMode;
+     mUpdateRequired = true;
+ }
+
+ void Texture2D::setFilterMode(TextureFilterMode filterMode)
+ {
+     mFilterMode = filterMode;
+     mUpdateRequired = true;
+ }
+
+
+
+
+
+
 TextureHandle *Texture2D::getNativeGraphics() const
 {
     return mTex;

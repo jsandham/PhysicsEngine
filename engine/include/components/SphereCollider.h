@@ -51,6 +51,11 @@ class SphereCollider
 
     std::vector<float> getLines() const;
 
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
   private:
     friend class Scene;
 };

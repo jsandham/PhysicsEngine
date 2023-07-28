@@ -27,6 +27,7 @@ class LineRenderer
 
     World *mWorld;
 
+  public:
     glm::vec3 mStart;
     glm::vec3 mEnd;
     bool mEnabled;
@@ -47,6 +48,11 @@ class LineRenderer
     Guid getEntityGuid() const;
     Guid getGuid() const;
     Id getId() const;
+
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
   
   private:
     friend class Scene;

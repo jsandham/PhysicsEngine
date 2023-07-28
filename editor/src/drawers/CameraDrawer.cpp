@@ -1,6 +1,7 @@
 #include "../../include/drawers/CameraDrawer.h"
 
 #include "components/Camera.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

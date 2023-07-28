@@ -86,10 +86,10 @@ struct SceneIdState
 // Simple structs used for grouping scene allocators when passing to functions
 struct SceneAllocators
 {
-    // internal entity allocator
+    // entity allocator
     PoolAllocator<Entity> mEntityAllocator;
 
-    // internal component allocators
+    // component allocators
     PoolAllocator<Transform> mTransformAllocator;
     PoolAllocator<MeshRenderer> mMeshRendererAllocator;
     PoolAllocator<LineRenderer> mLineRendererAllocator;
@@ -145,13 +145,11 @@ class Scene
     int getTypeOf(const Id &id) const;
     int getIndexOf(const Guid &guid) const;
     int getTypeOf(const Guid &guid) const;
+    Id getIdFromGuid(const Guid &guid) const;
+    Guid getGuidFromId(const Id &id) const;
     Entity *getEntityByIndex(size_t index) const;
     Entity *getEntityById(const Id &entityId) const;
     Entity *getEntityByGuid(const Guid &entityGuid) const;
-    // Component *getComponentById(const Id &componentId, int type) const;
-    // Component *getComponentByGuid(const Guid &componentGuid, int type) const;
-    // Component *addComponent(const Guid &entityGuid, int type);
-    // Component *addComponent(const YAML::Node &in, int type);
 
     Entity *createEntity();
     Entity *createEntity(const YAML::Node &in);

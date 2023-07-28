@@ -137,6 +137,7 @@ void AssetLoadingSystem::doWork(int slot)
 
 AssetLoadingSystem::AssetLoadingSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
     mNumThreads = std::thread::hardware_concurrency();
 
     // mWorkerRequests.resize(mNumThreads);
@@ -152,6 +153,7 @@ AssetLoadingSystem::AssetLoadingSystem(World *world, const Id &id) : mWorld(worl
 
 AssetLoadingSystem::AssetLoadingSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
     mNumThreads = std::thread::hardware_concurrency();
 
     // mWorkerRequests.resize(mNumThreads);

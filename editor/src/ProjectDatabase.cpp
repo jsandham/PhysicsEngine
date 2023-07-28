@@ -89,11 +89,11 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			texture->load(path.string());
 			if (path.has_stem())
 			{
-				texture->setName(path.stem().string());
+				texture->mName = path.stem().string();
 			}
 			else
 			{
-				texture->setName(path.filename().string());
+				texture->mName = path.filename().string();
 			}
 			texture->writeToYAML(texturePath);
 
@@ -111,11 +111,11 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			mesh->load(path.string());
 			if (path.has_stem())
 			{
-				mesh->setName(path.stem().string());
+				mesh->mName = path.stem().string();
 			}
 			else
 			{
-				mesh->setName(path.filename().string());
+				mesh->mName = path.filename().string();
 			}
 			mesh->writeToYAML(meshPath);
 
@@ -138,12 +138,12 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			if (path.has_stem())
 			{
 				attrib.mName = path.stem().string();
-				shader->setName(path.stem().string());
+				shader->mName = path.stem().string();
 			}
 			else
 			{
 				attrib.mName = path.filename().string();
-				shader->setName(path.filename().string());
+				shader->mName = path.filename().string();
 			}
 
 			shader->load(attrib);
@@ -267,7 +267,7 @@ void ProjectDatabase::createCubemapFile(PhysicsEngine::World* world, const std::
 		if (!std::filesystem::exists(filepath))
 		{
 			PhysicsEngine::Cubemap* cubemap = world->createAsset<PhysicsEngine::Cubemap>();
-			cubemap->setName(filename);
+			cubemap->mName = filename;
 			cubemap->writeToYAML(filepath.string());
 			break;
 		}
@@ -285,7 +285,7 @@ void ProjectDatabase::createMaterialFile(PhysicsEngine::World* world, const std:
 		if (!std::filesystem::exists(filepath))
 		{
 			PhysicsEngine::Material* material = world->createAsset<PhysicsEngine::Material>();
-			material->setName(filename);
+			material->mName = filename;
 			material->writeToYAML(filepath.string());
 			break;
 		}
@@ -584,10 +584,10 @@ void ProjectDatabase::populateScene(Clipboard& clipboard)
 	}
 
 	PhysicsEngine::Entity* lightEntity = clipboard.getWorld()->getActiveScene()->createLight(PhysicsEngine::LightType::Directional);
-	lightEntity->setName("Light");
+	lightEntity->mName = "Light";
 
 	PhysicsEngine::Entity* planeEntity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Plane);
-	planeEntity->setName("Plane");
+	planeEntity->mName = "Plane";
 	PhysicsEngine::Transform* planeTransform = planeEntity->getComponent<PhysicsEngine::Transform>();
 	planeTransform->setPosition(glm::vec3(0, 0, 0));
 	planeTransform->setScale(glm::vec3(50, 1, 50));
@@ -603,7 +603,7 @@ void ProjectDatabase::populateScene(Clipboard& clipboard)
 				std::string name = "Cube" + std::to_string(index++);
 
 				PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->createPrimitive(PhysicsEngine::PrimitiveType::Cube);
-				entity->setName(name);
+				entity->mName = name;
 				PhysicsEngine::Transform* transform = entity->getComponent<PhysicsEngine::Transform>();
 				transform->setPosition(glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f));
 				//transform->mPosition = glm::vec3(i + 0.5f, k + 0.5f, j + 0.5f);

@@ -1,6 +1,7 @@
 #include "../../include/drawers/TransformDrawer.h"
 
 #include "components/Transform.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

@@ -277,6 +277,64 @@ void RenderTexture::writePixels()
 {
 }
 
+bool RenderTexture::deviceUpdateRequired() const
+{
+    return mDeviceUpdateRequired;
+}
+
+bool RenderTexture::updateRequired() const
+{
+    return mUpdateRequired;
+}
+
+int RenderTexture::getNumChannels() const
+{
+    return mNumChannels;
+}
+
+int RenderTexture::getAnisoLevel() const
+{
+    return mAnisoLevel;
+}
+
+TextureDimension RenderTexture::getDimension() const
+{
+    return mDimension;
+}
+
+TextureFormat RenderTexture::getFormat() const
+{
+    return mFormat;
+}
+
+TextureWrapMode RenderTexture::getWrapMode() const
+{
+    return mWrapMode;
+}
+
+TextureFilterMode RenderTexture::getFilterMode() const
+{
+    return mFilterMode;
+}
+
+void RenderTexture::setAnisoLevel(int anisoLevel)
+{
+    mAnisoLevel = anisoLevel;
+    mUpdateRequired = true;
+}
+
+void RenderTexture::setWrapMode(TextureWrapMode wrapMode)
+{
+    mWrapMode = wrapMode;
+    mUpdateRequired = true;
+}
+
+void RenderTexture::setFilterMode(TextureFilterMode filterMode)
+{
+    mFilterMode = filterMode;
+    mUpdateRequired = true;
+}
+
 Framebuffer *RenderTexture::getNativeGraphicsMainFBO() const
 {
     return mTargets.mMainFBO;

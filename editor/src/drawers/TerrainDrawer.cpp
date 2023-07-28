@@ -2,6 +2,7 @@
 #include "../../include/ProjectDatabase.h"
 
 #include "components/Terrain.h"
+#include "components/ComponentTypes.h"
 #include "graphics/RenderContext.h"
 
 #include "imgui.h"
@@ -39,7 +40,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				ImVec2 windowSize = ImGui::GetWindowSize();
 				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-				if (ImGui::ButtonEx((transform == nullptr ? "None (Transform)" : transform->getEntity()->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				if (ImGui::ButtonEx((transform == nullptr ? "None (Transform)" : transform->getEntity()->mName).c_str(), ImVec2(windowSize.x, 0)))
 				{
 				}
 
@@ -87,7 +88,7 @@ void TerrainDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				ImVec2 windowSize = ImGui::GetWindowSize();
 				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->mName).c_str(), ImVec2(windowSize.x, 0)))
 				{
 					clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
 				}

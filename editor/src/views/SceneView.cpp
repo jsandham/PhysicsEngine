@@ -475,12 +475,22 @@ bool SceneView::isSceneContentHovered() const
 
 void SceneView::initWorld(PhysicsEngine::World* world)
 {
-	for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
+	PhysicsEngine::FreeLookCameraSystem* cameraSystem = world->getSystem<PhysicsEngine::FreeLookCameraSystem>();
+	PhysicsEngine::TerrainSystem* terrainSystem = world->getSystem<PhysicsEngine::TerrainSystem>();
+	PhysicsEngine::RenderSystem* renderSystem = world->getSystem<PhysicsEngine::RenderSystem>();
+	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
+
+	cameraSystem->init(world);
+	terrainSystem->init(world);
+	renderSystem->init(world);
+	cleanUpSystem->init(world);
+
+	/*for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
 	{
 		PhysicsEngine::System* system = world->getSystemByUpdateOrder(i);
 
 		system->init(world);
-	}
+	}*/
 }
 
 void SceneView::updateWorld(PhysicsEngine::World* world)
@@ -500,13 +510,30 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 	}
 
 	// call update on all systems in world
-	for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
+	/*for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
 	{
 		PhysicsEngine::System* system = world->getSystemByUpdateOrder(i);
 
 		if (system->mEnabled) {
 			system->update(input, PhysicsEngine::getTime());
 		}
+	}*/
+	PhysicsEngine::FreeLookCameraSystem* cameraSystem = world->getSystem<PhysicsEngine::FreeLookCameraSystem>();
+	PhysicsEngine::TerrainSystem* terrainSystem = world->getSystem<PhysicsEngine::TerrainSystem>();
+	PhysicsEngine::RenderSystem* renderSystem = world->getSystem<PhysicsEngine::RenderSystem>();
+	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
+
+	if (cameraSystem->mEnabled) {
+		cameraSystem->update(input, PhysicsEngine::getTime());
+	}
+	if (terrainSystem->mEnabled) {
+		terrainSystem->update(input, PhysicsEngine::getTime());
+	}
+	if (renderSystem->mEnabled) {
+		renderSystem->update(input, PhysicsEngine::getTime());
+	}
+	if (cleanUpSystem->mEnabled) {
+		cleanUpSystem->update(input, PhysicsEngine::getTime());
 	}
 }
 

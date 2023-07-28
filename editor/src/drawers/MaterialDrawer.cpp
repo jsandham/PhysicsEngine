@@ -53,13 +53,13 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 		PhysicsEngine::Shader* ss = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderId);
 
-		if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->getName()).c_str(), ImGuiComboFlags_None))
+		if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->mName).c_str(), ImGuiComboFlags_None))
 		{
 			for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Shader>(); i++)
 			{
 				PhysicsEngine::Shader* s = clipboard.getWorld()->getAssetByIndex<PhysicsEngine::Shader>(i);
 
-				std::string label = s->getName() + "##" + s->getGuid().toString();
+				std::string label = s->mName + "##" + s->getGuid().toString();
 
 				bool is_selected = (currentShaderId == s->getGuid());
 				if (ImGui::Selectable(label.c_str(), is_selected))

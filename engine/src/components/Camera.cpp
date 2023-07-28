@@ -486,3 +486,8 @@ RenderTextureHandle *Camera::getNativeGraphicsSSAONoiseTex() const
 {
     return mTargets.mSsaoFBO->getColorTex();
 }
+
+Entity *Camera::getEntity() const
+{
+    return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
+}

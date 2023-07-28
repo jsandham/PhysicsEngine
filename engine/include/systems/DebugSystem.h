@@ -24,6 +24,7 @@ class DebugSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     DebugSystem(World *world, const Id &id);

@@ -44,6 +44,7 @@ class AssetLoadingSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     AssetLoadingSystem(World *world, const Id &id);

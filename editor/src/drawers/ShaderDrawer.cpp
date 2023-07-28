@@ -44,7 +44,7 @@ void ShaderDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 			ImGui::TableNextColumn();
 			ImGui::Text("Name:");
 			ImGui::TableNextColumn();
-			ImGui::Text(shader->getName().c_str());
+			ImGui::Text(shader->mName.c_str());
 
 			ImGui::TableNextColumn();
 			ImGui::Text("Language:");

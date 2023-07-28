@@ -1,6 +1,7 @@
 #include "../../include/drawers/LightDrawer.h"
 
 #include "components/Light.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

@@ -109,8 +109,8 @@ void Hierarchy::update(Clipboard& clipboard, bool isOpenedThisFrame)
 				PhysicsEngine::Entity* entity = clipboard.getWorld()->getActiveScene()->getEntityByIndex(mEntries[i]);
 				static bool selected = false;
 				char buf1[64];
-				std::size_t len = std::min(size_t(64 - 1), entity->getName().length());
-				strncpy(buf1, entity->getName().c_str(), len);
+				std::size_t len = std::min(size_t(64 - 1), entity->mName.length());
+				strncpy(buf1, entity->mName.c_str(), len);
 				buf1[len] = '\0';
 
 				bool edited = false;
@@ -119,7 +119,7 @@ void Hierarchy::update(Clipboard& clipboard, bool isOpenedThisFrame)
 				if (ImGui::SelectableInput(entity->getGuid().c_str(), selectedIndex == mEntries[i], &edited,
 					ImGuiSelectableFlags_None, buf1, IM_ARRAYSIZE(buf1)))
 				{
-					entity->setName(std::string(buf1));
+					entity->mName = std::string(buf1);
 
 					clipboard.setSelectedItem(InteractionType::Entity, entity->getGuid());
 				}
@@ -134,7 +134,7 @@ void Hierarchy::update(Clipboard& clipboard, bool isOpenedThisFrame)
 					const void* data = static_cast<const void*>(entity->getGuid().c_str());
 
 					ImGui::SetDragDropPayload("ENTITY_GUID", data, sizeof(PhysicsEngine::Guid));
-					ImGui::Text(entity->getName().c_str());
+					ImGui::Text(entity->mName.c_str());
 					ImGui::EndDragDropSource();
 				}
 			}

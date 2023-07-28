@@ -1,6 +1,7 @@
 #include "../../include/drawers/RigidbodyDrawer.h"
 
 #include "components/Rigidbody.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

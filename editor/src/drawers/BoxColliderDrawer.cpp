@@ -1,6 +1,7 @@
 #include "../../include/drawers/BoxColliderDrawer.h"
 
 #include "components/BoxCollider.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

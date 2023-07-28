@@ -18,16 +18,22 @@ Clipboard::Clipboard()
 	mScenePath = std::filesystem::path();
 	mSceneId = PhysicsEngine::Guid::INVALID;
 
-	// add camera, render, and cleanup system to world
-	mCameraSystem = mWorld.addSystem<PhysicsEngine::FreeLookCameraSystem>(0);
-	// add camera, render, and cleanup system to world
-	mTerrainSystem = mWorld.addSystem<PhysicsEngine::TerrainSystem>(1);
-	// add simple editor render pass system to render line floor and default skymap
-	mRenderSystem = mWorld.addSystem<PhysicsEngine::RenderSystem>(2);
-	// add gizmo system
-	mGizmoSystem = mWorld.addSystem<PhysicsEngine::GizmoSystem>(3);
-	// add simple editor render system to render gizmo's
-	mCleanUpSystem = mWorld.addSystem<PhysicsEngine::CleanUpSystem>(4);
+	//// add camera, render, and cleanup system to world
+	//mCameraSystem = mWorld.addSystem<PhysicsEngine::FreeLookCameraSystem>(0);
+	//// add camera, render, and cleanup system to world
+	//mTerrainSystem = mWorld.addSystem<PhysicsEngine::TerrainSystem>(1);
+	//// add simple editor render pass system to render line floor and default skymap
+	//mRenderSystem = mWorld.addSystem<PhysicsEngine::RenderSystem>(2);
+	//// add gizmo system
+	//mGizmoSystem = mWorld.addSystem<PhysicsEngine::GizmoSystem>(3);
+	//// add simple editor render system to render gizmo's
+	//mCleanUpSystem = mWorld.addSystem<PhysicsEngine::CleanUpSystem>(4);
+
+	mCameraSystem = mWorld.getSystem< PhysicsEngine::FreeLookCameraSystem>();
+	mTerrainSystem = mWorld.getSystem< PhysicsEngine::TerrainSystem>();
+	mRenderSystem = mWorld.getSystem< PhysicsEngine::RenderSystem>();
+	mGizmoSystem = mWorld.getSystem< PhysicsEngine::GizmoSystem>();
+	mCleanUpSystem = mWorld.getSystem< PhysicsEngine::CleanUpSystem>();
 
 	mCameraSystem->mHide = PhysicsEngine::HideFlag::DontSave;
 	mTerrainSystem->mHide = PhysicsEngine::HideFlag::DontSave;

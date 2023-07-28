@@ -1,6 +1,7 @@
 #include "../../include/drawers/MeshColliderDrawer.h"
 
 #include "components/MeshCollider.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

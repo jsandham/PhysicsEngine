@@ -56,6 +56,11 @@ class MeshRenderer
     Guid getMaterial(int index) const;
     std::vector<Guid> getMaterials() const;
 
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
   private:
     friend class Scene;
 };

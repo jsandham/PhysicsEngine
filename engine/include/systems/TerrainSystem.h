@@ -24,6 +24,7 @@ class TerrainSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     TerrainSystem(World *world, const Id &id);

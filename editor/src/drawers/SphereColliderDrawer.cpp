@@ -1,6 +1,7 @@
 #include "../../include/drawers/SphereColliderDrawer.h"
 
 #include "components/SphereCollider.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

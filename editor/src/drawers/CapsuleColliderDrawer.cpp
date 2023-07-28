@@ -1,6 +1,7 @@
 #include "../../include/drawers/CapsuleColliderDrawer.h"
 
 #include "components/CapsuleCollider.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

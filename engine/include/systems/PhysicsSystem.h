@@ -30,6 +30,7 @@ class PhysicsSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     PhysicsSystem(World *world, const Id &id);

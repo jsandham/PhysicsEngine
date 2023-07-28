@@ -137,6 +137,11 @@ class Terrain
 
     int getTotalChunkCount() const;
 
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
   private:
     friend class Scene;
 };

@@ -149,6 +149,13 @@ class Camera
     RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
     RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
 
+    Entity *getEntity() const;
+
+    template <typename T> T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
   private:
     friend class Scene;
 };

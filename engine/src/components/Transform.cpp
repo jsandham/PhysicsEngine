@@ -156,3 +156,8 @@ void Transform::v3Scale(glm::vec3 &v, float desiredLength)
         v[2] *= l;
     }
 }
+
+Entity *Transform::getEntity() const
+{
+    return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
+}

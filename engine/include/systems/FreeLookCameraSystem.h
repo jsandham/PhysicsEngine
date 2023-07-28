@@ -60,6 +60,7 @@ class FreeLookCameraSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     FreeLookCameraSystem(World *world, const Id &id);

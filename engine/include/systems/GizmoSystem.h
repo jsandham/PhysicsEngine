@@ -33,6 +33,7 @@ class GizmoSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     GizmoSystem(World *world, const Id &id);

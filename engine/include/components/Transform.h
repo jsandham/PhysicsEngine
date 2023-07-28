@@ -61,6 +61,14 @@ class Transform
     glm::vec3 getUp() const;
     glm::vec3 getRight() const;
 
+    Entity *getEntity() const;
+
+    template <typename T>
+    T *getComponent() const
+    {
+        return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
+    }
+
     static bool decompose(const glm::mat4 &model, glm::vec3 &translation, glm::quat &rotation, glm::vec3 &scale);
 
   private:

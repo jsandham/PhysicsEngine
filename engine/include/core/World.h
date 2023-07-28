@@ -90,18 +90,19 @@ struct WorldAllocators
 class World
 {
   private:
-    // allocators for scenes and assets
+    // Allocators for scenes and assets
     WorldAllocators mAllocators;
 
-    // id state for scenes and assets
+    // Id state for scenes and assets
     WorldIdState mIdState;
 
     // Primitive meshes all worlds have access to
     WorldPrimitives mPrimitives;
 
-    // active scene
+    // Active scene
     Scene *mActiveScene;
 
+    // Systems
     AssetLoadingSystem* mAssetLoadingSystem;
     CleanUpSystem* mCleanUpSystem;
     DebugSystem* mDebugSystem;
@@ -175,6 +176,8 @@ class World
     int getIndexOf(const Guid &guid) const;
     int getTypeOf(const Id &id) const;
     int getTypeOf(const Guid &guid) const;
+    Id getIdFromGuid(const Guid &guid) const;
+    Guid getGuidFromId(const Id &id) const;
 
     Scene *createScene();
     Scene *createScene(const YAML::Node &in);

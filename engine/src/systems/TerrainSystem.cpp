@@ -10,10 +10,12 @@ using namespace PhysicsEngine;
 
 TerrainSystem::TerrainSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
 }
 
 TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
 }
 
 TerrainSystem::~TerrainSystem()

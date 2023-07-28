@@ -12,6 +12,26 @@
 
 namespace PhysicsEngine
 {
+    template <typename T> struct IsAsset
+    {
+        static constexpr bool value = false;
+    };
+
+#define INSTANTIATE(T)                          \
+    template <> struct IsAsset<T>           \
+    {                                           \
+        static constexpr bool value = true;     \
+    };
+
+    INSTANTIATE(Cubemap);
+    INSTANTIATE(Mesh);
+    INSTANTIATE(Material);
+    INSTANTIATE(RenderTexture);
+    INSTANTIATE(Texture2D);
+    INSTANTIATE(Shader);
+
+#undef INSTANTIATE
+
     template <typename T> struct AssetType
     {
         static constexpr int type = PhysicsEngine::INVALID_TYPE;

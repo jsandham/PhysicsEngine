@@ -44,6 +44,7 @@ class RenderSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     RenderSystem(World *world, const Id &id);

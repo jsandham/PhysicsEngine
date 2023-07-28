@@ -2,6 +2,7 @@
 #include "../../include/ProjectDatabase.h"
 
 #include "components/MeshRenderer.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -36,7 +37,7 @@ void MeshRendererDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid&
 				ImVec2 windowSize = ImGui::GetWindowSize();
 				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-				if (ImGui::ButtonEx((mesh == nullptr ? "None (Mesh)" : mesh->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				if (ImGui::ButtonEx((mesh == nullptr ? "None (Mesh)" : mesh->mName).c_str(), ImVec2(windowSize.x, 0)))
 				{
 					clipboard.setSelectedItem(InteractionType::Mesh, mesh->getGuid());
 				}
@@ -100,7 +101,7 @@ void MeshRendererDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid&
 				ImVec2 windowSize = ImGui::GetWindowSize();
 				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->getName()).c_str(), ImVec2(windowSize.x, 0)))
+				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->mName).c_str(), ImVec2(windowSize.x, 0)))
 				{
 					clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
 				}

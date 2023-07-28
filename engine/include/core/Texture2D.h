@@ -88,6 +88,30 @@ class Texture2D
     void readPixels();
     void writePixels();
 
+
+
+
+
+
+    bool deviceUpdateRequired() const;
+    bool updateRequired() const;
+    int getNumChannels() const;
+    int getAnisoLevel() const;
+    TextureDimension getDimension() const;
+    TextureFormat getFormat() const;
+    TextureWrapMode getWrapMode() const;
+    TextureFilterMode getFilterMode() const;
+
+    void setAnisoLevel(int anisoLevel);
+    void setWrapMode(TextureWrapMode wrapMode);
+    void setFilterMode(TextureFilterMode filterMode);
+
+
+
+
+
+
+
     TextureHandle *getNativeGraphics() const;
 };
 

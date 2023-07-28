@@ -1,6 +1,7 @@
 #include "../../include/drawers/LineRendererDrawer.h"
 
 #include "components/LineRenderer.h"
+#include "components/ComponentTypes.h"
 
 #include "imgui.h"
 

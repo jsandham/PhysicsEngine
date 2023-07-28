@@ -112,7 +112,7 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
 	{
 		PhysicsEngine::Scene* scene = clipboard.getWorld()->getSceneByIndex(i);
 
-		ImGui::Text("Scene name: %s guid: %s\n", scene->getName().c_str(), scene->getGuid().toString().c_str());
+		ImGui::Text("Scene name: %s guid: %s\n", scene->mName.c_str(), scene->getGuid().toString().c_str());
 	}
 
 	ImGui::Text("Entity count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfEntities());
@@ -149,12 +149,6 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
 
 	//PlotHistogram(const char* label, const float* values, int values_count, int values_offset = 0, const char* overlay_text = NULL, float scale_min = FLT_MAX, float scale_max = FLT_MAX, ImVec2 graph_size = ImVec2(0, 0), int stride = sizeof(float));
 
-	ImGui::Text("RenderSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::RenderSystem>());
-	ImGui::Text("PhysicsSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::PhysicsSystem>());
-	ImGui::Text("CleanUpSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::CleanUpSystem>());
-	ImGui::Text("GizmoSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::GizmoSystem>());
-	ImGui::Text("FreeLookCameraSystem count in world: %d\n", clipboard.getWorld()->getNumberOfSystems<PhysicsEngine::FreeLookCameraSystem>());
-
 	ImGui::EndColumns();
 }
 
@@ -166,13 +160,13 @@ void DebugOverlay::shaderTab(Clipboard& clipboard)
 
 	PhysicsEngine::Guid currentShaderId = selected->getGuid();
 
-	if (ImGui::BeginCombo("Shader", (selected == nullptr ? "" : selected->getName()).c_str(), ImGuiComboFlags_None))
+	if (ImGui::BeginCombo("Shader", (selected == nullptr ? "" : selected->mName).c_str(), ImGuiComboFlags_None))
 	{
 		for (int i = 0; i < clipboard.getWorld()->getNumberOfAssets<PhysicsEngine::Shader>(); i++)
 		{
 			PhysicsEngine::Shader* s = clipboard.getWorld()->getAssetByIndex<PhysicsEngine::Shader>(i);
 
-			std::string label = s->getName() + "##" + s->getGuid().toString();
+			std::string label = s->mName + "##" + s->getGuid().toString();
 
 			bool is_selected = (currentShaderId == s->getGuid());
 			if (ImGui::Selectable(label.c_str(), is_selected))

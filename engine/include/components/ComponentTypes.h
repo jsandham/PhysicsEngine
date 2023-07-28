@@ -17,6 +17,31 @@
 
 namespace PhysicsEngine
 {
+    template <typename T> struct IsComponent
+    {
+        static constexpr bool value = false;
+    };
+
+#define INSTANTIATE(T)                          \
+    template <> struct IsComponent<T>           \
+    {                                           \
+        static constexpr bool value = true;     \
+    };
+
+    INSTANTIATE(Transform);
+    INSTANTIATE(Terrain);
+    INSTANTIATE(Rigidbody);
+    INSTANTIATE(MeshRenderer);
+    INSTANTIATE(LineRenderer);
+    INSTANTIATE(Light);
+    INSTANTIATE(Camera);
+    INSTANTIATE(SphereCollider);
+    INSTANTIATE(MeshCollider);
+    INSTANTIATE(CapsuleCollider);
+    INSTANTIATE(BoxCollider);
+
+#undef INSTANTIATE
+
     template <typename T> struct ComponentType
     {
         static constexpr int type = PhysicsEngine::INVALID_TYPE;

@@ -23,10 +23,12 @@ using namespace PhysicsEngine;
 
 RenderSystem::RenderSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
 }
 
 RenderSystem::RenderSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
+    mEnabled = true;
 }
 
 RenderSystem::~RenderSystem()

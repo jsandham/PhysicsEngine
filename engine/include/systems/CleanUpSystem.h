@@ -22,6 +22,7 @@ class CleanUpSystem
 
   public:
     HideFlag mHide;
+    bool mEnabled;
 
   public:
     CleanUpSystem(World *world, const Id &id);

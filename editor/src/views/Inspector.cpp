@@ -5,6 +5,7 @@
 
 #include "../include/components/Light.h"
 #include "../include/components/MeshRenderer.h"
+#include "../include/components/ComponentTypes.h"
 
 using namespace PhysicsEditor;
 
@@ -103,7 +104,7 @@ void Inspector::drawEntity(Clipboard& clipboard)
 	ImGui::Text("Entity");
 	ImGui::SameLine();
 
-	std::string name = entity->getName();
+	std::string name = entity->mName;
 
 	std::vector<char> inputBuffer(256, '\0');
 	std::copy(name.begin(), name.end(), inputBuffer.begin());
@@ -111,7 +112,7 @@ void Inspector::drawEntity(Clipboard& clipboard)
 	ImGuiInputTextFlags options = ImGuiInputTextFlags_AutoSelectAll | ImGuiInputTextFlags_EnterReturnsTrue;
 	if (ImGui::InputText("##Entity Header", &inputBuffer[0], inputBuffer.size(), options))
 	{
-		entity->setName(std::string(inputBuffer.begin(), inputBuffer.end()));
+		entity->mName = std::string(inputBuffer.begin(), inputBuffer.end());
 	}
 
 	ImGui::Text(("EntityId: " + entity->getGuid().toString()).c_str());
@@ -150,7 +151,8 @@ void Inspector::drawEntity(Clipboard& clipboard)
 	size_t index;
 	if (ImGui::BeginDropdownWindow("Add component", components, &index))
 	{
-		PhysicsEngine::Component* component = nullptr;
+		//PhysicsEngine::Component* component = nullptr;
+		void* component = nullptr;
 		switch (index)
 		{
 		case 0:
