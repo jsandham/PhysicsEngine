@@ -9,8 +9,6 @@
 #include "Ray.h"
 #include "Sphere.h"
 
-#include "../components/Collider.h"
-
 namespace PhysicsEngine
 {
 typedef struct Object1

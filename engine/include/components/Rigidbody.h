@@ -15,6 +15,27 @@ namespace PhysicsEngine
 {
 class World;
 
+struct RigidbodyData
+{
+    glm::vec3 mVelocity;
+    glm::vec3 mAngularVelocity;
+    glm::vec3 mCentreOfMass;
+    glm::mat3 mInertiaTensor;
+
+    // leap-frog
+    glm::vec3 mHalfVelocity;
+
+    float mMass;
+    float mDrag;
+    float mAngularDrag;
+    bool mUseGravity;
+
+    RigidbodyData();
+
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
+};
+
 class Rigidbody
 { 
   private:
@@ -26,12 +47,10 @@ class Rigidbody
 
   public:
     HideFlag mHide;
-
-    float mMass;
-    float mDrag;
-    float mAngularDrag;
-    bool mUseGravity;
     bool mEnabled;
+
+
+
 
     glm::vec3 mVelocity;
     glm::vec3 mAngularVelocity;
@@ -40,6 +59,11 @@ class Rigidbody
 
     // leap-frog
     glm::vec3 mHalfVelocity;
+
+    float mMass;
+    float mDrag;
+    float mAngularDrag;
+    bool mUseGravity;
 
   public:
     Rigidbody(World *world, const Id &id);

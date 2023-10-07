@@ -133,20 +133,23 @@ void Inspector::drawEntity(Clipboard& clipboard)
 		case PhysicsEngine::ComponentType<PhysicsEngine::Rigidbody>::type: { mRigidbodyDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::Camera>::type: { mCameraDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::MeshRenderer>::type: { mMeshRendererDrawer.render(clipboard, componentId); break; }
-		case PhysicsEngine::ComponentType<PhysicsEngine::LineRenderer>::type: { mLineRendererDrawer.render(clipboard, componentId); break; }
+		//case PhysicsEngine::ComponentType<PhysicsEngine::LineRenderer>::type: { mLineRendererDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::Light>::type: { mLightDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::BoxCollider>::type: { mBoxColliderDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::SphereCollider>::type: { mSphereColliderDrawer.render(clipboard, componentId); break; }
-		case PhysicsEngine::ComponentType<PhysicsEngine::CapsuleCollider>::type: { mCapsuleColliderDrawer.render(clipboard, componentId); break; }
-		case PhysicsEngine::ComponentType<PhysicsEngine::MeshCollider>::type: { mMeshColliderDrawer.render(clipboard, componentId); break; }
+		//case PhysicsEngine::ComponentType<PhysicsEngine::CapsuleCollider>::type: { mCapsuleColliderDrawer.render(clipboard, componentId); break; }
+		//case PhysicsEngine::ComponentType<PhysicsEngine::MeshCollider>::type: { mMeshColliderDrawer.render(clipboard, componentId); break; }
 		case PhysicsEngine::ComponentType<PhysicsEngine::Terrain>::type: { mTerrainDrawer.render(clipboard, componentId); break; }
 		}
 
 		//ImGui::PopID();
 	}
 
-	static std::vector<std::string> components = { "Rigidbody",    "Camera",
+	/*static std::vector<std::string> components = { "Rigidbody",    "Camera",
 										   "MeshRenderer",   "LineRenderer", "Light",
+										   "SphereCollider", "BoxCollider",  "Terrain" };*/
+	static std::vector<std::string> components = { "Rigidbody",    "Camera",
+										   "MeshRenderer",   "Light",
 										   "SphereCollider", "BoxCollider",  "Terrain" };
 	size_t index;
 	if (ImGui::BeginDropdownWindow("Add component", components, &index))
@@ -164,19 +167,19 @@ void Inspector::drawEntity(Clipboard& clipboard)
 		case 2:
 			component = entity->addComponent<PhysicsEngine::MeshRenderer>();
 			break;
-		case 3:
+		/*case 3:
 			component = entity->addComponent<PhysicsEngine::LineRenderer>();
-			break;
-		case 4:
+			break;*/
+		case 3:
 			component = entity->addComponent<PhysicsEngine::Light>();
 			break;
-		case 5:
+		case 4:
 			component = entity->addComponent<PhysicsEngine::SphereCollider>();
 			break;
-		case 6:
+		case 5:
 			component = entity->addComponent<PhysicsEngine::BoxCollider>();
 			break;
-		case 7:
+		case 6:
 			component = entity->addComponent<PhysicsEngine::Terrain>();
 			break;
 		}

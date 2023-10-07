@@ -39,7 +39,7 @@ void MeshRendererDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid&
 
 				if (ImGui::ButtonEx((mesh == nullptr ? "None (Mesh)" : mesh->mName).c_str(), ImVec2(windowSize.x, 0)))
 				{
-					clipboard.setSelectedItem(InteractionType::Mesh, mesh->getGuid());
+					clipboard.setSelectedItem(InteractionType::Mesh, mesh == nullptr ? PhysicsEngine::Guid::INVALID : mesh->getGuid());
 				}
 
 				if (ImGui::BeginDragDropTarget())

@@ -9,7 +9,6 @@
 #include "../core/Input.h"
 #include "../core/Time.h"
 
-#include "../components/Collider.h"
 #include "../components/Rigidbody.h"
 
 namespace PhysicsEngine

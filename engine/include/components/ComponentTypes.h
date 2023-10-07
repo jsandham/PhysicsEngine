@@ -5,10 +5,7 @@
 
 #include "BoxCollider.h"
 #include "Camera.h"
-#include "CapsuleCollider.h"
 #include "Light.h"
-#include "LineRenderer.h"
-#include "MeshCollider.h"
 #include "MeshRenderer.h"
 #include "Rigidbody.h"
 #include "SphereCollider.h"
@@ -32,12 +29,9 @@ namespace PhysicsEngine
     INSTANTIATE(Terrain);
     INSTANTIATE(Rigidbody);
     INSTANTIATE(MeshRenderer);
-    INSTANTIATE(LineRenderer);
     INSTANTIATE(Light);
     INSTANTIATE(Camera);
     INSTANTIATE(SphereCollider);
-    INSTANTIATE(MeshCollider);
-    INSTANTIATE(CapsuleCollider);
     INSTANTIATE(BoxCollider);
 
 #undef INSTANTIATE
@@ -67,11 +61,6 @@ namespace PhysicsEngine
         static constexpr int type = PhysicsEngine::MESHRENDERER_TYPE;
     };
 
-    template <> struct ComponentType<LineRenderer>
-    {
-        static constexpr int type = PhysicsEngine::LINERENDERER_TYPE;
-    };
-
     template <> struct ComponentType<Light>
     {
         static constexpr int type = PhysicsEngine::LIGHT_TYPE;
@@ -85,16 +74,6 @@ namespace PhysicsEngine
     template <> struct ComponentType<SphereCollider>
     {
         static constexpr int type = PhysicsEngine::SPHERECOLLIDER_TYPE;
-    };
-
-    template <> struct ComponentType<MeshCollider>
-    {
-        static constexpr int type = PhysicsEngine::MESHCOLLIDER_TYPE;
-    };
-
-    template <> struct ComponentType<CapsuleCollider>
-    {
-        static constexpr int type = CAPSULECOLLIDER_TYPE;
     };
 
     template <> struct ComponentType<BoxCollider>

@@ -277,7 +277,7 @@ bool Material::hasTextureChanged() const
     return mTextureChanged;
 }
 
-void Material::setShaderId(const Guid &shaderId)
+void Material::setShaderGuid(const Guid &shaderGuid)
 {
     // If current shader on material was valid, cache its uniforms before setting new shader
     if (mShaderGuid.isValid())
@@ -285,14 +285,19 @@ void Material::setShaderId(const Guid &shaderId)
         mWorld->cacheMaterialUniforms(getGuid(), mShaderGuid, mUniforms);
     }
 
-    mShaderGuid = shaderId;
+    mShaderGuid = shaderGuid;
     mShaderChanged = true;
 }
 
-Guid Material::getShaderId() const
+Guid Material::getShaderGuid() const
 {
     return mShaderGuid;
 }
+
+//Id Material::getShaderId() const
+//{
+//    return mSh
+//}
 
 std::vector<ShaderUniform> Material::getUniforms() const
 {

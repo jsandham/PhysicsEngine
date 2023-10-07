@@ -9,11 +9,11 @@ using namespace PhysicsEngine;
 MeshRenderer::MeshRenderer(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mEntityGuid = Guid::INVALID;
-    mMeshId = Guid::INVALID;
+    mMeshGuid = Guid::INVALID;
 
     for (int i = 0; i < 8; i++)
     {
-        mMaterialIds[i] = Guid::INVALID;
+        mMaterialGuids[i] = Guid::INVALID;
     }
 
     mMaterialCount = 0;
@@ -26,11 +26,11 @@ MeshRenderer::MeshRenderer(World *world, const Id &id) : mWorld(world), mGuid(Gu
 MeshRenderer::MeshRenderer(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mEntityGuid = Guid::INVALID;
-    mMeshId = Guid::INVALID;
+    mMeshGuid = Guid::INVALID;
 
     for (int i = 0; i < 8; i++)
     {
-        mMaterialIds[i] = Guid::INVALID;
+        mMaterialGuids[i] = Guid::INVALID;
     }
 
     mMaterialCount = 0;
@@ -52,11 +52,11 @@ void MeshRenderer::serialize(YAML::Node &out) const
 
     out["entityId"] = mEntityGuid;
 
-    out["meshId"] = mMeshId;
+    out["meshId"] = mMeshGuid;
     out["materialCount"] = mMaterialCount;
     for (int i = 0; i < mMaterialCount; i++)
     {
-        out["materialIds"].push_back(mMaterialIds[i]);
+        out["materialIds"].push_back(mMaterialGuids[i]);
     }
     out["isStatic"] = mIsStatic;
     out["enabled"] = mEnabled;
@@ -69,17 +69,23 @@ void MeshRenderer::deserialize(const YAML::Node &in)
 
     mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
-    mMeshId = YAML::getValue<Guid>(in, "meshId");
+    mMeshGuid = YAML::getValue<Guid>(in, "meshId");
     mMaterialCount = YAML::getValue<int>(in, "materialCount");
     for (int i = 0; i < mMaterialCount; i++)
     {
-        mMaterialIds[i] = YAML::getValue<Guid>(in, "materialIds", i);
+        mMaterialGuids[i] = YAML::getValue<Guid>(in, "materialIds", i);
     }
     mIsStatic = YAML::getValue<bool>(in, "isStatic");
     mEnabled = YAML::getValue<bool>(in, "enabled");
 
     mMeshChanged = true;
     mMaterialChanged = true;
+
+    mMeshId = mWorld->getIdFromGuid(mMeshGuid);
+    for (int i = 0; i < mMaterialCount; i++)
+    {
+        mMaterialIds[i] = mWorld->getIdFromGuid(mMaterialGuids[i]);
+    }
 }
 
 int MeshRenderer::getType() const
@@ -107,15 +113,19 @@ Id MeshRenderer::getId() const
     return mId;
 }
 
-void MeshRenderer::setMesh(const Guid &meshId)
+void MeshRenderer::setMesh(const Guid &meshGuid)
 {
-    mMeshId = meshId;
+    mMeshId = mWorld->getIdFromGuid(meshGuid);
+
+    mMeshGuid = meshGuid;
     mMeshChanged = true;
 }
 
-void MeshRenderer::setMaterial(const Guid &materialId)
+void MeshRenderer::setMaterial(const Guid &materialGuid)
 {
-    mMaterialIds[0] = materialId;
+    mMaterialIds[0] = mWorld->getIdFromGuid(materialGuid);
+
+    mMaterialGuids[0] = materialGuid;
     mMaterialChanged = true;
     if (mMaterialCount == 0)
     {
@@ -123,30 +133,32 @@ void MeshRenderer::setMaterial(const Guid &materialId)
     }
 }
 
-void MeshRenderer::setMaterial(const Guid &materialId, int index)
+void MeshRenderer::setMaterial(const Guid &materialGuid, int index)
 {
     if (index >= 0 && index < 8)
     {
-        mMaterialIds[index] = materialId;
+        mMaterialIds[index] = mWorld->getIdFromGuid(materialGuid);
+
+        mMaterialGuids[index] = materialGuid;
         mMaterialChanged = true;
     }
 }
 
 Guid MeshRenderer::getMesh() const
 {
-    return mMeshId;
+    return mMeshGuid;
 }
 
 Guid MeshRenderer::getMaterial() const
 {
-    return mMaterialIds[0];
+    return mMaterialGuids[0];
 }
 
 Guid MeshRenderer::getMaterial(int index) const
 {
     if (index >= 0 && index < 8)
     {
-        return mMaterialIds[index];
+        return mMaterialGuids[index];
     }
 
     return Guid::INVALID;
@@ -157,11 +169,31 @@ std::vector<Guid> MeshRenderer::getMaterials() const
     std::vector<Guid> materials;
     for (int i = 0; i < 8; i++)
     {
-        if (mMaterialIds[i] != Guid::INVALID)
+        if (mMaterialGuids[i] != Guid::INVALID)
         {
-            materials.push_back(mMaterialIds[i]);
+            materials.push_back(mMaterialGuids[i]);
         }
     }
 
     return materials;
+}
+
+Id MeshRenderer::getMeshId() const
+{
+    return mMeshId;
+}
+
+Id MeshRenderer::getMaterialId() const
+{
+    return mMaterialIds[0];
+}
+
+Id MeshRenderer::getMaterialId(int index) const
+{
+    if (index >= 0 && index < 8)
+    {
+        return mMaterialIds[index];
+    }
+
+    return Id::INVALID;
 }

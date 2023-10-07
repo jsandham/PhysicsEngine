@@ -16,6 +16,14 @@ namespace PhysicsEngine
 {
 class World;
 
+struct BoxColliderData
+{
+    AABB mAABB;
+
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
+};
+
 class BoxCollider
 {
   private:

@@ -47,11 +47,11 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 	if (material != nullptr)
 	{
 		ImGui::Text(("Material id: " + material->getGuid().toString()).c_str());
-		ImGui::Text(("Shader id: " + material->getShaderId().toString()).c_str());
+		ImGui::Text(("Shader id: " + material->getShaderGuid().toString()).c_str());
 
-		PhysicsEngine::Guid currentShaderId = material->getShaderId();
+		PhysicsEngine::Guid currentShaderGuid = material->getShaderGuid();
 
-		PhysicsEngine::Shader* ss = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderId);
+		PhysicsEngine::Shader* ss = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderGuid);
 
 		if (ImGui::BeginCombo("Shader", (ss == nullptr ? "" : ss->mName).c_str(), ImGuiComboFlags_None))
 		{
@@ -61,12 +61,12 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 				std::string label = s->mName + "##" + s->getGuid().toString();
 
-				bool is_selected = (currentShaderId == s->getGuid());
+				bool is_selected = (currentShaderGuid == s->getGuid());
 				if (ImGui::Selectable(label.c_str(), is_selected))
 				{
-					currentShaderId = s->getGuid();
+					currentShaderGuid = s->getGuid();
 
-					material->setShaderId(currentShaderId);
+					material->setShaderGuid(currentShaderGuid);
 					material->onShaderChanged();
 					clipboard.mModifiedAssets.insert(material->getGuid());
 
@@ -80,7 +80,7 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 			ImGui::EndCombo();
 		}
 
-		PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderId);
+		PhysicsEngine::Shader* shader = clipboard.getWorld()->getAssetByGuid<PhysicsEngine::Shader>(currentShaderGuid);
 
 		if (shader == nullptr)
 		{

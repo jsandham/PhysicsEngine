@@ -72,11 +72,52 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 {
 	std::string extension = path.extension().string();
 
-	PhysicsEngine::Asset* asset = nullptr;
-	if (PhysicsEngine::Util::isAssetYamlExtension(extension))
+	if (PhysicsEngine::Util::isTextureYamlExtension(extension))
 	{
-		asset = world->loadAssetFromYAML(path.string());
-		PhysicsEngine::Log::warn(("Loading asset with id: " + asset->getGuid().toString() + "\n").c_str());
+		PhysicsEngine::Texture2D* texture = world->loadTexture2DFromYAML(path.string());
+		PhysicsEngine::Log::warn(("Loading texture with id: " + texture->getGuid().toString() + "\n").c_str());
+
+		assert(texture != nullptr);
+
+		mFilePathToId[path] = texture->getGuid();
+		mIdToFilePath[texture->getGuid()] = path;
+		return;
+	}
+
+	if (PhysicsEngine::Util::isMaterialYamlExtension(extension))
+	{
+		PhysicsEngine::Material* material = world->loadMaterialFromYAML(path.string());
+		PhysicsEngine::Log::warn(("Loading material with id: " + material->getGuid().toString() + "\n").c_str());
+	
+		assert(material != nullptr);
+
+		mFilePathToId[path] = material->getGuid();
+		mIdToFilePath[material->getGuid()] = path;
+		return;
+	}
+
+	if (PhysicsEngine::Util::isMeshYamlExtension(extension))
+	{
+		PhysicsEngine::Mesh* mesh = world->loadMeshFromYAML(path.string());
+		PhysicsEngine::Log::warn(("Loading mesh with id: " + mesh->getGuid().toString() + "\n").c_str());
+
+		assert(mesh != nullptr);
+
+		mFilePathToId[path] = mesh->getGuid();
+		mIdToFilePath[mesh->getGuid()] = path;
+		return;
+	}
+
+	if (PhysicsEngine::Util::isShaderYamlExtension(extension))
+	{
+		PhysicsEngine::Shader* shader = world->loadShaderFromYAML(path.string());
+		PhysicsEngine::Log::warn(("Loading shader with id: " + shader->getGuid().toString() + "\n").c_str());
+	
+		assert(shader != nullptr);
+
+		mFilePathToId[path] = shader->getGuid();
+		mIdToFilePath[shader->getGuid()] = path;
+		return;
 	}
 
 	// ensure each png file has a generated yaml texture file and if not then create one
@@ -97,7 +138,9 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			}
 			texture->writeToYAML(texturePath);
 
-			asset = texture;
+			mFilePathToId[path] = texture->getGuid();
+			mIdToFilePath[texture->getGuid()] = path;
+			return;
 		}
 	}
 
@@ -119,7 +162,9 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			}
 			mesh->writeToYAML(meshPath);
 
-			asset = mesh;
+			mFilePathToId[path] = mesh->getGuid();
+			mIdToFilePath[mesh->getGuid()] = path;
+			return;
 		}
 	}
 
@@ -149,21 +194,15 @@ void ProjectDatabase::addFile(const std::filesystem::path& path, PhysicsEngine::
 			shader->load(attrib);
 			shader->writeToYAML(shaderPath);
 
-			asset = shader;
+			mFilePathToId[path] = shader->getGuid();
+			mIdToFilePath[shader->getGuid()] = path;
+			return;
 		}
 	}
 
-	if (asset != nullptr)
-	{
-		mFilePathToId[path] = asset->getGuid();
-		mIdToFilePath[asset->getGuid()] = path;
-	}
-	else
-	{
-		PhysicsEngine::Guid fileId = PhysicsEngine::Guid::newGuid();
-		mFilePathToId[path] = fileId;
-		mIdToFilePath[fileId] = path;
-	}
+	PhysicsEngine::Guid fileId = PhysicsEngine::Guid::newGuid();
+	mFilePathToId[path] = fileId;
+	mIdToFilePath[fileId] = path;
 }
 
 void ProjectDatabase::deleteFile(const std::filesystem::path& path, PhysicsEngine::World* world)

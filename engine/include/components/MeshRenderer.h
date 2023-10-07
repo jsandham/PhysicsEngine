@@ -20,8 +20,11 @@ class MeshRenderer
 
     World *mWorld;
 
-    Guid mMeshId;
-    Guid mMaterialIds[8];
+    Guid mMeshGuid;
+    Guid mMaterialGuids[8];
+
+    Id mMeshId;
+    Id mMaterialIds[8];
 
   public:
     HideFlag mHide;
@@ -47,14 +50,18 @@ class MeshRenderer
     Guid getGuid() const;
     Id getId() const;
 
-    void setMesh(const Guid &meshId);
-    void setMaterial(const Guid &materialId);
-    void setMaterial(const Guid &materialId, int index);
+    void setMesh(const Guid &meshGuid);
+    void setMaterial(const Guid &materialGuid);
+    void setMaterial(const Guid &materialGuid, int index);
 
     Guid getMesh() const;
     Guid getMaterial() const;
     Guid getMaterial(int index) const;
     std::vector<Guid> getMaterials() const;
+
+    Id getMeshId() const;
+    Id getMaterialId() const;
+    Id getMaterialId(int index) const;
 
     template <typename T> T *getComponent() const
     {

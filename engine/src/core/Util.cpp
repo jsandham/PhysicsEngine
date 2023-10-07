@@ -153,32 +153,37 @@ bool Util::isAssetYamlExtension(const std::string &extension)
     return false;
 }
 
+bool Util::isTextureYamlExtension(const std::string &extension)
+{
+    return extension == TEXTURE2D_EXT;
+}
+
+bool Util::isMaterialYamlExtension(const std::string &extension)
+{
+    return extension == MATERIAL_EXT;
+}
+
+bool Util::isMeshYamlExtension(const std::string &extension)
+{
+    return extension == MESH_EXT;
+}
+
+bool Util::isShaderYamlExtension(const std::string &extension)
+{
+    return extension == SHADER_EXT;
+}
+
 bool Util::isTextureExtension(const std::string &extension)
 {
-    if (extension == PNG_EXT || extension == JPG_EXT)
-    {
-        return true;
-    }
-
-    return false;
+    return (extension == PNG_EXT || extension == JPG_EXT);
 }
 
 bool Util::isMeshExtension(const std::string &extension)
 {
-    if (extension == OBJ_EXT)
-    {
-        return true;
-    }
-
-    return false;
+    return extension == OBJ_EXT;
 }
 
 bool Util::isShaderExtension(const std::string &extension)
 {
-    if (extension == GLSL_EXT || extension == HLSL_EXT)
-    {
-        return true;
-    }
-
-    return false;
+    return (extension == GLSL_EXT || extension == HLSL_EXT);
 }

@@ -2,6 +2,7 @@
 #define ID_H__
 
 #include <functional>
+#include <string>
 
 namespace PhysicsEngine
 {
@@ -22,6 +23,7 @@ class Id
 
     bool isValid() const;
     bool isInvalid() const;
+    std::string toString() const;
 
     static Id newId();
     static const Id INVALID;

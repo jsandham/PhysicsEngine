@@ -37,6 +37,10 @@ class Util
                            int numChannels);
 
     static bool isAssetYamlExtension(const std::string &extension);
+    static bool isTextureYamlExtension(const std::string &extension);
+    static bool isMaterialYamlExtension(const std::string &extension);
+    static bool isMeshYamlExtension(const std::string &extension);
+    static bool isShaderYamlExtension(const std::string &extension);
     static bool isTextureExtension(const std::string &extension);
     static bool isMeshExtension(const std::string &extension);
     static bool isShaderExtension(const std::string &extension);

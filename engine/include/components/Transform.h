@@ -2,6 +2,7 @@
 #define TRANSFORM_H__
 
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_INTRINSICS
 
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
@@ -15,6 +16,40 @@
 namespace PhysicsEngine
 {
 class World;
+class Entity;
+
+struct TransformData
+{
+    glm::vec3 mPosition;
+    glm::quat mRotation;
+    glm::vec3 mScale;
+
+    TransformData();
+
+    void serialize(YAML::Node &out) const;
+    void deserialize(const YAML::Node &in);
+
+    glm::mat4 getModelMatrix() const;
+    glm::vec3 getForward() const;
+    glm::vec3 getUp() const;
+    glm::vec3 getRight() const;
+};
+
+
+//class TransformTag
+//{
+//  private:
+//    Guid mGuid;
+//    Id mId;
+//    Guid mEntityGuid;
+//
+//    World *mWorld;
+//
+//  public:
+//    HideFlag mHide;
+//    bool mEnabled;
+//};
+
 
 class Transform
 {
@@ -24,10 +59,6 @@ class Transform
     Guid mEntityGuid;
 
     World *mWorld;
-
-    glm::vec3 mPosition;
-    glm::quat mRotation;
-    glm::vec3 mScale;
 
   public:
      HideFlag mHide;

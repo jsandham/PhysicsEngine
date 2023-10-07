@@ -3,6 +3,8 @@
 #include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
 
+#include <iostream>
+
 using namespace PhysicsEngine;
 
 const float FreeLookCameraSystem::YAW_PAN_SENSITIVITY = 0.0025f;
@@ -100,10 +102,30 @@ void FreeLookCameraSystem::init(World *world)
         transform = camera->getComponent<Transform>();
     }
 
+    std::string test = transform->getId().toString();
+
+    //std::cout << "rotationOnInit: " << transform->getRotation().x << " " << transform->getRotation().y << " "
+    //          << transform->getRotation().z << " " << transform->getRotation().w << " transform id: " << transform->getId().toString() << std::endl;
+
     camera->mRenderToScreen = mRenderToScreen;
 
     mCameraId = camera->getGuid();
     mTransformId = transform->getGuid();
+
+    /*std::cout << "mWorld->getActiveScene()->getNumberOfComponents<Transform>(): "
+              << mWorld->getActiveScene()->getNumberOfComponents<Transform>() 
+              << " mWorld->getActiveScene()->getTransformDataCount(): "
+              << mWorld->getActiveScene()->getTransformDataCount() << std::endl;
+
+    std::cout << "transform guid: " << transform->getGuid().toString()
+              << " transform id: " << transform->getId().toString() << std::endl;
+
+    for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Transform>(); i++)
+    {
+        Transform *t = mWorld->getActiveScene()->getComponentByIndex<Transform>(i);
+        std::cout << "t guid: " << t->getGuid().toString()
+                  << " t id: " << t->getId().toString() << std::endl;
+    }*/
 }
 
 void FreeLookCameraSystem::update(const Input &input, const Time &time)
@@ -182,6 +204,22 @@ void FreeLookCameraSystem::update(const Input &input, const Time &time)
         mMousePosXOnRightClick = mMousePosX;
         mMousePosYOnRightClick = mMousePosY;
         rotationOnClick = transform->getRotation();
+        /*std::cout << "rotationOnClick: " << rotationOnClick.x << " " << rotationOnClick.y << " " << rotationOnClick.z
+                  << " " << rotationOnClick.w << " transform id: " << transform->getId().toString() << std::endl;
+        
+        std::cout << "mWorld->getActiveScene()->getNumberOfComponents<Transform>(): "
+                  << mWorld->getActiveScene()->getNumberOfComponents<Transform>()
+                  << " mWorld->getActiveScene()->getTransformDataCount(): "
+                  << mWorld->getActiveScene()->getTransformDataCount() << std::endl;
+
+        std::cout << "transform guid: " << transform->getGuid().toString()
+                  << " transform id: " << transform->getId().toString() << std::endl;*/
+
+        /*for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Transform>(); i++)
+        {
+            Transform *t = mWorld->getActiveScene()->getComponentByIndex<Transform>(i);
+            std::cout << "t guid: " << t->getGuid().toString() << " t id: " << t->getId().toString() << std::endl;
+        }*/
     }
     else if (mIsRightMouseHeldDown)
     {
@@ -191,8 +229,16 @@ void FreeLookCameraSystem::update(const Input &input, const Time &time)
         // https://gamedev.stackexchange.com/questions/136174/im-rotating-an-object-on-two-axes-so-why-does-it-keep-twisting-around-the-thir
         // mTransform->mRotation =
         //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
-        transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick *
-                               glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
+        transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
+    
+        //glm::quat temp =
+        //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
+
+
+        //std::cout << "Editor camera rotation: " << transform->getRotation().x << " " << transform->getRotation().y
+        //          << " " << transform->getRotation().z << " " << transform->getRotation().w << " " << temp.x << " "
+        //          << temp.y << " " << temp.z << " " << temp.w << " yaw: " << yaw
+        //          << " pitch: " << pitch << std::endl;
     }
 
     camera->computeViewMatrix(position, front, up, right);

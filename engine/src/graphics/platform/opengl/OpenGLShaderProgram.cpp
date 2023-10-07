@@ -201,7 +201,7 @@ void OpenGLShaderProgram::compile()
         CHECK_ERROR(glGetProgramResourceiv(mHandle, GL_UNIFORM_BLOCK, blockIdx, 1, &member, (GLsizei)uniformIdxs.size(),
                                            nullptr, uniformIdxs.data()));
 
-        std::cout << "blockName: " << std::string(blockName.data()) << " uniform count: " << blockData[1] << std::endl;
+        //std::cout << "blockName: " << std::string(blockName.data()) << " uniform count: " << blockData[1] << std::endl;
 
         std::array<GLenum, 2> uniformProperties{GL_NAME_LENGTH, GL_TYPE};
         std::array<GLint, 2> uniformData{};
@@ -215,8 +215,8 @@ void OpenGLShaderProgram::compile()
             CHECK_ERROR(glGetProgramResourceName(mHandle, GL_UNIFORM, uniformIdx, (GLsizei)uniformName.size() + 1,
                                                  nullptr, uniformName.data()));
 
-            std::cout << "uniform name: " << std::string(uniformName.data()) << " type: " << uniformData[1]
-                      << std::endl;
+            //std::cout << "uniform name: " << std::string(uniformName.data()) << " type: " << uniformData[1]
+            //          << std::endl;
 
             // mUniforms[].mName = std::string(uniformName.data());
             // mUniforms[].mBufferName = std::string(blockName.data());

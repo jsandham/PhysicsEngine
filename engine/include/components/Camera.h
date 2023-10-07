@@ -40,6 +40,7 @@ struct CameraTargets
 };
 
 class World;
+class Entity;
 
 class Camera
 {

@@ -8,6 +8,16 @@
 
 using namespace PhysicsEngine;
 
+void SphereColliderData::serialize(YAML::Node &out) const
+{
+    out["sphere"] = mSphere;
+}
+
+void SphereColliderData::deserialize(const YAML::Node &in)
+{
+    mSphere = YAML::getValue<Sphere>(in, "sphere");
+}
+
 SphereCollider::SphereCollider(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mEntityGuid = Guid::INVALID;
@@ -33,8 +43,6 @@ void SphereCollider::serialize(YAML::Node &out) const
     out["entityId"] = mEntityGuid;
 
     out["enabled"] = mEnabled;
-
-    out["sphere"] = mSphere;
 }
 
 void SphereCollider::deserialize(const YAML::Node &in)
@@ -45,8 +53,6 @@ void SphereCollider::deserialize(const YAML::Node &in)
     mEntityGuid = YAML::getValue<Guid>(in, "entityId");
 
     mEnabled = YAML::getValue<bool>(in, "enabled");
-
-    mSphere = YAML::getValue<Sphere>(in, "sphere");
 }
 
 int SphereCollider::getType() const

@@ -12,7 +12,6 @@
 #include "../../include/core/World.h"
 
 #include "../../include/components/BoxCollider.h"
-#include "../../include/components/MeshCollider.h"
 #include "../../include/components/SphereCollider.h"
 #include "../../include/components/Transform.h"
 

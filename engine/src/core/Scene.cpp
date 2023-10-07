@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 
 #include "../../include/core/Entity.h"
 #include "../../include/core/GLM.h"
@@ -59,11 +60,6 @@ template <> size_t Scene::getNumberOfComponents<MeshRenderer>() const
     return mAllocators.mMeshRendererAllocator.getCount();
 }
 
-template <> size_t Scene::getNumberOfComponents<LineRenderer>() const
-{
-    return mAllocators.mLineRendererAllocator.getCount();
-}
-
 template <> size_t Scene::getNumberOfComponents<Rigidbody>() const
 {
     return mAllocators.mRigidbodyAllocator.getCount();
@@ -89,16 +85,6 @@ template <> size_t Scene::getNumberOfComponents<BoxCollider>() const
     return mAllocators.mBoxColliderAllocator.getCount();
 }
 
-template <> size_t Scene::getNumberOfComponents<CapsuleCollider>() const
-{
-    return mAllocators.mCapsuleColliderAllocator.getCount();
-}
-
-template <> size_t Scene::getNumberOfComponents<MeshCollider>() const
-{
-    return mAllocators.mMeshColliderAllocator.getCount();
-}
-
 template <> size_t Scene::getNumberOfComponents<Terrain>() const
 {
     return mAllocators.mTerrainAllocator.getCount();
@@ -112,11 +98,6 @@ template <> Transform *Scene::getComponentByIndex<Transform>(size_t index) const
 template <> MeshRenderer *Scene::getComponentByIndex<MeshRenderer>(size_t index) const
 {
     return mAllocators.mMeshRendererAllocator.get(index);
-}
-
-template <> LineRenderer *Scene::getComponentByIndex<LineRenderer>(size_t index) const
-{
-    return mAllocators.mLineRendererAllocator.get(index);
 }
 
 template <> Rigidbody *Scene::getComponentByIndex<Rigidbody>(size_t index) const
@@ -144,16 +125,6 @@ template <> BoxCollider *Scene::getComponentByIndex<BoxCollider>(size_t index) c
     return mAllocators.mBoxColliderAllocator.get(index);
 }
 
-template <> CapsuleCollider *Scene::getComponentByIndex<CapsuleCollider>(size_t index) const
-{
-    return mAllocators.mCapsuleColliderAllocator.get(index);
-}
-
-template <> MeshCollider *Scene::getComponentByIndex<MeshCollider>(size_t index) const
-{
-    return mAllocators.mMeshColliderAllocator.get(index);
-}
-
 template <> Terrain *Scene::getComponentByIndex<Terrain>(size_t index) const
 {
     return mAllocators.mTerrainAllocator.get(index);
@@ -161,125 +132,111 @@ template <> Terrain *Scene::getComponentByIndex<Terrain>(size_t index) const
 
 template <> Transform *Scene::getComponentById<Transform>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mTransformIdToGlobalIndex, &mAllocators.mTransformAllocator, componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mTransformIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mTransformIdToGlobalIndex.end()) ? mAllocators.mTransformAllocator.get(it->second) : nullptr;
 }
 
 template <> MeshRenderer *Scene::getComponentById<MeshRenderer>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mMeshRendererIdToGlobalIndex, &mAllocators.mMeshRendererAllocator,
-                                 componentId);
-}
-
-template <> LineRenderer *Scene::getComponentById<LineRenderer>(const Id &componentId) const
-{
-    return getComponentById_impl(mIdState.mLineRendererIdToGlobalIndex, &mAllocators.mLineRendererAllocator,
-                                 componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mMeshRendererIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mMeshRendererIdToGlobalIndex.end()) ? mAllocators.mMeshRendererAllocator.get(it->second)
+                                                               : nullptr;
 }
 
 template <> Rigidbody *Scene::getComponentById<Rigidbody>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mRigidbodyIdToGlobalIndex, &mAllocators.mRigidbodyAllocator, componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mRigidbodyIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mRigidbodyIdToGlobalIndex.end()) ? mAllocators.mRigidbodyAllocator.get(it->second)
+                                                               : nullptr;
 }
 
 template <> Camera *Scene::getComponentById<Camera>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mCameraIdToGlobalIndex, &mAllocators.mCameraAllocator, componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mCameraIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mCameraIdToGlobalIndex.end()) ? mAllocators.mCameraAllocator.get(it->second) : nullptr;
 }
 
 template <> Light *Scene::getComponentById<Light>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mLightIdToGlobalIndex, &mAllocators.mLightAllocator, componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mLightIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mLightIdToGlobalIndex.end()) ? mAllocators.mLightAllocator.get(it->second) : nullptr;
 }
 
 template <> SphereCollider *Scene::getComponentById<SphereCollider>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mSphereColliderIdToGlobalIndex, &mAllocators.mSphereColliderAllocator,
-                                 componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mSphereColliderIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mSphereColliderIdToGlobalIndex.end()) ? mAllocators.mSphereColliderAllocator.get(it->second)
+                                                                 : nullptr;
 }
 
 template <> BoxCollider *Scene::getComponentById<BoxCollider>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mBoxColliderIdToGlobalIndex, &mAllocators.mBoxColliderAllocator, componentId);
-}
-
-template <> CapsuleCollider *Scene::getComponentById<CapsuleCollider>(const Id &componentId) const
-{
-    return getComponentById_impl(mIdState.mCapsuleColliderIdToGlobalIndex, &mAllocators.mCapsuleColliderAllocator,
-                                 componentId);
-}
-
-template <> MeshCollider *Scene::getComponentById<MeshCollider>(const Id &componentId) const
-{
-    return getComponentById_impl(mIdState.mMeshColliderIdToGlobalIndex, &mAllocators.mMeshColliderAllocator,
-                                 componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mBoxColliderIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mBoxColliderIdToGlobalIndex.end()) ? mAllocators.mBoxColliderAllocator.get(it->second)
+                                                                 : nullptr;
 }
 
 template <> Terrain *Scene::getComponentById<Terrain>(const Id &componentId) const
 {
-    return getComponentById_impl(mIdState.mTerrainIdToGlobalIndex, &mAllocators.mTerrainAllocator, componentId);
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mTerrainIdToGlobalIndex.find(componentId);
+    return (it != mIdState.mTerrainIdToGlobalIndex.end()) ? mAllocators.mTerrainAllocator.get(it->second)
+                                                               : nullptr;
 }
 
 template <> Transform *Scene::getComponentByGuid<Transform>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mTransformGuidToGlobalIndex, &mAllocators.mTransformAllocator,
-                                   componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mTransformGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mTransformGuidToGlobalIndex.end()) ? mAllocators.mTransformAllocator.get(it->second)
+                                                              : nullptr;
 }
 
 template <> MeshRenderer *Scene::getComponentByGuid<MeshRenderer>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mMeshRendererGuidToGlobalIndex, &mAllocators.mMeshRendererAllocator,
-                                   componentGuid);
-}
-
-template <> LineRenderer *Scene::getComponentByGuid<LineRenderer>(const Guid &componentGuid) const
-{
-    return getComponentByGuid_impl(mIdState.mLineRendererGuidToGlobalIndex, &mAllocators.mLineRendererAllocator,
-                                   componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mMeshRendererGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mMeshRendererGuidToGlobalIndex.end()) ? mAllocators.mMeshRendererAllocator.get(it->second)
+                                                              : nullptr;
 }
 
 template <> Rigidbody *Scene::getComponentByGuid<Rigidbody>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mRigidbodyGuidToGlobalIndex, &mAllocators.mRigidbodyAllocator,
-                                   componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mRigidbodyGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mRigidbodyGuidToGlobalIndex.end()) ? mAllocators.mRigidbodyAllocator.get(it->second)
+                                                                 : nullptr;
 }
 
 template <> Camera *Scene::getComponentByGuid<Camera>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mCameraGuidToGlobalIndex, &mAllocators.mCameraAllocator, componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mCameraGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mCameraGuidToGlobalIndex.end()) ? mAllocators.mCameraAllocator.get(it->second)
+                                                              : nullptr;
 }
 
 template <> Light *Scene::getComponentByGuid<Light>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mLightGuidToGlobalIndex, &mAllocators.mLightAllocator, componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mLightGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mLightGuidToGlobalIndex.end()) ? mAllocators.mLightAllocator.get(it->second) : nullptr;
 }
 
 template <> SphereCollider *Scene::getComponentByGuid<SphereCollider>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mSphereColliderGuidToGlobalIndex, &mAllocators.mSphereColliderAllocator,
-                                   componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mSphereColliderGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mSphereColliderGuidToGlobalIndex.end())
+               ? mAllocators.mSphereColliderAllocator.get(it->second)
+                                                                   : nullptr;
 }
 
 template <> BoxCollider *Scene::getComponentByGuid<BoxCollider>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mBoxColliderGuidToGlobalIndex, &mAllocators.mBoxColliderAllocator,
-                                   componentGuid);
-}
-
-template <> CapsuleCollider *Scene::getComponentByGuid<CapsuleCollider>(const Guid &componentGuid) const
-{
-    return getComponentByGuid_impl(mIdState.mCapsuleColliderGuidToGlobalIndex, &mAllocators.mCapsuleColliderAllocator,
-                                   componentGuid);
-}
-
-template <> MeshCollider *Scene::getComponentByGuid<MeshCollider>(const Guid &componentGuid) const
-{
-    return getComponentByGuid_impl(mIdState.mMeshColliderGuidToGlobalIndex, &mAllocators.mMeshColliderAllocator,
-                                   componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mBoxColliderGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mBoxColliderGuidToGlobalIndex.end()) ? mAllocators.mBoxColliderAllocator.get(it->second)
+               : nullptr;
 }
 
 template <> Terrain *Scene::getComponentByGuid<Terrain>(const Guid &componentGuid) const
 {
-    return getComponentByGuid_impl(mIdState.mTerrainGuidToGlobalIndex, &mAllocators.mTerrainAllocator, componentGuid);
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mTerrainGuidToGlobalIndex.find(componentGuid);
+    return (it != mIdState.mTerrainGuidToGlobalIndex.end()) ? mAllocators.mTerrainAllocator.get(it->second)
+                                                                 : nullptr;
 }
 
 template <> Transform *Scene::getComponent<Transform>(const Guid &entityGuid) const
@@ -290,492 +247,141 @@ template <> Transform *Scene::getComponent<Transform>(const Guid &entityGuid) co
 
 template <> MeshRenderer *Scene::getComponent<MeshRenderer>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mMeshRendererAllocator, entityGuid);
-}
-
-template <> LineRenderer *Scene::getComponent<LineRenderer>(const Guid &entityGuid) const
-{
-    return getComponent_impl(&mAllocators.mLineRendererAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<MeshRenderer>::type);
+    return index >= 0 ? mAllocators.mMeshRendererAllocator.get(index) : nullptr; 
 }
 
 template <> Rigidbody *Scene::getComponent<Rigidbody>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mRigidbodyAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<Rigidbody>::type);
+    return index >= 0 ? mAllocators.mRigidbodyAllocator.get(index) : nullptr; 
 }
 
 template <> Camera *Scene::getComponent<Camera>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mCameraAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<Camera>::type);
+    return index >= 0 ? mAllocators.mCameraAllocator.get(index) : nullptr; 
 }
 
 template <> Light *Scene::getComponent<Light>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mLightAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<Light>::type);
+    return index >= 0 ? mAllocators.mLightAllocator.get(index) : nullptr; 
 }
 
 template <> SphereCollider *Scene::getComponent<SphereCollider>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mSphereColliderAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<SphereCollider>::type);
+    return index >= 0 ? mAllocators.mSphereColliderAllocator.get(index) : nullptr; 
 }
 
 template <> BoxCollider *Scene::getComponent<BoxCollider>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mBoxColliderAllocator, entityGuid);
-}
-
-template <> CapsuleCollider *Scene::getComponent<CapsuleCollider>(const Guid &entityGuid) const
-{
-    return getComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityGuid);
-}
-
-template <> MeshCollider *Scene::getComponent<MeshCollider>(const Guid &entityGuid) const
-{
-    return getComponent_impl(&mAllocators.mMeshColliderAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<BoxCollider>::type);
+    return index >= 0 ? mAllocators.mBoxColliderAllocator.get(index) : nullptr; 
 }
 
 template <> Terrain *Scene::getComponent<Terrain>(const Guid &entityGuid) const
 {
-    return getComponent_impl(&mAllocators.mTerrainAllocator, entityGuid);
+    int index = getComponentIndex(entityGuid, ComponentType<Terrain>::type);
+    return index >= 0 ? mAllocators.mTerrainAllocator.get(index) : nullptr; 
 }
 
 template <> MeshRenderer *Scene::addComponent<MeshRenderer>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mMeshRendererAllocator, entityGuid);
-}
-
-template <> LineRenderer *Scene::addComponent<LineRenderer>(const Guid &entityGuid)
-{
-    return addComponent_impl(&mAllocators.mLineRendererAllocator, entityGuid);
+    return addMeshRenderer(entityGuid);
 }
 
 template <> Rigidbody *Scene::addComponent<Rigidbody>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mRigidbodyAllocator, entityGuid);
+    return addRigidbody(entityGuid);
 }
 
 template <> Camera *Scene::addComponent<Camera>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mCameraAllocator, entityGuid);
+    return addCamera(entityGuid);
 }
 
 template <> Light *Scene::addComponent<Light>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mLightAllocator, entityGuid);
+    return addLight(entityGuid);
 }
 
 template <> SphereCollider *Scene::addComponent<SphereCollider>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mSphereColliderAllocator, entityGuid);
+    return addSphereCollider(entityGuid);
 }
 
 template <> BoxCollider *Scene::addComponent<BoxCollider>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mBoxColliderAllocator, entityGuid);
-}
-
-template <> CapsuleCollider *Scene::addComponent<CapsuleCollider>(const Guid &entityGuid)
-{
-    return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, entityGuid);
-}
-
-template <> MeshCollider *Scene::addComponent<MeshCollider>(const Guid &entityGuid)
-{
-    return addComponent_impl(&mAllocators.mMeshColliderAllocator, entityGuid);
+    return addBoxCollider(entityGuid);
 }
 
 template <> Terrain *Scene::addComponent<Terrain>(const Guid &entityGuid)
 {
-    return addComponent_impl(&mAllocators.mTerrainAllocator, entityGuid);
+    return addTerrain(entityGuid);
 }
 
 template <> Transform *Scene::addComponent<Transform>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mTransformAllocator, in);
+    return addTransform(in);
 }
 
 template <> MeshRenderer *Scene::addComponent<MeshRenderer>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mMeshRendererAllocator, in);
-}
-
-template <> LineRenderer *Scene::addComponent<LineRenderer>(const YAML::Node &in)
-{
-    return addComponent_impl(&mAllocators.mLineRendererAllocator, in);
+    return addMeshRenderer(in);
 }
 
 template <> Rigidbody *Scene::addComponent<Rigidbody>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mRigidbodyAllocator, in);
+    return addRigidbody(in);
 }
 
 template <> Camera *Scene::addComponent<Camera>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mCameraAllocator, in);
+    return addCamera(in);
 }
 
 template <> Light *Scene::addComponent<Light>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mLightAllocator, in);
+    return addLight(in);
 }
 
 template <> SphereCollider *Scene::addComponent<SphereCollider>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mSphereColliderAllocator, in);
+    return addSphereCollider(in);
 }
 
 template <> BoxCollider *Scene::addComponent<BoxCollider>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mBoxColliderAllocator, in);
-}
-
-template <> CapsuleCollider *Scene::addComponent<CapsuleCollider>(const YAML::Node &in)
-{
-    return addComponent_impl(&mAllocators.mCapsuleColliderAllocator, in);
-}
-
-template <> MeshCollider *Scene::addComponent<MeshCollider>(const YAML::Node &in)
-{
-    return addComponent_impl(&mAllocators.mMeshColliderAllocator, in);
+    return addBoxCollider(in);
 }
 
 template <> Terrain *Scene::addComponent<Terrain>(const YAML::Node &in)
 {
-    return addComponent_impl(&mAllocators.mTerrainAllocator, in);
+    return addTerrain(in);
 }
 
-void Scene::addToIdState(const Guid &guid, const Id &id, int index, int type)
+int Scene::getComponentIndex(const Guid &entityGuid, int componentType) const
 {
-    assert(guid != Guid::INVALID);
-    assert(id != Id::INVALID);
-    assert(index >= 0);
-
-    mIdState.mGuidToGlobalIndex[guid] = index;
-    mIdState.mIdToGlobalIndex[id] = index;
-
-    mIdState.mGuidToType[guid] = type;
-    mIdState.mIdToType[id] = type;
-
-    mIdState.mGuidToId[guid] = id;
-    mIdState.mIdToGuid[id] = guid;
-}
-
-void Scene::removeFromIdState(const Guid &guid, const Id &id)
-{
-    assert(guid != Guid::INVALID);
-    assert(id != Id::INVALID);
-
-    mIdState.mGuidToGlobalIndex.erase(guid);
-    mIdState.mIdToGlobalIndex.erase(id);
-
-    mIdState.mGuidToType.erase(guid);
-    mIdState.mIdToType.erase(id);
-
-    mIdState.mGuidToId.erase(guid);
-    mIdState.mIdToGuid.erase(id);
-}
-
-template <> void Scene::addToIdState_impl<Entity>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mEntityGuidToGlobalIndex[guid] = index;
-    mIdState.mEntityIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<Transform>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mTransformGuidToGlobalIndex[guid] = index;
-    mIdState.mTransformIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<MeshRenderer>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mMeshRendererGuidToGlobalIndex[guid] = index;
-    mIdState.mMeshRendererIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<LineRenderer>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mLineRendererGuidToGlobalIndex[guid] = index;
-    mIdState.mLineRendererIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<Rigidbody>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mRigidbodyGuidToGlobalIndex[guid] = index;
-    mIdState.mRigidbodyIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<Camera>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mCameraGuidToGlobalIndex[guid] = index;
-    mIdState.mCameraIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<Light>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mLightGuidToGlobalIndex[guid] = index;
-    mIdState.mLightIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<SphereCollider>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mSphereColliderGuidToGlobalIndex[guid] = index;
-    mIdState.mSphereColliderIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<BoxCollider>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mBoxColliderGuidToGlobalIndex[guid] = index;
-    mIdState.mBoxColliderIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<CapsuleCollider>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mCapsuleColliderGuidToGlobalIndex[guid] = index;
-    mIdState.mCapsuleColliderIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<MeshCollider>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mMeshColliderGuidToGlobalIndex[guid] = index;
-    mIdState.mMeshColliderIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::addToIdState_impl<Terrain>(const Guid &guid, const Id &id, int index, int type)
-{
-    mIdState.mTerrainGuidToGlobalIndex[guid] = index;
-    mIdState.mTerrainIdToGlobalIndex[id] = index;
-
-    addToIdState(guid, id, index, type);
-}
-
-template <> void Scene::removeFromIdState_impl<Entity>(const Guid &guid, const Id &id)
-{
-    mIdState.mEntityGuidToGlobalIndex.erase(guid);
-    mIdState.mEntityIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<Transform>(const Guid &guid, const Id &id)
-{
-    mIdState.mTransformGuidToGlobalIndex.erase(guid);
-    mIdState.mTransformIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<MeshRenderer>(const Guid &guid, const Id &id)
-{
-    mIdState.mMeshRendererGuidToGlobalIndex.erase(guid);
-    mIdState.mMeshRendererIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<LineRenderer>(const Guid &guid, const Id &id)
-{
-    mIdState.mLineRendererGuidToGlobalIndex.erase(guid);
-    mIdState.mLineRendererIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<Rigidbody>(const Guid &guid, const Id &id)
-{
-    mIdState.mRigidbodyGuidToGlobalIndex.erase(guid);
-    mIdState.mRigidbodyIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<Camera>(const Guid &guid, const Id &id)
-{
-    mIdState.mCameraGuidToGlobalIndex.erase(guid);
-    mIdState.mCameraIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<Light>(const Guid &guid, const Id &id)
-{
-    mIdState.mLightGuidToGlobalIndex.erase(guid);
-    mIdState.mLightIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<SphereCollider>(const Guid &guid, const Id &id)
-{
-    mIdState.mSphereColliderGuidToGlobalIndex.erase(guid);
-    mIdState.mSphereColliderIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<BoxCollider>(const Guid &guid, const Id &id)
-{
-    mIdState.mBoxColliderGuidToGlobalIndex.erase(guid);
-    mIdState.mBoxColliderIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<CapsuleCollider>(const Guid &guid, const Id &id)
-{
-    mIdState.mCapsuleColliderGuidToGlobalIndex.erase(guid);
-    mIdState.mCapsuleColliderIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<MeshCollider>(const Guid &guid, const Id &id)
-{
-    mIdState.mMeshColliderGuidToGlobalIndex.erase(guid);
-    mIdState.mMeshColliderIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <> void Scene::removeFromIdState_impl<Terrain>(const Guid &guid, const Id &id)
-{
-    mIdState.mTerrainGuidToGlobalIndex.erase(guid);
-    mIdState.mTerrainIdToGlobalIndex.erase(id);
-
-    removeFromIdState(guid, id);
-}
-
-template <typename T>
-T *Scene::getComponentById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                                const Id &id) const
-{
-    std::unordered_map<Id, int>::const_iterator it = idToIndexMap.find(id);
-    if (it != idToIndexMap.end())
-    {
-        return allocator->get(it->second);
-    }
-    else
-    {
-        return nullptr;
-    }
-}
-
-template <typename T>
-T *Scene::getComponentByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap,
-                                  const PoolAllocator<T> *allocator, const Guid &guid) const
-{
-    std::unordered_map<Guid, int>::const_iterator it = guidToIndexMap.find(guid);
-    if (it != guidToIndexMap.end())
-    {
-        return allocator->get(it->second);
-    }
-    else
-    {
-        return nullptr;
-    }
-}
-
-template <typename T> T *Scene::getComponent_impl(const PoolAllocator<T> *allocator, const Guid &entityGuid) const
-{
-    static_assert(IsComponent<T>::value, "'T' is not of type Component");
-
-    assert(allocator != nullptr);
-
     std::vector<std::pair<Guid, int>> componentsOnEntity = getComponentsOnEntity(entityGuid);
-
+    
     for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
-        if (ComponentType<T>::type == componentsOnEntity[i].second)
+        if (componentType == componentsOnEntity[i].second)
         {
             std::unordered_map<Guid, int>::const_iterator it =
                 mIdState.mGuidToGlobalIndex.find(componentsOnEntity[i].first);
             if (it != mIdState.mGuidToGlobalIndex.end())
             {
-                return allocator->get(it->second);
+                return it->second;
             }
-
+    
             break;
         }
     }
 
-    return nullptr;
-}
-
-template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, const YAML::Node &in)
-{
-    static_assert(IsComponent<T>::value, "'T' is not of type Component");
-
-    assert(allocator != nullptr);
-
-    int componentGlobalIndex = (int)allocator->getCount();
-    int componentType = ComponentType<T>::type;
-
-    T *component = allocator->construct(mWorld, in, Id::newId());
-
-    if (component != nullptr)
-    {
-        addToIdState_impl<T>(component->getGuid(), component->getId(), componentGlobalIndex, componentType);
-
-        mIdState.mEntityGuidToComponentIds[component->getEntityGuid()].push_back(
-            std::make_pair(component->getGuid(), componentType));
-
-        mIdState.mComponentGuidsMarkedCreated.push_back(
-            std::make_tuple(component->getEntityGuid(), component->getGuid(), componentType));
-    }
-
-    return component;
-}
-
-template <typename T> T *Scene::addComponent_impl(PoolAllocator<T> *allocator, const Guid &entityGuid)
-{
-    static_assert(IsComponent<T>::value, "'T' is not of type Component");
-
-    assert(allocator != nullptr);
-
-    if (getTypeOf(entityGuid) != EntityType<Entity>::type)
-    {
-        return nullptr;
-    }
-
-    int componentGlobalIndex = (int)allocator->getCount();
-    int componentType = ComponentType<T>::type;
-
-    T *component = allocator->construct(mWorld, Guid::newGuid(), Id::newId());
-
-    if (component != nullptr)
-    {
-        component->mEntityGuid = entityGuid;
-
-        addToIdState_impl<T>(component->getGuid(), component->getId(), componentGlobalIndex, componentType);
-
-        mIdState.mEntityGuidToComponentIds[entityGuid].push_back(std::make_pair(component->getGuid(), componentType));
-
-        mIdState.mComponentGuidsMarkedCreated.push_back(
-            std::make_tuple(entityGuid, component->getGuid(), componentType));
-    }
-
-    return component;
+    return -1;
 }
 
 Scene::Scene(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
@@ -862,10 +468,6 @@ void Scene::deserialize(const YAML::Node &in)
                         deserializeOrLoadComponent<MeshRenderer>(this, objectGuid, it->second);
                         break;
                     }
-                    case ComponentType<LineRenderer>::type: {
-                        deserializeOrLoadComponent<LineRenderer>(this, objectGuid, it->second);
-                        break;
-                    }
                     case ComponentType<Light>::type: {
                         deserializeOrLoadComponent<Light>(this, objectGuid, it->second);
                         break;
@@ -876,14 +478,6 @@ void Scene::deserialize(const YAML::Node &in)
                     }
                     case ComponentType<SphereCollider>::type: {
                         deserializeOrLoadComponent<SphereCollider>(this, objectGuid, it->second);
-                        break;
-                    }
-                    case ComponentType<MeshCollider>::type: {
-                        deserializeOrLoadComponent<MeshCollider>(this, objectGuid, it->second);
-                        break;
-                    }
-                    case ComponentType<CapsuleCollider>::type: {
-                        deserializeOrLoadComponent<CapsuleCollider>(this, objectGuid, it->second);
                         break;
                     }
                     case ComponentType<Terrain>::type: {
@@ -974,10 +568,6 @@ bool Scene::writeToYAML(const std::string &filepath) const
                     serializeComponent<MeshRenderer>(this, temp[j].first, componentNode);
                     break;
                 }
-                case ComponentType<LineRenderer>::type: {
-                    serializeComponent<LineRenderer>(this, temp[j].first, componentNode);
-                    break;
-                }
                 case ComponentType<Light>::type: {
                     serializeComponent<Light>(this, temp[j].first, componentNode);
                     break;
@@ -988,14 +578,6 @@ bool Scene::writeToYAML(const std::string &filepath) const
                 }
                 case ComponentType<SphereCollider>::type: {
                     serializeComponent<SphereCollider>(this, temp[j].first, componentNode);
-                    break;
-                }
-                case ComponentType<MeshCollider>::type: {
-                    serializeComponent<MeshCollider>(this, temp[j].first, componentNode);
-                    break;
-                }
-                case ComponentType<CapsuleCollider>::type: {
-                    serializeComponent<CapsuleCollider>(this, temp[j].first, componentNode);
                     break;
                 }
                 case ComponentType<Terrain>::type: {
@@ -1171,77 +753,20 @@ void Scene::immediateDestroyEntitiesInScene()
 
 Entity *Scene::createEntity()
 {
-    int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
-    int type = EntityType<Entity>::type;
-
-    Entity *entity = mAllocators.mEntityAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
-
-    if (entity != nullptr)
-    {
-        addToIdState_impl<Entity>(entity->getGuid(), entity->getId(), globalIndex, type);
-
-        mIdState.mEntityGuidToComponentIds[entity->getGuid()] = std::vector<std::pair<Guid, int>>();
-
-        mIdState.mEntityGuidsMarkedCreated.push_back(entity->getGuid());
-    }
+    // Create entity
+    Entity* entity = this->addEntity();
 
     // Add transform (all entities must have a transform)
-    int componentGlobalIndex = (int)mAllocators.mTransformAllocator.getCount();
-    int componentType = ComponentType<Transform>::type;
-
-    Transform *component = mAllocators.mTransformAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
-
-    assert(component != nullptr);
-
-    component->mEntityGuid = entity->getGuid();
-
-    addToIdState_impl<Transform>(component->getGuid(), component->getId(), componentGlobalIndex, componentType);
-
-    mIdState.mEntityGuidToComponentIds[entity->getGuid()].push_back(
-        std::make_pair(component->getGuid(), componentType));
-
-    mIdState.mComponentGuidsMarkedCreated.push_back(
-        std::make_tuple(entity->getGuid(), component->getGuid(), componentType));
-
+    this->addTransform(entity->getGuid());
+   
     return entity;
 }
 
-Entity *Scene::createEntity(
-    const YAML::Node &in) // currently create entity without transform...pass in transform node as well??
+// Used by scene loading
+// currently create entity without transform...pass in transform node as well??
+Entity *Scene::createEntity(const YAML::Node &in)
 {
-    int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
-    int type = EntityType<Entity>::type;
-
-    Entity *entity = mAllocators.mEntityAllocator.construct(mWorld, in, Id::newId());
-
-    if (entity != nullptr)
-    {
-        addToIdState_impl<Entity>(entity->getGuid(), entity->getId(), globalIndex, type);
-
-        mIdState.mEntityGuidToComponentIds[entity->getGuid()] = std::vector<std::pair<Guid, int>>();
-
-        mIdState.mEntityGuidsMarkedCreated.push_back(entity->getGuid());
-    }
-
-    //// Add transform (all entities must have a transform)
-    // int componentGlobalIndex = (int)mAllocators.mTransformAllocator.getCount();
-    // int componentType = ComponentType<Transform>::type;
-
-    // Transform *component = mAllocators.mTransformAllocator.construct(mWorld, Guid::newGuid());
-
-    // assert(component != nullptr);
-
-    // component->mEntityId = entity->getGuid();
-
-    // addToIdState_impl<Transform>(component->getGuid(), component->getId(), componentGlobalIndex, componentType);
-
-    // mIdState.mEntityIdToComponentIds[entity->getGuid()].push_back(std::make_pair(component->getGuid(),
-    // componentType));
-
-    // mIdState.mComponentIdsMarkedCreated.push_back(std::make_tuple(entity->getGuid(), component->getGuid(),
-    // componentType));
-
-    return entity;
+    return addEntity(in);
 }
 
 Entity *Scene::createEntity(const std::string &name)
@@ -1362,22 +887,7 @@ void Scene::immediateDestroyEntity(const Guid &entityGuid)
         immediateDestroyComponent(entityGuid, componentsOnEntity[i].first, componentsOnEntity[i].second);
     }
 
-    assert(mIdState.mEntityGuidToComponentIds[entityGuid].size() == 0);
-
-    mIdState.mEntityGuidToComponentIds.erase(entityGuid);
-
-    // Destroy entity
-    int index = getIndexOf(entityGuid);
-    Id entityId = getIdFromGuid(entityGuid);
-
-    Entity *swap = mAllocators.mEntityAllocator.destruct(index);
-
-    removeFromIdState_impl<Entity>(entityGuid, entityId);
-
-    if (swap != nullptr)
-    {
-        addToIdState_impl<Entity>(swap->getGuid(), swap->getId(), index, EntityType<Entity>::type);
-    }
+    removeEntity(entityGuid);
 }
 
 void Scene::latentDestroyComponent(const Guid &entityGuid, const Guid &componentGuid, int componentType)
@@ -1387,150 +897,39 @@ void Scene::latentDestroyComponent(const Guid &entityGuid, const Guid &component
 
 void Scene::immediateDestroyComponent(const Guid &entityGuid, const Guid &componentGuid, int componentType)
 {
-    // remove from entity component list
-    std::vector<std::pair<Guid, int>> &componentsOnEntity = mIdState.mEntityGuidToComponentIds[entityGuid];
-
-    std::vector<std::pair<Guid, int>>::iterator it = componentsOnEntity.begin();
-    while (it < componentsOnEntity.end())
-    {
-        if (it->second == componentType && it->first == componentGuid)
-        {
-            break;
-        }
-
-        it++;
-    }
-
-    if (it < componentsOnEntity.end())
-    {
-        componentsOnEntity.erase(it);
-    }
-
     // Destroy component
-    int index = getIndexOf(componentGuid);
-    Id componentId = getIdFromGuid(componentGuid);
-
     switch (componentType)
     {
     case ComponentType<Transform>::type: {
-        Transform *swap = mAllocators.mTransformAllocator.destruct(index);
-
-        removeFromIdState_impl<Transform>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Transform>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeTransform(entityGuid, componentGuid);
         break;
     }
     case ComponentType<Rigidbody>::type: {
-        Rigidbody *swap = mAllocators.mRigidbodyAllocator.destruct(index);
-
-        removeFromIdState_impl<Rigidbody>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Rigidbody>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeRigidbody(entityGuid, componentGuid);
         break;
     }
     case ComponentType<Camera>::type: {
-        Camera *swap = mAllocators.mCameraAllocator.destruct(index);
-
-        removeFromIdState_impl<Camera>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Camera>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeCamera(entityGuid, componentGuid);
         break;
     }
     case ComponentType<MeshRenderer>::type: {
-        MeshRenderer *swap = mAllocators.mMeshRendererAllocator.destruct(index);
-
-        removeFromIdState_impl<MeshRenderer>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<MeshRenderer>(swap->getGuid(), swap->getId(), index, componentType);
-        }
-        break;
-    }
-    case ComponentType<LineRenderer>::type: {
-        LineRenderer *swap = mAllocators.mLineRendererAllocator.destruct(index);
-
-        removeFromIdState_impl<LineRenderer>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<LineRenderer>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeMeshRenderer(entityGuid, componentGuid);
         break;
     }
     case ComponentType<Light>::type: {
-        Light *swap = mAllocators.mLightAllocator.destruct(index);
-
-        removeFromIdState_impl<Light>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Light>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeLight(entityGuid, componentGuid);
         break;
     }
     case ComponentType<BoxCollider>::type: {
-        BoxCollider *swap = mAllocators.mBoxColliderAllocator.destruct(index);
-
-        removeFromIdState_impl<BoxCollider>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<BoxCollider>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeBoxCollider(entityGuid, componentGuid);
         break;
     }
     case ComponentType<SphereCollider>::type: {
-        SphereCollider *swap = mAllocators.mSphereColliderAllocator.destruct(index);
-
-        removeFromIdState_impl<SphereCollider>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<SphereCollider>(swap->getGuid(), swap->getId(), index, componentType);
-        }
-        break;
-    }
-    case ComponentType<MeshCollider>::type: {
-        MeshCollider *swap = mAllocators.mMeshColliderAllocator.destruct(index);
-
-        removeFromIdState_impl<MeshCollider>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<MeshCollider>(swap->getGuid(), swap->getId(), index, componentType);
-        }
-        break;
-    }
-    case ComponentType<CapsuleCollider>::type: {
-        CapsuleCollider *swap = mAllocators.mCapsuleColliderAllocator.destruct(index);
-
-        removeFromIdState_impl<CapsuleCollider>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<CapsuleCollider>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeSphereCollider(entityGuid, componentGuid);
         break;
     }
     case ComponentType<Terrain>::type: {
-        Terrain *swap = mAllocators.mTerrainAllocator.destruct(index);
-
-        removeFromIdState_impl<Terrain>(componentGuid, componentId);
-
-        if (swap != nullptr)
-        {
-            addToIdState_impl<Terrain>(swap->getGuid(), swap->getId(), index, componentType);
-        }
+        removeTerrain(entityGuid, componentGuid);
         break;
     }
     default:
@@ -1597,4 +996,673 @@ std::vector<std::tuple<Guid, Guid, int>> Scene::getComponentIdsMarkedCreated() c
 std::vector<std::tuple<Guid, Guid, int>> Scene::getComponentIdsMarkedLatentDestroy() const
 {
     return mIdState.mComponentGuidsMarkedLatentDestroy;
+}
+
+size_t Scene::getTransformDataCount() const
+{
+    return mAllocators.mTransformDataAllocator.getCount();
+}
+
+TransformData *Scene::getTransformDataByIndex(size_t index) const
+{
+    return mAllocators.mTransformDataAllocator.get(index);
+}
+
+TransformData *Scene::getTransformDataFromTransformId(const Id& id) const
+{
+    std::unordered_map<Id, int>::const_iterator it = mIdState.mTransformIdToGlobalIndex.find(id);
+    return (it != mIdState.mTransformIdToGlobalIndex.end()) ? mAllocators.mTransformDataAllocator.get(it->second)
+                                                            : nullptr;
+}
+
+TransformData *Scene::getTransformDataFromTransformGuid(const Guid &guid) const
+{
+    std::unordered_map<Guid, int>::const_iterator it = mIdState.mTransformGuidToGlobalIndex.find(guid);
+    return (it != mIdState.mTransformGuidToGlobalIndex.end()) ? mAllocators.mTransformDataAllocator.get(it->second)
+                                                            : nullptr;
+}
+
+void Scene::setTransformPosition(const Id &id, const glm::vec3 &position)
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    transformData->mPosition = position;
+}
+
+void Scene::setTransformRotation(const Id &id, const glm::quat &rotation)
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    transformData->mRotation = rotation;
+}
+
+void Scene::setTransformScale(const Id &id, const glm::vec3 &scale)
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    transformData->mScale = scale;
+}
+
+glm::vec3 Scene::getTransformPosition(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->mPosition;
+}
+
+glm::quat Scene::getTransformRotation(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->mRotation;
+}
+
+glm::vec3 Scene::getTransformScale(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->mScale;
+}
+
+glm::mat4 Scene::getTransformModelMatrix(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->getModelMatrix();
+}
+
+glm::vec3 Scene::getTransformForward(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->getForward();
+}
+
+glm::vec3 Scene::getTransformUp(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->getUp();
+}
+
+glm::vec3 Scene::getTransformRight(const Id &id) const
+{
+    TransformData *transformData = this->getTransformDataFromTransformId(id);
+    return transformData->getRight();
+}
+
+
+
+
+
+
+
+
+
+
+
+size_t Scene::getIndexOfTransformFromMeshRendererIndex(size_t index) const
+{
+    return *mAllocators.mTransformIndicesAllocator.get(index);
+}
+
+TransformData *Scene::getTransformDataByMeshRendererIndex(size_t index) const
+{
+    return getTransformDataByIndex(*mAllocators.mTransformIndicesAllocator.get(index));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+void Scene::addEntityToIdState(int entityIndex, const Guid &entityGuid, const Id &entityId)
+{
+    assert(entityGuid != Guid::INVALID);
+    assert(entityId != Id::INVALID);
+    assert(entityIndex >= 0);
+
+    mIdState.mEntityGuidToGlobalIndex[entityGuid] = entityIndex;
+    mIdState.mEntityIdToGlobalIndex[entityId] = entityIndex;
+
+    mIdState.mGuidToGlobalIndex[entityGuid] = entityIndex;
+    mIdState.mIdToGlobalIndex[entityId] = entityIndex;
+
+    mIdState.mGuidToType[entityGuid] = EntityType<Entity>::type;
+    mIdState.mIdToType[entityId] = EntityType<Entity>::type;
+
+    mIdState.mGuidToId[entityGuid] = entityId;
+    mIdState.mIdToGuid[entityId] = entityGuid;
+
+    mIdState.mEntityGuidToComponentIds[entityGuid] = std::vector<std::pair<Guid, int>>();
+    
+    mIdState.mEntityGuidsMarkedCreated.push_back(entityGuid);
+}
+
+void Scene::addComponentToIdState(std::unordered_map<Guid, int> &componentGuidToIndex,
+                                  std::unordered_map<Id, int> &componentIdToIndex, int componentIndex, const Guid &entityGuid,
+                                  const Guid &componentGuid, const Id &componentId, int componentType)
+{
+    assert(componentGuid != Guid::INVALID);
+    assert(componentId != Id::INVALID);
+    assert(componentIndex >= 0);
+
+    componentGuidToIndex[componentGuid] = componentIndex;
+    componentIdToIndex[componentId] = componentIndex;
+
+    mIdState.mGuidToGlobalIndex[componentGuid] = componentIndex;
+    mIdState.mIdToGlobalIndex[componentId] = componentIndex;
+
+    mIdState.mGuidToType[componentGuid] = componentType;
+    mIdState.mIdToType[componentId] = componentType;
+
+    mIdState.mGuidToId[componentGuid] = componentId;
+    mIdState.mIdToGuid[componentId] = componentGuid;
+
+    mIdState.mEntityGuidToComponentIds[entityGuid].push_back(std::make_pair(componentGuid, componentType));
+    
+    mIdState.mComponentGuidsMarkedCreated.push_back(std::make_tuple(entityGuid, componentGuid, componentType));
+}
+
+void Scene::removeEntityFromIdState(const Guid &entityGuid, const Id &entityId)
+{
+    assert(entityGuid != Guid::INVALID);
+    assert(entityId != Id::INVALID);
+
+    mIdState.mEntityGuidToGlobalIndex.erase(entityGuid);
+    mIdState.mEntityIdToGlobalIndex.erase(entityId);
+
+    mIdState.mGuidToGlobalIndex.erase(entityGuid);
+    mIdState.mIdToGlobalIndex.erase(entityId);
+
+    mIdState.mGuidToType.erase(entityGuid);
+    mIdState.mIdToType.erase(entityId);
+
+    mIdState.mGuidToId.erase(entityGuid);
+    mIdState.mIdToGuid.erase(entityId);
+
+    assert(mIdState.mEntityGuidToComponentIds[entityGuid].size() == 0);
+
+    mIdState.mEntityGuidToComponentIds.erase(entityGuid);
+}
+
+void Scene::removeComponentFromIdState(std::unordered_map<Guid, int> &componentGuidToIndex,
+                                       std::unordered_map<Id, int> &componentIdToIndex,
+                                       const Guid &entityGuid, const Guid &componentGuid,
+                                       const Id &componentId, int componentType)
+{
+    assert(componentGuid != Guid::INVALID);
+    assert(componentId != Id::INVALID);
+
+    componentGuidToIndex.erase(componentGuid);
+    componentIdToIndex.erase(componentId);
+
+    mIdState.mGuidToGlobalIndex.erase(componentGuid);
+    mIdState.mIdToGlobalIndex.erase(componentId);
+
+    mIdState.mGuidToType.erase(componentGuid);
+    mIdState.mIdToType.erase(componentId);
+
+    mIdState.mGuidToId.erase(componentGuid);
+    mIdState.mIdToGuid.erase(componentId);
+
+    // remove from entity component list
+    std::vector<std::pair<Guid, int>> &componentsOnEntity = mIdState.mEntityGuidToComponentIds[entityGuid];
+
+    std::vector<std::pair<Guid, int>>::iterator it = componentsOnEntity.begin();
+    while (it < componentsOnEntity.end())
+    {
+        if (it->second == componentType && it->first == componentGuid)
+        {
+            break;
+        }
+
+        it++;
+    }
+
+    if (it < componentsOnEntity.end())
+    {
+        componentsOnEntity.erase(it);
+    }
+}
+
+void Scene::moveEntityIndexInIdState(const Guid &entityGuid, const Id &entityId, int entityIndex)
+{
+    assert(entityGuid != Guid::INVALID);
+    assert(entityId != Id::INVALID);
+    assert(entityIndex >= 0);
+
+    mIdState.mEntityGuidToGlobalIndex[entityGuid] = entityIndex;
+    mIdState.mEntityIdToGlobalIndex[entityId] = entityIndex;
+
+    mIdState.mGuidToGlobalIndex[entityGuid] = entityIndex;
+    mIdState.mIdToGlobalIndex[entityId] = entityIndex;
+}
+
+void Scene::moveComponentIndexInIdState(std::unordered_map<Guid, int> &componentGuidToIndex,
+                                        std::unordered_map<Id, int> &componentIdToIndex, const Guid &componentGuid,
+                                        const Id &componentId, int componentIndex)
+{
+    assert(componentGuid != Guid::INVALID);
+    assert(componentId != Id::INVALID);
+    assert(componentIndex >= 0);
+
+    componentGuidToIndex[componentGuid] = componentIndex;
+    componentIdToIndex[componentId] = componentIndex;
+
+    mIdState.mGuidToGlobalIndex[componentGuid] = componentIndex;
+    mIdState.mIdToGlobalIndex[componentId] = componentIndex;
+}
+
+Entity *Scene::addEntity(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
+
+    Entity *entity = mAllocators.mEntityAllocator.construct(mWorld, Id::newId());
+    entity->deserialize(in);
+
+    addEntityToIdState(globalIndex, entity->getGuid(), entity->getId());
+
+    return entity;
+}
+
+Transform *Scene::addTransform(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mTransformAllocator.getCount();
+
+    Transform *transform = mAllocators.mTransformAllocator.construct(mWorld, Id::newId());
+    transform->deserialize(in);
+
+    TransformData *transformData = mAllocators.mTransformDataAllocator.construct();
+    transformData->deserialize(in);
+
+    addComponentToIdState(mIdState.mTransformGuidToGlobalIndex, 
+                          mIdState.mTransformIdToGlobalIndex,
+                          globalIndex,
+                          transform->getEntityGuid(),
+                          transform->getGuid(),
+                          transform->getId(),
+                          ComponentType<Transform>::type);
+    return transform;
+}
+
+Rigidbody *Scene::addRigidbody(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mRigidbodyAllocator.getCount();
+
+    Rigidbody *rigidbody = mAllocators.mRigidbodyAllocator.construct(mWorld, Id::newId());
+    rigidbody->deserialize(in);
+
+    addComponentToIdState(mIdState.mRigidbodyGuidToGlobalIndex, mIdState.mRigidbodyIdToGlobalIndex, globalIndex,
+                          rigidbody->getEntityGuid(), rigidbody->getGuid(), rigidbody->getId(),
+                          ComponentType<Rigidbody>::type);
+    return rigidbody;
+}
+
+MeshRenderer *Scene::addMeshRenderer(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mMeshRendererAllocator.getCount();
+
+    MeshRenderer *renderer = mAllocators.mMeshRendererAllocator.construct(mWorld, Id::newId());
+    renderer->deserialize(in);
+
+    addComponentToIdState(mIdState.mMeshRendererGuidToGlobalIndex, mIdState.mMeshRendererIdToGlobalIndex, globalIndex,
+                          renderer->getEntityGuid(), renderer->getGuid(), renderer->getId(),
+                          ComponentType<MeshRenderer>::type);
+
+    // using renderer->getComponent<Transform>() requires the mActiveScene to be set already...
+    //Transform *transform = renderer->getComponent<Transform>();
+    Transform *transform = this->getComponent<Transform>(renderer->getEntityGuid());
+    assert(transform != nullptr);
+
+    size_t* index = mAllocators.mTransformIndicesAllocator.construct();
+    *index = getIndexOf(transform->getId());
+
+    return renderer;
+}
+
+Light *Scene::addLight(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mLightAllocator.getCount();
+
+    Light *light = mAllocators.mLightAllocator.construct(mWorld, Id::newId());
+    light->deserialize(in);
+
+    addComponentToIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex, globalIndex,
+                          light->getEntityGuid(), light->getGuid(), light->getId(),
+                          ComponentType<Light>::type);
+    return light;
+}
+
+Camera *Scene::addCamera(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mCameraAllocator.getCount();
+
+    Camera *camera = mAllocators.mCameraAllocator.construct(mWorld, Id::newId());
+    camera->deserialize(in);
+
+    addComponentToIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex, globalIndex,
+                          camera->getEntityGuid(), camera->getGuid(), camera->getId(), ComponentType<Camera>::type);
+    return camera;
+}
+
+SphereCollider *Scene::addSphereCollider(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mSphereColliderAllocator.getCount();
+
+    SphereCollider *collider = mAllocators.mSphereColliderAllocator.construct(mWorld, Id::newId());
+    collider->deserialize(in);
+
+    addComponentToIdState(mIdState.mSphereColliderGuidToGlobalIndex, mIdState.mSphereColliderIdToGlobalIndex,
+                          globalIndex, collider->getEntityGuid(), collider->getGuid(), collider->getId(),
+                          ComponentType<SphereCollider>::type);
+    return collider;
+}
+
+BoxCollider *Scene::addBoxCollider(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mBoxColliderAllocator.getCount();
+
+    BoxCollider *collider = mAllocators.mBoxColliderAllocator.construct(mWorld, Id::newId());
+    collider->deserialize(in);
+
+    addComponentToIdState(mIdState.mBoxColliderGuidToGlobalIndex, mIdState.mBoxColliderIdToGlobalIndex,
+                          globalIndex, collider->getEntityGuid(), collider->getGuid(), collider->getId(),
+                          ComponentType<BoxCollider>::type);
+    return collider;
+}
+
+Terrain *Scene::addTerrain(const YAML::Node &in)
+{
+    int globalIndex = (int)mAllocators.mTerrainAllocator.getCount();
+
+    Terrain *terrain = mAllocators.mTerrainAllocator.construct(mWorld, Id::newId());
+    terrain->deserialize(in);
+
+    addComponentToIdState(mIdState.mTerrainGuidToGlobalIndex, mIdState.mTerrainIdToGlobalIndex, globalIndex,
+                          terrain->getEntityGuid(), terrain->getGuid(), terrain->getId(),
+                          ComponentType<Terrain>::type);
+    return terrain;
+}
+
+Entity *Scene::addEntity()
+{
+    int globalIndex = (int)mAllocators.mEntityAllocator.getCount();
+
+    Entity *entity = mAllocators.mEntityAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    addEntityToIdState(globalIndex, entity->getGuid(), entity->getId());
+    return entity;
+}
+
+Transform *Scene::addTransform(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mTransformAllocator.getCount();
+
+    Transform *transform = mAllocators.mTransformAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+    TransformData *transformData = mAllocators.mTransformDataAllocator.construct();
+
+    assert(transform != nullptr);
+    assert(transformData != nullptr);
+
+    transform->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mTransformGuidToGlobalIndex, mIdState.mTransformIdToGlobalIndex, globalIndex,
+                          transform->getEntityGuid(), transform->getGuid(), transform->getId(),
+                          ComponentType<Transform>::type);
+    return transform;
+}
+
+Rigidbody *Scene::addRigidbody(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mRigidbodyAllocator.getCount();
+
+    Rigidbody *rigidbody = mAllocators.mRigidbodyAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    rigidbody->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mRigidbodyGuidToGlobalIndex, mIdState.mRigidbodyIdToGlobalIndex, globalIndex,
+                          rigidbody->getEntityGuid(), rigidbody->getGuid(), rigidbody->getId(),
+                          ComponentType<Rigidbody>::type);
+    return rigidbody;
+}
+
+MeshRenderer *Scene::addMeshRenderer(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mMeshRendererAllocator.getCount();
+
+    MeshRenderer *renderer = mAllocators.mMeshRendererAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    renderer->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mMeshRendererGuidToGlobalIndex, mIdState.mMeshRendererIdToGlobalIndex, globalIndex,
+                          renderer->getEntityGuid(), renderer->getGuid(), renderer->getId(),
+                          ComponentType<MeshRenderer>::type);
+
+    Transform *transform = renderer->getComponent<Transform>();
+    assert(transform != nullptr);
+
+    size_t *index = mAllocators.mTransformIndicesAllocator.construct();
+    *index = getIndexOf(transform->getId());
+
+    return renderer;
+}
+
+Light *Scene::addLight(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mLightAllocator.getCount();
+
+    Light *light = mAllocators.mLightAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    light->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex, globalIndex,
+                          light->getEntityGuid(), light->getGuid(), light->getId(),
+                          ComponentType<Light>::type);
+    return light;
+}
+
+Camera *Scene::addCamera(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mCameraAllocator.getCount();
+
+    Camera *camera = mAllocators.mCameraAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    camera->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex, globalIndex,
+                          camera->getEntityGuid(), camera->getGuid(), camera->getId(), ComponentType<Camera>::type);
+    return camera;
+}
+
+SphereCollider *Scene::addSphereCollider(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mSphereColliderAllocator.getCount();
+
+    SphereCollider *collider = mAllocators.mSphereColliderAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    collider->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mSphereColliderGuidToGlobalIndex, mIdState.mSphereColliderIdToGlobalIndex, globalIndex,
+                          collider->getEntityGuid(), collider->getGuid(), collider->getId(), ComponentType<SphereCollider>::type);
+    return collider;
+}
+
+BoxCollider *Scene::addBoxCollider(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mBoxColliderAllocator.getCount();
+
+    BoxCollider *collider = mAllocators.mBoxColliderAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    collider->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mBoxColliderGuidToGlobalIndex, mIdState.mBoxColliderIdToGlobalIndex,
+                          globalIndex, collider->getEntityGuid(), collider->getGuid(), collider->getId(),
+                          ComponentType<BoxCollider>::type);
+    return collider;
+}
+
+Terrain *Scene::addTerrain(const Guid &entityGuid)
+{
+    int globalIndex = (int)mAllocators.mTerrainAllocator.getCount();
+
+    Terrain *terrain = mAllocators.mTerrainAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
+
+    terrain->mEntityGuid = entityGuid;
+
+    addComponentToIdState(mIdState.mTerrainGuidToGlobalIndex, mIdState.mTerrainIdToGlobalIndex, globalIndex,
+                          terrain->getEntityGuid(), terrain->getGuid(), terrain->getId(),
+                          ComponentType<Terrain>::type);
+    return terrain;
+}
+
+void Scene::removeEntity(const Guid &entityGuid)
+{
+    int entityIndex = getIndexOf(entityGuid);
+    Id entityId = getIdFromGuid(entityGuid);
+
+    Entity *swap = mAllocators.mEntityAllocator.destruct(entityIndex);
+
+    removeEntityFromIdState(entityGuid, entityId);
+
+    if (swap != nullptr)
+    {
+        moveEntityIndexInIdState(swap->getGuid(), swap->getId(), entityIndex);
+    }
+}
+
+void Scene::removeTransform(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    Transform *swap = mAllocators.mTransformAllocator.destruct(componentIndex);
+    mAllocators.mTransformDataAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mTransformGuidToGlobalIndex, mIdState.mTransformIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<Transform>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mTransformGuidToGlobalIndex, mIdState.mTransformIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeRigidbody(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    Rigidbody *swap = mAllocators.mRigidbodyAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mRigidbodyGuidToGlobalIndex, mIdState.mRigidbodyIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<Rigidbody>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mRigidbodyGuidToGlobalIndex, mIdState.mRigidbodyIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeMeshRenderer(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    MeshRenderer *swap = mAllocators.mMeshRendererAllocator.destruct(componentIndex);
+    mAllocators.mTransformIndicesAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mMeshRendererGuidToGlobalIndex, mIdState.mMeshRendererIdToGlobalIndex,
+                               entityGuid,
+                               componentGuid, componentId, ComponentType<MeshRenderer>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mMeshRendererGuidToGlobalIndex, mIdState.mMeshRendererIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeLight(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    Light *swap = mAllocators.mLightAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<Light>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeCamera(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    Camera *swap = mAllocators.mCameraAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<Camera>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeSphereCollider(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    SphereCollider *swap = mAllocators.mSphereColliderAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mSphereColliderGuidToGlobalIndex, mIdState.mSphereColliderIdToGlobalIndex,
+                               entityGuid, componentGuid, componentId, ComponentType<SphereCollider>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mSphereColliderGuidToGlobalIndex, mIdState.mSphereColliderIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeBoxCollider(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    BoxCollider *swap = mAllocators.mBoxColliderAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mBoxColliderGuidToGlobalIndex, mIdState.mBoxColliderIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<BoxCollider>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mBoxColliderGuidToGlobalIndex, mIdState.mBoxColliderIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
+}
+
+void Scene::removeTerrain(const Guid &entityGuid, const Guid &componentGuid)
+{
+    int componentIndex = getIndexOf(componentGuid);
+    Id componentId = getIdFromGuid(componentGuid);
+
+    Terrain *swap = mAllocators.mTerrainAllocator.destruct(componentIndex);
+
+    removeComponentFromIdState(mIdState.mTerrainGuidToGlobalIndex, mIdState.mTerrainIdToGlobalIndex, entityGuid,
+                               componentGuid, componentId, ComponentType<Terrain>::type);
+
+    if (swap != nullptr)
+    {
+        moveComponentIndexInIdState(mIdState.mTerrainGuidToGlobalIndex, mIdState.mTerrainIdToGlobalIndex,
+                                    componentGuid, componentId, componentIndex);
+    }
 }

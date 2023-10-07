@@ -51,6 +51,11 @@ bool Id::isInvalid() const
     return *this == Id::INVALID;
 }
 
+std::string Id::toString() const
+{
+    return std::to_string(mId);
+}
+
 Id Id::newId()
 {
     static int id = 0;

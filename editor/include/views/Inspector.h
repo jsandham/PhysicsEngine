@@ -15,10 +15,10 @@
 
 #include "../../include/drawers/BoxColliderDrawer.h"
 #include "../../include/drawers/CameraDrawer.h"
-#include "../../include/drawers/CapsuleColliderDrawer.h"
+//#include "../../include/drawers/CapsuleColliderDrawer.h"
 #include "../../include/drawers/LightDrawer.h"
-#include "../../include/drawers/LineRendererDrawer.h"
-#include "../../include/drawers/MeshColliderDrawer.h"
+//#include "../../include/drawers/LineRendererDrawer.h"
+//#include "../../include/drawers/MeshColliderDrawer.h"
 #include "../../include/drawers/MeshRendererDrawer.h"
 #include "../../include/drawers/RigidbodyDrawer.h"
 #include "../../include/drawers/SphereColliderDrawer.h"
@@ -42,12 +42,12 @@ namespace PhysicsEditor
 		RigidbodyDrawer mRigidbodyDrawer;
 		CameraDrawer mCameraDrawer;
 		MeshRendererDrawer mMeshRendererDrawer;
-		LineRendererDrawer mLineRendererDrawer;
+		//LineRendererDrawer mLineRendererDrawer;
 		LightDrawer mLightDrawer;
 		BoxColliderDrawer mBoxColliderDrawer;
 		SphereColliderDrawer mSphereColliderDrawer;
-		CapsuleColliderDrawer mCapsuleColliderDrawer;
-		MeshColliderDrawer mMeshColliderDrawer;
+		//CapsuleColliderDrawer mCapsuleColliderDrawer;
+		//MeshColliderDrawer mMeshColliderDrawer;
 		TerrainDrawer mTerrainDrawer;
 
 		bool mOpen;

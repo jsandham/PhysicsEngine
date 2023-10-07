@@ -9,6 +9,13 @@ using namespace PhysicsEngine;
 
 void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
 {
+    //YAML::Node planeNode;
+    //planeNode["type"] = AssetType<Mesh>::type;
+    //planeNode["hide"] = 0;
+    //planeNode["id"] = Guid("83a08619-90c8-49a0-af38-9fb3732c6bc3");
+    //planeNode["name"] = "plane";
+
+    // Must use fixed guid so that we can serialize and deserialize to/from scene files
     Mesh *plane = world->createAsset<Mesh>(Guid("83a08619-90c8-49a0-af38-9fb3732c6bc3"));
     Mesh *disc = world->createAsset<Mesh>(Guid("a564ec96-bd6f-493a-ad2a-0009a7cb0fb0"));
     Mesh *cube = world->createAsset<Mesh>(Guid("94f5dcfc-977b-44ad-ba7c-502ce049a187"));
@@ -132,7 +139,7 @@ void WorldPrimitives::createPrimitiveMeshes(World *world, int nx, int nz)
         standardShader->compile();
 
         standardMaterial->mName = "Standard";
-        standardMaterial->setShaderId(standardShader->getGuid());
+        standardMaterial->setShaderGuid(standardShader->getGuid());
         standardMaterial->onShaderChanged();
 
         standardMaterial->setFloat("material.shininess", 0.5f);

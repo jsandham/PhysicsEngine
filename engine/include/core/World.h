@@ -196,30 +196,37 @@ class World
   private:
     bool loadAssetYAML(const std::string &filePath, YAML::Node &in, Guid& guid, int& type);
     void generateSourcePaths(const std::string &filepath, YAML::Node &in);
-    void addToIdState(const Guid &guid, const Id &id, int index, int type);
-    void removeFromIdState(const Guid &guid, const Id &id);
+    
+    void addToIdState(std::unordered_map<Guid, int> &guidToIndex, std::unordered_map<Id, int> &idToIndex,
+                           int index, const Guid &guid, const Id &id, int type);
+    void removeFromIdState(std::unordered_map<Guid, int> &guidToIndex, std::unordered_map<Id, int> &idToIndex,
+                                const Guid &guid, const Id &id);
+    void moveIndexInIdState(std::unordered_map<Guid, int> &guidToIndex,
+                                     std::unordered_map<Id, int> &idToIndex, const Guid &guid,
+                                     const Id &id, int index);
 
+    Scene *addScene(const YAML::Node &in);
+    Cubemap *addCubemap(const YAML::Node &in);
+    Material *addMaterial(const YAML::Node &in);
+    Mesh *addMesh(const YAML::Node &in);
+    Shader *addShader(const YAML::Node &in);
+    Texture2D *addTexture2D(const YAML::Node &in);
+    RenderTexture *addRenderTexture(const YAML::Node &in);
 
+    Scene *addScene();
+    Cubemap *addCubemap(const Guid &assetGuid);
+    Material *addMaterial(const Guid &assetGuid);
+    Mesh *addMesh(const Guid &assetGuid);
+    Shader *addShader(const Guid &assetGuid);
+    Texture2D *addTexture2D(const Guid &assetGuid);
+    RenderTexture *addRenderTexture(const Guid &assetGuid);
 
-
-
-
-    template <typename T> void addToIdState_impl(const Guid &guid, const Id &id, int index, int type);
-    template <typename T> void removeFromIdState_impl(const Guid &guid, const Id &id);
-    template <typename T>
-    T *getAssetById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                         const Id &assetId) const;
-    template <typename T>
-    T *getAssetByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
-                           const Guid &assetGuid) const;
-    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const Guid &assetGuid);
-    template <typename T> T *createAsset_impl(PoolAllocator<T> *allocator, const YAML::Node &in);
-    template <typename T>
-    T *getById_impl(const std::unordered_map<Id, int> &idToIndexMap, const PoolAllocator<T> *allocator,
-                    const Id &id) const;
-    template <typename T>
-    T *getByGuid_impl(const std::unordered_map<Guid, int> &guidToIndexMap, const PoolAllocator<T> *allocator,
-                      const Guid &guid) const;
+    void removeCubemap(const Guid &assetGuid);
+    void removeMaterial(const Guid &assetGuid);
+    void removeMesh(const Guid &assetGuid);
+    void removeShader(const Guid &assetGuid);
+    void removeTexture2D(const Guid &assetGuid);
+    void removeRenderTexture(const Guid &assetGuid);
 };
 } // namespace PhysicsEngine
 

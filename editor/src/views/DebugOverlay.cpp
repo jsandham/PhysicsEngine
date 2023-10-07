@@ -126,8 +126,6 @@ void DebugOverlay::sceneTab(Clipboard& clipboard)
 	ImGui::Text("Rigidbody count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::Rigidbody>());
 	ImGui::Text("SphereCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::SphereCollider>());
 	ImGui::Text("BoxCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::BoxCollider>());
-	ImGui::Text("CapsuleCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::CapsuleCollider>());
-	ImGui::Text("MeshCollider count: %d\n", clipboard.getWorld()->getActiveScene()->getNumberOfComponents<PhysicsEngine::MeshCollider>());
 	ImGui::Unindent(16.0f);
 
 	ImGui::Text("Assets");

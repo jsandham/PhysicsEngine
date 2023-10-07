@@ -478,11 +478,13 @@ void SceneView::initWorld(PhysicsEngine::World* world)
 	PhysicsEngine::FreeLookCameraSystem* cameraSystem = world->getSystem<PhysicsEngine::FreeLookCameraSystem>();
 	PhysicsEngine::TerrainSystem* terrainSystem = world->getSystem<PhysicsEngine::TerrainSystem>();
 	PhysicsEngine::RenderSystem* renderSystem = world->getSystem<PhysicsEngine::RenderSystem>();
+	PhysicsEngine::GizmoSystem* gizmoSystem = world->getSystem<PhysicsEngine::GizmoSystem>();
 	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
 
 	cameraSystem->init(world);
 	terrainSystem->init(world);
 	renderSystem->init(world);
+	gizmoSystem->init(world);
 	cleanUpSystem->init(world);
 
 	/*for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
@@ -521,6 +523,7 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 	PhysicsEngine::FreeLookCameraSystem* cameraSystem = world->getSystem<PhysicsEngine::FreeLookCameraSystem>();
 	PhysicsEngine::TerrainSystem* terrainSystem = world->getSystem<PhysicsEngine::TerrainSystem>();
 	PhysicsEngine::RenderSystem* renderSystem = world->getSystem<PhysicsEngine::RenderSystem>();
+	PhysicsEngine::GizmoSystem* gizmoSystem = world->getSystem<PhysicsEngine::GizmoSystem>();
 	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
 
 	if (cameraSystem->mEnabled) {
@@ -531,6 +534,9 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 	}
 	if (renderSystem->mEnabled) {
 		renderSystem->update(input, PhysicsEngine::getTime());
+	}
+	if (gizmoSystem->mEnabled) {
+		gizmoSystem->update(input, PhysicsEngine::getTime());
 	}
 	if (cleanUpSystem->mEnabled) {
 		cleanUpSystem->update(input, PhysicsEngine::getTime());

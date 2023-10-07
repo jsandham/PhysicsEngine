@@ -38,6 +38,13 @@ typedef struct RenderObject
     }
 } RenderObject;
 
+struct InstanceModelKey
+{
+    Id mMaterialId;
+    Id mMeshId;
+    int mMeshStartIndex;
+};
+
 struct InstanceModelData
 {
     std::vector<glm::mat4> models;
@@ -53,6 +60,7 @@ struct pair_hash
     }
 };
 
+typedef std::unordered_map<uint16_t, InstanceModelData> InstanceMap2;
 typedef std::unordered_map<std::pair<Guid, RenderObject>, InstanceModelData, pair_hash> InstanceMap;
 } // namespace PhysicsEngine
 

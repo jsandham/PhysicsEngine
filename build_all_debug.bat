@@ -6,27 +6,27 @@ if not defined DevEnvDir (
 
 echo [94mBuilding imgui...[0m
 cd "%~dp0\external\imgui\lib"
-call "build_imgui.bat" /debug /Od
+call "build_imgui.bat" /debug /O0
 cd "..\..\.."
 
 echo [94mBuilding imguizmo...[0m
 cd "%~dp0\external\imguizmo\lib"
-call "build_imguizmo.bat" /debug /Od
+call "build_imguizmo.bat" /debug /O0
 cd "..\..\.."
 
 echo [94mBuilding efsw...[0m
 cd "%~dp0\external\efsw\lib"
-call "build_efsw.bat" /debug /Od
+call "build_efsw.bat" /debug /O0
 cd "..\..\.."
 
 echo [94mBuilding yaml-cpp...[0m
 cd "%~dp0\external\yaml-cpp\lib"
-call "build-yaml-cpp.bat" /debug /Od
+call "build-yaml-cpp.bat" /debug /O0
 cd "..\..\.."
 
 echo [94mBuilding shader_cpp_generator...[0m
 cd "%~dp0\engine\tools\shader_cpp_generator"
-call "build_shader_cpp_generator.bat" /debug /Od
+call "build_shader_cpp_generator.bat" /debug /O0
 cd "..\..\.."
 
 echo [95mGenerating cpp shaders...[0m
@@ -37,10 +37,10 @@ cd "..\..\.."
 
 echo [94mBuilding engine...[0m
 cd "%~dp0\engine\lib"
-call "build_engine.bat" /debug /Od
+call "build_engine.bat" /debug /omp /O0
 cd "..\.."
 
 echo [94mBuilding editor...[0m
 cd "%~dp0\editor\bin"
-call "build_editor.bat" /debug /Od
+call "build_editor.bat" /debug /O0
 cd "..\.."
