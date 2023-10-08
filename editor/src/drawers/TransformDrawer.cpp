@@ -5,6 +5,8 @@
 
 #include "imgui.h"
 
+#include <limits>
+
 using namespace PhysicsEditor;
 
 TransformDrawer::TransformDrawer()
@@ -33,12 +35,14 @@ void TransformDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id
 			glm::vec3 scale = transform->getScale();
 			glm::vec3 eulerAngles = glm::degrees(glm::eulerAngles(rotation));
 
-			if (ImGui::DragFloat3("Position", glm::value_ptr(position)))
+			float speed = 0.2f;
+
+			if (ImGui::DragFloat3("Position", glm::value_ptr(position), speed))
 			{
 				transform->setPosition(position);
 			}
 
-			if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles)))
+			if (ImGui::DragFloat3("Rotation", glm::value_ptr(eulerAngles), speed))
 			{
 				glm::quat x = glm::angleAxis(glm::radians(eulerAngles.x), glm::vec3(1.0f, 0.0f, 0.0f));
 				glm::quat y = glm::angleAxis(glm::radians(eulerAngles.y), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -46,8 +50,11 @@ void TransformDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id
 
 				transform->setRotation(z * y * x);
 			}
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(scale)))
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(scale), speed, 0.001f, std::numeric_limits<float>::max()))
 			{
+				scale.x = std::max(0.001f, scale.x);
+				scale.y = std::max(0.001f, scale.y);
+				scale.z = std::max(0.001f, scale.z);
 				transform->setScale(scale);
 			}
 		}

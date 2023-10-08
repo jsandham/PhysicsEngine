@@ -118,7 +118,12 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject> 
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        if (renderObjects[i].instanced)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+
+        if (isInstanced(renderObjects[i].key))
         {
             switch (camera->mColorTarget)
             {
@@ -133,11 +138,16 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject> 
                 break;
             }
 
-            renderObjects[i].instanceModelBuffer->bind();
-            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+
+            instanceModelBuffer->bind();
+            instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                                           sizeof(glm::mat4) * renderObjects[i].instanceCount);
-            renderObjects[i].instanceModelBuffer->unbind();
-            Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
+            instanceModelBuffer->unbind();
+            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                          (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                          renderObjects[i].instanceCount,
+                                                          camera->mQuery);
             modelIndex += renderObjects[i].instanceCount;
         }
         else
@@ -158,7 +168,7 @@ void DebugRenderer::renderDebug(Camera *camera, const std::vector<RenderObject> 
                 break;
             }
 
-            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
             modelIndex++;
         }
     }
@@ -179,7 +189,12 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera, const std::vector<Re
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        if (renderObjects[i].instanced)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+
+        if (isInstanced(renderObjects[i].key))
         {
             std::vector<glm::uvec4> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
@@ -192,18 +207,25 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera, const std::vector<Re
                 color++;
             }
 
+            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+            VertexBuffer *instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
+
             mColorInstancedShader->bind();
 
-            renderObjects[i].instanceModelBuffer->bind();
-            renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
+            instanceModelBuffer->bind();
+            instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                                           sizeof(glm::mat4) * renderObjects[i].instanceCount);
-            renderObjects[i].instanceModelBuffer->unbind();
+            instanceModelBuffer->unbind();
 
-            renderObjects[i].instanceColorBuffer->bind();
-            renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
+            instanceColorBuffer->bind();
+            instanceColorBuffer->setData(colors.data(), 0,
                                                           sizeof(glm::uvec4) * renderObjects[i].instanceCount);
-            renderObjects[i].instanceColorBuffer->unbind();
-            Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
+            instanceColorBuffer->unbind();
+
+            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                          (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                          renderObjects[i].instanceCount,
+                                                          camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -213,7 +235,9 @@ void DebugRenderer::renderDebugColorPicking(Camera *camera, const std::vector<Re
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor32(Color32::convertUint32ToColor32(color));
 
-            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                 (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                 camera->mQuery);
 
             color++;
             modelIndex++;

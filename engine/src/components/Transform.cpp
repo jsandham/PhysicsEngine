@@ -141,6 +141,9 @@ void Transform::setRotation(const glm::quat &rotation)
 
 void Transform::setScale(const glm::vec3 &scale)
 {
+    assert(scale.x >= 0.001f);
+    assert(scale.y >= 0.001f);
+    assert(scale.z >= 0.001f);
     mWorld->getActiveScene()->setTransformScale(mId, scale);
 }
 

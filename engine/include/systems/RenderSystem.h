@@ -34,6 +34,7 @@ class RenderSystem
     std::vector<glm::mat4> mTotalModels;
     std::vector<Id> mTotalTransformIds;
     std::vector<Sphere> mTotalBoundingSpheres;
+    //std::vector<int64_t> mTotalRenderObjects;
     std::vector<RenderObject> mTotalRenderObjects;
 
     std::vector<glm::mat4> mModels;
@@ -70,6 +71,7 @@ class RenderSystem
     void buildRenderQueue();
     void sortRenderQueue();
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
+    Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere);
 };
 
 } // namespace PhysicsEngine

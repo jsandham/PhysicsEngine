@@ -200,54 +200,6 @@ void RenderSystem::registerRenderAssets(World *world)
     }
 }
 
-static uint64_t generateKey(int materialIndex, int meshIndex, int shaderIndex, int subMesh)
-{
-    assert(materialIndex >= std::numeric_limits<uint16_t>::min());
-    assert(materialIndex <= std::numeric_limits<uint16_t>::max());
-    assert(meshIndex >= std::numeric_limits<uint16_t>::min());
-    assert(meshIndex <= std::numeric_limits<uint16_t>::max());
-    assert(shaderIndex >= std::numeric_limits<uint16_t>::min());
-    assert(shaderIndex <= std::numeric_limits<uint16_t>::max());
-    assert(subMesh >= std::numeric_limits<uint16_t>::min());
-    assert(subMesh <= std::numeric_limits<uint16_t>::max());
-
-    uint64_t key = static_cast<uint64_t>(materialIndex);
-    key += (static_cast<uint64_t>(meshIndex) << 16);
-    key += (static_cast<uint64_t>(shaderIndex) << 32);
-    key += (static_cast<uint64_t>(subMesh) << 48);
-
-    return key;
-}
-
-static uint16_t getMaterialIndexFromKey(uint64_t key)
-{
-    uint64_t mask;
-    mask = (((uint64_t)1 << 16) - (uint64_t)1) << 0;
-
-    return key & mask;
-}
-
-static uint16_t getMeshIndexFromKey(uint64_t key)
-{
-    uint64_t mask;
-    mask = (((uint64_t)1 << 16) - (uint64_t)1) << 16;
-    return (key & mask) >> 16;
-}
-
-static uint16_t getShaderIndexFromKey(uint64_t key)
-{
-    uint64_t mask;
-    mask = (((uint64_t)1 << 16) - (uint64_t)1) << 32;
-    return (key & mask) >> 32;
-}
-
-static uint16_t getSubMeshFromKey(uint64_t key)
-{
-    uint64_t mask;
-    mask = (((uint64_t)1 << 16) - (uint64_t)1) << 48;
-    return (key & mask) >> 48;
-}
-
 void RenderSystem::buildRenderObjectsList(World *world)
 {
     size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
@@ -255,7 +207,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
     std::vector<glm::mat4> models;
     models.resize(meshRendererCount);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    std::vector<glm::vec3> scales;
+    scales.resize(meshRendererCount);
+
+    //auto startTime = std::chrono::high_resolution_clock::now();
 
     for (size_t i = 0; i < meshRendererCount; i++)
     {
@@ -263,12 +218,13 @@ void RenderSystem::buildRenderObjectsList(World *world)
         assert(transformData != nullptr);
     
         models[i] = transformData->getModelMatrix();
+        scales[i] = transformData->mScale;
     }
 
-    auto stop = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-    double gbytes = ((sizeof(TransformData) + sizeof(glm::mat4)) * meshRendererCount) / (1024.0 * 1024.0 * 1024.0);
-    std::cout << gbytes / (duration.count() / 1000000.0) << "\n";
+    //auto stopTime = std::chrono::high_resolution_clock::now();
+    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
+    //double gbytes = ((sizeof(TransformData) + sizeof(glm::mat4)) * meshRendererCount) / (1024.0 * 1024.0 * 1024.0);
+    //std::cout << gbytes / (duration.count() / 1000000.0) << "\n";
 
     std::vector<Id> transformIds;
     transformIds.resize(meshRendererCount);
@@ -306,7 +262,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
             Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
 
             meshIndices[i] = lastMeshIndex;
-            boundingSpheres[i] = computeWorldSpaceBoundingSphere(models[i], mesh->getBounds());
+            boundingSpheres[i] = computeWorldSpaceBoundingSphere(models[i], scales[i], mesh->getBounds());
         }
     }
 
@@ -341,7 +297,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
                         if (material->mEnableInstancing)
                         {
-                            uint64_t key = generateKey(materialIndex, meshIndices[i], shaderIndex, j);
+                            uint64_t key = generateKey(materialIndex, meshIndices[i], shaderIndex, j, 2);
 
                             auto it = instanceMapping.find(key);
                             if (it != instanceMapping.end())
@@ -358,7 +314,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                         else
                         {
                             singleDrawCallKeys[singleDrawCallCount] =
-                                generateKey(materialIndex, meshIndices[i], shaderIndex, j);
+                                generateKey(materialIndex, meshIndices[i], shaderIndex, j, 1);
                             singleDrawCallMeshRendererIndices[singleDrawCallCount] = i;
                             singleDrawCallCount++;
                         }
@@ -382,29 +338,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
     // non-instance draw calls
     for (size_t i = 0; i < singleDrawCallCount; i++)
     {
-        uint16_t materialIndex = getMaterialIndexFromKey(singleDrawCallKeys[i]);
-        uint16_t meshIndex = getMeshIndexFromKey(singleDrawCallKeys[i]);
-        uint16_t shaderIndex = getShaderIndexFromKey(singleDrawCallKeys[i]);
-        uint16_t subMesh = getSubMeshFromKey(singleDrawCallKeys[i]);
-
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-        assert(mesh != nullptr);
-
-        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
-        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
-
         RenderObject object;
         object.instanceStart = 0;
         object.instanceCount = 0;
-        object.materialIndex = materialIndex;
-        object.shaderIndex = shaderIndex;
-        object.start = subMeshVertexStartIndex;
-        object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-        object.meshHandle = mesh->getNativeGraphicsHandle();
-        object.instanceModelBuffer = nullptr;
-        object.instanceColorBuffer = nullptr;
-        object.instanced = false;
-        object.indexed = true;
+        object.key = singleDrawCallKeys[i];
 
         mTotalRenderObjects[i] = object;
         mTotalModels[i] = models[singleDrawCallMeshRendererIndices[i]];
@@ -415,27 +352,8 @@ void RenderSystem::buildRenderObjectsList(World *world)
     // instanced draw calls
     for (auto it = instanceMapping.begin(); it != instanceMapping.end(); it++)
     {
-        uint16_t materialIndex = getMaterialIndexFromKey(it->first);
-        uint16_t meshIndex = getMeshIndexFromKey(it->first);
-        uint16_t shaderIndex = getShaderIndexFromKey(it->first);
-        uint16_t subMesh = getSubMeshFromKey(it->first);
-
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-        assert(mesh != nullptr);
-
-        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
-        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
-
         RenderObject object;
-        object.materialIndex = materialIndex;
-        object.shaderIndex = shaderIndex;
-        object.start = subMeshVertexStartIndex;
-        object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-        object.meshHandle = mesh->getNativeGraphicsHandle();
-        object.instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
-        object.instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
-        object.instanced = true;
-        object.indexed = false;
+        object.key = it->first;
 
         size_t count = 0;
         while (count < it->second.size())
@@ -478,106 +396,6 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
 
 
-
-
-
-
-
-
-
-
-    // mTotalRenderObjects.clear();
-    // mTotalModels.clear();
-    // mTotalTransformIds.clear();
-    // mTotalBoundingSpheres.clear();
-
-    //InstanceMap2 instanceMap;
-
-    //for (size_t i = 0; i < meshRendererCount; i++)
-    //{
-    //    MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
-    //    assert(meshRenderer != nullptr);
-
-    //    if (meshRenderer->mEnabled)
-    //    {
-    //        Mesh *mesh = world->getAssetByIndex<Mesh>(meshIndices[i]);
-
-    //        // could be nullptr if for example we are adding a mesh to the renderer in the editor
-    //        // but we have not yet actually set the mesh
-    //        if (mesh != nullptr)
-    //        {
-    //            for (int j = 0; j < meshRenderer->mMaterialCount; j++)
-    //            {
-    //                int materialIndex = world->getIndexOf(meshRenderer->getMaterialId(j));
-    //                Material *material = world->getAssetByIndex<Material>(materialIndex);
-
-    //                // could be nullptr if for example we are adding a material to the renderer in the editor
-    //                // but we have not yet actually set the material
-    //                if (material != nullptr)
-    //                {
-    //                    int shaderIndex = world->getIndexOf(material->getShaderGuid());
-
-    //                    int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);
-    //                    int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
-
-    //                    if (material->mEnableInstancing)
-    //                    {
-    //                        //uint64_t key = generateInstanceKey(materialIndex, meshIndex, subMeshVertexStartIndex);
-    //                        //auto it = instanceMap.find(key);
-    //                        //if (it != instanceMap.end())
-    //                        //{
-    //                        //    it->second.models.push_back(models[i]);
-    //                        //    it->second.transformIds.push_back(transformIds[i]);
-    //                        //    it->second.boundingSpheres.push_back(boundingSphere);
-    //                        //}
-    //                        //else
-    //                        //{
-    //                        //    instanceMap[key].models = std::vector<glm::mat4>();
-    //                        //    instanceMap[key].transformIds = std::vector<Id>();
-    //                        //    instanceMap[key].boundingSpheres = std::vector<Sphere>();
-    //                        //
-    //                        //    instanceMap[key].models.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-    //                        //    instanceMap[key].transformIds.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-    //                        //    instanceMap[key].boundingSpheres.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-    //                        //
-    //                        //    instanceMap[key].models.push_back(models[i]);
-    //                        //    instanceMap[key].transformIds.push_back(transformIds[i]);
-    //                        //    instanceMap[key].boundingSpheres.push_back(boundingSphere);
-    //                        //}       
-    //                    }
-    //                    else
-    //                    {
-    //                        RenderObject object;
-    //                        object.instanceStart = 0;
-    //                        object.instanceCount = 0;
-    //                        object.materialIndex = materialIndex;
-    //                        object.shaderIndex = shaderIndex;
-    //                        object.start = subMeshVertexStartIndex;
-    //                        object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-    //                        object.meshHandle = mesh->getNativeGraphicsHandle();
-    //                        object.instanceModelBuffer = nullptr;
-    //                        object.instanceColorBuffer = nullptr;
-    //                        object.instanced = false;
-    //                        object.indexed = true;
-
-    //                        mTotalRenderObjects.push_back(object);
-    //                        mTotalModels.push_back(models[i]);
-    //                        mTotalTransformIds.push_back(transformIds[i]);
-    //                        mTotalBoundingSpheres.push_back(boundingSpheres[i]);
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    break;
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
-
-
-   
 
 
 
@@ -768,7 +586,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
     assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
     // add enabled terrain to render object list
-    for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
+    /*for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
     {
         Terrain *terrain = world->getActiveScene()->getComponentByIndex<Terrain>(i);
 
@@ -793,17 +611,18 @@ void RenderSystem::buildRenderObjectsList(World *world)
             if (terrain->isChunkEnabled(j))
             {
                 RenderObject object;
+                object.key = generateKey(materialIndex, shaderIndex, );
                 object.instanceStart = 0;
                 object.instanceCount = 0;
-                object.materialIndex = materialIndex;
-                object.shaderIndex = shaderIndex;
-                object.start = terrain->getChunkStart(j);
-                object.size = terrain->getChunkSize(j);
-                object.meshHandle = terrain->getNativeGraphicsHandle();
-                object.instanceModelBuffer = nullptr;
-                object.instanceColorBuffer = nullptr;
-                object.instanced = false;
-                object.indexed = false;
+                //object.materialIndex = materialIndex;
+                //object.shaderIndex = shaderIndex;
+                //object.start = terrain->getChunkStart(j);
+                //object.size = terrain->getChunkSize(j);
+                //object.meshHandle = terrain->getNativeGraphicsHandle();
+                //object.instanceModelBuffer = nullptr;
+                //object.instanceColorBuffer = nullptr;
+                //object.instanced = false;
+                //object.indexed = false;
 
                 mTotalRenderObjects.push_back(object);
                 mTotalModels.push_back(model);
@@ -812,7 +631,7 @@ void RenderSystem::buildRenderObjectsList(World *world)
                 mTotalBoundingSpheres.push_back(computeWorldSpaceBoundingSphere(model, terrain->getChunkBounds(j)));
             }
         }
-    }
+    }*/
 
     assert(mTotalModels.size() == mTotalTransformIds.size());
     assert(mTotalModels.size() == mTotalBoundingSpheres.size());
@@ -832,7 +651,7 @@ void RenderSystem::cullRenderObjects(Camera *camera)
     for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
     {
         // dont perform any culling on instanced objects
-        if (mTotalRenderObjects[i].instanced)
+        if (isInstanced(mTotalRenderObjects[i].key))
         {
             mRenderObjects[objectCount] = mTotalRenderObjects[i];
             mRenderObjects[objectCount].instanceStart = count;
@@ -917,13 +736,49 @@ void RenderSystem::sortRenderQueue()
     //          [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
 }
 
+
+// should work only if matrix is calculated as M = T * R * S
+glm::vec3 extractScale2(const glm::mat4 &m)
+{
+    glm::vec3 scale;
+
+    scale.x = glm::length2(glm::vec3(m[0][0], m[0][1], m[0][2]));
+    scale.y = glm::length2(glm::vec3(m[1][0], m[1][1], m[1][2]));
+    scale.z = glm::length2(glm::vec3(m[2][0], m[2][1], m[2][2]));
+
+    return scale;
+}
+
+float extractLargestScale(const glm::mat4 &m)
+{
+    glm::vec3 scale2 = extractScale2(m);
+
+    return glm::sqrt(glm::max(scale2.x, glm::max(scale2.y, scale2.z)));
+}
+
 Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere)
 {
-    glm::vec4 temp = model * glm::vec4(sphere.mRadius, sphere.mRadius, sphere.mRadius, 0.0f);
-
     Sphere boundingSphere;
     boundingSphere.mCentre = glm::vec3(model * glm::vec4(sphere.mCentre, 1.0f));
-    boundingSphere.mRadius = std::max(temp.x, std::max(temp.y, temp.z));
+    boundingSphere.mRadius = sphere.mRadius * extractLargestScale(model);
+
+    return boundingSphere;
+}
+
+Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere)
+{
+    // M = T * R * S
+    // Rxx*Sx Ryx*Sy Rzx*Sz Tx
+    // Rxy*Sx Ryy*Sy Rzy*Sz Ty
+    // Rxz*Sx Ryz*Sy Rzz*Sz Tz
+    //      0      0      0 1
+
+    Sphere boundingSphere;
+    boundingSphere.mCentre.x = scale.x * sphere.mCentre.x + model[3][0];
+    boundingSphere.mCentre.y = scale.y * sphere.mCentre.y + model[3][1];
+    boundingSphere.mCentre.z = scale.z * sphere.mCentre.z + model[3][2];
+    //boundingSphere.mCentre = glm::vec3(model * glm::vec4(sphere.mCentre, 1.0f));
+    boundingSphere.mRadius = sphere.mRadius * glm::max(scale.x, glm::max(scale.y, scale.z));
 
     return boundingSphere;
 }

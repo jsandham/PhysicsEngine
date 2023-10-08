@@ -121,7 +121,12 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        if (renderObjects[i].instanced)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+
+        if (isInstanced(renderObjects[i].key))
         {
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -137,7 +142,8 @@ void DeferredRenderer::geometryPass(Camera *camera, const std::vector<RenderObje
             //    currentMaterialIndex = renderObjects[renderQueue[i].second].materialIndex;
             //}
 
-            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                 camera->mQuery);
             modelIndex++;
         }
     }
@@ -189,7 +195,12 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera, const std::vec
     int modelIndex = 0;
     for (size_t i = 0; i < renderObjects.size(); i++)
     {
-        if (renderObjects[i].instanced)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+
+        if (isInstanced(renderObjects[i].key))
         {
             std::vector<glm::uvec4> colors(renderObjects[i].instanceCount);
             for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
@@ -202,9 +213,12 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera, const std::vec
                 color++;
             }
 
+            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+            VertexBuffer *instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
+
             mColorInstancedShader->bind();
 
-            renderObjects[i].instanceModelBuffer->bind();
+            /*renderObjects[i].instanceModelBuffer->bind();
             renderObjects[i].instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                                           sizeof(glm::mat4) * renderObjects[i].instanceCount);
             renderObjects[i].instanceModelBuffer->unbind();
@@ -212,8 +226,20 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera, const std::vec
             renderObjects[i].instanceColorBuffer->bind();
             renderObjects[i].instanceColorBuffer->setData(colors.data(), 0,
                                                           sizeof(glm::uvec4) * renderObjects[i].instanceCount);
-            renderObjects[i].instanceColorBuffer->unbind();
-            Renderer::getRenderer()->drawIndexedInstanced(renderObjects[i], camera->mQuery);
+            renderObjects[i].instanceColorBuffer->unbind();*/
+            instanceModelBuffer->bind();
+            instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+            instanceModelBuffer->unbind();
+
+            instanceColorBuffer->bind();
+            instanceColorBuffer->setData(colors.data(), 0,
+                                                          sizeof(glm::uvec4) * renderObjects[i].instanceCount);
+            instanceColorBuffer->unbind();
+            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                          (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                          renderObjects[i].instanceCount,
+                                                          camera->mQuery);
 
             modelIndex += renderObjects[i].instanceCount;
         }
@@ -223,7 +249,8 @@ void DeferredRenderer::renderColorPickingDeferred(Camera *camera, const std::vec
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor32(Color32::convertUint32ToColor32(color));
 
-            Renderer::getRenderer()->drawIndexed(renderObjects[i], camera->mQuery);
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                 camera->mQuery);
 
             color++;
             modelIndex++;

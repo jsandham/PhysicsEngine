@@ -14,67 +14,25 @@ namespace PhysicsEngine
 {
 typedef struct RenderObject
 {
-    MeshHandle *meshHandle;
-    VertexBuffer *instanceModelBuffer;
-    VertexBuffer *instanceColorBuffer;
-
     int instanceStart;
     int instanceCount;
-    int materialIndex;
-    int shaderIndex;
-    int start; // start index in vbo
-    int size;  // size of vbo
-    bool instanced;
-    bool indexed;
 
-    bool operator==(const RenderObject &object) const
-    {
-        return this->instanceStart == object.instanceStart && this->instanceCount == object.instanceCount &&
-               this->materialIndex == object.materialIndex && this->shaderIndex == object.shaderIndex &&
-               this->start == object.start && this->size == object.size && this->instanced == object.instanced &&
-               this->indexed == object.indexed && this->meshHandle == object.meshHandle &&
-               this->instanceModelBuffer == object.instanceModelBuffer &&
-               this->instanceColorBuffer == object.instanceColorBuffer;
-    }
+    uint64_t key;
 } RenderObject;
 
-struct InstanceModelKey
+enum class RenderFlags
 {
-    Id mMaterialId;
-    Id mMeshId;
-    int mMeshStartIndex;
+    Indexed = 1,
+    Instanced = 2
 };
 
-struct InstanceModelData
-{
-    std::vector<glm::mat4> models;
-    std::vector<Id> transformIds;
-    std::vector<Sphere> boundingSpheres;
-};
-
-struct pair_hash
-{
-    template <class T1, class T2> std::size_t operator()(const std::pair<T1, T2> &pair) const
-    {
-        return std::hash<T1>()(pair.first) ^ std::hash<T2>()(pair.second);
-    }
-};
-
-typedef std::unordered_map<uint16_t, InstanceModelData> InstanceMap2;
-typedef std::unordered_map<std::pair<Guid, RenderObject>, InstanceModelData, pair_hash> InstanceMap;
+uint64_t generateKey(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags);
+uint16_t getMaterialIndexFromKey(uint64_t key);
+uint16_t getMeshIndexFromKey(uint64_t key);
+uint16_t getShaderIndexFromKey(uint64_t key);
+uint8_t getSubMeshFromKey(uint64_t key);
+uint8_t getFlagsFromKey(uint64_t key);
+bool isIndexed(uint64_t key);
+bool isInstanced(uint64_t key);
 } // namespace PhysicsEngine
-
-// allow use of InstancedRenderObject in unordered_set and unordered_map
-namespace std
-{
-template <> struct hash<PhysicsEngine::RenderObject>
-{
-    size_t operator()(const PhysicsEngine::RenderObject &object) const noexcept
-    {
-        std::hash<int> hash;
-        return hash(object.start) ^ hash(object.size);
-    }
-};
-} // namespace std
-
 #endif

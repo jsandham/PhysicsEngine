@@ -161,52 +161,44 @@ void OpenGLRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest
     CHECK_ERROR(glBlendFunc(s, d));
 }
 
-void OpenGLRenderer::draw_impl(const RenderObject &renderObject, GraphicsQuery &query)
+void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
 {
-    assert(renderObject.instanced == false);
+    meshHandle->draw(start / 3, size / 3);
 
-    renderObject.meshHandle->draw(renderObject.start / 3, renderObject.size / 3);
-
-    unsigned int count = renderObject.size / 3;
+    unsigned int count = size / 3;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }
 
-void OpenGLRenderer::drawIndexed_impl(const RenderObject &renderObject, GraphicsQuery &query)
+void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
 {
-    assert(renderObject.instanced == false);
+    meshHandle->drawIndexed(start, size);
 
-    renderObject.meshHandle->drawIndexed(renderObject.start, renderObject.size);
-
-    unsigned int count = renderObject.size;
+    unsigned int count = size;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }
 
-void OpenGLRenderer::drawInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query)
+void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
 {
-    assert(renderObject.instanced == true);
+    meshHandle->drawInstanced(start / 3, size / 3, instanceCount);
 
-    renderObject.meshHandle->drawInstanced(renderObject.start / 3, renderObject.size / 3, renderObject.instanceCount);
-
-    unsigned int count = renderObject.size / 3;
+    unsigned int count = size / 3;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }
 
-void OpenGLRenderer::drawIndexedInstanced_impl(const RenderObject &renderObject, GraphicsQuery &query)
+void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
 {
-    assert(renderObject.instanced == true);
+    meshHandle->drawIndexedInstanced(start, size, instanceCount);
 
-    renderObject.meshHandle->drawIndexedInstanced(renderObject.start, renderObject.size, renderObject.instanceCount);
-
-    unsigned int count = renderObject.size;
+    unsigned int count = size;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
