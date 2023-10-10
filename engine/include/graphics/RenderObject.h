@@ -14,9 +14,7 @@ namespace PhysicsEngine
 {
 typedef struct RenderObject
 {
-    int instanceStart;
     int instanceCount;
-
     uint64_t key;
 } RenderObject;
 
@@ -26,7 +24,7 @@ enum class RenderFlags
     Instanced = 2
 };
 
-uint64_t generateKey(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags);
+uint64_t generateDrawCall(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags);
 uint16_t getMaterialIndexFromKey(uint64_t key);
 uint16_t getMeshIndexFromKey(uint64_t key);
 uint16_t getShaderIndexFromKey(uint64_t key);

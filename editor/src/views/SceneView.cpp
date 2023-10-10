@@ -9,6 +9,8 @@
 
 #include "../../include/imgui/imgui_extensions.h"
 
+#include <chrono>
+
 using namespace PhysicsEditor;
 
 SceneView::SceneView() : mOpen(true), mFocused(false), mHovered(false), mHoveredLastFrame(false)
@@ -481,6 +483,12 @@ void SceneView::initWorld(PhysicsEngine::World* world)
 	PhysicsEngine::GizmoSystem* gizmoSystem = world->getSystem<PhysicsEngine::GizmoSystem>();
 	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
 
+	assert(cameraSystem != nullptr);
+	assert(terrainSystem != nullptr);
+	assert(renderSystem != nullptr);
+	assert(gizmoSystem != nullptr);
+	assert(cleanUpSystem != nullptr);
+
 	cameraSystem->init(world);
 	terrainSystem->init(world);
 	renderSystem->init(world);
@@ -526,6 +534,12 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 	PhysicsEngine::GizmoSystem* gizmoSystem = world->getSystem<PhysicsEngine::GizmoSystem>();
 	PhysicsEngine::CleanUpSystem* cleanUpSystem = world->getSystem<PhysicsEngine::CleanUpSystem>();
 
+	assert(cameraSystem != nullptr);
+	assert(terrainSystem != nullptr);
+	assert(renderSystem != nullptr);
+	assert(gizmoSystem != nullptr);
+	assert(cleanUpSystem != nullptr);
+
 	if (cameraSystem->mEnabled) {
 		cameraSystem->update(input, PhysicsEngine::getTime());
 	}
@@ -567,7 +581,7 @@ void SceneView::drawPerformanceOverlay(Clipboard& clipboard, PhysicsEngine::Free
 		ImGui::Text("Tris: %d\n", cameraSystem->getQuery().mTris);
 		ImGui::Text("Verts: %d\n", cameraSystem->getQuery().mVerts);
 		ImGui::Text("Draw calls: %d\n", cameraSystem->getQuery().mNumDrawCalls);
-		ImGui::Text("Batch Draw calls: %d\n", cameraSystem->getQuery().mNumBatchDrawCalls);
+		ImGui::Text("Instance Draw calls: %d\n", cameraSystem->getQuery().mNumInstancedDrawCalls);
 		ImGui::Text("Elapsed time: %f", cameraSystem->getQuery().mTotalElapsedTime);
 		ImGui::Text("Frame count: %d", clipboard.mTime.mFrameCount);
 		ImGui::Text("Delta time: %f", clipboard.mTime.mDeltaTime);

@@ -545,10 +545,10 @@ Texture2D *World::loadTexture2DFromYAML(const std::string &filePath)
     return nullptr;
 }
 
-Material *loadMaterialFromYAML(const std::string &filePath);
-Mesh *loadMeshFromYAML(const std::string &filePath);
-RenderTexture *loadRenderTextureFromYAML(const std::string &filePath);
-Texture2D *loadTexture2DFromYAML(const std::string &filePath);
+//Material *loadMaterialFromYAML(const std::string &filePath);
+//Mesh *loadMeshFromYAML(const std::string &filePath);
+//RenderTexture *loadRenderTextureFromYAML(const std::string &filePath);
+//Texture2D *loadTexture2DFromYAML(const std::string &filePath);
 
 Scene *World::loadSceneFromYAML(const std::string &filePath)
 {

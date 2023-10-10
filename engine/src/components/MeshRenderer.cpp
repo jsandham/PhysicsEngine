@@ -14,6 +14,7 @@ MeshRenderer::MeshRenderer(World *world, const Id &id) : mWorld(world), mGuid(Gu
     for (int i = 0; i < 8; i++)
     {
         mMaterialGuids[i] = Guid::INVALID;
+        mMaterialIds[i] = Id::INVALID;
     }
 
     mMaterialCount = 0;
@@ -31,6 +32,7 @@ MeshRenderer::MeshRenderer(World *world, const Guid &guid, const Id &id) : mWorl
     for (int i = 0; i < 8; i++)
     {
         mMaterialGuids[i] = Guid::INVALID;
+        mMaterialIds[i] = Id::INVALID;
     }
 
     mMaterialCount = 0;

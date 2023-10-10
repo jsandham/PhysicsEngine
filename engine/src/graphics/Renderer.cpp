@@ -9,7 +9,7 @@
 
 using namespace PhysicsEngine;
 
-int Renderer::INSTANCE_BATCH_SIZE = 1000;
+int Renderer::INSTANCE_BATCH_SIZE = 100;
 Renderer *Renderer::sInstance = nullptr;
 
 void Renderer::init()

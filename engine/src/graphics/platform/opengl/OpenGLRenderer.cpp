@@ -189,7 +189,7 @@ void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, int start, int s
 
     unsigned int count = size / 3;
 
-    query.mNumDrawCalls++;
+    query.mNumInstancedDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }
@@ -200,7 +200,7 @@ void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, int start
 
     unsigned int count = size;
 
-    query.mNumDrawCalls++;
+    query.mNumInstancedDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }

@@ -4,7 +4,7 @@
 
 using namespace PhysicsEngine;
 
-uint64_t PhysicsEngine::generateKey(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags)
+uint64_t PhysicsEngine::generateDrawCall(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags)
 {
     assert(materialIndex >= std::numeric_limits<uint16_t>::min());
     assert(materialIndex <= std::numeric_limits<uint16_t>::max());

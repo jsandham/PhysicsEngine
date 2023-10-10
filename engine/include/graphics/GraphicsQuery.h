@@ -5,7 +5,7 @@ namespace PhysicsEngine
 {
 struct GraphicsQuery
 {
-    unsigned int mNumBatchDrawCalls;
+    unsigned int mNumInstancedDrawCalls;
     unsigned int mNumDrawCalls;
     unsigned int mVerts;
     unsigned int mTris;
@@ -19,7 +19,7 @@ struct GraphicsQuery
 
     GraphicsQuery()
     {
-        mNumBatchDrawCalls = 0;
+        mNumInstancedDrawCalls = 0;
         mNumDrawCalls = 0;
         mVerts = 0;
         mTris = 0;

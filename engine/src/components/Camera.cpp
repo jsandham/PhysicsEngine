@@ -194,7 +194,7 @@ void Camera::resizeTargets()
 
 void Camera::beginQuery()
 {
-    mQuery.mNumBatchDrawCalls = 0;
+    mQuery.mNumInstancedDrawCalls = 0;
     mQuery.mNumDrawCalls = 0;
     mQuery.mTotalElapsedTime = 0.0f;
     mQuery.mVerts = 0;

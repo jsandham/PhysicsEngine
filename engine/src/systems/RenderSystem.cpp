@@ -83,7 +83,7 @@ void RenderSystem::update(const Input &input, const Time &time)
 {
     registerRenderAssets(mWorld);
 
-    buildRenderObjectsList(mWorld);
+    cacheRenderData(mWorld);
 
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
@@ -91,7 +91,7 @@ void RenderSystem::update(const Input &input, const Time &time)
 
         if (camera->mEnabled)
         {
-            cullRenderObjects(camera);
+            buildRenderObjectsList(mWorld, camera);
 
             buildRenderQueue();
             sortRenderQueue();
@@ -100,16 +100,16 @@ void RenderSystem::update(const Input &input, const Time &time)
             {
                 if (camera->mRenderPath == RenderPath::Forward)
                 {
-                    mForwardRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
+                    mForwardRenderer.update(input, camera, mDrawCalls, mModels, mTransformIds);
                 }
                 else
                 {
-                    mDeferredRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
+                    mDeferredRenderer.update(input, camera, mDrawCalls, mModels, mTransformIds);
                 }
             }
             else
             {
-                mDebugRenderer.update(input, camera, mRenderObjects, mModels, mTransformIds);
+                mDebugRenderer.update(input, camera, mDrawCalls, mModels, mTransformIds);
             }
         }
     }
@@ -200,34 +200,23 @@ void RenderSystem::registerRenderAssets(World *world)
     }
 }
 
-void RenderSystem::buildRenderObjectsList(World *world)
+void RenderSystem::cacheRenderData(World *world)
 {
     size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
-    std::vector<glm::mat4> models;
-    models.resize(meshRendererCount);
-
-    std::vector<glm::vec3> scales;
-    scales.resize(meshRendererCount);
-
-    //auto startTime = std::chrono::high_resolution_clock::now();
+    mCachedTransforms.resize(meshRendererCount);
+    mCachedTransformIds.resize(meshRendererCount);
+    mCachedBoundingSpheres.resize(meshRendererCount);
+    mCachedMeshIndices.resize(meshRendererCount);
+    mCachedMaterialIndices.resize(8 * meshRendererCount);
 
     for (size_t i = 0; i < meshRendererCount; i++)
     {
         TransformData *transformData = world->getActiveScene()->getTransformDataByMeshRendererIndex(i);
         assert(transformData != nullptr);
-    
-        models[i] = transformData->getModelMatrix();
-        scales[i] = transformData->mScale;
+
+        mCachedTransforms[i] = *transformData;
     }
-
-    //auto stopTime = std::chrono::high_resolution_clock::now();
-    //auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stopTime - startTime);
-    //double gbytes = ((sizeof(TransformData) + sizeof(glm::mat4)) * meshRendererCount) / (1024.0 * 1024.0 * 1024.0);
-    //std::cout << gbytes / (duration.count() / 1000000.0) << "\n";
-
-    std::vector<Id> transformIds;
-    transformIds.resize(meshRendererCount);
 
     for (size_t i = 0; i < meshRendererCount; i++)
     {
@@ -235,150 +224,212 @@ void RenderSystem::buildRenderObjectsList(World *world)
         Transform *transform = world->getActiveScene()->getComponentByIndex<Transform>(transformIndex);
         assert(transform != nullptr);
 
-        transformIds[i] = transform->getId();
+        mCachedTransformIds[i] = transform->getId();
     }
 
-    std::vector<Sphere> boundingSpheres;
-    boundingSpheres.resize(meshRendererCount);
-    
-    std::vector<int> meshIndices;
-    meshIndices.resize(meshRendererCount);
-    
     Id lastMeshId = Id::INVALID;
     int lastMeshIndex = -1;
+
+    Id lastMaterialId = Id::INVALID;
+    int lastMaterialIndex = -1;
+
     for (size_t i = 0; i < meshRendererCount; i++)
     {
         MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
         assert(meshRenderer != nullptr);
 
-        if (meshRenderer->mEnabled)
+        Id meshId = meshRenderer->getMeshId();
+        if (meshId != lastMeshId)
         {
-            if (meshRenderer->getMeshId() != lastMeshId)
+            lastMeshIndex = world->getIndexOf(meshId);
+            lastMeshId = meshId;
+        }
+
+        mCachedMeshIndices[i] = lastMeshIndex;
+
+        for (int j = 0; j < meshRenderer->mMaterialCount; j++)
+        {
+            Id materialId = meshRenderer->getMaterialId(j);
+            if (materialId != lastMaterialId)
             {
-                lastMeshIndex = world->getIndexOf(meshRenderer->getMeshId());
-                lastMeshId = meshRenderer->getMeshId();
+                lastMaterialIndex = world->getIndexOf(materialId);
+                lastMaterialId = materialId;
             }
 
-            Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
-
-            meshIndices[i] = lastMeshIndex;
-            boundingSpheres[i] = computeWorldSpaceBoundingSphere(models[i], scales[i], mesh->getBounds());
+            mCachedMaterialIndices[8 * i + j] = lastMaterialIndex;
         }
+
+        Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
+
+        mCachedBoundingSpheres[i] =
+            computeWorldSpaceBoundingSphere(mCachedTransforms[i].mPosition, mCachedTransforms[i].mScale, mesh->getBounds());
     }
+}
+
+void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
+{
+    size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
     std::unordered_map<uint64_t, std::vector<size_t>> instanceMapping;
 
-    std::vector<uint64_t> singleDrawCallKeys(meshRendererCount);
-    std::vector<size_t> singleDrawCallMeshRendererIndices(meshRendererCount);
-
-    size_t singleDrawCallCount = 0;
+    mDrawCallScratch.resize(meshRendererCount);
+    mDrawCallMeshRendererIndices.resize(meshRendererCount);
+    
+    size_t drawCallCount = 0;
+    size_t instancedDrawCallCount = 0;
+    size_t dataArraysCount = 0;
 
     for (size_t i = 0; i < meshRendererCount; i++)
     {
-        MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
-        assert(meshRenderer != nullptr);
-
-        if (meshRenderer->mEnabled)
+        if (Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()))
         {
-            // could be nullptr if for example we are adding a mesh to the renderer in the editor
-            // but we have not yet actually set the mesh
-            if (meshIndices[i] != -1)
+            MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
+            assert(meshRenderer != nullptr);
+
+            if (meshRenderer->mEnabled)
             {
-                for (int j = 0; j < meshRenderer->mMaterialCount; j++)
+                // could be nullptr if for example we are adding a mesh to the renderer in the editor
+                // but we have not yet actually set the mesh
+                if (mCachedMeshIndices[i] != -1)
                 {
-                    int materialIndex = world->getIndexOf(meshRenderer->getMaterialId(j));
-                    Material *material = world->getAssetByIndex<Material>(materialIndex);
-
-                    // could be nullptr if for example we are adding a material to the renderer in the editor
-                    // but we have not yet actually set the material
-                    if (material != nullptr)
+                    for (int j = 0; j < meshRenderer->mMaterialCount; j++)
                     {
-                        int shaderIndex = world->getIndexOf(material->getShaderGuid());
+                        //int materialIndex = world->getIndexOf(meshRenderer->getMaterialId(j));
+                        int materialIndex = mCachedMaterialIndices[8 * i + j];
+                        Material *material = world->getAssetByIndex<Material>(materialIndex);
 
-                        if (material->mEnableInstancing)
+                        // could be nullptr if for example we are adding a material to the renderer in the editor
+                        // but we have not yet actually set the material
+                        if (material != nullptr)
                         {
-                            uint64_t key = generateKey(materialIndex, meshIndices[i], shaderIndex, j, 2);
+                            int shaderIndex = world->getIndexOf(material->getShaderGuid());
 
-                            auto it = instanceMapping.find(key);
-                            if (it != instanceMapping.end())
+                            if (material->mEnableInstancing)
                             {
-                                it->second.push_back(i);
+                                uint64_t key = generateDrawCall(materialIndex, mCachedMeshIndices[i], shaderIndex, j, 2);
+
+                                auto it = instanceMapping.find(key);
+                                if (it != instanceMapping.end())
+                                {
+                                    if (it->second.size() % Renderer::getRenderer()->INSTANCE_BATCH_SIZE == 0)
+                                    {
+                                        instancedDrawCallCount++;
+                                    }
+
+                                    it->second.push_back(i);
+                                }
+                                else
+                                {
+                                    instanceMapping[key] = std::vector<size_t>();
+                                    instanceMapping[key].reserve(1000);
+                                    instanceMapping[key].push_back(i);
+                                    instancedDrawCallCount++;
+                                }
+                                dataArraysCount++;
                             }
                             else
                             {
-                                instanceMapping[key] = std::vector<size_t>();
-                                instanceMapping[key].reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-                                instanceMapping[key].push_back(i);
+                                mDrawCallScratch[drawCallCount].key =
+                                    generateDrawCall(materialIndex, mCachedMeshIndices[i], shaderIndex, j, 1);
+                                mDrawCallMeshRendererIndices[drawCallCount] = i;
+                                drawCallCount++;
+                                dataArraysCount++;
                             }
                         }
                         else
                         {
-                            singleDrawCallKeys[singleDrawCallCount] =
-                                generateKey(materialIndex, meshIndices[i], shaderIndex, j, 1);
-                            singleDrawCallMeshRendererIndices[singleDrawCallCount] = i;
-                            singleDrawCallCount++;
+                            break;
                         }
-                    }
-                    else
-                    {
-                        break;
                     }
                 }
             }
         }
     }
 
-    singleDrawCallKeys.resize(singleDrawCallCount);
+    assert(dataArraysCount >= (drawCallCount + instancedDrawCallCount));
 
-    mTotalRenderObjects.resize(singleDrawCallCount);
-    mTotalModels.resize(singleDrawCallCount);
-    mTotalTransformIds.resize(singleDrawCallCount);
-    mTotalBoundingSpheres.resize(singleDrawCallCount);
+    mDrawCalls.resize(drawCallCount + instancedDrawCallCount);
+    mModels.resize(dataArraysCount);
+    mTransformIds.resize(dataArraysCount);
+    mBoundingSpheres.resize(dataArraysCount);
 
-    // non-instance draw calls
-    for (size_t i = 0; i < singleDrawCallCount; i++)
+    // single draw calls
+    for (size_t i = 0; i < drawCallCount; i++)
     {
-        RenderObject object;
-        object.instanceStart = 0;
-        object.instanceCount = 0;
-        object.key = singleDrawCallKeys[i];
-
-        mTotalRenderObjects[i] = object;
-        mTotalModels[i] = models[singleDrawCallMeshRendererIndices[i]];
-        mTotalTransformIds[i] = transformIds[singleDrawCallMeshRendererIndices[i]];
-        mTotalBoundingSpheres[i] = boundingSpheres[singleDrawCallMeshRendererIndices[i]];
+        mDrawCalls[i] = mDrawCallScratch[i];
+        mModels[i] = mCachedTransforms[mDrawCallMeshRendererIndices[i]].getModelMatrix();
+        mTransformIds[i] = mCachedTransformIds[mDrawCallMeshRendererIndices[i]];
+        mBoundingSpheres[i] = mCachedBoundingSpheres[mDrawCallMeshRendererIndices[i]];
     }
 
     // instanced draw calls
+    size_t index = drawCallCount;
+    size_t offset = index;
     for (auto it = instanceMapping.begin(); it != instanceMapping.end(); it++)
     {
-        RenderObject object;
-        object.key = it->first;
-
         size_t count = 0;
         while (count < it->second.size())
         {
-            object.instanceStart = count;
-            object.instanceCount =
+            assert(index < mDrawCalls.size());
+
+            mDrawCalls[index].key = it->first;
+            mDrawCalls[index].instanceCount =
                 std::min(it->second.size() - count, static_cast<size_t>(Renderer::getRenderer()->INSTANCE_BATCH_SIZE));
 
-            mTotalRenderObjects.push_back(object);
-
-            size_t start = mTotalModels.size();
-            mTotalModels.resize(mTotalModels.size() + object.instanceCount);
-            mTotalTransformIds.resize(mTotalTransformIds.size() + object.instanceCount);
-            mTotalBoundingSpheres.resize(mTotalBoundingSpheres.size() + object.instanceCount);
-
-            for (size_t i = 0; i < object.instanceCount; i++)
+            for (size_t i = 0; i < mDrawCalls[index].instanceCount; i++)
             {
-                mTotalModels[start + i] = models[it->second[object.instanceStart + i]];
-                mTotalTransformIds[start + i] = transformIds[it->second[object.instanceStart + i]];
-                mTotalBoundingSpheres[start + i] = boundingSpheres[it->second[object.instanceStart + i]];
+                assert(offset + i < mModels.size());
+                assert(offset + i < mTransformIds.size());
+                assert(offset + i < mBoundingSpheres.size());
+
+                assert(count + i < it->second.size());
+                assert(count + i < it->second.size());
+                assert(count + i < it->second.size());
+
+                mModels[offset + i] = mCachedTransforms[it->second[count + i]].getModelMatrix();
+                mTransformIds[offset + i] = mCachedTransformIds[it->second[count + i]];
+                mBoundingSpheres[offset + i] = mCachedBoundingSpheres[it->second[count + i]];
             }
 
+            offset += mDrawCalls[index].instanceCount;
+            index++;
             count += Renderer::getRenderer()->INSTANCE_BATCH_SIZE;
         }
     }
+
+    assert(index == mDrawCalls.size());
+    assert(offset == mModels.size());
+    assert(offset == mTransformIds.size());
+    assert(offset == mBoundingSpheres.size());
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -409,181 +460,6 @@ void RenderSystem::buildRenderObjectsList(World *world)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //mTotalRenderObjects.clear();
-    //mTotalModels.clear();
-    //mTotalTransformIds.clear();
-    //mTotalBoundingSpheres.clear();
-
-    //InstanceMap instanceMap;
-
-    //// add enabled renderers to render object list
-    //for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<MeshRenderer>(); i++)
-    //{
-    //    MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
-
-    //    assert(meshRenderer != nullptr);
-
-    //    if (meshRenderer->mEnabled)
-    //    {
-    //        Transform *transform = meshRenderer->getComponent<Transform>();
-    //        Mesh *mesh = world->getAssetById<Mesh>(meshRenderer->getMeshId());
-
-    //        assert(transform != nullptr);
-
-    //        // could be nullptr if for example we are adding a mesh to the renderer in the editor
-    //        // but we have not yet actually set the mesh
-    //        if (mesh == nullptr)
-    //        {
-    //            continue;
-    //        }
-
-    //        glm::mat4 model = transform->getModelMatrix();
-
-    //        Sphere boundingSphere = computeWorldSpaceBoundingSphere(model, mesh->getBounds());
-
-    //        for (int j = 0; j < meshRenderer->mMaterialCount; j++)
-    //        {
-    //            int materialIndex = world->getIndexOf(meshRenderer->getMaterialId(j));
-    //            Material *material = world->getAssetByIndex<Material>(materialIndex);
-
-    //            // could be nullptr if for example we are adding a material to the renderer in the editor
-    //            // but we have not yet actually set the material
-    //            if (material == nullptr)
-    //            {
-    //                break;
-    //            }
-
-    //            int shaderIndex = world->getIndexOf(material->getShaderGuid());
-
-    //            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(j);
-    //            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(j);
-
-    //            if (material->mEnableInstancing)
-    //            {
-    //                RenderObject object;
-    //                object.instanceStart = 0;
-    //                object.instanceCount = 0;
-    //                object.materialIndex = materialIndex;
-    //                object.shaderIndex = shaderIndex;
-    //                object.start = subMeshVertexStartIndex;
-    //                object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-    //                object.meshHandle = mesh->getNativeGraphicsHandle();
-    //                object.instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
-    //                object.instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
-    //                object.instanced = true;
-    //                object.indexed = false;
-
-    //                std::pair<Guid, RenderObject> key = std::make_pair(material->getGuid(), object);
-
-    //                auto it = instanceMap.find(key);
-    //                if (it != instanceMap.end())
-    //                {
-    //                    it->second.models.push_back(model);
-    //                    it->second.transformIds.push_back(transform->getId());
-    //                    it->second.boundingSpheres.push_back(boundingSphere);
-    //                }
-    //                else
-    //                {
-    //                    instanceMap[key].models = std::vector<glm::mat4>();
-    //                    instanceMap[key].transformIds = std::vector<Id>();
-    //                    instanceMap[key].boundingSpheres = std::vector<Sphere>();
-
-    //                    instanceMap[key].models.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-    //                    instanceMap[key].transformIds.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-    //                    instanceMap[key].boundingSpheres.reserve(Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
-
-    //                    instanceMap[key].models.push_back(model);
-    //                    instanceMap[key].transformIds.push_back(transform->getId());
-    //                    instanceMap[key].boundingSpheres.push_back(boundingSphere);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                RenderObject object;
-    //                object.instanceStart = 0;
-    //                object.instanceCount = 0;
-    //                object.materialIndex = materialIndex;
-    //                object.shaderIndex = shaderIndex;
-    //                object.start = subMeshVertexStartIndex;
-    //                object.size = subMeshVertexEndIndex - subMeshVertexStartIndex;
-    //                object.meshHandle = mesh->getNativeGraphicsHandle();
-    //                object.instanceModelBuffer = nullptr;
-    //                object.instanceColorBuffer = nullptr;
-    //                object.instanced = false;
-    //                object.indexed = true;
-
-    //                mTotalRenderObjects.push_back(object);
-    //                mTotalModels.push_back(model);
-    //                mTotalTransformIds.push_back(transform->getId());
-    //                mTotalBoundingSpheres.push_back(boundingSphere);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //for (auto it = instanceMap.begin(); it != instanceMap.end(); it++)
-    //{
-    //    std::vector<glm::mat4> &models = it->second.models;
-    //    std::vector<Id> &transformIds = it->second.transformIds;
-    //    std::vector<Sphere> &boundingSpheres = it->second.boundingSpheres;
-
-    //    size_t count = 0;
-    //    while (count < models.size())
-    //    {
-    //        RenderObject renderObject = it->first.second;
-    //        renderObject.instanceStart = count;
-    //        renderObject.instanceCount =
-    //            std::min(models.size() - count, static_cast<size_t>(Renderer::getRenderer()->INSTANCE_BATCH_SIZE));
-
-    //        mTotalRenderObjects.push_back(renderObject);
-
-    //        size_t start = mTotalModels.size();
-    //        mTotalModels.resize(mTotalModels.size() + renderObject.instanceCount);
-    //        mTotalTransformIds.resize(mTotalTransformIds.size() + renderObject.instanceCount);
-    //        mTotalBoundingSpheres.resize(mTotalBoundingSpheres.size() + renderObject.instanceCount);
-
-    //        for (size_t i = 0; i < renderObject.instanceCount; i++)
-    //        {
-    //            //mTotalModels.push_back(models[renderObject.instanceStart + i]);
-    //            //mTotalTransformIds.push_back(transformIds[renderObject.instanceStart + i]);
-    //            //mTotalBoundingSpheres.push_back(boundingSpheres[renderObject.instanceStart + i]);
-    //            mTotalModels[start + i] = models[renderObject.instanceStart + i];
-    //            mTotalTransformIds[start + i] = transformIds[renderObject.instanceStart + i];
-    //            mTotalBoundingSpheres[start + i] = boundingSpheres[renderObject.instanceStart + i];
-    //        }
-
-    //        count += Renderer::getRenderer()->INSTANCE_BATCH_SIZE;
-    //    }
-    //}
-
-    assert(mTotalModels.size() == mTotalTransformIds.size());
-    assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
     // add enabled terrain to render object list
     /*for (size_t i = 0; i < world->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
@@ -633,60 +509,10 @@ void RenderSystem::buildRenderObjectsList(World *world)
         }
     }*/
 
-    assert(mTotalModels.size() == mTotalTransformIds.size());
-    assert(mTotalModels.size() == mTotalBoundingSpheres.size());
+    //assert(mTotalModels.size() == mTotalTransformIds.size());
+    //assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
-    mWorld->mBoundingSpheres = mTotalBoundingSpheres;
-}
-
-void RenderSystem::cullRenderObjects(Camera *camera)
-{
-    mModels.resize(mTotalModels.size());
-    mTransformIds.resize(mTotalTransformIds.size());
-    mRenderObjects.resize(mTotalRenderObjects.size());
-
-    int index = 0;
-    int objectCount = 0;
-    int count = 0;
-    for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
-    {
-        // dont perform any culling on instanced objects
-        if (isInstanced(mTotalRenderObjects[i].key))
-        {
-            mRenderObjects[objectCount] = mTotalRenderObjects[i];
-            mRenderObjects[objectCount].instanceStart = count;
-
-            for (size_t j = 0; j < mTotalRenderObjects[i].instanceCount; j++)
-            {
-                mModels[count + j] = mTotalModels[index];
-                mTransformIds[count + j] = mTotalTransformIds[index];
-
-                index++;
-            }
-
-            objectCount++;
-            count += mTotalRenderObjects[i].instanceCount;
-        }
-        else
-        {
-            if (Intersect::intersect(mTotalBoundingSpheres[index], camera->getFrustum()))
-            {
-                mRenderObjects[objectCount] = mTotalRenderObjects[i];
-
-                mModels[count] = mTotalModels[index];
-                mTransformIds[count] = mTotalTransformIds[index];
-
-                objectCount++;
-                count++;
-            }
-
-            index++;
-        }
-    }
-
-    mModels.resize(count);
-    mTransformIds.resize(count);
-    mRenderObjects.resize(objectCount);
+    mWorld->mBoundingSpheres = mBoundingSpheres;
 }
 
 void RenderSystem::buildRenderQueue()
@@ -765,6 +591,23 @@ Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, con
     return boundingSphere;
 }
 
+Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::vec3 &translation, const glm::vec3 &scale, const Sphere &sphere)
+{
+    // M = T * R * S
+    // Rxx*Sx Ryx*Sy Rzx*Sz Tx
+    // Rxy*Sx Ryy*Sy Rzy*Sz Ty
+    // Rxz*Sx Ryz*Sy Rzz*Sz Tz
+    //      0      0      0 1
+
+    Sphere boundingSphere;
+    boundingSphere.mCentre.x = scale.x * sphere.mCentre.x + translation.x;
+    boundingSphere.mCentre.y = scale.y * sphere.mCentre.y + translation.y;
+    boundingSphere.mCentre.z = scale.z * sphere.mCentre.z + translation.z;
+    boundingSphere.mRadius = sphere.mRadius * glm::max(scale.x, glm::max(scale.y, scale.z));
+
+    return boundingSphere;
+}
+
 Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere)
 {
     // M = T * R * S
@@ -777,7 +620,6 @@ Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, con
     boundingSphere.mCentre.x = scale.x * sphere.mCentre.x + model[3][0];
     boundingSphere.mCentre.y = scale.y * sphere.mCentre.y + model[3][1];
     boundingSphere.mCentre.z = scale.z * sphere.mCentre.z + model[3][2];
-    //boundingSphere.mCentre = glm::vec3(model * glm::vec4(sphere.mCentre, 1.0f));
     boundingSphere.mRadius = sphere.mRadius * glm::max(scale.x, glm::max(scale.y, scale.z));
 
     return boundingSphere;

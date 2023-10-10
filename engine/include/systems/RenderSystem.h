@@ -10,6 +10,7 @@
 #include "../core/Time.h"
 
 #include "../components/Camera.h"
+#include "../components/Transform.h"
 
 #include "../graphics/DebugRenderer.h"
 #include "../graphics/DeferredRenderer.h"
@@ -19,6 +20,19 @@
 namespace PhysicsEngine
 {
 class World;
+
+struct DrawCallData
+{
+    std::vector<RenderObject> mDrawCalls;
+    std::vector<glm::mat4> mModels;
+    std::vector<Id> mTransformIds;
+    std::vector<Sphere> mBoundingSpheres;
+
+    // std::vector<RenderObject> mInstancedDrawCalls;
+    // std::vector<glm::mat4> mInstancedModels;
+    // std::vector<Id> mInstancedTransformIds;
+    // std::vector<Sphere> mInstancedBoundingSpheres;
+};
 
 class RenderSystem
 {
@@ -31,15 +45,44 @@ class RenderSystem
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
 
-    std::vector<glm::mat4> mTotalModels;
-    std::vector<Id> mTotalTransformIds;
-    std::vector<Sphere> mTotalBoundingSpheres;
-    //std::vector<int64_t> mTotalRenderObjects;
-    std::vector<RenderObject> mTotalRenderObjects;
+    // Cache data that is used in contructing draw call lists once
+    std::vector<TransformData> mCachedTransforms;
+    std::vector<Id> mCachedTransformIds;
+    std::vector<Sphere> mCachedBoundingSpheres;
+    std::vector<int> mCachedMeshIndices;
+    std::vector<int> mCachedMaterialIndices;
 
+    // Scratch arrays
+    std::vector<RenderObject> mDrawCallScratch;
+    std::vector<int> mDrawCallMeshRendererIndices;
+
+    // Draw call data
+    std::vector<RenderObject> mDrawCalls;
     std::vector<glm::mat4> mModels;
     std::vector<Id> mTransformIds;
-    std::vector<RenderObject> mRenderObjects;
+    std::vector<Sphere> mBoundingSpheres;
+
+    //std::vector<RenderObject> mInstancedDrawCalls;
+    //std::vector<glm::mat4> mInstancedModels;
+    //std::vector<Id> mInstancedTransformIds;
+    //std::vector<Sphere> mInstancedBoundingSpheres;
+
+
+
+
+
+
+
+
+
+    //std::vector<glm::mat4> mTotalModels;
+    //std::vector<Id> mTotalTransformIds;
+    //std::vector<Sphere> mTotalBoundingSpheres;
+    //std::vector<RenderObject> mTotalRenderObjects;
+
+    //std::vector<glm::mat4> mFinalModels;
+    //std::vector<Id> mFinalTransformIds;
+    //std::vector<RenderObject> mFinalRenderObjects;
 
     // std::vector<bool> mCulledObjectFlags;
 
@@ -66,11 +109,13 @@ class RenderSystem
 
   private:
     void registerRenderAssets(World *world);
-    void buildRenderObjectsList(World *world);
+    void cacheRenderData(World *world);
+    void buildRenderObjectsList(World *world, Camera* camera);
     void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
+    Sphere computeWorldSpaceBoundingSphere(const glm::vec3 &translation, const glm::vec3 &scale, const Sphere &sphere);
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere);
 };
 
