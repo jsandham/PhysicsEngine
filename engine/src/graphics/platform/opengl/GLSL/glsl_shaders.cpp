@@ -199,6 +199,49 @@ return "#version 430 core\n"
 "  FragColor = diffuse * color;\n"
 "}\n";
 }
+std::string glsl::getGizmoInstancedFragmentShader()
+{
+return "#version 430 core\n"
+"out vec4 FragColor;\n"
+"in vec3 Normal;\n"
+"in vec3 FragPos;\n"
+"in vec4 Color;\n"
+"\n"
+"uniform vec3 lightPos;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    vec3 norm = normalize(Normal);\n"
+"    vec3 lightDir = normalize(lightPos - FragPos);\n"
+"    float diff = max(abs(dot(norm, lightDir)), 0.1);\n"
+"    vec4 diffuse = vec4(diff, diff, diff, 1.0);\n"
+"    FragColor = diffuse * Color;\n"
+"}\n";
+}
+std::string glsl::getGizmoInstancedVertexShader()
+{
+return "#version 430 core\n"
+"layout(location = 0) in vec3 position;\n"
+"layout(location = 1) in vec3 normal;\n"
+"layout(location = 3) in mat4 model;\n"
+"layout(location = 7) in uvec4 color;\n"
+"\n"
+"out vec3 FragPos;\n"
+"out vec3 Normal;\n"
+"out vec4 Color;\n"
+"\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    Color = vec4(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);\n"
+"\n"
+"    FragPos = vec3(model * vec4(position, 1.0));\n"
+"    Normal = mat3(transpose(inverse(model))) * normal;\n"
+"    gl_Position = projection * view * vec4(FragPos, 1.0);\n"
+"}\n";
+}
 std::string glsl::getGizmoVertexShader()
 {
 return "#version 430 core\n"

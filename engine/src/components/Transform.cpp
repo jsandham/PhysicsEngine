@@ -11,10 +11,9 @@ using namespace PhysicsEngine;
 #define GLM_ENABLE_EXPERIMENTAL
 
 TransformData::TransformData()
+    : mPosition(glm::vec3(0.0f, 0.0f, 0.0f)), mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),
+      mScale(glm::vec3(1.0f, 1.0f, 1.0f))
 {
-    mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-    mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-    mScale = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
 void TransformData::serialize(YAML::Node &out) const

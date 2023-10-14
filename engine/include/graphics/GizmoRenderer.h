@@ -98,6 +98,7 @@ class GizmoRenderer
 
     LineShader *mLineShader;
     GizmoShader *mGizmoShader;
+    GizmoInstancedShader *mGizmoInstancedShader;
     GridShader *mGridShader;
 
     MeshHandle *mFrustumHandle;

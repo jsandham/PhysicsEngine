@@ -15,8 +15,8 @@ const float FreeLookCameraSystem::TRANSLATE_SENSITIVITY = 1.0f; // 75.0f;
 FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mEnabled = true;
-    mTransformId = Guid::INVALID;
-    mCameraId = Guid::INVALID;
+    mTransformGuid = Guid::INVALID;
+    mCameraGuid = Guid::INVALID;
 
     mMousePosX = 0;
     mMousePosY = 0;
@@ -31,8 +31,8 @@ FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Id &id) : mWorld(
 FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mEnabled = true;
-    mTransformId = Guid::INVALID;
-    mCameraId = Guid::INVALID;
+    mTransformGuid = Guid::INVALID;
+    mCameraGuid = Guid::INVALID;
 
     mMousePosX = 0;
     mMousePosY = 0;
@@ -117,8 +117,8 @@ void FreeLookCameraSystem::init(World *world)
 
     camera->mRenderToScreen = mRenderToScreen;
 
-    mCameraId = camera->getGuid();
-    mTransformId = transform->getGuid();       
+    mCameraGuid = camera->getGuid();
+    mTransformGuid = transform->getGuid();       
 }
 
 void FreeLookCameraSystem::update(const Input &input, const Time &time)
@@ -288,12 +288,12 @@ CameraGizmos FreeLookCameraSystem::getGizmos() const
 
 Camera *FreeLookCameraSystem::getCamera() const
 {
-    return mWorld->getActiveScene()->getComponentByGuid<Camera>(mCameraId);
+    return mWorld->getActiveScene()->getComponentByGuid<Camera>(mCameraGuid);
 }
 
 Transform *FreeLookCameraSystem::getTransform() const
 {
-    return mWorld->getActiveScene()->getComponentByGuid<Transform>(mTransformId);
+    return mWorld->getActiveScene()->getComponentByGuid<Transform>(mTransformGuid);
 }
 
 int FreeLookCameraSystem::getMousePosX() const

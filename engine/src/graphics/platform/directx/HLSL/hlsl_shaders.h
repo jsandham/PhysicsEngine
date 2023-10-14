@@ -40,6 +40,8 @@ namespace hlsl
     std::string getLineFragmentShader();
     std::string getGizmoVertexShader();
     std::string getGizmoFragmentShader();
+    std::string getGizmoInstancedVertexShader();
+    std::string getGizmoInstancedFragmentShader();
     std::string getGridVertexShader();
     std::string getGridFragmentShader();
     std::string getStandardVertexShader();

@@ -213,6 +213,47 @@ return "struct PS_INPUT\n"
 "    return float4(input.normal, 1.0);\n"
 "}\n";
 }
+std::string hlsl::getGizmoInstancedFragmentShader()
+{
+return "struct PS_INPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// pixel shader\n"
+"float4 PSMain(PS_INPUT input) : SV_TARGET\n"
+"{\n"
+"    return float4(input.normal, 1.0);\n"
+"}\n";
+}
+std::string hlsl::getGizmoInstancedVertexShader()
+{
+return "// INPUT/OUTPUT structures\n"
+"struct VS_INPUT\n"
+"{\n"
+"    float3 position : POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"struct VS_OUTPUT\n"
+"{\n"
+"    float4 position : SV_POSITION;\n"
+"    float3 normal : NORMAL;\n"
+"};\n"
+"\n"
+"// uniforms : external parameters\n"
+"matrix worldViewProjection;\n"
+"\n"
+"// vertex shader \n"
+"VS_OUTPUT VSMain(VS_INPUT input)\n"
+"{\n"
+"    VS_OUTPUT output;\n"
+"    output.position = mul(worldViewProjection, float4(input.position, 1.0));\n"
+"    output.normal = input.normal;\n"
+"    return output;\n"
+"}\n";
+}
 std::string hlsl::getGizmoVertexShader()
 {
 return "// INPUT/OUTPUT structures\n"

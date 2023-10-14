@@ -91,10 +91,16 @@ void RenderSystem::update(const Input &input, const Time &time)
 
         if (camera->mEnabled)
         {
+            frustumCulling(mWorld, camera);
+
             buildRenderObjectsList(mWorld, camera);
 
             buildRenderQueue();
             sortRenderQueue();
+
+
+            // batching after sort?
+
 
             if (camera->mColorTarget == ColorTarget::Color || camera->mColorTarget == ColorTarget::ShadowCascades)
             {
@@ -204,7 +210,7 @@ void RenderSystem::cacheRenderData(World *world)
 {
     size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
-    mCachedTransforms.resize(meshRendererCount);
+    mCachedModels.resize(meshRendererCount);
     mCachedTransformIds.resize(meshRendererCount);
     mCachedBoundingSpheres.resize(meshRendererCount);
     mCachedMeshIndices.resize(meshRendererCount);
@@ -215,7 +221,7 @@ void RenderSystem::cacheRenderData(World *world)
         TransformData *transformData = world->getActiveScene()->getTransformDataByMeshRendererIndex(i);
         assert(transformData != nullptr);
 
-        mCachedTransforms[i] = *transformData;
+        mCachedModels[i] = transformData->getModelMatrix();
     }
 
     for (size_t i = 0; i < meshRendererCount; i++)
@@ -261,8 +267,19 @@ void RenderSystem::cacheRenderData(World *world)
 
         Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
 
-        mCachedBoundingSpheres[i] =
-            computeWorldSpaceBoundingSphere(mCachedTransforms[i].mPosition, mCachedTransforms[i].mScale, mesh->getBounds());
+        mCachedBoundingSpheres[i] = computeWorldSpaceBoundingSphere(mCachedModels[i], mesh->getBounds());
+    }
+}
+
+void RenderSystem::frustumCulling(World *world, Camera *camera)
+{
+    size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
+
+    mFrustumVisible.resize(meshRendererCount);
+
+    for (size_t i = 0; i < meshRendererCount; i++)
+    {
+        mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum());
     }
 }
 
@@ -281,7 +298,7 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
 
     for (size_t i = 0; i < meshRendererCount; i++)
     {
-        if (Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()))
+        if (mFrustumVisible[i])
         {
             MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
             assert(meshRenderer != nullptr);
@@ -294,7 +311,6 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
                 {
                     for (int j = 0; j < meshRenderer->mMaterialCount; j++)
                     {
-                        //int materialIndex = world->getIndexOf(meshRenderer->getMaterialId(j));
                         int materialIndex = mCachedMaterialIndices[8 * i + j];
                         Material *material = world->getAssetByIndex<Material>(materialIndex);
 
@@ -357,7 +373,7 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
     for (size_t i = 0; i < drawCallCount; i++)
     {
         mDrawCalls[i] = mDrawCallScratch[i];
-        mModels[i] = mCachedTransforms[mDrawCallMeshRendererIndices[i]].getModelMatrix();
+        mModels[i] = mCachedModels[mDrawCallMeshRendererIndices[i]];
         mTransformIds[i] = mCachedTransformIds[mDrawCallMeshRendererIndices[i]];
         mBoundingSpheres[i] = mCachedBoundingSpheres[mDrawCallMeshRendererIndices[i]];
     }
@@ -386,7 +402,7 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
                 assert(count + i < it->second.size());
                 assert(count + i < it->second.size());
 
-                mModels[offset + i] = mCachedTransforms[it->second[count + i]].getModelMatrix();
+                mModels[offset + i] = mCachedModels[it->second[count + i]];
                 mTransformIds[offset + i] = mCachedTransformIds[it->second[count + i]];
                 mBoundingSpheres[offset + i] = mCachedBoundingSpheres[it->second[count + i]];
             }
@@ -512,7 +528,10 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
     //assert(mTotalModels.size() == mTotalTransformIds.size());
     //assert(mTotalModels.size() == mTotalBoundingSpheres.size());
 
-    mWorld->mBoundingSpheres = mBoundingSpheres;
+    assert(mCachedBoundingSpheres.size() == mFrustumVisible.size());
+
+    mWorld->mBoundingSpheres = mCachedBoundingSpheres;
+    mWorld->mFrustumVisible = mFrustumVisible;
 }
 
 void RenderSystem::buildRenderQueue()
@@ -587,40 +606,6 @@ Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, con
     Sphere boundingSphere;
     boundingSphere.mCentre = glm::vec3(model * glm::vec4(sphere.mCentre, 1.0f));
     boundingSphere.mRadius = sphere.mRadius * extractLargestScale(model);
-
-    return boundingSphere;
-}
-
-Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::vec3 &translation, const glm::vec3 &scale, const Sphere &sphere)
-{
-    // M = T * R * S
-    // Rxx*Sx Ryx*Sy Rzx*Sz Tx
-    // Rxy*Sx Ryy*Sy Rzy*Sz Ty
-    // Rxz*Sx Ryz*Sy Rzz*Sz Tz
-    //      0      0      0 1
-
-    Sphere boundingSphere;
-    boundingSphere.mCentre.x = scale.x * sphere.mCentre.x + translation.x;
-    boundingSphere.mCentre.y = scale.y * sphere.mCentre.y + translation.y;
-    boundingSphere.mCentre.z = scale.z * sphere.mCentre.z + translation.z;
-    boundingSphere.mRadius = sphere.mRadius * glm::max(scale.x, glm::max(scale.y, scale.z));
-
-    return boundingSphere;
-}
-
-Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere)
-{
-    // M = T * R * S
-    // Rxx*Sx Ryx*Sy Rzx*Sz Tx
-    // Rxy*Sx Ryy*Sy Rzy*Sz Ty
-    // Rxz*Sx Ryz*Sy Rzz*Sz Tz
-    //      0      0      0 1
-
-    Sphere boundingSphere;
-    boundingSphere.mCentre.x = scale.x * sphere.mCentre.x + model[3][0];
-    boundingSphere.mCentre.y = scale.y * sphere.mCentre.y + model[3][1];
-    boundingSphere.mCentre.z = scale.z * sphere.mCentre.z + model[3][2];
-    boundingSphere.mRadius = sphere.mRadius * glm::max(scale.x, glm::max(scale.y, scale.z));
 
     return boundingSphere;
 }

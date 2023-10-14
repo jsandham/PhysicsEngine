@@ -40,8 +40,8 @@ class FreeLookCameraSystem
     Id mId;
     World* mWorld;
 
-    Guid mTransformId;
-    Guid mCameraId;
+    Guid mTransformGuid;
+    Guid mCameraGuid;
 
     int mMousePosX;
     int mMousePosY;

@@ -72,3 +72,8 @@ Color32 Color32::convertUint32ToColor32(uint32_t i)
 
     return Color32(r, g, b, a);
 }
+
+Color32 Color32::convertColorToColor32(const Color &color)
+{
+    return Color32(255 * color.mR, 255 * color.mG, 255 * color.mB, 255 * color.mA);
+}

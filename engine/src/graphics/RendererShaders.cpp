@@ -625,6 +625,47 @@ void GizmoShader::setLightPos(const glm::vec3 &lightPos)
     mShader->setVec3(mLightPosId, lightPos);
 }
 
+GizmoInstancedShader::GizmoInstancedShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("Gizmo Instanced", getGizmoInstancedVertexShader(), getGizmoInstancedFragmentShader());
+    mShader->compile();
+
+    mViewId = Shader::uniformToId("view");
+    mProjectionId = Shader::uniformToId("projection");
+    mLightPosId = Shader::uniformToId("lightPos");
+}
+
+GizmoInstancedShader::~GizmoInstancedShader()
+{
+    delete mShader;
+}
+
+void GizmoInstancedShader::bind()
+{
+    mShader->bind();
+}
+
+void GizmoInstancedShader::unbind()
+{
+    mShader->unbind();
+}
+
+void GizmoInstancedShader::setView(const glm::mat4 &view)
+{
+    mShader->setMat4(mViewId, view);
+}
+
+void GizmoInstancedShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionId, projection);
+}
+
+void GizmoInstancedShader::setLightPos(const glm::vec3 &lightPos)
+{
+    mShader->setVec3(mLightPosId, lightPos);
+}
+
 GridShader::GridShader()
 {
     mShader = ShaderProgram::create();
@@ -678,6 +719,7 @@ LinearDepthShader *RendererShaders::sLinearDepthShader = nullptr;
 LinearDepthInstancedShader *RendererShaders::sLinearDepthInstancedShader = nullptr;
 LineShader *RendererShaders::sLineShader = nullptr;
 GizmoShader *RendererShaders::sGizmoShader = nullptr;
+GizmoInstancedShader *RendererShaders::sGizmoInstancedShader = nullptr;
 GridShader *RendererShaders::sGridShader = nullptr;
 
 void RendererShaders::createInternalShaders()
@@ -703,6 +745,7 @@ void RendererShaders::createInternalShaders()
     sLinearDepthInstancedShader = new LinearDepthInstancedShader();
     sLineShader = new LineShader();
     sGizmoShader = new GizmoShader();
+    sGizmoInstancedShader = new GizmoInstancedShader();
     sGridShader = new GridShader();
     Log::warn("Finished compiling internal shaders\n");
 }
@@ -795,6 +838,11 @@ LineShader *RendererShaders::getLineShader()
 GizmoShader *RendererShaders::getGizmoShader()
 {
     return RendererShaders::sGizmoShader;
+}
+
+GizmoInstancedShader *RendererShaders::getGizmoInstancedShader()
+{
+    return RendererShaders::sGizmoInstancedShader;
 }
 
 GridShader *RendererShaders::getGridShader()

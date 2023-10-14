@@ -713,6 +713,8 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/line_f.glsl"] = "getLineFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_v.glsl"] = "getGizmoVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_f.glsl"] = "getGizmoFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_instanced_v.glsl"] = "getGizmoInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/gizmo_instanced_f.glsl"] = "getGizmoInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/grid_v.glsl"] = "getGridVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/grid_f.glsl"] = "getGridFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_v.glsl"] = "getStandardVertexShader";

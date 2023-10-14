@@ -185,6 +185,7 @@ template <> Terrain *Scene::getComponentById<Terrain>(const Id &componentId) con
 
 template <> Transform *Scene::getComponentByGuid<Transform>(const Guid &componentGuid) const
 {
+    std::string test = componentGuid.toString();
     std::unordered_map<Guid, int>::const_iterator it = mIdState.mTransformGuidToGlobalIndex.find(componentGuid);
     return (it != mIdState.mTransformGuidToGlobalIndex.end()) ? mAllocators.mTransformAllocator.get(it->second)
                                                               : nullptr;
@@ -732,13 +733,33 @@ void Scene::latentDestroyEntitiesInScene()
 
 void Scene::immediateDestroyEntitiesInScene()
 {
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
+    std::cout << "Before immediate destroy" << std::endl;
+    std::cout << "mEntityAllocator.getCount(): " << mAllocators.mEntityAllocator.getCount()
+              << " mEntityAllocator.getCapacity(): " << mAllocators.mEntityAllocator.getCapacity() << std::endl;
+    std::cout << "mTransformAllocator.getCount(): " << mAllocators.mTransformAllocator.getCount()
+              << " mTransformAllocator.getCapacity(): " << mAllocators.mTransformAllocator.getCapacity() << std::endl;
+    std::cout << "mTransformDataAllocator.getCount(): " << mAllocators.mTransformDataAllocator.getCount()
+              << " mTransformDataAllocator.getCapacity(): " << mAllocators.mTransformDataAllocator.getCapacity()
+              << std::endl;
+    mAllocators.mEntityAllocator.visualize();
+    mAllocators.mTransformAllocator.visualize();
+    mAllocators.mTransformDataAllocator.visualize();
+
     // immediate destroy all entities (and thereby also all components)
     std::vector<Guid> entitiesToDestroy;
+    std::vector<Guid> entitiesToKeep;
     for (size_t i = 0; i < getNumberOfEntities(); i++)
     {
         Entity *entity = getEntityByIndex(i);
 
-        if (!entity->mDoNotDestroy)
+        if (entity->mDoNotDestroy)
+        {
+            entitiesToKeep.push_back(entity->getGuid());
+        }
+        else
         {
             entitiesToDestroy.push_back(entity->getGuid());
         }
@@ -748,6 +769,27 @@ void Scene::immediateDestroyEntitiesInScene()
     {
         Log::info(("Immediate destroy entity with id: " + entitiesToDestroy[i].toString() + "\n").c_str());
         immediateDestroyEntity(entitiesToDestroy[i]);
+    }
+
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
+    std::cout << "After immediate destroy" << std::endl;
+    std::cout << "mEntityAllocator.getCount(): " << mAllocators.mEntityAllocator.getCount()
+              << " mEntityAllocator.getCapacity(): " << mAllocators.mEntityAllocator.getCapacity() << std::endl;
+    std::cout << "mTransformAllocator.getCount(): " << mAllocators.mTransformAllocator.getCount()
+              << " mTransformAllocator.getCapacity(): " << mAllocators.mTransformAllocator.getCapacity() << std::endl;
+    std::cout << "mTransformDataAllocator.getCount(): " << mAllocators.mTransformDataAllocator.getCount()
+              << " mTransformDataAllocator.getCapacity(): " << mAllocators.mTransformDataAllocator.getCapacity()
+              << std::endl;
+    mAllocators.mEntityAllocator.visualize();
+    mAllocators.mTransformAllocator.visualize();
+    mAllocators.mTransformDataAllocator.visualize();
+    
+    for (size_t i = 0; i < entitiesToKeep.size(); i++)
+    {
+        Log::info(("Keeping entity with id: " + entitiesToKeep[i].toString() + "\n").c_str());
+
     }
 }
 
@@ -882,12 +924,23 @@ void Scene::immediateDestroyEntity(const Guid &entityGuid)
 {
     // Destroy components on entity
     std::vector<std::pair<Guid, int>> componentsOnEntity = mIdState.mEntityGuidToComponentIds[entityGuid];
+    
+    int transformCount = 0;
     for (size_t i = 0; i < componentsOnEntity.size(); i++)
     {
+        if (componentsOnEntity[i].second == ComponentType<Transform>::type)
+        {
+            transformCount++;
+        }
         immediateDestroyComponent(entityGuid, componentsOnEntity[i].first, componentsOnEntity[i].second);
     }
 
+    assert(transformCount == 1);
+
     removeEntity(entityGuid);
+
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
 }
 
 void Scene::latentDestroyComponent(const Guid &entityGuid, const Guid &componentGuid, int componentType)
@@ -1273,6 +1326,9 @@ Transform *Scene::addTransform(const YAML::Node &in)
     TransformData *transformData = mAllocators.mTransformDataAllocator.construct();
     transformData->deserialize(in);
 
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
     addComponentToIdState(mIdState.mTransformGuidToGlobalIndex, 
                           mIdState.mTransformIdToGlobalIndex,
                           globalIndex,
@@ -1399,6 +1455,9 @@ Transform *Scene::addTransform(const Guid &entityGuid)
     Transform *transform = mAllocators.mTransformAllocator.construct(mWorld, Guid::newGuid(), Id::newId());
     TransformData *transformData = mAllocators.mTransformDataAllocator.construct();
 
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
     assert(transform != nullptr);
     assert(transformData != nullptr);
 
@@ -1520,6 +1579,9 @@ void Scene::removeEntity(const Guid &entityGuid)
 
     Entity *swap = mAllocators.mEntityAllocator.destruct(entityIndex);
 
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
     removeEntityFromIdState(entityGuid, entityId);
 
     if (swap != nullptr)
@@ -1536,13 +1598,18 @@ void Scene::removeTransform(const Guid &entityGuid, const Guid &componentGuid)
     Transform *swap = mAllocators.mTransformAllocator.destruct(componentIndex);
     mAllocators.mTransformDataAllocator.destruct(componentIndex);
 
+    assert(mAllocators.mTransformAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
+
+    assert(mAllocators.mEntityAllocator.getCount() - 1 == mAllocators.mTransformAllocator.getCount());
+    assert(mAllocators.mEntityAllocator.getCount() - 1 == mAllocators.mTransformDataAllocator.getCount());
+
     removeComponentFromIdState(mIdState.mTransformGuidToGlobalIndex, mIdState.mTransformIdToGlobalIndex, entityGuid,
                                componentGuid, componentId, ComponentType<Transform>::type);
 
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mTransformGuidToGlobalIndex, mIdState.mTransformIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }
 
@@ -1559,7 +1626,7 @@ void Scene::removeRigidbody(const Guid &entityGuid, const Guid &componentGuid)
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mRigidbodyGuidToGlobalIndex, mIdState.mRigidbodyIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }
 
@@ -1578,7 +1645,7 @@ void Scene::removeMeshRenderer(const Guid &entityGuid, const Guid &componentGuid
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mMeshRendererGuidToGlobalIndex, mIdState.mMeshRendererIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }
 
@@ -1594,8 +1661,8 @@ void Scene::removeLight(const Guid &entityGuid, const Guid &componentGuid)
 
     if (swap != nullptr)
     {
-        moveComponentIndexInIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+        moveComponentIndexInIdState(mIdState.mLightGuidToGlobalIndex, mIdState.mLightIdToGlobalIndex, swap->getGuid(),
+                                    swap->getId(), componentIndex);
     }
 }
 
@@ -1611,8 +1678,8 @@ void Scene::removeCamera(const Guid &entityGuid, const Guid &componentGuid)
 
     if (swap != nullptr)
     {
-        moveComponentIndexInIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+        moveComponentIndexInIdState(mIdState.mCameraGuidToGlobalIndex, mIdState.mCameraIdToGlobalIndex, swap->getGuid(),
+                                    swap->getId(), componentIndex);
     }
 }
 
@@ -1629,7 +1696,7 @@ void Scene::removeSphereCollider(const Guid &entityGuid, const Guid &componentGu
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mSphereColliderGuidToGlobalIndex, mIdState.mSphereColliderIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }
 
@@ -1646,7 +1713,7 @@ void Scene::removeBoxCollider(const Guid &entityGuid, const Guid &componentGuid)
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mBoxColliderGuidToGlobalIndex, mIdState.mBoxColliderIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }
 
@@ -1663,6 +1730,6 @@ void Scene::removeTerrain(const Guid &entityGuid, const Guid &componentGuid)
     if (swap != nullptr)
     {
         moveComponentIndexInIdState(mIdState.mTerrainGuidToGlobalIndex, mIdState.mTerrainIdToGlobalIndex,
-                                    componentGuid, componentId, componentIndex);
+                                    swap->getGuid(), swap->getId(), componentIndex);
     }
 }

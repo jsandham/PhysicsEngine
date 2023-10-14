@@ -18,18 +18,29 @@ template <typename T> static void copyComponentFromSceneToScene(const Scene *fro
 {
     static_assert(IsComponent<T>::value);
 
-    T *component = from->getComponentByGuid<T>(guid);
+    T *oldComponent = from->getComponentByGuid<T>(guid);
 
-    YAML::Node componentNode;
-    component->serialize(componentNode);
+    assert(oldComponent != nullptr);
+
+    YAML::Node oldComponentNode;
+    oldComponent->serialize(oldComponentNode);
 
     if constexpr(ComponentType<T>::type == ComponentType<Transform>::type)
     {
         TransformData *transformData = from->getTransformDataFromTransformGuid(guid);
-        transformData->serialize(componentNode);
+        transformData->serialize(oldComponentNode);
     }
 
-    to->addComponent<T>(componentNode);
+    T *newComponent = to->getComponentByGuid<T>(guid);
+
+    if (newComponent == nullptr)
+    {
+        to->addComponent<T>(oldComponentNode);   
+    }
+    else
+    {
+        newComponent->deserialize(oldComponentNode);
+    }
 }
 
 template <> size_t World::getNumberOfAssets<Mesh>() const

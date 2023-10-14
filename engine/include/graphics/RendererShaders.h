@@ -306,6 +306,25 @@ class GizmoShader
     void setLightPos(const glm::vec3 &lightPos);
 };
 
+class GizmoInstancedShader
+{
+  private:
+    ShaderProgram *mShader;
+    int mViewId;
+    int mProjectionId;
+    int mLightPosId;
+
+  public:
+    GizmoInstancedShader();
+    ~GizmoInstancedShader();
+
+    void bind();
+    void unbind();
+    void setView(const glm::mat4 &view);
+    void setProjection(const glm::mat4 &projection);
+    void setLightPos(const glm::vec3 &lightPos);
+};
+
 class GridShader
 {
   private:
@@ -344,6 +363,7 @@ class RendererShaders
     static LinearDepthInstancedShader *sLinearDepthInstancedShader;
     static LineShader *sLineShader;
     static GizmoShader *sGizmoShader;
+    static GizmoInstancedShader *sGizmoInstancedShader;
     static GridShader *sGridShader;
 
   public:
@@ -365,6 +385,7 @@ class RendererShaders
     static LinearDepthInstancedShader *getLinearDepthInstancedShader();
     static LineShader *getLineShader();
     static GizmoShader *getGizmoShader();
+    static GizmoInstancedShader *getGizmoInstancedShader();
     static GridShader *getGridShader();
 
     static void createInternalShaders();

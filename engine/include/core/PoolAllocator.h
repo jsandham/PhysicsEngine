@@ -82,12 +82,12 @@ template <class T, size_t T_per_page = 512> class PoolAllocator //: public Alloc
         return t;
     }
 
-    size_t getCount() const //override
+    size_t getCount() const
     {
         return count;
     }
 
-    size_t getCapacity() const //override
+    size_t getCapacity() const
     {
         return T_per_page * pools.size();
     }
@@ -150,8 +150,28 @@ template <class T, size_t T_per_page = 512> class PoolAllocator //: public Alloc
             count -= start;
         }
     }
-};
 
+    void visualize()
+    {
+        std::cout << "" << std::endl;
+        for (size_t i = 0; i < pools.size(); i++)
+        {
+            for (size_t j = 0; j < T_per_page; j++)
+            {
+                T *t = get(T_per_page * i + j);
+                if (t == nullptr)
+                {
+                    std::cout << "0 ";
+                }
+                else
+                {
+                    std::cout << "1 ";
+                }
+            }
+            std::cout << "" << std::endl;
+        }
+    }
+};
 
 
 

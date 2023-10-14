@@ -172,6 +172,8 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/line_f.hlsl"] = "getLineFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/gizmo_v.hlsl"] = "getGizmoVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/gizmo_f.hlsl"] = "getGizmoFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/gizmo_instanced_v.hlsl"] = "getGizmoInstancedVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/gizmo_instanced_f.hlsl"] = "getGizmoInstancedFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/grid_v.hlsl"] = "getGridVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/grid_f.hlsl"] = "getGridFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/standard_v.hlsl"] = "getStandardVertexShader";

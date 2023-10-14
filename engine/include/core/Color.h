@@ -67,6 +67,7 @@ class Color32
 
     static uint32_t convertColor32ToUint32(const Color32 &c);
     static Color32 convertUint32ToColor32(uint32_t i);
+    static Color32 convertColorToColor32(const Color& color);
 };
 } // namespace PhysicsEngine
 

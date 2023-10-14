@@ -116,6 +116,7 @@ class World
 
   public:
     std::vector<Sphere> mBoundingSpheres;
+    std::vector<bool> mFrustumVisible;
 
   public:
     World();

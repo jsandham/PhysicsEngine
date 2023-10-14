@@ -16,7 +16,6 @@ Light::Light(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), 
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
-
     mInnerSpotAngle = 12.5f; // glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mShadowNearPlane = 1.0f;
@@ -44,7 +43,6 @@ Light::Light(World *world, const Guid &guid, const Id &id) : mWorld(world), mGui
     mColor = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
     mIntensity = 1.0f;
     mSpotAngle = 15.0f; // glm::cos(glm::radians(15.0f));
-
     mInnerSpotAngle = 12.5f; // glm::cos(glm::radians(12.5f));
     mShadowStrength = 1.0f;
     mShadowNearPlane = 1.0f;

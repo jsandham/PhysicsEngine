@@ -29,6 +29,7 @@ void GizmoRenderer::init(World *world)
 
     mLineShader = RendererShaders::getLineShader();
     mGizmoShader = RendererShaders::getGizmoShader();
+    mGizmoInstancedShader = RendererShaders::getGizmoInstancedShader();
     mGridShader = RendererShaders::getGridShader();
 
     mGridColor = Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -46,6 +47,8 @@ void GizmoRenderer::init(World *world)
 
     mFrustumHandle->addVertexBuffer(mFrustumVertexBuffer, AttribType::Vec3);
     mFrustumHandle->addVertexBuffer(mFrustumNormalBuffer, AttribType::Vec3);
+
+    mGridVertices.reserve(800);
 
     for (int i = -100; i < 100; i++)
     {
@@ -77,8 +80,7 @@ void GizmoRenderer::update(Camera *camera)
 {
     for (size_t i = 0; i < mWorld->mBoundingSpheres.size(); i++)
     {
-        /*addToDrawList(mWorld->mBoundingSpheres[i], mWorld->mRenderObjects[i].culled ? Color::blue : Color::red);*/
-        addToDrawList(mWorld->mBoundingSpheres[i], Color(0.0f, 0.0f, 1.0f, 0.3f) /*Color::blue*/);
+        addToDrawList(mWorld->mBoundingSpheres[i], mWorld->mFrustumVisible[i] ? Color(0.0f, 0.0f, 1.0f, 0.3f) : Color(1.0f, 0.0f, 0.0f, 0.3f));
     }
 
     renderLineGizmos(camera);
@@ -224,26 +226,79 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    mesh->getNativeGraphicsHandle()->bind();
-
-    mGizmoShader->bind();
-    mGizmoShader->setLightPos(transform->getPosition());
-    mGizmoShader->setView(camera->getViewMatrix());
-    mGizmoShader->setProjection(camera->getProjMatrix());
-
-    for (size_t i = 0; i < mSpheres.size(); i++)
+    if (mSpheres.size() < 100)
     {
-        glm::mat4 model = glm::translate(glm::mat4(1.0f), mSpheres[i].mSphere.mCentre);
-        model = glm::scale(
-            model, glm::vec3(mSpheres[i].mSphere.mRadius, mSpheres[i].mSphere.mRadius, mSpheres[i].mSphere.mRadius));
+        mGizmoShader->bind();
+        mGizmoShader->setLightPos(transform->getPosition());
+        mGizmoShader->setView(camera->getViewMatrix());
+        mGizmoShader->setProjection(camera->getProjMatrix());
 
-        mGizmoShader->setColor(mSpheres[i].mColor);
-        mGizmoShader->setModel(model);
+        for (size_t i = 0; i < mSpheres.size(); i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model[3].x = mSpheres[i].mSphere.mCentre.x;
+            model[3].y = mSpheres[i].mSphere.mCentre.y;
+            model[3].z = mSpheres[i].mSphere.mCentre.z;
 
-        mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
+            model[0].x = mSpheres[i].mSphere.mRadius;
+            model[1].y = mSpheres[i].mSphere.mRadius;
+            model[2].z = mSpheres[i].mSphere.mRadius;
+
+            mGizmoShader->setColor(mSpheres[i].mColor);
+            mGizmoShader->setModel(model);
+
+            mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
+        }
     }
+    else
+    {
+        mGizmoInstancedShader->bind();
+        mGizmoInstancedShader->setLightPos(transform->getPosition());
+        mGizmoInstancedShader->setView(camera->getViewMatrix());
+        mGizmoInstancedShader->setProjection(camera->getProjMatrix());
 
-    mesh->getNativeGraphicsHandle()->unbind();
+        std::vector<glm::mat4> models(mSpheres.size());
+        for (size_t i = 0; i < models.size(); i++)
+        {
+            models[i] = glm::mat4(1.0f);
+            models[i][3].x = mSpheres[i].mSphere.mCentre.x;
+            models[i][3].y = mSpheres[i].mSphere.mCentre.y;
+            models[i][3].z = mSpheres[i].mSphere.mCentre.z;
+
+            models[i][0].x = mSpheres[i].mSphere.mRadius;
+            models[i][1].y = mSpheres[i].mSphere.mRadius;
+            models[i][2].z = mSpheres[i].mSphere.mRadius;
+        }
+
+        std::vector<glm::uvec4> colors(mSpheres.size());
+        for (size_t i = 0; i < colors.size(); i++)
+        {
+            Color32 c = Color32::convertColorToColor32(mSpheres[i].mColor);
+
+            colors[i].r = c.mR;
+            colors[i].g = c.mG;
+            colors[i].b = c.mB;
+            colors[i].a = c.mA;
+        }
+
+        VertexBuffer *modelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+        VertexBuffer *colorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
+
+        modelBuffer->bind();
+        modelBuffer->resize(sizeof(glm::mat4) * models.size());
+        modelBuffer->setData(models.data(), 0, sizeof(glm::mat4) * models.size());
+        modelBuffer->unbind();
+
+        colorBuffer->bind();
+        colorBuffer->resize(sizeof(glm::uvec4) * colors.size());
+        colorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * colors.size());
+        colorBuffer->unbind();
+
+        Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
+                                                      (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
+                                                      mSpheres.size(), camera->mQuery);
+
+    }
 
     camera->getNativeGraphicsMainFBO()->unbind();
 
@@ -268,8 +323,6 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    mesh->getNativeGraphicsHandle()->bind();
-
     mGizmoShader->bind();
     mGizmoShader->setLightPos(transform->getPosition());
     mGizmoShader->setView(camera->getViewMatrix());
@@ -285,8 +338,6 @@ void GizmoRenderer::renderAABBGizmos(Camera *camera)
 
         mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
     }
-
-    mesh->getNativeGraphicsHandle()->unbind();
 
     camera->getNativeGraphicsMainFBO()->unbind();
 
@@ -311,8 +362,6 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                     camera->getViewport().mWidth, camera->getViewport().mHeight);
 
-    mesh->getNativeGraphicsHandle()->bind();
-
     mGizmoShader->bind();
     mGizmoShader->setLightPos(transform->getPosition());
     mGizmoShader->setView(camera->getViewMatrix());
@@ -335,7 +384,6 @@ void GizmoRenderer::renderPlaneGizmos(Camera *camera)
         mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
     }
 
-    mesh->getNativeGraphicsHandle()->unbind();
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);

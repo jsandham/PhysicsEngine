@@ -46,7 +46,7 @@ class RenderSystem
     DebugRenderer mDebugRenderer;
 
     // Cache data that is used in contructing draw call lists once
-    std::vector<TransformData> mCachedTransforms;
+    std::vector<glm::mat4> mCachedModels;
     std::vector<Id> mCachedTransformIds;
     std::vector<Sphere> mCachedBoundingSpheres;
     std::vector<int> mCachedMeshIndices;
@@ -55,6 +55,9 @@ class RenderSystem
     // Scratch arrays
     std::vector<RenderObject> mDrawCallScratch;
     std::vector<int> mDrawCallMeshRendererIndices;
+
+    // Frustum culling flags
+    std::vector<bool> mFrustumVisible;
 
     // Draw call data
     std::vector<RenderObject> mDrawCalls;
@@ -110,8 +113,8 @@ class RenderSystem
   private:
     void registerRenderAssets(World *world);
     void cacheRenderData(World *world);
+    void frustumCulling(World *world, Camera *camera);
     void buildRenderObjectsList(World *world, Camera* camera);
-    void cullRenderObjects(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);

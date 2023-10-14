@@ -55,10 +55,18 @@ void LightDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				if (ImGui::SliderAngle("Spot Angle", &spotAngleRad, 0.0f, 90.0f))
 				{
 					light->mSpotAngle = glm::degrees(spotAngleRad);
+					if (light->mSpotAngle < light->mInnerSpotAngle)
+					{
+						light->mInnerSpotAngle = light->mSpotAngle;
+					}
 				}
 				if (ImGui::SliderAngle("Inner Spot Angle", &innerSpotAngleRad, 0.0f, 90.0f))
 				{
 					light->mInnerSpotAngle = glm::degrees(innerSpotAngleRad);
+					if (light->mSpotAngle < light->mInnerSpotAngle)
+					{
+						light->mSpotAngle = light->mInnerSpotAngle;
+					}
 				}
 			}
 
