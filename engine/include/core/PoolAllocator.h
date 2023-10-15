@@ -7,7 +7,6 @@
 #include <iostream>
 #include <vector>
 
-#include "Allocator.h"
 #include "Guid.h"
 #include "Id.h"
 
@@ -15,7 +14,7 @@ namespace PhysicsEngine
 {
 class World;
 
-template <class T, size_t T_per_page = 512> class PoolAllocator //: public Allocator
+template <class T, size_t T_per_page = 512> class PoolAllocator
 {
   private:
     const size_t pool_size = T_per_page * sizeof(T);
@@ -170,133 +169,6 @@ template <class T, size_t T_per_page = 512> class PoolAllocator //: public Alloc
             }
             std::cout << "" << std::endl;
         }
-    }
-};
-
-
-
-
-
-
-
-template <class T> struct myHash
-{
-};
-
-template <> struct myHash<int>
-{
-    static size_t hashFunction(const int m)
-    {
-        return std::hash<int>()(m);
-    }
-};
-
-//template <class K, class V, class HashGenerator = myHash<K>>
-
-template <typename KEY_TYPE, typename VAL_TYPE, typename HashGenerator = myHash<KEY_TYPE>, size_t SIZE = 65536>
-class hash_map
-{
-  private:
-    std::array<KEY_TYPE, SIZE> keys;
-    std::array<VAL_TYPE, SIZE> values;
-    std::array<bool, SIZE> occupied;
-
-  public:
-    void insert(KEY_TYPE key, VAL_TYPE val)
-    {
-        size_t index = hash(key);
-        if (!occupied[index] || keys[index] == key)
-        {
-            keys[index] = key;
-            values[index] = val;
-            occupied[index] = true;
-            return;
-        }
-
-        for (size_t i = index + 1; keys.size(); i++)
-        {
-            if (!occupied[i] || keys[i] == key)
-            {
-                keys[i] = key;
-                values[i] = val;
-                occupied[i] = true;
-                return;
-            }           
-        }
-
-        for (size_t i = 0; index; i++)
-        {
-            if (!occupied[i] || keys[i] == key)
-            {
-                keys[i] = key;
-                values[i] = val;
-                occupied[i] = true;
-                return;
-            }
-        }
-    }
-
-    void erase(KEY_TYPE key)
-    {
-        size_t index = hash(key);
-
-        if (occupied[index] && keys[index] == key)
-        {
-            occupied[index] = false;
-            return;
-        }
-
-        for (size_t i = index + 1; keys.size(); i++)
-        {
-            if (occupied[i] && keys[i] == key)
-            {
-                occupied[i] = false;
-                return;
-            }
-        }
-
-        for (size_t i = 0; index; i++)
-        {
-            if (occupied[i] && keys[i] == key)
-            {
-                occupied[i] = false;
-                return;
-            }
-        }   
-    }
-
-    bool contains(KEY_TYPE key)
-    {
-        size_t index = hash(key);
-
-        if (occupied[index] && keys[index] == key)
-        {
-            return true;
-        }
-
-        for (size_t i = index + 1; keys.size(); i++)
-        {
-            if (occupied[i] && keys[i] == key)
-            {
-                return true;
-            }
-        }
-
-        for (size_t i = 0; index; i++)
-        {
-            if (occupied[i] && keys[i] == key)
-            {
-                return true;
-            }
-        }  
-
-        return false;
-    }
-
-  private:
-    size_t hash(const KEY_TYPE &k)
-    {
-        return HashGenerator::hashFunction(k) % keys.size();
     }
 };
 

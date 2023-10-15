@@ -147,7 +147,7 @@ vec3 CalcDirLight(Material material, vec3 normal, vec3 viewDir)
 	else if (ClipSpaceZ <= Light.cascadeEnds[3]) {
 		finalColor = vec3(0.0f, 1.0f, 1.0f);
 	}
-	else if (ClipSpaceZ <= Light.cascadeEnds[4])
+	else if (ClipSpaceZ <= Light.cascadeEnds[4]){
 		finalColor = vec3(0.6f, 0.0f, 0.6f);
 	}
 	else {

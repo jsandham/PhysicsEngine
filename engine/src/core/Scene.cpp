@@ -736,18 +736,6 @@ void Scene::immediateDestroyEntitiesInScene()
     assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
     assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
 
-    std::cout << "Before immediate destroy" << std::endl;
-    std::cout << "mEntityAllocator.getCount(): " << mAllocators.mEntityAllocator.getCount()
-              << " mEntityAllocator.getCapacity(): " << mAllocators.mEntityAllocator.getCapacity() << std::endl;
-    std::cout << "mTransformAllocator.getCount(): " << mAllocators.mTransformAllocator.getCount()
-              << " mTransformAllocator.getCapacity(): " << mAllocators.mTransformAllocator.getCapacity() << std::endl;
-    std::cout << "mTransformDataAllocator.getCount(): " << mAllocators.mTransformDataAllocator.getCount()
-              << " mTransformDataAllocator.getCapacity(): " << mAllocators.mTransformDataAllocator.getCapacity()
-              << std::endl;
-    mAllocators.mEntityAllocator.visualize();
-    mAllocators.mTransformAllocator.visualize();
-    mAllocators.mTransformDataAllocator.visualize();
-
     // immediate destroy all entities (and thereby also all components)
     std::vector<Guid> entitiesToDestroy;
     std::vector<Guid> entitiesToKeep;
@@ -773,18 +761,6 @@ void Scene::immediateDestroyEntitiesInScene()
 
     assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformAllocator.getCount());
     assert(mAllocators.mEntityAllocator.getCount() == mAllocators.mTransformDataAllocator.getCount());
-
-    std::cout << "After immediate destroy" << std::endl;
-    std::cout << "mEntityAllocator.getCount(): " << mAllocators.mEntityAllocator.getCount()
-              << " mEntityAllocator.getCapacity(): " << mAllocators.mEntityAllocator.getCapacity() << std::endl;
-    std::cout << "mTransformAllocator.getCount(): " << mAllocators.mTransformAllocator.getCount()
-              << " mTransformAllocator.getCapacity(): " << mAllocators.mTransformAllocator.getCapacity() << std::endl;
-    std::cout << "mTransformDataAllocator.getCount(): " << mAllocators.mTransformDataAllocator.getCount()
-              << " mTransformDataAllocator.getCapacity(): " << mAllocators.mTransformDataAllocator.getCapacity()
-              << std::endl;
-    mAllocators.mEntityAllocator.visualize();
-    mAllocators.mTransformAllocator.visualize();
-    mAllocators.mTransformDataAllocator.visualize();
     
     for (size_t i = 0; i < entitiesToKeep.size(); i++)
     {
