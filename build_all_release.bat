@@ -15,6 +15,11 @@ cd "%~dp0\external\imguizmo\lib"
 call "build_imguizmo.bat" /release /O2
 cd "..\..\.."
 
+echo [94mBuilding imguicolortextedit...[0m
+cd "%~dp0\external\imguicolortextedit\lib"
+call "build_imguicolortextedit.bat" /release /O2
+cd "..\..\.."
+
 echo [94mBuilding efsw...[0m
 cd "%~dp0\external\efsw\lib"
 call "build_efsw.bat" /release /O2

@@ -78,12 +78,16 @@ void GizmoRenderer::init(World *world)
 
 void GizmoRenderer::update(Camera *camera)
 {
+    addToDrawList(mWorld->mBoundingVolume, Color(1.0f, 0.91764705f, 0.01568627f, 0.3f), true);
+
     renderLineGizmos(camera);
     renderPlaneGizmos(camera);
     renderAABBGizmos(camera);
     renderSphereGizmos(camera);
     renderFrustumGizmos(camera);
+
     renderBoundngSpheres(camera);
+    //renderBoundingVolumeHeirarchy(camera);
 }
 
 void GizmoRenderer::drawGrid(Camera *camera)
@@ -655,3 +659,71 @@ void GizmoRenderer::renderBoundngSpheres(Camera *camera)
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
 }
+
+
+
+/*void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
+{
+    Renderer::getRenderer()->turnOn(Capability::Blending);
+    Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+
+    Transform *transform = camera->getComponent<Transform>();
+
+    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
+
+    camera->getNativeGraphicsMainFBO()->bind();
+    camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                                    camera->getViewport().mWidth, camera->getViewport().mHeight);
+
+    mGizmoInstancedShader->bind();
+    mGizmoInstancedShader->setLightPos(transform->getPosition());
+    mGizmoInstancedShader->setView(camera->getViewMatrix());
+    mGizmoInstancedShader->setProjection(camera->getProjMatrix());
+
+    std::vector<Sphere> &spheres = mWorld->mBoundingSpheres;
+    std::vector<bool> &visible = mWorld->mFrustumVisible;
+
+    std::vector<glm::mat4> models(spheres.size(), glm::mat4(0.0f));
+
+    for (size_t i = 0; i < models.size(); i++)
+    {
+        models[i][3].x = spheres[i].mCentre.x;
+        models[i][3].y = spheres[i].mCentre.y;
+        models[i][3].z = spheres[i].mCentre.z;
+
+        models[i][0].x = spheres[i].mRadius;
+        models[i][1].y = spheres[i].mRadius;
+        models[i][2].z = spheres[i].mRadius;
+        models[i][3].w = 1.0f;
+    }
+
+    static glm::uvec4 blue = glm::uvec4(0, 0, 255, 78);
+    static glm::uvec4 red = glm::uvec4(255, 0, 0, 78);
+
+    std::vector<glm::uvec4> colors(spheres.size());
+    for (size_t i = 0; i < colors.size(); i++)
+    {
+        colors[i] = visible[i] ? blue : red;
+    }
+
+    VertexBuffer *modelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+    VertexBuffer *colorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
+
+    modelBuffer->bind();
+    modelBuffer->resize(sizeof(glm::mat4) * models.size());
+    modelBuffer->setData(models.data(), 0, sizeof(glm::mat4) * models.size());
+    modelBuffer->unbind();
+
+    colorBuffer->bind();
+    colorBuffer->resize(sizeof(glm::uvec4) * colors.size());
+    colorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * colors.size());
+    colorBuffer->unbind();
+
+    Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
+                                                  (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
+                                                  spheres.size(), camera->mQuery);
+
+    camera->getNativeGraphicsMainFBO()->unbind();
+
+    Renderer::getRenderer()->turnOff(Capability::Blending);
+}*/

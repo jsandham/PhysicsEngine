@@ -1,0 +1,8 @@
+Material:
+  type: 1004
+  hide: 0
+  id: a31e14e3-0820-4252-987b-5739fb2c6929
+  name: New Material(0).material
+  shaderId: 00000000-0000-0000-0000-000000000000
+  renderQueue: Opaque
+  enableInstancing: false

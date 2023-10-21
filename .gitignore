@@ -20,6 +20,8 @@ external/imgui/lib/debug/obj/*.obj
 external/imgui/lib/release/obj/*.obj
 external/imguizmo/lib/debug/obj/*.obj
 external/imguizmo/lib/release/obj/*.obj
+external/imguicolortextedit/lib/debug/obj/*.obj
+external/imguicolortextedit/lib/release/obj/*.obj
 external/efsw/lib/debug/obj/*.obj
 external/efsw/lib/release/obj/*.obj
 external/yaml-cpp/lib/debug/obj/*.obj

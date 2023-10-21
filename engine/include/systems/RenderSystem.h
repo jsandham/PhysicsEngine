@@ -8,6 +8,7 @@
 #include "../core/Id.h"
 #include "../core/Input.h"
 #include "../core/Time.h"
+#include "../core/AABB.h"
 
 #include "../components/Camera.h"
 #include "../components/Transform.h"
@@ -21,18 +22,18 @@ namespace PhysicsEngine
 {
 class World;
 
-struct DrawCallData
-{
-    std::vector<RenderObject> mDrawCalls;
-    std::vector<glm::mat4> mModels;
-    std::vector<Id> mTransformIds;
-    std::vector<Sphere> mBoundingSpheres;
-
-    // std::vector<RenderObject> mInstancedDrawCalls;
-    // std::vector<glm::mat4> mInstancedModels;
-    // std::vector<Id> mInstancedTransformIds;
-    // std::vector<Sphere> mInstancedBoundingSpheres;
-};
+//struct DrawCallData
+//{
+//    std::vector<RenderObject> mDrawCalls;
+//    std::vector<glm::mat4> mModels;
+//    std::vector<Id> mTransformIds;
+//    std::vector<Sphere> mBoundingSpheres;
+//
+//    // std::vector<RenderObject> mInstancedDrawCalls;
+//    // std::vector<glm::mat4> mInstancedModels;
+//    // std::vector<Id> mInstancedTransformIds;
+//    // std::vector<Sphere> mInstancedBoundingSpheres;
+//};
 
 class RenderSystem
 {
@@ -41,6 +42,7 @@ class RenderSystem
     Id mId;
     World* mWorld;
 
+    // Renderers
     ForwardRenderer mForwardRenderer;
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
@@ -51,6 +53,7 @@ class RenderSystem
     std::vector<Sphere> mCachedBoundingSpheres;
     std::vector<int> mCachedMeshIndices;
     std::vector<int> mCachedMaterialIndices;
+    AABB mCachedBoundingVolume;
 
     // Scratch arrays
     std::vector<RenderObject> mDrawCallScratch;
@@ -69,25 +72,6 @@ class RenderSystem
     //std::vector<glm::mat4> mInstancedModels;
     //std::vector<Id> mInstancedTransformIds;
     //std::vector<Sphere> mInstancedBoundingSpheres;
-
-
-
-
-
-
-
-
-
-    //std::vector<glm::mat4> mTotalModels;
-    //std::vector<Id> mTotalTransformIds;
-    //std::vector<Sphere> mTotalBoundingSpheres;
-    //std::vector<RenderObject> mTotalRenderObjects;
-
-    //std::vector<glm::mat4> mFinalModels;
-    //std::vector<Id> mFinalTransformIds;
-    //std::vector<RenderObject> mFinalRenderObjects;
-
-    // std::vector<bool> mCulledObjectFlags;
 
   public:
     HideFlag mHide;

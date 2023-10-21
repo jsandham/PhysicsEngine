@@ -21,7 +21,8 @@ typedef struct RenderObject
 enum class RenderFlags
 {
     Indexed = 1,
-    Instanced = 2
+    Instanced = 2,
+    Terrain = 4
 };
 
 uint64_t generateDrawCall(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags);
@@ -32,5 +33,6 @@ uint8_t getSubMeshFromKey(uint64_t key);
 uint8_t getFlagsFromKey(uint64_t key);
 bool isIndexed(uint64_t key);
 bool isInstanced(uint64_t key);
+bool isTerrain(uint64_t key);
 } // namespace PhysicsEngine
 #endif

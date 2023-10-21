@@ -5,6 +5,7 @@ set GLM="../../external/glm"
 set YAML="../../external/yaml-cpp/include"
 set IMGUI="../../external/imgui/include"
 set IMGUIZMO="../../external/imguizmo/include"
+set IMGUICOLORTEXTEDIT="../../external/imguicolortextedit/include"
 set FILEWATCH="../../external/efsw/include"
 set ENGINE="../../engine/include"
 set WARN=-W4 -wd4100 -wd4996 -wd4211 -wd4201
@@ -53,14 +54,15 @@ if %MODE%==release (
 )
 set IMGUI_LIB="../../external/imgui/lib/%MODE%/imgui.lib"
 set IMGUIZMO_LIB="../../external/imguizmo/lib/%MODE%/imguizmo.lib"
+set IMGUICOLORTEXTEDIT_LIB="../../external/imguicolortextedit/lib/%MODE%/imguicolortextedit.lib"
 set FILEWATCH_LIB="../../external/efsw/lib/%MODE%/efsw.lib"
 set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
 
 ::import libraries
 set GLEW_LIB="../../external/glew-2.1.0/lib/%MODE%/glew32.lib"
 
-set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% opengl32.lib comdlg32.lib
-set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%FILEWATCH% /I%ENGINE%
+set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %IMGUICOLORTEXTEDIT_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% opengl32.lib comdlg32.lib
+set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%IMGUICOLORTEXTEDIT% /I%FILEWATCH% /I%ENGINE%
 cl /std:c++17 /Fe"%MODE%/EditorApplication" %OPT% %WARN% %MODEFLAGS% %FLAGS% %INCLUDES% ../EditorApplication.cpp %SRC_FILES% %LIBS%
 
 goto :eof

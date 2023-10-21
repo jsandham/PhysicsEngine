@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <TextEditor.h>
 
 #include "../../include/drawers/ShaderDrawer.h"
 #include "../../include/imgui/imgui_extensions.h"
@@ -10,7 +11,6 @@
 #include "core/Log.h"
 #include "graphics/RenderContext.h"
 
-#include "imgui.h"
 #include "glm/glm.hpp"
 
 using namespace PhysicsEditor;
@@ -97,240 +97,254 @@ void ShaderDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 			}
 		}
 
-		static bool vertexShaderActive = true;
-		static bool geometryShaderActive = false;
-		static bool fragmentShaderActive = false;
-
-		// select shader stage to view
-		ImGui::SetCursorPosX(glm::max(0.5f * ImGui::GetWindowSize().x - 100.0f, 0.0f));
-		ImGui::BeginGroup();
-		if (ImGui::StampButton("Vertex", vertexShaderActive))
+		if (ImGui::Begin("Shader Editor", NULL))
 		{
-			vertexShaderActive = true;
-			geometryShaderActive = false;
-			fragmentShaderActive = false;
-		}
-		ImGui::SameLine();
+			static bool vertexShaderActive = true;
+			static bool geometryShaderActive = false;
+			static bool fragmentShaderActive = false;
 
-		if (ImGui::StampButton("Geometry", geometryShaderActive))
-		{
-			vertexShaderActive = false;
-			geometryShaderActive = true;
-			fragmentShaderActive = false;
-		}
-		ImGui::SameLine();
-
-		if (ImGui::StampButton("Fragment", fragmentShaderActive))
-		{
-			vertexShaderActive = false;
-			geometryShaderActive = false;
-			fragmentShaderActive = true;
-		}
-		ImGui::SameLine();
-		ImGui::EndGroup();
-
-		static char* text = nullptr;
-
-		static char vertexText[16384];
-		static char fragmentText[16384];
-		static char geometryText[16384];
-
-		static bool vertexTextFilled = false;
-		static bool fragmentTextFilled = false;
-		static bool geometryTextFilled = false;
-
-		// if selected shader changes, refill buffers
-		if (mShaderId != shader->getGuid())
-		{
-			vertexTextFilled = false;
-			fragmentTextFilled = false;
-			geometryTextFilled = false;
-		}
-		mShaderId = shader->getGuid();
-
-		// Fill buffers with current shaders
-		if (!vertexTextFilled)
-		{
-			strncpy(vertexText, shader->getVertexShader().c_str(), sizeof(vertexText));
-			vertexText[sizeof(vertexText) - 1] = 0;
-			vertexTextFilled = true;
-		}
-		if (!fragmentTextFilled)
-		{
-			strncpy(fragmentText, shader->getFragmentShader().c_str(), sizeof(fragmentText));
-			fragmentText[sizeof(fragmentText) - 1] = 0;
-			fragmentTextFilled = true;
-		}
-		if (!geometryTextFilled)
-		{
-			strncpy(geometryText, shader->getGeometryShader().c_str(), sizeof(geometryText));
-			geometryText[sizeof(geometryText) - 1] = 0;
-			geometryTextFilled = true;
-		}
-
-		if (vertexShaderActive)
-		{
-			text = &vertexText[0];
-		}
-		else if (fragmentShaderActive)
-		{
-			text = &fragmentText[0];
-		}
-		else if (geometryShaderActive)
-		{
-			text = &geometryText[0];
-		}
-
-		assert(text != nullptr);
-
-		static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
-		ImGui::InputTextMultiline("Shader Source", text, 16384, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 32), flags);
-
-		if (ImGui::BeginTable("Compilation Status", 2, ImGuiTableFlags_SizingFixedFit))
-		{
-			// Determine if shader has been edited
-			bool vertexEditMade = (strcmp(shader->getVertexShader().c_str(), &vertexText[0]) != 0);
-			bool fragmentEditMade = (strcmp(shader->getFragmentShader().c_str(), &fragmentText[0]) != 0);
-			bool geometryEditMade = (strcmp(shader->getGeometryShader().c_str(), &geometryText[0]) != 0);
-
-			// Determine if all shader variants compiled successfully
-			char vertexCompileLog[512];
-			char fragmentCompileLog[512];
-			char geometryCompileLog[512];
-			char linkLog[512];
-			bool vertexCompiled = true;
-			bool fragmentCompiled = true;
-			bool geometryCompiled = true;
-			bool linked = true;
-			for (size_t i = 0; i < programs.size(); i++)
+			// select shader stage to view
+			ImGui::SetCursorPosX(glm::max(0.5f * ImGui::GetWindowSize().x - 100.0f, 0.0f));
+			ImGui::BeginGroup();
+			if (ImGui::StampButton("Vertex", vertexShaderActive))
 			{
-				if (vertexCompiled && !programs[i]->getStatus().mVertexShaderCompiled)
-				{
-					strncpy(vertexCompileLog, programs[i]->getStatus().mVertexCompileLog, sizeof(vertexCompileLog));
-					vertexCompiled = false;
-				}
-				if (fragmentCompiled && !programs[i]->getStatus().mFragmentShaderCompiled)
-				{
-					strncpy(fragmentCompileLog, programs[i]->getStatus().mFragmentCompileLog, sizeof(fragmentCompileLog));
-					fragmentCompiled = false;
-				}
-				if (geometryCompiled && !programs[i]->getStatus().mGeometryShaderCompiled)
-				{
-					strncpy(geometryCompileLog, programs[i]->getStatus().mGeometryCompileLog, sizeof(geometryCompileLog));
-					geometryCompiled = false;
-				}
-				if (linked && !programs[i]->getStatus().mShaderLinked)
-				{
-					strncpy(linkLog, programs[i]->getStatus().mLinkLog, sizeof(linkLog));
-					linked = false;
-				}
+				vertexShaderActive = true;
+				geometryShaderActive = false;
+				fragmentShaderActive = false;
+			}
+			ImGui::SameLine();
+
+			if (ImGui::StampButton("Geometry", geometryShaderActive))
+			{
+				vertexShaderActive = false;
+				geometryShaderActive = true;
+				fragmentShaderActive = false;
+			}
+			ImGui::SameLine();
+
+			if (ImGui::StampButton("Fragment", fragmentShaderActive))
+			{
+				vertexShaderActive = false;
+				geometryShaderActive = false;
+				fragmentShaderActive = true;
+			}
+			ImGui::SameLine();
+			ImGui::EndGroup();
+
+			static std::string vertexText;
+			static std::string geometryText;
+			static std::string fragmentText;
+
+			static bool vertexTextFilled = false;
+			static bool fragmentTextFilled = false;
+			static bool geometryTextFilled = false;
+
+			// if selected shader changes, refill buffers
+			if (mShaderId != shader->getGuid())
+			{
+				vertexTextFilled = false;
+				fragmentTextFilled = false;
+				geometryTextFilled = false;
+			}
+			mShaderId = shader->getGuid();
+
+			// Fill buffers with current shaders
+			if (!vertexTextFilled)
+			{
+				vertexText = shader->getVertexShader();
+				vertexTextFilled = true;
+			}
+			if (!fragmentTextFilled)
+			{
+				fragmentText = shader->getFragmentShader();
+				fragmentTextFilled = true;
+			}
+			if (!geometryTextFilled)
+			{
+				geometryText = shader->getGeometryShader();
+				geometryTextFilled = true;
 			}
 
-			ImGui::TableNextColumn();
-			ImGui::Text("Vertex Shader:");
-			ImGui::TableNextColumn();
-			if (vertexEditMade)
+			static std::string text;
+			if (vertexShaderActive)
 			{
-				ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
+				text = vertexText;
 			}
-			else
+			else if (fragmentShaderActive)
 			{
-				if (vertexCompiled)
+				text = fragmentText;
+			}
+			else if (geometryShaderActive)
+			{
+				text = geometryText;
+			}
+
+			static TextEditor mEditor;
+			mEditor.SetLanguageDefinition(TextEditor::LanguageDefinitionId::Cpp);
+			mEditor.SetText(text);
+			mEditor.Render("ShaderTextEditor", false, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 32), true);
+
+			if (vertexShaderActive)
+			{
+				vertexText = mEditor.GetText();
+			}
+			else if (fragmentShaderActive)
+			{
+				fragmentText = mEditor.GetText();
+			}
+			else if (geometryShaderActive)
+			{
+				geometryText = mEditor.GetText();
+			}
+
+			if (ImGui::BeginTable("Compilation Status", 2, ImGuiTableFlags_SizingFixedFit))
+			{
+				// Determine if shader has been edited
+				bool vertexEditMade = shader->getVertexShader().compare(vertexText) != 0;
+				bool fragmentEditMade = shader->getFragmentShader().compare(fragmentText) != 0;
+				bool geometryEditMade = shader->getGeometryShader().compare(geometryText) != 0;
+
+				// Determine if all shader variants compiled successfully
+				char vertexCompileLog[512];
+				char fragmentCompileLog[512];
+				char geometryCompileLog[512];
+				char linkLog[512];
+				bool vertexCompiled = true;
+				bool fragmentCompiled = true;
+				bool geometryCompiled = true;
+				bool linked = true;
+				for (size_t i = 0; i < programs.size(); i++)
+				{
+					if (vertexCompiled && !programs[i]->getStatus().mVertexShaderCompiled)
+					{
+						strncpy(vertexCompileLog, programs[i]->getStatus().mVertexCompileLog, sizeof(vertexCompileLog));
+						vertexCompiled = false;
+					}
+					if (fragmentCompiled && !programs[i]->getStatus().mFragmentShaderCompiled)
+					{
+						strncpy(fragmentCompileLog, programs[i]->getStatus().mFragmentCompileLog, sizeof(fragmentCompileLog));
+						fragmentCompiled = false;
+					}
+					if (geometryCompiled && !programs[i]->getStatus().mGeometryShaderCompiled)
+					{
+						strncpy(geometryCompileLog, programs[i]->getStatus().mGeometryCompileLog, sizeof(geometryCompileLog));
+						geometryCompiled = false;
+					}
+					if (linked && !programs[i]->getStatus().mShaderLinked)
+					{
+						strncpy(linkLog, programs[i]->getStatus().mLinkLog, sizeof(linkLog));
+						linked = false;
+					}
+				}
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Vertex Shader:");
+				ImGui::TableNextColumn();
+				if (vertexEditMade)
+				{
+					ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
+				}
+				else
+				{
+					if (vertexCompiled)
+					{
+						ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), vertexCompileLog);
+					}
+				}
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Fragment Shader:");
+				ImGui::TableNextColumn();
+				if (fragmentEditMade)
+				{
+					ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
+				}
+				else
+				{
+					if (fragmentCompiled)
+					{
+						ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), fragmentCompileLog);
+					}
+				}
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Geometry Shader:");
+				ImGui::TableNextColumn();
+				if (geometryEditMade)
+				{
+					ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
+				}
+				else
+				{
+					if (shader->getGeometryShader().empty())
+					{
+						ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "-");
+					}
+					else if (geometryCompiled)
+					{
+						ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+					}
+					else
+					{
+						ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), geometryCompileLog);
+					}
+				}
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Linking:");
+				ImGui::TableNextColumn();
+				if (linked)
 				{
 					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
 				}
 				else
 				{
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), vertexCompileLog);
+					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), linkLog);
 				}
+
+				ImGui::EndTable();
 			}
 
-			ImGui::TableNextColumn();
-			ImGui::Text("Fragment Shader:");
-			ImGui::TableNextColumn();
-			if (fragmentEditMade)
+			//ImGui::Separator();
+
+			ImGui::SetCursorPosX(glm::max(ImGui::GetWindowSize().x - 80.0f, 0.0f));
+			if (ImGui::Button("Recompile"))
 			{
-				ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
-			}
-			else
-			{
-				if (fragmentCompiled)
-				{
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
-				}
-				else
-				{
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), fragmentCompileLog);
-				}
+				shader->setVertexShader(std::string(vertexText));
+				shader->setFragmentShader(std::string(fragmentText));
+				shader->setGeometryShader(std::string(geometryText));
 			}
 
-			ImGui::TableNextColumn();
-			ImGui::Text("Geometry Shader:");
-			ImGui::TableNextColumn();
-			if (geometryEditMade)
+			ImGui::Separator();
+
+
+			if (ImGui::Button("Reload from file"))
 			{
-				ImGui::TextColored(ImVec4(1.0f, 0.91764705f, 0.01568627f, 1.0f), "Recompile required");
-			}
-			else
-			{
-				if (shader->getGeometryShader().empty())
-				{
-					ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "-");
-				}
-				else if (geometryCompiled)
-				{
-					ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
-				}
-				else
-				{
-					ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), geometryCompileLog);
-				}
+			    vertexTextFilled = false;
+			    fragmentTextFilled = false;
+			    geometryTextFilled = false;
 			}
 
-			ImGui::TableNextColumn();
-			ImGui::Text("Linking:");
-			ImGui::TableNextColumn();
-			if (linked)
+			if (ImGui::Button("Save to file"))
 			{
-				ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "Success");
+				std::ofstream file(shader->getSourceFilepath());
+				file << "#vertex\n";
+				file << shader->getVertexShader() + "\n";
+				file << "#fragment\n";
+				file << shader->getFragmentShader() + "\n";
+				file.close();
 			}
-			else
-			{
-				ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), linkLog);
-			}
-
-			ImGui::EndTable();
 		}
 
-		//ImGui::Separator();
-
-		ImGui::SetCursorPosX(glm::max(ImGui::GetWindowSize().x - 80.0f, 0.0f));
-		if (ImGui::Button("Recompile"))
-		{
-			shader->setVertexShader(std::string(vertexText));
-			shader->setFragmentShader(std::string(fragmentText));
-			shader->setGeometryShader(std::string(geometryText));
-		}
-
-		ImGui::Separator();
-
-
-		//if (ImGui::Button("Reload from file"))
-		//{
-		//    vertexTextFilled = false;
-		//    fragmentTextFilled = false;
-		//    geometryTextFilled = false;
-		//}
-
-		if (ImGui::Button("Save to file"))
-		{
-			std::ofstream file(shader->getSourceFilepath());
-			file << "#vertex\n";
-			file << shader->getVertexShader() + "\n";
-			file << "#fragment\n";
-			file << shader->getFragmentShader() + "\n";
-			file.close();
-		}
+		ImGui::End();
 	}
 
 	mContentMax = ImGui::GetItemRectMax();

@@ -101,9 +101,14 @@ void MeshRendererDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid&
 				ImVec2 windowSize = ImGui::GetWindowSize();
 				windowSize.x = std::min(std::max(windowSize.x - 100.0f, 50.0f), 250.0f);
 
-				if (ImGui::ButtonEx((material == nullptr ? "None (Material)" : material->mName).c_str(), ImVec2(windowSize.x, 0)))
+				std::string materialLabel = (material == nullptr) ? "None (Material)" : (material->mName + "##" + std::to_string(i));
+
+				if (ImGui::ButtonEx(materialLabel.c_str(), ImVec2(windowSize.x, 0)))
 				{
-					clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
+					if (material != nullptr)
+					{
+						clipboard.setSelectedItem(InteractionType::Material, material->getGuid());
+					}
 				}
 
 				if (ImGui::BeginDragDropTarget())
@@ -113,7 +118,7 @@ void MeshRendererDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid&
 					{
 						const char* data = static_cast<const char*>(payload->Data);
 
-						meshRenderer->setMaterial(ProjectDatabase::getGuid(data));
+						meshRenderer->setMaterial(ProjectDatabase::getGuid(data), i);
 					}
 					ImGui::EndDragDropTarget();
 				}

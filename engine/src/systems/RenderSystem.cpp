@@ -239,6 +239,9 @@ void RenderSystem::cacheRenderData(World *world)
     Id lastMaterialId = Id::INVALID;
     int lastMaterialIndex = -1;
 
+    glm::vec3 boundingVolumeCentre = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 boundingVolumeMin = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+    glm::vec3 boundingVolumeMax = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
     for (size_t i = 0; i < meshRendererCount; i++)
     {
         MeshRenderer *meshRenderer = world->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
@@ -268,7 +271,21 @@ void RenderSystem::cacheRenderData(World *world)
         Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
 
         mCachedBoundingSpheres[i] = computeWorldSpaceBoundingSphere(mCachedModels[i], mesh->getBounds());
+        
+        glm::vec3 centre = mCachedBoundingSpheres[i].mCentre;
+        float radius = mCachedBoundingSpheres[i].mRadius;
+
+        boundingVolumeMin.x = glm::min(boundingVolumeMin.x, centre.x - radius);
+        boundingVolumeMin.y = glm::min(boundingVolumeMin.y, centre.y - radius);
+        boundingVolumeMin.z = glm::min(boundingVolumeMin.z, centre.z - radius);
+
+        boundingVolumeMax.x = glm::max(boundingVolumeMax.x, centre.x + radius);
+        boundingVolumeMax.y = glm::max(boundingVolumeMax.y, centre.y + radius);
+        boundingVolumeMax.z = glm::max(boundingVolumeMax.z, centre.z + radius);
     }
+
+    mCachedBoundingVolume.mCentre = 0.5f * (boundingVolumeMax + boundingVolumeMin);
+    mCachedBoundingVolume.mSize = (boundingVolumeMax - boundingVolumeMin);
 }
 
 void RenderSystem::frustumCulling(World *world, Camera *camera)
@@ -289,8 +306,9 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
 
     std::unordered_map<uint64_t, std::vector<size_t>> instanceMapping;
 
-    mDrawCallScratch.resize(meshRendererCount);
-    mDrawCallMeshRendererIndices.resize(meshRendererCount);
+    // allow up to 8 materials (and hence draw calls) per mesh renderer
+    mDrawCallScratch.resize(8 * meshRendererCount);
+    mDrawCallMeshRendererIndices.resize(8 * meshRendererCount);
     
     size_t drawCallCount = 0;
     size_t instancedDrawCallCount = 0;
@@ -493,36 +511,33 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
         // but we have not yet actually set the material
         if (material == nullptr)
         {
-            break;
-        }
+            int shaderIndex = world->getIndexOf(material->getShaderGuid());
 
-        int shaderIndex = world->getIndexOf(material->getShaderGuid());
-
-        for (int j = 0; j < terrain->getTotalChunkCount(); j++)
-        {
-            if (terrain->isChunkEnabled(j))
+            for (int j = 0; j < terrain->getTotalChunkCount(); j++)
             {
-                RenderObject object;
-                object.key = generateKey(materialIndex, shaderIndex, );
-                object.instanceStart = 0;
-                object.instanceCount = 0;
-                //object.materialIndex = materialIndex;
-                //object.shaderIndex = shaderIndex;
-                //object.start = terrain->getChunkStart(j);
-                //object.size = terrain->getChunkSize(j);
-                //object.meshHandle = terrain->getNativeGraphicsHandle();
-                //object.instanceModelBuffer = nullptr;
-                //object.instanceColorBuffer = nullptr;
-                //object.instanced = false;
-                //object.indexed = false;
+                if (terrain->isChunkEnabled(j))
+                {
+                    RenderObject object;
+                    object.key = generateDrawCall(materialIndex, i, shaderIndex, j, 4);
+                    object.instanceCount = 0;
+                    // object.materialIndex = materialIndex;
+                    // object.shaderIndex = shaderIndex;
+                    // object.start = terrain->getChunkStart(j);
+                    // object.size = terrain->getChunkSize(j);
+                    // object.meshHandle = terrain->getNativeGraphicsHandle();
+                    // object.instanceModelBuffer = nullptr;
+                    // object.instanceColorBuffer = nullptr;
+                    // object.instanced = false;
+                    // object.indexed = false;
 
-                mTotalRenderObjects.push_back(object);
-                mTotalModels.push_back(model);
-                mTotalTransformIds.push_back(transform->getId());
+                    mTotalRenderObjects.push_back(object);
+                    mTotalModels.push_back(model);
+                    mTotalTransformIds.push_back(transform->getId());
 
-                mTotalBoundingSpheres.push_back(computeWorldSpaceBoundingSphere(model, terrain->getChunkBounds(j)));
+                    mTotalBoundingSpheres.push_back(computeWorldSpaceBoundingSphere(model, terrain->getChunkBounds(j)));
+                }
             }
-        }
+        }        
     }*/
 
     //assert(mTotalModels.size() == mTotalTransformIds.size());
@@ -532,6 +547,7 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
 
     mWorld->mBoundingSpheres = mCachedBoundingSpheres;
     mWorld->mFrustumVisible = mFrustumVisible;
+    mWorld->mBoundingVolume = mCachedBoundingVolume;
 }
 
 void RenderSystem::buildRenderQueue()
