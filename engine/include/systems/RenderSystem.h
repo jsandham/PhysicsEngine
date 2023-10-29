@@ -22,6 +22,129 @@ namespace PhysicsEngine
 {
 class World;
 
+struct BVHNode
+{
+    glm::vec3 mMin;
+    glm::vec3 mMax;
+    int mLeft;
+    int mRight;
+    int mStartIndex;
+    int mIndexCount;
+};
+
+struct BVH
+{
+    std::vector<int> mPerm;
+    std::vector<BVHNode> mNodes;
+
+    void buildBVH(const std::vector<AABB> &boundingAABBs)
+    {
+        if (boundingAABBs.size() == 0)
+        {
+            return;
+        }
+
+        mPerm.resize(boundingAABBs.size(), 0);
+        for (size_t i = 0; i < mPerm.size(); i++)
+        {
+            mPerm[i] = (int)i;
+        }
+
+        mNodes.resize(2 * boundingAABBs.size() - 1);
+
+        mNodes[0].mLeft = 0;
+        mNodes[0].mRight = 0;
+        mNodes[0].mStartIndex = 0;
+        mNodes[0].mIndexCount = static_cast<int>(boundingAABBs.size());
+
+        std::queue<int> queue;
+        queue.push(0);
+
+        int index = 0; // start at one for alignment
+        while (!queue.empty())
+        {
+            int nodeIndex = queue.front();
+            queue.pop();
+
+            assert(index < mNodes.size());
+            assert(nodeIndex < mNodes.size());
+
+            // update bounds
+            glm::vec3 nodeMin = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
+            glm::vec3 nodeMax = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
+            for (size_t i = mNodes[nodeIndex].mStartIndex; i < mNodes[nodeIndex].mIndexCount; i++)
+            {
+                nodeMin = glm::min(nodeMin, boundingAABBs[mPerm[i]].getMin());
+                nodeMax = glm::max(nodeMax, boundingAABBs[mPerm[i]].getMax());
+            }
+
+            mNodes[nodeIndex].mMin = nodeMin;
+            mNodes[nodeIndex].mMax = nodeMax;
+
+            // Find split (by splitting along longest axis)
+            glm::vec3 extents = mNodes[nodeIndex].mMax - mNodes[nodeIndex].mMin;
+            int splitPlane = 0;
+            if (extents.y > extents.x && extents.y > extents.z)
+            {
+                splitPlane = 1;
+            }
+            else if (extents.z > extents.x && extents.z > extents.y)
+            {
+                splitPlane = 2;
+            }
+            float splitPosition = mNodes[nodeIndex].mMin[splitPlane] + 0.5f * extents[splitPlane];
+
+            // Split bounding AABB's to the left or right of split position
+            int i = mNodes[nodeIndex].mStartIndex;
+            int j = i + mNodes[nodeIndex].mIndexCount - 1;
+            while (i <= j)
+            {
+                if (boundingAABBs[mPerm[i]].mCentre[splitPlane] < splitPosition)
+                {
+                    i++;
+                }
+                else
+                {
+                    int temp = mPerm[i];
+                    mPerm[i] = mPerm[j];
+                    mPerm[j] = temp;
+                    j--;
+                    //AABB temp = mBoundingAABBs[i];
+                    //mBoundingAABBs[i] = mBoundingAABBs[j];
+                    //mBoundingAABBs[j] = temp;
+                    //j--;
+                }
+            }
+
+            int leftChildIndexCount = i - mNodes[nodeIndex].mStartIndex;
+            int rightChildIndexCount = mNodes[nodeIndex].mIndexCount - (i - mNodes[nodeIndex].mStartIndex);
+
+            if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
+            {
+                int leftChildIndex = ++index;
+                int rightChildIndex = ++index;
+
+                assert(index < mNodes.size());
+
+                mNodes[leftChildIndex].mStartIndex = mNodes[nodeIndex].mStartIndex;
+                mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
+
+                mNodes[rightChildIndex].mStartIndex = i;
+                mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
+
+                mNodes[nodeIndex].mLeft = leftChildIndex;
+                mNodes[nodeIndex].mRight = rightChildIndex;
+                mNodes[nodeIndex].mIndexCount = 0;
+
+                queue.push(leftChildIndex);
+                queue.push(rightChildIndex);
+            }
+        }
+    }
+};
+
+
+
 //struct DrawCallData
 //{
 //    std::vector<RenderObject> mDrawCalls;
@@ -51,6 +174,7 @@ class RenderSystem
     std::vector<glm::mat4> mCachedModels;
     std::vector<Id> mCachedTransformIds;
     std::vector<Sphere> mCachedBoundingSpheres;
+    std::vector<AABB> mCachedBoundingAABBs;
     std::vector<int> mCachedMeshIndices;
     std::vector<int> mCachedMaterialIndices;
     AABB mCachedBoundingVolume;
@@ -59,7 +183,8 @@ class RenderSystem
     std::vector<RenderObject> mDrawCallScratch;
     std::vector<int> mDrawCallMeshRendererIndices;
 
-    // Frustum culling flags
+    // Frustum culling
+    BVH mBVH;
     std::vector<bool> mFrustumVisible;
 
     // Draw call data
@@ -93,6 +218,8 @@ class RenderSystem
 
     void init(World *world);
     void update(const Input &input, const Time &time);
+
+    const BVH &getBVH() const;
 
   private:
     void registerRenderAssets(World *world);

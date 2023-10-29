@@ -146,8 +146,9 @@ class GizmoRenderer
     void renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
     void renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
     void renderGridGizmo(Camera *camera);
-    void renderBoundngSpheres(Camera* camera);
-    //void renderBoundingVolumeHeirarchy(Camera *camera);
+    void renderBoundingSpheres(Camera* camera);
+    void renderBoundingAABBs(Camera* camera);
+    void renderBoundingVolumeHeirarchy(Camera *camera);
 };
 
 } // namespace PhysicsEngine

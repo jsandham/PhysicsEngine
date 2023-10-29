@@ -6,6 +6,8 @@
 #include <chrono>
 #include <limits>
 #include <unordered_set>
+#include <stack>
+#include <queue>
 
 #define GLM_FORCE_RADIANS
 
@@ -213,6 +215,7 @@ void RenderSystem::cacheRenderData(World *world)
     mCachedModels.resize(meshRendererCount);
     mCachedTransformIds.resize(meshRendererCount);
     mCachedBoundingSpheres.resize(meshRendererCount);
+    mCachedBoundingAABBs.resize(meshRendererCount);
     mCachedMeshIndices.resize(meshRendererCount);
     mCachedMaterialIndices.resize(8 * meshRendererCount);
 
@@ -271,7 +274,7 @@ void RenderSystem::cacheRenderData(World *world)
         Mesh *mesh = world->getAssetByIndex<Mesh>(lastMeshIndex);
 
         mCachedBoundingSpheres[i] = computeWorldSpaceBoundingSphere(mCachedModels[i], mesh->getBounds());
-        
+
         glm::vec3 centre = mCachedBoundingSpheres[i].mCentre;
         float radius = mCachedBoundingSpheres[i].mRadius;
 
@@ -282,18 +285,214 @@ void RenderSystem::cacheRenderData(World *world)
         boundingVolumeMax.x = glm::max(boundingVolumeMax.x, centre.x + radius);
         boundingVolumeMax.y = glm::max(boundingVolumeMax.y, centre.y + radius);
         boundingVolumeMax.z = glm::max(boundingVolumeMax.z, centre.z + radius);
+
+        mCachedBoundingAABBs[i].mCentre = centre;
+        mCachedBoundingAABBs[i].mSize = glm::vec3(2 * radius, 2 * radius, 2 * radius);
     }
 
     mCachedBoundingVolume.mCentre = 0.5f * (boundingVolumeMax + boundingVolumeMin);
     mCachedBoundingVolume.mSize = (boundingVolumeMax - boundingVolumeMin);
 }
 
+
+//struct Node
+//{
+//    glm::vec3 mCentre;
+//    glm::vec3 mExtent;
+//    std::vector<int> mSphereIndices;
+//};
+//
+//struct OctTree
+//{
+//    AABB mBounds;
+//    int mMaxDepth;
+//    std::vector<Node> mNodes;
+//
+//    static int getDepth(int index)
+//    {
+//        // indices 0           -> depth 0
+//        // indices 1...8       -> depth 1
+//        // indices 9...72      -> depth 2
+//        // indices 73...585    -> depth 3
+//        if (index == 0)
+//        {
+//            return 0;
+//        }
+//        else if (index < 9)
+//        {
+//            return 1;
+//        }
+//        else if (index < 73)
+//        {
+//            return 2;
+//        }
+//        else
+//        {
+//            return 3;
+//        }
+//    }
+//
+//    void create(const AABB& bounds, int maxDepth)
+//    {
+//        mBounds = bounds;
+//        mMaxDepth = maxDepth;
+//
+//        // find total number of nodes in octtree corresponding to input max tree depth
+//        int d = 0;                 // depth
+//        int levelSize = 1;         // number of nodes only at depth d
+//        int totalSize = levelSize; // total number of nodes at all depths
+//        while (d < maxDepth)
+//        {
+//            levelSize *= 8;
+//            d++;
+//            totalSize += levelSize;
+//        }
+//
+//        mNodes.resize(totalSize);
+//
+//        // for all nodes in octtree, determine centre and extents of node
+//        mNodes[0].mExtent = 0.5f * bounds.mSize;
+//        mNodes[0].mCentre = bounds.mCentre;
+//        
+//        std::queue<int> queue;
+//        queue.push(0);
+//        while (!queue.empty())
+//        {
+//            int currentIndex = queue.front();
+//            queue.pop();
+//
+//            int depth = getDepth(currentIndex);
+//
+//            if(depth < maxDepth)
+//            {
+//                for (int i = -1; i <= 1; i += 2)
+//                {
+//                    for (int j = -1; j <= 1; j += 2)
+//                    {
+//                        for (int k = -1; k <= 1; k += 2)
+//                        {
+//                            glm::vec3 newExtent = 0.5f * mNodes[currentIndex].mExtent;
+//                            glm::vec3 newCentre;
+//                            newCentre.x = mNodes[currentIndex].mCentre.x + i * 0.5f * mNodes[currentIndex].mExtent.x;
+//                            newCentre.y = mNodes[currentIndex].mCentre.y + j * 0.5f * mNodes[currentIndex].mExtent.y;
+//                            newCentre.z = mNodes[currentIndex].mCentre.z + k * 0.5f * mNodes[currentIndex].mExtent.z;
+//
+//                            int quadrant = 0;
+//                            for (int l = 0; l < 3; l++)
+//                            {
+//                                float delta = newCentre[l] - mNodes[currentIndex].mCentre[l];
+//                                if (delta > 0.0f)
+//                                {
+//                                    quadrant |= (1 << l);
+//                                }
+//                            }
+//
+//                            int index = 8 * currentIndex + quadrant + 1;
+//                            mNodes[index].mExtent = newExtent;
+//                            mNodes[index].mCentre = newCentre;
+//
+//                            queue.push(index);
+//                        
+//                        // 0
+//                        // 1 2 3 4 5 6 7 8 
+//                        // 9 10 11 12 13 14 15 16   17 18 19 20 21 22 
+//                        
+//                        
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    void insert(const Sphere &sphere, int sphereIndex)
+//    {
+//        std::queue<int> queue;
+//
+//        queue.push(0);
+//        while (!queue.empty())
+//        {
+//            int nodeIndex = queue.front();
+//            queue.pop();
+//
+//            int depth = getDepth(nodeIndex);
+//
+//            // find quadrant that completely contains the object
+//            bool straddle = false;
+//            int quadrant = 0;
+//            for (int i = 0; i < 3; i++)
+//            {
+//                float delta = sphere.mCentre[i] - mNodes[nodeIndex].mCentre[i];
+//                if (std::abs(delta) <= sphere.mRadius)
+//                {
+//                    straddle = true;
+//                    break;
+//                }
+//
+//                if (delta > 0.0f)
+//                {
+//                    quadrant |= (1 << i);
+//                }
+//            }
+//
+//            if (!straddle && depth < mMaxDepth)
+//            {
+//                queue.push(8 * nodeIndex + quadrant + 1);
+//            }
+//            else
+//            {
+//                // insert object into current node
+//                mNodes[nodeIndex].mSphereIndices.push_back(sphereIndex);
+//            }
+//        }
+//    }
+//};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void RenderSystem::frustumCulling(World *world, Camera *camera)
 {
+    mBVH.buildBVH(mCachedBoundingAABBs);
+
+    /*std::queue<int> queue;
+    queue.push(0);
+
+    while (!queue.empty())
+    {
+        int nodeIndex = queue.front();
+        queue.pop();
+
+        AABB aabb;
+        aabb.mCentre = 0.5f * (mBVH.mNodes[nodeIndex].mMax + mBVH.mNodes[nodeIndex].mMin);
+        aabb.mSize = mBVH.mNodes[nodeIndex].mMax - mBVH.mNodes[nodeIndex].mMin;
+
+        if (Intersect::intersect(aabb, camera->getFrustum()))
+        {
+            
+        }
+    }*/
+
+
+
+
     size_t meshRendererCount = world->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
     mFrustumVisible.resize(meshRendererCount);
-
     for (size_t i = 0; i < meshRendererCount; i++)
     {
         mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum());
@@ -546,6 +745,7 @@ void RenderSystem::buildRenderObjectsList(World *world, Camera* camera)
     assert(mCachedBoundingSpheres.size() == mFrustumVisible.size());
 
     mWorld->mBoundingSpheres = mCachedBoundingSpheres;
+    mWorld->mBoundingAABBs = mCachedBoundingAABBs;
     mWorld->mFrustumVisible = mFrustumVisible;
     mWorld->mBoundingVolume = mCachedBoundingVolume;
 }
@@ -624,4 +824,9 @@ Sphere RenderSystem::computeWorldSpaceBoundingSphere(const glm::mat4 &model, con
     boundingSphere.mRadius = sphere.mRadius * extractLargestScale(model);
 
     return boundingSphere;
+}
+
+const BVH &RenderSystem::getBVH() const
+{
+    return mBVH;
 }

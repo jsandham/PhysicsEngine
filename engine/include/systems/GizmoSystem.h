@@ -60,6 +60,12 @@ class GizmoSystem
     void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe = false);
 
     void clearDrawList();
+
+    void drawSphereIntersectionTest();
+    void drawAABBIntersectionTest();
+
+
+
 };
 
 } // namespace PhysicsEngine

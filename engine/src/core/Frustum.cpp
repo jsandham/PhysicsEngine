@@ -18,6 +18,9 @@ Frustum::~Frustum()
 void Frustum::computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up,
                             const glm::vec3 &right)
 {
+    assert(mNearPlane > 0.0f);
+    assert(mNearPlane < mFarPlane);
+    
     glm::vec3 nfront = glm::normalize(front);
     glm::vec3 nup = glm::normalize(up);
     glm::vec3 nright = glm::normalize(right);

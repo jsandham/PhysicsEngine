@@ -1,5 +1,7 @@
 #include "../../include/graphics/GizmoRenderer.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Intersect.h"
+#include "../../include/core/Input.h"
 
 using namespace PhysicsEngine;
 
@@ -78,16 +80,17 @@ void GizmoRenderer::init(World *world)
 
 void GizmoRenderer::update(Camera *camera)
 {
-    addToDrawList(mWorld->mBoundingVolume, Color(1.0f, 0.91764705f, 0.01568627f, 0.3f), true);
+    //addToDrawList(mWorld->mBoundingVolume, Color(1.0f, 0.91764705f, 0.01568627f, 0.3f), true);
 
-    renderLineGizmos(camera);
-    renderPlaneGizmos(camera);
-    renderAABBGizmos(camera);
-    renderSphereGizmos(camera);
-    renderFrustumGizmos(camera);
+    //renderLineGizmos(camera);
+    //renderPlaneGizmos(camera);
+    //renderAABBGizmos(camera);
+    //renderSphereGizmos(camera);
+    //renderFrustumGizmos(camera);
 
-    renderBoundngSpheres(camera);
-    //renderBoundingVolumeHeirarchy(camera);
+    //renderBoundingSpheres(camera);
+    //renderBoundingAABBs(camera);
+    renderBoundingVolumeHeirarchy(camera);
 }
 
 void GizmoRenderer::drawGrid(Camera *camera)
@@ -589,7 +592,7 @@ void GizmoRenderer::renderGridGizmo(Camera *camera)
     Renderer::getRenderer()->turnOff(Capability::LineSmoothing);
 }
 
-void GizmoRenderer::renderBoundngSpheres(Camera *camera)
+void GizmoRenderer::renderBoundingSpheres(Camera *camera)
 {
     if (mWorld->mBoundingSpheres.empty())
     {
@@ -661,15 +664,19 @@ void GizmoRenderer::renderBoundngSpheres(Camera *camera)
 }
 
 
-
-/*void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
+void GizmoRenderer::renderBoundingAABBs(Camera *camera)
 {
+    if (mWorld->mBoundingAABBs.empty())
+    {
+        return;
+    }
+
     Renderer::getRenderer()->turnOn(Capability::Blending);
     Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
     Transform *transform = camera->getComponent<Transform>();
 
-    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
+    Mesh *mesh = mWorld->getPrimtiveMesh(PrimitiveType::Cube);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -680,27 +687,27 @@ void GizmoRenderer::renderBoundngSpheres(Camera *camera)
     mGizmoInstancedShader->setView(camera->getViewMatrix());
     mGizmoInstancedShader->setProjection(camera->getProjMatrix());
 
-    std::vector<Sphere> &spheres = mWorld->mBoundingSpheres;
+    std::vector<AABB> &aabbs = mWorld->mBoundingAABBs;
     std::vector<bool> &visible = mWorld->mFrustumVisible;
 
-    std::vector<glm::mat4> models(spheres.size(), glm::mat4(0.0f));
+    std::vector<glm::mat4> models(aabbs.size(), glm::mat4(0.0f));
 
     for (size_t i = 0; i < models.size(); i++)
     {
-        models[i][3].x = spheres[i].mCentre.x;
-        models[i][3].y = spheres[i].mCentre.y;
-        models[i][3].z = spheres[i].mCentre.z;
+        models[i][3].x = aabbs[i].mCentre.x;
+        models[i][3].y = aabbs[i].mCentre.y;
+        models[i][3].z = aabbs[i].mCentre.z;
 
-        models[i][0].x = spheres[i].mRadius;
-        models[i][1].y = spheres[i].mRadius;
-        models[i][2].z = spheres[i].mRadius;
+        models[i][0].x = aabbs[i].mSize.x;
+        models[i][1].y = aabbs[i].mSize.y;
+        models[i][2].z = aabbs[i].mSize.z;
         models[i][3].w = 1.0f;
     }
 
     static glm::uvec4 blue = glm::uvec4(0, 0, 255, 78);
     static glm::uvec4 red = glm::uvec4(255, 0, 0, 78);
 
-    std::vector<glm::uvec4> colors(spheres.size());
+    std::vector<glm::uvec4> colors(aabbs.size());
     for (size_t i = 0; i < colors.size(); i++)
     {
         colors[i] = visible[i] ? blue : red;
@@ -721,9 +728,227 @@ void GizmoRenderer::renderBoundngSpheres(Camera *camera)
 
     Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
                                                   (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
-                                                  spheres.size(), camera->mQuery);
+                                                  aabbs.size(), camera->mQuery);
 
     camera->getNativeGraphicsMainFBO()->unbind();
 
     Renderer::getRenderer()->turnOff(Capability::Blending);
-}*/
+}
+
+
+
+void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
+{
+    RenderSystem *renderSystem = mWorld->getSystem<RenderSystem>();
+    if (renderSystem != nullptr)
+    {
+        Renderer::getRenderer()->turnOn(Capability::Blending);
+        Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
+
+        const BVH &bvh = renderSystem->getBVH();
+
+        std::vector<float> mLineVertices(3 * 36 * bvh.mNodes.size());
+
+        for (size_t i = 0; i < bvh.mNodes.size(); i++)
+        {
+            glm::vec3 min = bvh.mNodes[i].mMin;
+            glm::vec3 max = bvh.mNodes[i].mMax;
+
+            glm::vec3 size = max - min;
+
+            glm::vec3 xsize = glm::vec3(size.x, 0.0f, 0.0f);
+            glm::vec3 ysize = glm::vec3(0.0f, size.y, 0.0f);
+            glm::vec3 zsize = glm::vec3(0.0f, 0.0f, size.z);
+
+            //      v7*--------*v6
+            //      . |       .|
+            //   .    |     .  |
+            //v3*----------*v2 |
+            //  |     |    |   |
+            //  |   v4|----|---|v5
+            //  |   .      |  .
+            //  |  .       | .
+            //  | .        |.
+            //  *----------*
+            //  v0         v1
+            // 
+            // v0 = min, v6 = max
+            glm::vec3 v0 = min;
+            glm::vec3 v1 = min + xsize;
+            glm::vec3 v2 = min + xsize + ysize;
+            glm::vec3 v3 = min + ysize;
+
+            glm::vec3 v4 = min + zsize;
+            glm::vec3 v5 = min + zsize + xsize;
+            glm::vec3 v6 = min + zsize + xsize + ysize;
+            glm::vec3 v7 = min + zsize + ysize;
+
+            // Using clockwise winding order
+            /*mLineVertices[36 * i + 0] = v0;
+            mLineVertices[36 * i + 1] = v2;
+            mLineVertices[36 * i + 2] = v1;
+            mLineVertices[36 * i + 3] = v0;
+            mLineVertices[36 * i + 4] = v3;
+            mLineVertices[36 * i + 5] = v2;
+
+            mLineVertices[36 * i + 6] = v1;
+            mLineVertices[36 * i + 7] = v6;
+            mLineVertices[36 * i + 8] = v5;
+            mLineVertices[36 * i + 9] = v1;
+            mLineVertices[36 * i + 10] = v2;
+            mLineVertices[36 * i + 11] = v6;
+
+            mLineVertices[36 * i + 12] = v5;
+            mLineVertices[36 * i + 13] = v7;
+            mLineVertices[36 * i + 14] = v4;
+            mLineVertices[36 * i + 15] = v5;
+            mLineVertices[36 * i + 16] = v6;
+            mLineVertices[36 * i + 17] = v7;
+
+            mLineVertices[36 * i + 18] = v4;
+            mLineVertices[36 * i + 19] = v3;
+            mLineVertices[36 * i + 20] = v0;
+            mLineVertices[36 * i + 21] = v4;
+            mLineVertices[36 * i + 22] = v7;
+            mLineVertices[36 * i + 23] = v3;
+
+            mLineVertices[36 * i + 24] = v3;
+            mLineVertices[36 * i + 25] = v6;
+            mLineVertices[36 * i + 26] = v2;
+            mLineVertices[36 * i + 27] = v3;
+            mLineVertices[36 * i + 28] = v7;
+            mLineVertices[36 * i + 29] = v6;
+
+            mLineVertices[36 * i + 30] = v0;
+            mLineVertices[36 * i + 31] = v1;
+            mLineVertices[36 * i + 32] = v5;
+            mLineVertices[36 * i + 33] = v0;
+            mLineVertices[36 * i + 34] = v5;
+            mLineVertices[36 * i + 35] = v4;*/
+
+
+            //// Using counter-clockwise winding order
+            //mLineVertices[36 * i + 0] = v0;
+            //mLineVertices[36 * i + 1] = v1;
+            //mLineVertices[36 * i + 2] = v2;
+            //mLineVertices[36 * i + 3] = v0;
+            //mLineVertices[36 * i + 4] = v2;
+            //mLineVertices[36 * i + 5] = v3;
+
+            //mLineVertices[36 * i + 6] = v1;
+            //mLineVertices[36 * i + 7] = v5;
+            //mLineVertices[36 * i + 8] = v6;
+            //mLineVertices[36 * i + 9] = v1;
+            //mLineVertices[36 * i + 10] = v6;
+            //mLineVertices[36 * i + 11] = v2;
+
+            //mLineVertices[36 * i + 12] = v5;
+            //mLineVertices[36 * i + 13] = v4;
+            //mLineVertices[36 * i + 14] = v7;
+            //mLineVertices[36 * i + 15] = v5;
+            //mLineVertices[36 * i + 16] = v7;
+            //mLineVertices[36 * i + 17] = v6;
+
+            //mLineVertices[36 * i + 18] = v4;
+            //mLineVertices[36 * i + 19] = v0;
+            //mLineVertices[36 * i + 20] = v3;
+            //mLineVertices[36 * i + 21] = v4;
+            //mLineVertices[36 * i + 22] = v3;
+            //mLineVertices[36 * i + 23] = v7;
+
+            //mLineVertices[36 * i + 24] = v3;
+            //mLineVertices[36 * i + 25] = v2;
+            //mLineVertices[36 * i + 26] = v6;
+            //mLineVertices[36 * i + 27] = v3;
+            //mLineVertices[36 * i + 28] = v6;
+            //mLineVertices[36 * i + 29] = v7;
+
+            //mLineVertices[36 * i + 30] = v0;
+            //mLineVertices[36 * i + 31] = v5;
+            //mLineVertices[36 * i + 32] = v1;
+            //mLineVertices[36 * i + 33] = v0;
+            //mLineVertices[36 * i + 34] = v4;
+            //mLineVertices[36 * i + 35] = v5;
+
+
+            // Using counter-clockwise winding order
+            for (int j = 0; j < 3; j++)
+            {
+                mLineVertices[3 * 36 * i + 3 * 0 + j] = v0[j];
+                mLineVertices[3 * 36 * i + 3 * 1 + j] = v1[j];
+                mLineVertices[3 * 36 * i + 3 * 2 + j] = v2[j];
+                mLineVertices[3 * 36 * i + 3 * 3 + j] = v0[j];
+                mLineVertices[3 * 36 * i + 3 * 4 + j] = v2[j];
+                mLineVertices[3 * 36 * i + 3 * 5 + j] = v3[j];
+
+                mLineVertices[3 * 36 * i + 3 * 6 + j] = v1[j];
+                mLineVertices[3 * 36 * i + 3 * 7 + j] = v5[j];
+                mLineVertices[3 * 36 * i + 3 * 8 + j] = v6[j];
+                mLineVertices[3 * 36 * i + 3 * 9 + j] = v1[j];
+                mLineVertices[3 * 36 * i + 3 * 10 + j] = v6[j];
+                mLineVertices[3 * 36 * i + 3 * 11 + j] = v2[j];
+
+                mLineVertices[3 * 36 * i + 3 * 12 + j] = v5[j];
+                mLineVertices[3 * 36 * i + 3 * 13 + j] = v4[j];
+                mLineVertices[3 * 36 * i + 3 * 14 + j] = v7[j];
+                mLineVertices[3 * 36 * i + 3 * 15 + j] = v5[j];
+                mLineVertices[3 * 36 * i + 3 * 16 + j] = v7[j];
+                mLineVertices[3 * 36 * i + 3 * 17 + j] = v6[j];
+
+                mLineVertices[3 * 36 * i + 3 * 18 + j] = v4[j];
+                mLineVertices[3 * 36 * i + 3 * 19 + j] = v0[j];
+                mLineVertices[3 * 36 * i + 3 * 20 + j] = v3[j];
+                mLineVertices[3 * 36 * i + 3 * 21 + j] = v4[j];
+                mLineVertices[3 * 36 * i + 3 * 22 + j] = v3[j];
+                mLineVertices[3 * 36 * i + 3 * 23 + j] = v7[j];
+
+                mLineVertices[3 * 36 * i + 3 * 24 + j] = v3[j];
+                mLineVertices[3 * 36 * i + 3 * 25 + j] = v2[j];
+                mLineVertices[3 * 36 * i + 3 * 26 + j] = v6[j];
+                mLineVertices[3 * 36 * i + 3 * 27 + j] = v3[j];
+                mLineVertices[3 * 36 * i + 3 * 28 + j] = v6[j];
+                mLineVertices[3 * 36 * i + 3 * 29 + j] = v7[j];
+
+                mLineVertices[3 * 36 * i + 3 * 30 + j] = v0[j];
+                mLineVertices[3 * 36 * i + 3 * 31 + j] = v5[j];
+                mLineVertices[3 * 36 * i + 3 * 32 + j] = v1[j];
+                mLineVertices[3 * 36 * i + 3 * 33 + j] = v0[j];
+                mLineVertices[3 * 36 * i + 3 * 34 + j] = v4[j];
+                mLineVertices[3 * 36 * i + 3 * 35 + j] = v5[j];
+            }
+        }
+
+        size_t t = sizeof(glm::vec3);
+
+        MeshHandle *meshHandle = MeshHandle::create();
+        VertexBuffer *vertexBuffer = VertexBuffer::create();
+
+        vertexBuffer->bind();
+        vertexBuffer->resize(mLineVertices.size() * sizeof(float));
+        vertexBuffer->setData(mLineVertices.data(), 0, mLineVertices.size() * sizeof(float));
+        vertexBuffer->unbind();
+
+        meshHandle->addVertexBuffer(vertexBuffer, AttribType::Vec3);
+
+        camera->getNativeGraphicsMainFBO()->bind();
+        camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
+                                                        camera->getViewport().mWidth, camera->getViewport().mHeight);
+
+        Transform *transform = camera->getComponent<Transform>();
+
+        glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
+
+        mGridShader->bind();
+        mGridShader->setColor(Color(1.0f, 0.91764705f, 0.01568627f, 0.5f));
+        mGridShader->setMVP(mvp);
+
+        Renderer::getRenderer()->draw(meshHandle, 0, mLineVertices.size(), camera->mQuery);
+
+        camera->getNativeGraphicsMainFBO()->unbind();
+    
+        Renderer::getRenderer()->turnOff(Capability::Blending);
+
+        delete vertexBuffer;
+        delete meshHandle;
+    }
+}

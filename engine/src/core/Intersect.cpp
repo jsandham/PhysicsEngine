@@ -121,11 +121,6 @@ bool Intersect::intersect(const Ray &ray, const AABB &aabb)
     return tmax >= tmin && tmax >= 0.0f;
 }
 
-bool Intersect::intersect(const Ray &ray, const Capsule &capsule)
-{
-    return false;
-}
-
 bool Intersect::intersect(const Ray &ray, const Frustum &frustum)
 {
     if (frustum.containsPoint(ray.mOrigin))
@@ -156,11 +151,8 @@ bool Intersect::intersect(const Sphere &sphere, const AABB &aabb)
            (ex * ex + ey * ey + ez * ez < sphere.mRadius * sphere.mRadius);
 }
 
-bool Intersect::intersect(const Sphere &sphere, const Capsule &capsule)
-{
-    return true;
-}
 
+// This is approximate and may produce false positives, i.e. may indcate an intersection when there isn't one.
 bool Intersect::intersect(const Sphere &sphere, const Frustum &frustum)
 {
     // various distances
@@ -200,22 +192,16 @@ bool Intersect::intersect(const AABB &aabb, const AABB &aabb2)
     // return (ex < 0) && (ey < 0) && (ez < 0);
 }
 
-bool Intersect::intersect(const AABB &aabb, const Capsule &capsule)
-{
-    return true;
-}
-
 bool Intersect::intersect(const AABB &aabb, const Frustum &frustum)
 {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 6; ++i)
     {
-
-        // maximum extent in direction of plane normal
         float r = fabsf(aabb.mSize.x * frustum.mPlanes[i].mNormal.x) +
                   fabsf(aabb.mSize.y * frustum.mPlanes[i].mNormal.y) +
                   fabsf(aabb.mSize.z * frustum.mPlanes[i].mNormal.z);
 
         // signed distance between box center and plane
+        //float d = glm::dot(furstum.mPlane[i].mNormal, aabb.mCentre) + frustum.mPlanes[i].getD();
         float d = frustum.mPlanes[i].signedDistance(aabb.mCentre);
 
         // return signed distance
@@ -230,6 +216,177 @@ bool Intersect::intersect(const AABB &aabb, const Frustum &frustum)
         }
 
         if (side < 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool Intersect::intersect(const glm::vec3 &centre, const glm::vec3 &size, const Frustum &frustum)
+{
+    for (int i = 0; i < 6; ++i)
+    {
+        float r = fabsf(size.x * frustum.mPlanes[i].mNormal.x) +
+                  fabsf(size.y * frustum.mPlanes[i].mNormal.y) +
+                  fabsf(size.z * frustum.mPlanes[i].mNormal.z);
+
+        // signed distance between box center and plane
+        // float d = glm::dot(furstum.mPlane[i].mNormal, aabb.mCentre) + frustum.mPlanes[i].getD();
+        float d = frustum.mPlanes[i].signedDistance(centre);
+
+        // return signed distance
+        float side = d - r;
+        if (fabsf(d) < r)
+        {
+            side = 0.0f;
+        }
+        else if (d < 0.0f)
+        {
+            side = d + r;
+        }
+
+        if (side < 0)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+//bool Intersect::intersect(const AABB &aabb, const Frustum &frustum)
+//{
+//    for (int i = 0; i < 6; i++)
+//    {
+//        // maximum extent in direction of plane normal
+//        float r = fabsf(aabb.mSize.x * frustum.mPlanes[i].mNormal.x) +
+//                  fabsf(aabb.mSize.y * frustum.mPlanes[i].mNormal.y) +
+//                  fabsf(aabb.mSize.z * frustum.mPlanes[i].mNormal.z);
+//
+//        // signed distance between box center and plane
+//        float d = frustum.mPlanes[i].signedDistance(aabb.mCentre);
+//
+//        // return signed distance
+//        float side = d - r;
+//        if (fabsf(d) < r)
+//        {
+//            side = 0.0f;
+//        }
+//        else if (d < 0.0f)
+//        {
+//            side = d + r;
+//        }
+//
+//        if (side < 0)
+//        {
+//            return false;
+//        }
+//    }
+//
+//    return true;
+//}
+
+//bool Intersect::intersect(const glm::vec3 &centre, const glm::vec3 &extents, const Frustum &frustum)
+//{
+//    for (int i = 0; i < 6; i++)
+//    {
+//        // maximum extent in direction of plane normal
+//        float r = fabsf(0.5f * extents.x * frustum.mPlanes[i].mNormal.x) +
+//                  fabsf(0.5f * extents.y * frustum.mPlanes[i].mNormal.y) +
+//                  fabsf(0.5f * extents.z * frustum.mPlanes[i].mNormal.z);
+//
+//        // signed distance between box center and plane
+//        float d = frustum.mPlanes[i].signedDistance(centre);
+//
+//        // return signed distance
+//        float side = d - r;
+//        if (fabsf(d) < r)
+//        {
+//            side = 0.0f;
+//        }
+//        else if (d < 0.0f)
+//        {
+//            side = d + r;
+//        }
+//
+//        if (side < 0)
+//        {
+//            return false;
+//        }
+//    }
+//
+//    return true;
+//}
+
+
+// https://iquilezles.org/articles/frustumcorrect/
+bool Intersect::intersect2(const AABB &aabb, const Frustum &frustum)
+{
+    glm::vec3 min = aabb.getMin();
+    glm::vec3 max = aabb.getMax();
+
+    // check box outside/inside of frustum
+    for (int i = 0; i < 6; i++)
+    {
+        int out = 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(min.x, min.y, min.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(max.x, min.y, min.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(min.x, max.y, min.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(max.x, max.y, min.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(min.x, min.y, max.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(max.x, min.y, max.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(min.x, max.y, max.z)) < 0.0f) ? 1 : 0;
+        out += (frustum.mPlanes[i].signedDistance(glm::vec3(max.x, max.y, max.z)) < 0.0f) ? 1 : 0;
+
+        if (out == 8)
+        {
+            return false;
+        }
+    }
+
+    // check frustum outside/inside box
+    int out;
+    for (int i = 0; i < 3; i++)
+    {
+        out = 0;
+        out += frustum.mFtl[i] > max[i] ? 1 : 0;
+        out += frustum.mFtr[i] > max[i] ? 1 : 0;
+        out += frustum.mFbl[i] > max[i] ? 1 : 0;
+        out += frustum.mFbr[i] > max[i] ? 1 : 0;
+        out += frustum.mNtl[i] > max[i] ? 1 : 0;
+        out += frustum.mNtr[i] > max[i] ? 1 : 0;
+        out += frustum.mNbl[i] > max[i] ? 1 : 0;
+        out += frustum.mNbr[i] > max[i] ? 1 : 0;
+
+        if (out == 8)
+        {
+            return false;
+        }
+
+        out = 0;
+        out += frustum.mFtl[i] < min[i] ? 1 : 0;
+        out += frustum.mFtr[i] < min[i] ? 1 : 0;
+        out += frustum.mFbl[i] < min[i] ? 1 : 0;
+        out += frustum.mFbr[i] < min[i] ? 1 : 0;
+        out += frustum.mNtl[i] < min[i] ? 1 : 0;
+        out += frustum.mNtr[i] < min[i] ? 1 : 0;
+        out += frustum.mNbl[i] < min[i] ? 1 : 0;
+        out += frustum.mNbr[i] < min[i] ? 1 : 0;
+
+        if (out == 8)
         {
             return false;
         }

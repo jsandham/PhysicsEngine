@@ -10,7 +10,7 @@ AABB::AABB() : mCentre(glm::vec3(0.0f, 0.0f, 0.0f)), mSize(glm::vec3(1.0f, 1.0f,
 {
 }
 
-AABB::AABB(glm::vec3 centre, glm::vec3 size) : mCentre(centre), mSize(size)
+AABB::AABB(const glm::vec3 &centre, const glm::vec3 &size) : mCentre(centre), mSize(size)
 {
 }
 

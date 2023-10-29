@@ -16,7 +16,7 @@ class AABB
 
   public:
     AABB();
-    AABB(glm::vec3 centre, glm::vec3 size);
+    AABB(const glm::vec3 &centre, const glm::vec3 &size);
     ~AABB();
 
     glm::vec3 getExtents() const;
