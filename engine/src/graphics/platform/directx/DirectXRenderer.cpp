@@ -87,19 +87,19 @@ void DirectXRenderer::turnOff_impl(Capability capability)
 void DirectXRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest)
 {
 }
-void DirectXRenderer::draw_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void DirectXRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
 {
     
 };
-void DirectXRenderer::drawIndexed_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void DirectXRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
 {
   
 };
-void DirectXRenderer::drawInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
+void DirectXRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
 {
   
 };
-void DirectXRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
+void DirectXRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query)
 {
 
 };

@@ -161,44 +161,40 @@ void OpenGLRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest
     CHECK_ERROR(glBlendFunc(s, d));
 }
 
-void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
 {
-    meshHandle->draw(start / 3, size / 3);
+    meshHandle->draw(vertexOffset, vertexCount);
 
-    unsigned int count = size / 3;
+    query.mNumDrawCalls++;
+    query.mVerts += vertexCount;
+    query.mTris += vertexCount / 3;
+}
+
+void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
+{
+    meshHandle->drawIndexed(indexOffset, indexCount);
+
+    unsigned int count = indexCount;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
     query.mTris += count / 3;
 }
 
-void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
 {
-    meshHandle->drawIndexed(start, size);
-
-    unsigned int count = size;
-
-    query.mNumDrawCalls++;
-    query.mVerts += count;
-    query.mTris += count / 3;
-}
-
-void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
-{
-    meshHandle->drawInstanced(start / 3, size / 3, instanceCount);
-
-    unsigned int count = size / 3;
+    meshHandle->drawInstanced(vertexOffset, vertexCount, instanceCount);
 
     query.mNumInstancedDrawCalls++;
-    query.mVerts += count;
-    query.mTris += count / 3;
+    query.mVerts += vertexCount;
+    query.mTris += vertexCount / 3;
 }
 
-void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
+void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query)
 {
-    meshHandle->drawIndexedInstanced(start, size, instanceCount);
+    meshHandle->drawIndexedInstanced(indexOffset, indexCount, instanceCount);
 
-    unsigned int count = size;
+    unsigned int count = indexCount;
 
     query.mNumInstancedDrawCalls++;
     query.mVerts += count;

@@ -26,10 +26,10 @@ class OpenGLRenderer : public Renderer
     void turnOn_impl(Capability capability) override;
     void turnOff_impl(Capability capability) override;
     void setBlending_impl(BlendingFactor source, BlendingFactor dest) override;
-    void draw_impl(MeshHandle* meshHandle, int start, int size, GraphicsQuery &query) override;
-    void drawIndexed_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query) override;
-    void drawInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query) override;
-    void drawIndexedInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query) override;
+    void draw_impl(MeshHandle* meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query) override;
+    void drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query) override;
+    void drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query) override;
+    void drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query) override;
 
     void beginQuery_impl(unsigned int queryId) override;
     void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) override;

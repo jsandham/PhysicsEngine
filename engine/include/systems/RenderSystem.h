@@ -2,6 +2,7 @@
 #define RENDERSYSTEM_H__
 
 #include <vector>
+#include <limits>
 
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
@@ -70,10 +71,17 @@ struct BVH
             assert(nodeIndex < mNodes.size());
 
             // update bounds
-            glm::vec3 nodeMin = glm::vec3(FLT_MAX, FLT_MAX, FLT_MAX);
-            glm::vec3 nodeMax = glm::vec3(FLT_MIN, FLT_MIN, FLT_MIN);
-            for (size_t i = mNodes[nodeIndex].mStartIndex; i < mNodes[nodeIndex].mIndexCount; i++)
+            glm::vec3 nodeMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                                          std::numeric_limits<float>::max());
+            glm::vec3 nodeMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                                          std::numeric_limits<float>::lowest());
+
+            for (size_t i = mNodes[nodeIndex].mStartIndex; i < (mNodes[nodeIndex].mStartIndex + mNodes[nodeIndex].mIndexCount); i++)
             {
+                glm::vec3 min = boundingAABBs[mPerm[i]].getMin();
+                glm::vec3 max = boundingAABBs[mPerm[i]].getMax();
+
+
                 nodeMin = glm::min(nodeMin, boundingAABBs[mPerm[i]].getMin());
                 nodeMax = glm::max(nodeMax, boundingAABBs[mPerm[i]].getMax());
             }
@@ -109,10 +117,6 @@ struct BVH
                     mPerm[i] = mPerm[j];
                     mPerm[j] = temp;
                     j--;
-                    //AABB temp = mBoundingAABBs[i];
-                    //mBoundingAABBs[i] = mBoundingAABBs[j];
-                    //mBoundingAABBs[j] = temp;
-                    //j--;
                 }
             }
 

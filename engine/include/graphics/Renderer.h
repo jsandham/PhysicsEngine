@@ -51,10 +51,11 @@ class Renderer
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
     static void setBlending(BlendingFactor source, BlendingFactor dest);
-    static void draw(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query);
-    static void drawIndexed(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query);
-    static void drawInstanced(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query);
-    static void drawIndexedInstanced(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query);
+    static void draw(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query);
+    static void drawIndexed(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query);
+    static void drawInstanced(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query);
+    static void drawIndexedInstanced(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount,
+                                     GraphicsQuery &query);
 
     static void beginQuery(unsigned int queryId);
     static void endQuery(unsigned int queryId, unsigned long long *elapsedTime);
@@ -72,10 +73,10 @@ class Renderer
     virtual void turnOn_impl(Capability capability) = 0;
     virtual void turnOff_impl(Capability capability) = 0;
     virtual void setBlending_impl(BlendingFactor source, BlendingFactor dest) = 0;
-    virtual void draw_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query) = 0;
-    virtual void drawIndexed_impl(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query) = 0;
-    virtual void drawInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query) = 0;
-    virtual void drawIndexedInstanced_impl(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query) = 0;
+    virtual void draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query) = 0;
+    virtual void drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query) = 0;
+    virtual void drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query) = 0;
+    virtual void drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query) = 0;
 
     virtual void beginQuery_impl(unsigned int queryId) = 0;
     virtual void endQuery_impl(unsigned int queryId, unsigned long long *elapsedTime) = 0;

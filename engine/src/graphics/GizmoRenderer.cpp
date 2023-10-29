@@ -89,7 +89,7 @@ void GizmoRenderer::update(Camera *camera)
     //renderFrustumGizmos(camera);
 
     //renderBoundingSpheres(camera);
-    //renderBoundingAABBs(camera);
+    renderBoundingAABBs(camera);
     renderBoundingVolumeHeirarchy(camera);
 }
 
@@ -747,7 +747,7 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
 
         const BVH &bvh = renderSystem->getBVH();
 
-        std::vector<float> mLineVertices(3 * 36 * bvh.mNodes.size());
+        std::vector<glm::vec3> mLineVertices(36 * bvh.mNodes.size());
 
         for (size_t i = 0; i < bvh.mNodes.size(); i++)
         {
@@ -827,52 +827,52 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
             mLineVertices[36 * i + 35] = v4;*/
 
 
-            //// Using counter-clockwise winding order
-            //mLineVertices[36 * i + 0] = v0;
-            //mLineVertices[36 * i + 1] = v1;
-            //mLineVertices[36 * i + 2] = v2;
-            //mLineVertices[36 * i + 3] = v0;
-            //mLineVertices[36 * i + 4] = v2;
-            //mLineVertices[36 * i + 5] = v3;
+            // Using counter-clockwise winding order
+            mLineVertices[36 * i + 0] = v0;
+            mLineVertices[36 * i + 1] = v1;
+            mLineVertices[36 * i + 2] = v2;
+            mLineVertices[36 * i + 3] = v0;
+            mLineVertices[36 * i + 4] = v2;
+            mLineVertices[36 * i + 5] = v3;
 
-            //mLineVertices[36 * i + 6] = v1;
-            //mLineVertices[36 * i + 7] = v5;
-            //mLineVertices[36 * i + 8] = v6;
-            //mLineVertices[36 * i + 9] = v1;
-            //mLineVertices[36 * i + 10] = v6;
-            //mLineVertices[36 * i + 11] = v2;
+            mLineVertices[36 * i + 6] = v1;
+            mLineVertices[36 * i + 7] = v5;
+            mLineVertices[36 * i + 8] = v6;
+            mLineVertices[36 * i + 9] = v1;
+            mLineVertices[36 * i + 10] = v6;
+            mLineVertices[36 * i + 11] = v2;
 
-            //mLineVertices[36 * i + 12] = v5;
-            //mLineVertices[36 * i + 13] = v4;
-            //mLineVertices[36 * i + 14] = v7;
-            //mLineVertices[36 * i + 15] = v5;
-            //mLineVertices[36 * i + 16] = v7;
-            //mLineVertices[36 * i + 17] = v6;
+            mLineVertices[36 * i + 12] = v5;
+            mLineVertices[36 * i + 13] = v4;
+            mLineVertices[36 * i + 14] = v7;
+            mLineVertices[36 * i + 15] = v5;
+            mLineVertices[36 * i + 16] = v7;
+            mLineVertices[36 * i + 17] = v6;
 
-            //mLineVertices[36 * i + 18] = v4;
-            //mLineVertices[36 * i + 19] = v0;
-            //mLineVertices[36 * i + 20] = v3;
-            //mLineVertices[36 * i + 21] = v4;
-            //mLineVertices[36 * i + 22] = v3;
-            //mLineVertices[36 * i + 23] = v7;
+            mLineVertices[36 * i + 18] = v4;
+            mLineVertices[36 * i + 19] = v0;
+            mLineVertices[36 * i + 20] = v3;
+            mLineVertices[36 * i + 21] = v4;
+            mLineVertices[36 * i + 22] = v3;
+            mLineVertices[36 * i + 23] = v7;
 
-            //mLineVertices[36 * i + 24] = v3;
-            //mLineVertices[36 * i + 25] = v2;
-            //mLineVertices[36 * i + 26] = v6;
-            //mLineVertices[36 * i + 27] = v3;
-            //mLineVertices[36 * i + 28] = v6;
-            //mLineVertices[36 * i + 29] = v7;
+            mLineVertices[36 * i + 24] = v3;
+            mLineVertices[36 * i + 25] = v2;
+            mLineVertices[36 * i + 26] = v6;
+            mLineVertices[36 * i + 27] = v3;
+            mLineVertices[36 * i + 28] = v6;
+            mLineVertices[36 * i + 29] = v7;
 
-            //mLineVertices[36 * i + 30] = v0;
-            //mLineVertices[36 * i + 31] = v5;
-            //mLineVertices[36 * i + 32] = v1;
-            //mLineVertices[36 * i + 33] = v0;
-            //mLineVertices[36 * i + 34] = v4;
-            //mLineVertices[36 * i + 35] = v5;
+            mLineVertices[36 * i + 30] = v0;
+            mLineVertices[36 * i + 31] = v5;
+            mLineVertices[36 * i + 32] = v1;
+            mLineVertices[36 * i + 33] = v0;
+            mLineVertices[36 * i + 34] = v4;
+            mLineVertices[36 * i + 35] = v5;
 
 
             // Using counter-clockwise winding order
-            for (int j = 0; j < 3; j++)
+            /*for (int j = 0; j < 3; j++)
             {
                 mLineVertices[3 * 36 * i + 3 * 0 + j] = v0[j];
                 mLineVertices[3 * 36 * i + 3 * 1 + j] = v1[j];
@@ -915,17 +915,15 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
                 mLineVertices[3 * 36 * i + 3 * 33 + j] = v0[j];
                 mLineVertices[3 * 36 * i + 3 * 34 + j] = v4[j];
                 mLineVertices[3 * 36 * i + 3 * 35 + j] = v5[j];
-            }
+            }*/
         }
-
-        size_t t = sizeof(glm::vec3);
 
         MeshHandle *meshHandle = MeshHandle::create();
         VertexBuffer *vertexBuffer = VertexBuffer::create();
 
         vertexBuffer->bind();
-        vertexBuffer->resize(mLineVertices.size() * sizeof(float));
-        vertexBuffer->setData(mLineVertices.data(), 0, mLineVertices.size() * sizeof(float));
+        vertexBuffer->resize(mLineVertices.size() * sizeof(glm::vec3));
+        vertexBuffer->setData(mLineVertices.data(), 0, mLineVertices.size() * sizeof(glm::vec3));
         vertexBuffer->unbind();
 
         meshHandle->addVertexBuffer(vertexBuffer, AttribType::Vec3);

@@ -91,25 +91,25 @@ void Renderer::setBlending(BlendingFactor source, BlendingFactor dest)
     return sInstance->setBlending_impl(source, dest);
 }
 
-void Renderer::draw(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void Renderer::draw(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
 {
-    return sInstance->draw_impl(meshHandle, start, size, query);
+    return sInstance->draw_impl(meshHandle, vertexOffset, vertexCount, query);
 }
 
-void Renderer::drawIndexed(MeshHandle *meshHandle, int start, int size, GraphicsQuery &query)
+void Renderer::drawIndexed(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
 {
-    return sInstance->drawIndexed_impl(meshHandle, start, size, query);
+    return sInstance->drawIndexed_impl(meshHandle, indexOffset, indexCount, query);
 }
 
-void Renderer::drawInstanced(MeshHandle *meshHandle, int start, int size, int instanceCount, GraphicsQuery &query)
+void Renderer::drawInstanced(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
 {
-    return sInstance->drawInstanced_impl(meshHandle, start, size, instanceCount, query);
+    return sInstance->drawInstanced_impl(meshHandle, vertexOffset, vertexCount, instanceCount, query);
 }
 
-void Renderer::drawIndexedInstanced(MeshHandle *meshHandle, int start, int size, int instanceCount,
+void Renderer::drawIndexedInstanced(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount,
                                     GraphicsQuery &query)
 {
-    return sInstance->drawIndexedInstanced_impl(meshHandle, start, size, instanceCount, query);
+    return sInstance->drawIndexedInstanced_impl(meshHandle, indexOffset, indexCount, instanceCount, query);
 }
 
 void Renderer::beginQuery(unsigned int queryId)
