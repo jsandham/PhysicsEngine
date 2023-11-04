@@ -477,38 +477,50 @@ void RenderSystem::frustumCulling(World *world, Camera *camera)
         queue.push(0);
 
         mFrustumVisible.resize(meshRendererCount);
+        for (size_t i = 0; i < mFrustumVisible.size(); i++)
+        {
+            mFrustumVisible[i] = false;        
+        }
 
         while (!queue.empty())
         {
             int nodeIndex = queue.front();
             queue.pop();
 
+            BVHNode *node = &mBVH.mNodes[nodeIndex];
+
             AABB aabb;
-            aabb.mCentre = 0.5f * (mBVH.mNodes[nodeIndex].mMax + mBVH.mNodes[nodeIndex].mMin);
-            aabb.mSize = mBVH.mNodes[nodeIndex].mMax - mBVH.mNodes[nodeIndex].mMin;
+            aabb.mCentre = 0.5f * (node->mMax + node->mMin);
+            aabb.mSize = node->mMax - node->mMin;
 
             if (Intersect::intersect(aabb, camera->getFrustum()))
             {
-                if (mBVH.mNodes[nodeIndex].mIndexCount == 0)
+                if (node->mIndexCount == 0)
                 {
-                    queue.push(mBVH.mNodes[nodeIndex].mLeft);
-                    queue.push(mBVH.mNodes[nodeIndex].mRight);
+                    queue.push(node->mLeft);
+                    queue.push(node->mLeft + 1);
                 }
                 else
                 {
-                    mFrustumVisible[mBVH.mPerm[mBVH.mNodes[nodeIndex].mStartIndex]] = true;
+                    int startIndex = node->mStartIndex;
+                    int endIndex = startIndex + node->mIndexCount;
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        mFrustumVisible[mBVH.mPerm[i]] = true;
+                    }
                 }
             }
             else
             {
-                mFrustumVisible[mBVH.mPerm[mBVH.mNodes[nodeIndex].mStartIndex]] = false;
+                mFrustumVisible[mBVH.mPerm[node->mStartIndex]] = false;
             }
         }
 
-        /*for (size_t i = 0; i < meshRendererCount; i++)
-        {
-            mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum());
-        }*/
+        //for (size_t i = 0; i < meshRendererCount; i++)
+        //{
+        //    /*mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum());*/
+        //    mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
+        //}
     }
 }
 

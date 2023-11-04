@@ -28,15 +28,19 @@ struct BVHNode
     glm::vec3 mMin;
     glm::vec3 mMax;
     int mLeft;
-    int mRight;
     int mStartIndex;
     int mIndexCount;
+
+    inline bool isLeaf() const
+    {
+        return mIndexCount > 0;
+    }
 };
 
 struct BVH
 {
-    std::vector<int> mPerm;
     std::vector<BVHNode> mNodes;
+    std::vector<int> mPerm;
 
     void buildBVH(const std::vector<AABB> &boundingAABBs)
     {
@@ -45,7 +49,7 @@ struct BVH
             return;
         }
 
-        mPerm.resize(boundingAABBs.size(), 0);
+        mPerm.resize(boundingAABBs.size());
         for (size_t i = 0; i < mPerm.size(); i++)
         {
             mPerm[i] = (int)i;
@@ -54,7 +58,6 @@ struct BVH
         mNodes.resize(2 * boundingAABBs.size() - 1);
 
         mNodes[0].mLeft = 0;
-        mNodes[0].mRight = 0;
         mNodes[0].mStartIndex = 0;
         mNodes[0].mIndexCount = static_cast<int>(boundingAABBs.size());
 
@@ -70,41 +73,43 @@ struct BVH
             assert(index < mNodes.size());
             assert(nodeIndex < mNodes.size());
 
+            BVHNode *node = &mNodes[nodeIndex];
+
             // update bounds
             glm::vec3 nodeMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                                           std::numeric_limits<float>::max());
             glm::vec3 nodeMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
                                           std::numeric_limits<float>::lowest());
 
-            for (size_t i = mNodes[nodeIndex].mStartIndex; i < (mNodes[nodeIndex].mStartIndex + mNodes[nodeIndex].mIndexCount); i++)
+            int startIndex = node->mStartIndex;
+            int endIndex = node->mStartIndex + node->mIndexCount;
+
+            for (int i = startIndex; i < endIndex; i++)
             {
-                glm::vec3 min = boundingAABBs[mPerm[i]].getMin();
-                glm::vec3 max = boundingAABBs[mPerm[i]].getMax();
-
-
-                nodeMin = glm::min(nodeMin, boundingAABBs[mPerm[i]].getMin());
-                nodeMax = glm::max(nodeMax, boundingAABBs[mPerm[i]].getMax());
+                const AABB *aabb = &boundingAABBs[mPerm[i]];
+                nodeMin = glm::min(nodeMin, aabb->getMin());
+                nodeMax = glm::max(nodeMax, aabb->getMax());
             }
 
-            mNodes[nodeIndex].mMin = nodeMin;
-            mNodes[nodeIndex].mMax = nodeMax;
+            node->mMin = nodeMin;
+            node->mMax = nodeMax;
 
             // Find split (by splitting along longest axis)
-            glm::vec3 extents = mNodes[nodeIndex].mMax - mNodes[nodeIndex].mMin;
+            glm::vec3 size = node->mMax - node->mMin;
             int splitPlane = 0;
-            if (extents.y > extents.x && extents.y > extents.z)
+            if (size.y > size.x && size.y > size.z)
             {
                 splitPlane = 1;
             }
-            else if (extents.z > extents.x && extents.z > extents.y)
+            else if (size.z > size.x && size.z > size.y)
             {
                 splitPlane = 2;
             }
-            float splitPosition = mNodes[nodeIndex].mMin[splitPlane] + 0.5f * extents[splitPlane];
+            float splitPosition = node->mMin[splitPlane] + 0.5f * size[splitPlane];
 
             // Split bounding AABB's to the left or right of split position
-            int i = mNodes[nodeIndex].mStartIndex;
-            int j = i + mNodes[nodeIndex].mIndexCount - 1;
+            int i = node->mStartIndex;
+            int j = i + node->mIndexCount - 1;
             while (i <= j)
             {
                 if (boundingAABBs[mPerm[i]].mCentre[splitPlane] < splitPosition)
@@ -120,8 +125,8 @@ struct BVH
                 }
             }
 
-            int leftChildIndexCount = i - mNodes[nodeIndex].mStartIndex;
-            int rightChildIndexCount = mNodes[nodeIndex].mIndexCount - (i - mNodes[nodeIndex].mStartIndex);
+            int leftChildIndexCount = i - node->mStartIndex;
+            int rightChildIndexCount = node->mIndexCount - (i - node->mStartIndex);
 
             if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
             {
@@ -130,15 +135,14 @@ struct BVH
 
                 assert(index < mNodes.size());
 
-                mNodes[leftChildIndex].mStartIndex = mNodes[nodeIndex].mStartIndex;
+                mNodes[leftChildIndex].mStartIndex = node->mStartIndex;
                 mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
 
                 mNodes[rightChildIndex].mStartIndex = i;
                 mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
 
-                mNodes[nodeIndex].mLeft = leftChildIndex;
-                mNodes[nodeIndex].mRight = rightChildIndex;
-                mNodes[nodeIndex].mIndexCount = 0;
+                node->mLeft = leftChildIndex;
+                node->mIndexCount = 0;
 
                 queue.push(leftChildIndex);
                 queue.push(rightChildIndex);
@@ -182,6 +186,12 @@ class RenderSystem
     std::vector<int> mCachedMeshIndices;
     std::vector<int> mCachedMaterialIndices;
     AABB mCachedBoundingVolume;
+
+    //std::vector<MeshHandle *> mCachedMeshHandles;
+
+
+
+
 
     // Scratch arrays
     std::vector<RenderObject> mDrawCallScratch;
