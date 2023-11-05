@@ -12,10 +12,6 @@ Sphere::Sphere(const glm::vec3 &centre, float radius) : mCentre(centre), mRadius
 {
 }
 
-Sphere::~Sphere()
-{
-}
-
 float Sphere::getVolume() const
 {
     return (4.0f / 3.0f) * glm::pi<float>() * mRadius * mRadius * mRadius;

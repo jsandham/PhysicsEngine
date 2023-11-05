@@ -54,7 +54,6 @@ class Frustum
   public:
     Frustum();
     Frustum(float fov, float aspectRatio, float near, float far);
-    ~Frustum();
 
     void computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up, const glm::vec3 &right);
     bool containsPoint(const glm::vec3 &point) const;

@@ -55,18 +55,18 @@ class ForwardRenderer
     ForwardRenderer &operator=(const ForwardRenderer &other) = delete;
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
                 const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
 
   private:
     void beginFrame(Camera *camera);
-    void computeSSAO(Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void computeSSAO(Camera *camera, const std::vector<DrawCallCommand> &commands,
                      const std::vector<glm::mat4> &models);
     void renderShadows(Camera *camera, Light *light, Transform *lightTransform,
-                       const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
+                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
     void renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
-                       const std::vector<RenderObject> &renderObjects, const std::vector<glm::mat4> &models);
-    void renderColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
+                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
+    void renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
     void renderTransparents();
     void postProcessing();

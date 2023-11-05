@@ -43,14 +43,14 @@ class DebugRenderer
     DebugRenderer &operator=(const DebugRenderer &other) = delete;
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
                 const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
 
   private:
     void beginDebugFrame(Camera *camera);
-    void renderDebug(Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void renderDebug(Camera *camera, const std::vector<DrawCallCommand> &commands,
                      const std::vector<glm::mat4> &models);
-    void renderDebugColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void renderDebugColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                                  const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
     void endDebugFrame(Camera *camera);
 };

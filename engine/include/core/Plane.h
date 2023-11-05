@@ -21,7 +21,6 @@ class Plane
   public:
     Plane();
     Plane(glm::vec3 normal, glm::vec3 x0);
-    ~Plane();
 
     float getD() const;
     float signedDistance(const glm::vec3 &point) const;

@@ -90,7 +90,7 @@ void GizmoRenderer::update(Camera *camera)
 
     //renderBoundingSpheres(camera);
     renderBoundingAABBs(camera);
-    renderBoundingVolumeHeirarchy(camera);
+    //renderBoundingVolumeHeirarchy(camera);
 }
 
 void GizmoRenderer::drawGrid(Camera *camera)
@@ -616,7 +616,7 @@ void GizmoRenderer::renderBoundingSpheres(Camera *camera)
     mGizmoInstancedShader->setProjection(camera->getProjMatrix());
 
     std::vector<Sphere> &spheres = mWorld->mBoundingSpheres;
-    std::vector<bool> &visible = mWorld->mFrustumVisible;
+    std::vector<int> &visible = mWorld->mFrustumVisible;
 
     std::vector<glm::mat4> models(spheres.size(), glm::mat4(0.0f));
     
@@ -688,7 +688,7 @@ void GizmoRenderer::renderBoundingAABBs(Camera *camera)
     mGizmoInstancedShader->setProjection(camera->getProjMatrix());
 
     std::vector<AABB> &aabbs = mWorld->mBoundingAABBs;
-    std::vector<bool> &visible = mWorld->mFrustumVisible;
+    std::vector<int> &visible = mWorld->mFrustumVisible;
 
     std::vector<glm::mat4> models(aabbs.size(), glm::mat4(0.0f));
 

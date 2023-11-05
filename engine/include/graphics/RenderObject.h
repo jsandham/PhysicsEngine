@@ -6,17 +6,26 @@
 #include "../core/Guid.h"
 #include "../core/Id.h"
 #include "../core/Sphere.h"
+#include "../core/Material.h"
+
 #include "../graphics/MeshHandle.h"
 
 #include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {
-typedef struct RenderObject
+typedef struct DrawCallCommand
 {
+    MeshHandle *meshHandle;
+    VertexBuffer *instanceModelBuffer;
+    VertexBuffer *instanceColorBuffer;
+    Material *material;
+    Shader *shader;
+    int meshStartIndex;
+    int meshEndIndex;
     int instanceCount;
-    uint64_t key;
-} RenderObject;
+    bool indexed;
+} DrawCallCommand;
 
 enum class RenderFlags
 {

@@ -31,14 +31,14 @@ void ForwardRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
                              const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginFrame(camera);
 
     if (camera->mSSAO == CameraSSAO::SSAO_On)
     {
-        computeSSAO(camera, renderObjects, models);
+        computeSSAO(camera, commands, models);
     }
 
     for (size_t j = 0; j < mWorld->getActiveScene()->getNumberOfComponents<Light>(); j++)
@@ -53,17 +53,17 @@ void ForwardRenderer::update(const Input &input, Camera *camera, const std::vect
             {
                 if (light->mShadowType != ShadowType::None)
                 {
-                    renderShadows(camera, light, lightTransform, renderObjects, models);
+                    renderShadows(camera, light, lightTransform, commands, models);
                 }
 
-                renderOpaques(camera, light, lightTransform, renderObjects, models);
+                renderOpaques(camera, light, lightTransform, commands, models);
 
                 renderTransparents();
             }
         }
     }
 
-    renderColorPicking(camera, renderObjects, models, transformIds);
+    renderColorPicking(camera, commands, models, transformIds);
 
     postProcessing();
 
@@ -124,7 +124,7 @@ void ForwardRenderer::beginFrame(Camera *camera)
     }
 }
 
-void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject> &renderObjects,
+void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<DrawCallCommand> &commands,
                                   const std::vector<glm::mat4> &models)
 {
     // fill geometry framebuffer
@@ -135,22 +135,22 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
     mGeometryShader->bind();
 
     int modelIndex = 0;
-    for (size_t i = 0; i < renderObjects.size(); i++)
+    for (size_t i = 0; i < commands.size(); i++)
     {
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+        //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
 
-        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
-        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexStartIndex = commands[i].meshStartIndex;
+        int subMeshVertexEndIndex = commands[i].meshEndIndex;
 
-        if (isInstanced(renderObjects[i].key))
+        if (commands[i].instanceCount > 0)
         {
-            modelIndex += renderObjects[i].instanceCount;
+            modelIndex += commands[i].instanceCount;
         }
         else
         {
             mGeometryShader->setModel(models[modelIndex]);
 
-            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+            Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                  camera->mQuery);
             modelIndex++;
         }
@@ -179,7 +179,7 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<RenderObject
 }
 
 void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lightTransform,
-                                    const std::vector<RenderObject> &renderObjects,
+                                    const std::vector<DrawCallCommand> &commands,
                                     const std::vector<glm::mat4> &models)
 {
     if (light->mLightType == LightType::Directional)
@@ -205,21 +205,23 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             mDepthShader->setProjection(mCascadeOrthoProj[i]);
 
             int modelIndex = 0;
-            for (size_t j = 0; j < renderObjects.size(); j++)
+            for (size_t j = 0; j < commands.size(); j++)
             {
-                Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[j].key));
+                //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[j].key));
 
-                int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[j].key));
-                int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[j].key));
+                int subMeshVertexStartIndex = commands[j].meshStartIndex;
+                int subMeshVertexEndIndex = commands[j].meshEndIndex;
 
-                if (isInstanced(renderObjects[j].key))
+                if (commands[j].instanceCount > 0)
                 {
-                    modelIndex += renderObjects[j].instanceCount;
+                    modelIndex += commands[j].instanceCount;
                 }
                 else
                 {
                     mDepthShader->setModel(models[modelIndex]);
-                    Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
+                    Renderer::getRenderer()->drawIndexed(commands[j].meshHandle, subMeshVertexStartIndex,
+                                                         (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                         camera->mQuery);
                     modelIndex++;
                 }
             }
@@ -244,22 +246,23 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         mDepthShader->setProjection(mShadowProjMatrix);
 
         int modelIndex = 0;
-        for (size_t i = 0; i < renderObjects.size(); i++)
+        for (size_t i = 0; i < commands.size(); i++)
         {
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+            //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
 
-            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
-            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+            int subMeshVertexStartIndex = commands[i].meshStartIndex;
+            int subMeshVertexEndIndex = commands[i].meshEndIndex;
 
-            if (isInstanced(renderObjects[i].key))
+            if (commands[i].instanceCount > 0)
             {
-                modelIndex += renderObjects[i].instanceCount;
+                modelIndex += commands[i].instanceCount;
             }
             else
             {
                 mDepthShader->setModel(models[modelIndex]);
 
-                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                      camera->mQuery);
                 modelIndex++;
             }
@@ -311,22 +314,23 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         mDepthCubemapShader->setCubeViewProj(5, mCubeViewProjMatrices[5]);
 
         int modelIndex = 0;
-        for (size_t i = 0; i < renderObjects.size(); i++)
+        for (size_t i = 0; i < commands.size(); i++)
         {
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+            //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
 
-            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
-            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+            int subMeshVertexStartIndex = commands[i].meshStartIndex;
+            int subMeshVertexEndIndex = commands[i].meshEndIndex;
 
-            if (isInstanced(renderObjects[i].key))
+            if (commands[i].instanceCount > 0)
             {
-                modelIndex += renderObjects[i].instanceCount;
+                modelIndex += commands[i].instanceCount;
             }
             else
             {
                 mDepthCubemapShader->setModel(models[modelIndex]);
 
-                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                      camera->mQuery);
                 modelIndex++;
             }
@@ -337,7 +341,7 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
 }
 
 void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
-                                    const std::vector<RenderObject> &renderObjects,
+                                    const std::vector<DrawCallCommand> &commands,
                                     const std::vector<glm::mat4> &models)
 {
     // Configure light uniform
@@ -429,76 +433,78 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
     framebuffer->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                              camera->getViewport().mHeight);
 
-    int currentMaterialIndex = -1;
-    int currentShaderIndex = -1;
+    //int currentMaterialIndex = -1;
+    //int currentShaderIndex = -1;
 
     Shader *shader = nullptr;
     Material *material = nullptr;
 
     int modelIndex = 0;
-    for (size_t i = 0; i < renderObjects.size(); i++)
+    for (size_t i = 0; i < commands.size(); i++)
     {
-        int shaderIndex = getShaderIndexFromKey(renderObjects[i].key);
-        int materialIndex = getMaterialIndexFromKey(renderObjects[i].key);
+        //int shaderIndex = getShaderIndexFromKey(renderObjects[i].key);
+        //int materialIndex = getMaterialIndexFromKey(renderObjects[i].key);
 
-        if (currentShaderIndex != shaderIndex)
+        //if (currentShaderIndex != shaderIndex)
+        if (shader != commands[i].shader)
         {
-            shader = mWorld->getAssetByIndex<Shader>(shaderIndex);
+            shader = commands[i].shader;
+        }
 
-            if (isInstanced(renderObjects[i].key))
+        if (commands[i].instanceCount > 0)
+        {
+            shader->bind(variant | static_cast<int64_t>(ShaderMacro::Instancing));
+        }
+        else
+        {
+            shader->bind(shader->getProgramFromVariant(variant) != nullptr ? variant : 0);
+        }
+
+        //currentShaderIndex = shaderIndex;
+
+        if (light->mShadowType != ShadowType::None)
+        {
+            if (light->mLightType == LightType::Directional)
             {
-                shader->bind(variant | static_cast<int64_t>(ShaderMacro::Instancing));
+                std::vector<void *> tex = {
+                    light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getTexture(),
+                    light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getTexture(),
+                    light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getTexture(),
+                    light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getTexture(),
+                    light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getTexture()};
+                std::vector<int> texUnit = {3, 4, 5, 6, 7};
+                shader->setTexture2Ds(Shader::SHADOW_MAP_UNIFORM_ID, texUnit, 5, tex);
             }
-            else
+            else if (light->mLightType == LightType::Spot)
             {
-                shader->bind(shader->getProgramFromVariant(variant) != nullptr ? variant : 0);
-            }
-
-            currentShaderIndex = shaderIndex;
-
-            if (light->mShadowType != ShadowType::None)
-            {
-                if (light->mLightType == LightType::Directional)
-                {
-                    std::vector<void *> tex = {
-                        light->getNativeGraphicsShadowCascadeFBO(0)->getDepthTex()->getTexture(),
-                        light->getNativeGraphicsShadowCascadeFBO(1)->getDepthTex()->getTexture(),
-                        light->getNativeGraphicsShadowCascadeFBO(2)->getDepthTex()->getTexture(),
-                        light->getNativeGraphicsShadowCascadeFBO(3)->getDepthTex()->getTexture(),
-                        light->getNativeGraphicsShadowCascadeFBO(4)->getDepthTex()->getTexture()};
-                    std::vector<int> texUnit = {3, 4, 5, 6, 7};
-                    shader->setTexture2Ds(Shader::SHADOW_MAP_UNIFORM_ID, texUnit, 5, tex);
-                }
-                else if (light->mLightType == LightType::Spot)
-                {
-                    shader->setTexture2D(Shader::SHADOW_MAP_UNIFORM_ID, 3,
-                                         light->getNativeGrpahicsShadowSpotlightDepthTex()->getTexture());
-                }
+                shader->setTexture2D(Shader::SHADOW_MAP_UNIFORM_ID, 3,
+                                        light->getNativeGrpahicsShadowSpotlightDepthTex()->getTexture());
             }
         }
 
-        if (currentMaterialIndex != materialIndex)
-        {
-            material = mWorld->getAssetByIndex<Material>(materialIndex);
+        /*if (currentMaterialIndex != materialIndex)*/
+        //if (material != commands[i].material)
+        //{
+            material = commands[i].material;
             material->apply();
 
-            currentMaterialIndex = materialIndex;
-        }
+            //currentMaterialIndex = materialIndex;
+        //}
 
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+        //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
 
-        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
-        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexStartIndex = commands[i].meshStartIndex;
+        int subMeshVertexEndIndex = commands[i].meshEndIndex;
 
-        if (isInstanced(renderObjects[i].key))
+        if (commands[i].instanceCount > 0)
         {
-            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+            VertexBuffer *instanceModelBuffer = commands[i].instanceModelBuffer;
 
             instanceModelBuffer->bind();
             instanceModelBuffer->setData(models.data() + modelIndex, 0,
-                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+                                                          sizeof(glm::mat4) * commands[i].instanceCount);
             instanceModelBuffer->unbind();
-            modelIndex += renderObjects[i].instanceCount;
+            modelIndex += commands[i].instanceCount;
         }
         else
         {
@@ -506,23 +512,25 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             modelIndex++;
         }
 
-        if (isInstanced(renderObjects[i].key))
+        if (commands[i].instanceCount > 0)
         {
-            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+            Renderer::getRenderer()->drawIndexedInstanced(commands[i].meshHandle, subMeshVertexStartIndex,
                                                           (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                          renderObjects[i].instanceCount,
+                                                          commands[i].instanceCount,
                                                           camera->mQuery);
         }
         else
         {
-            if (isIndexed(renderObjects[i].key))
+            if (commands[i].indexed)
             {
-                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                      camera->mQuery);
             }
             else
             {
-                Renderer::getRenderer()->draw(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                Renderer::getRenderer()->draw(commands[i].meshHandle, subMeshVertexStartIndex,
+                                              (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                               camera->mQuery);
             }
         }
@@ -531,7 +539,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
     framebuffer->unbind();
 }
 
-void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<RenderObject> &renderObjects,
+void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                                          const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     camera->setColoringIds(transformIds);
@@ -542,17 +550,17 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
 
     uint32_t color = 1;
     int modelIndex = 0;
-    for (size_t i = 0; i < renderObjects.size(); i++)
+    for (size_t i = 0; i < commands.size(); i++)
     {
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+        //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
 
-        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(getSubMeshFromKey(renderObjects[i].key));
-        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(getSubMeshFromKey(renderObjects[i].key));
+        int subMeshVertexStartIndex = commands[i].meshStartIndex;
+        int subMeshVertexEndIndex = commands[i].meshEndIndex;
 
-        if (isInstanced(renderObjects[i].key))
+        if (commands[i].instanceCount > 0)
         {
-            std::vector<glm::uvec4> colors(renderObjects[i].instanceCount);
-            for (size_t j = 0; j < renderObjects[i].instanceCount; j++)
+            std::vector<glm::uvec4> colors(commands[i].instanceCount);
+            for (size_t j = 0; j < commands[i].instanceCount; j++)
             {
                 Color32 c = Color32::convertUint32ToColor32(color);
                 colors[j].r = c.mR;
@@ -562,26 +570,26 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
                 color++;
             }
 
-            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
-            VertexBuffer *instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
+            VertexBuffer *instanceModelBuffer = commands[i].instanceModelBuffer;
+            VertexBuffer *instanceColorBuffer = commands[i].instanceColorBuffer;
 
             mColorInstancedShader->bind();
 
             instanceModelBuffer->bind();
             instanceModelBuffer->setData(models.data() + modelIndex, 0,
-                                                          sizeof(glm::mat4) * renderObjects[i].instanceCount);
+                                                          sizeof(glm::mat4) * commands[i].instanceCount);
             instanceModelBuffer->unbind();
 
             instanceColorBuffer->bind();
             instanceColorBuffer->setData(colors.data(), 0,
-                                                          sizeof(glm::uvec4) * renderObjects[i].instanceCount);
+                                                          sizeof(glm::uvec4) * commands[i].instanceCount);
             instanceColorBuffer->unbind();
-            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+            Renderer::getRenderer()->drawIndexedInstanced(commands[i].meshHandle, subMeshVertexStartIndex,
                                                           (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                          renderObjects[i].instanceCount,
+                                                          commands[i].instanceCount,
                                                           camera->mQuery);
 
-            modelIndex += renderObjects[i].instanceCount;
+            modelIndex += commands[i].instanceCount;
         }
         else
         {
@@ -589,8 +597,16 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<Rende
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor32(Color32::convertUint32ToColor32(color));
 
-            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                 camera->mQuery);
+            if (commands[i].indexed)
+            {
+                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
+            }
+            else
+            {
+                Renderer::getRenderer()->draw(commands[i].meshHandle, subMeshVertexStartIndex,
+                                              (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
+            }
 
             color++;
             modelIndex++;

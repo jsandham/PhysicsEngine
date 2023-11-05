@@ -17,7 +17,6 @@ class Sphere
   public:
     Sphere();
     Sphere(const glm::vec3 &centre, float radius);
-    ~Sphere();
 
     float getVolume() const;
 };

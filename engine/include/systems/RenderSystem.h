@@ -151,21 +151,6 @@ struct BVH
     }
 };
 
-
-
-//struct DrawCallData
-//{
-//    std::vector<RenderObject> mDrawCalls;
-//    std::vector<glm::mat4> mModels;
-//    std::vector<Id> mTransformIds;
-//    std::vector<Sphere> mBoundingSpheres;
-//
-//    // std::vector<RenderObject> mInstancedDrawCalls;
-//    // std::vector<glm::mat4> mInstancedModels;
-//    // std::vector<Id> mInstancedTransformIds;
-//    // std::vector<Sphere> mInstancedBoundingSpheres;
-//};
-
 class RenderSystem
 {
   private:
@@ -187,30 +172,22 @@ class RenderSystem
     std::vector<int> mCachedMaterialIndices;
     AABB mCachedBoundingVolume;
 
-    //std::vector<MeshHandle *> mCachedMeshHandles;
-
-
-
-
-
-    // Scratch arrays
-    std::vector<RenderObject> mDrawCallScratch;
-    std::vector<int> mDrawCallMeshRendererIndices;
-
     // Frustum culling
     BVH mBVH;
-    std::vector<bool> mFrustumVisible;
+    std::vector<int> mFrustumVisible;
+
+    // RenderQueue scratch array
+    std::vector<std::pair<uint64_t, int>> mRenderQueueScratch;
+
+    // RenderQueue
+    std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
     // Draw call data
-    std::vector<RenderObject> mDrawCalls;
     std::vector<glm::mat4> mModels;
     std::vector<Id> mTransformIds;
     std::vector<Sphere> mBoundingSpheres;
 
-    //std::vector<RenderObject> mInstancedDrawCalls;
-    //std::vector<glm::mat4> mInstancedModels;
-    //std::vector<Id> mInstancedTransformIds;
-    //std::vector<Sphere> mInstancedBoundingSpheres;
+    std::vector<DrawCallCommand> mDrawCallCommands;
 
   public:
     HideFlag mHide;
@@ -236,12 +213,12 @@ class RenderSystem
     const BVH &getBVH() const;
 
   private:
-    void registerRenderAssets(World *world);
-    void cacheRenderData(World *world);
-    void frustumCulling(World *world, Camera *camera);
-    void buildRenderObjectsList(World *world, Camera* camera);
+    void registerRenderAssets();
+    void cacheRenderData();
+    void frustumCulling(Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
+    void buildDrawCallCommandList();
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
     Sphere computeWorldSpaceBoundingSphere(const glm::vec3 &translation, const glm::vec3 &scale, const Sphere &sphere);
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere);

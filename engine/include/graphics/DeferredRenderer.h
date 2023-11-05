@@ -37,15 +37,15 @@ class DeferredRenderer
     DeferredRenderer &operator=(const DeferredRenderer &other) = delete;
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
                 const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
 
   private:
     void beginDeferredFrame(Camera *camera);
-    void geometryPass(Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void geometryPass(Camera *camera, const std::vector<DrawCallCommand> &commands,
                       const std::vector<glm::mat4> &models);
-    void lightingPass(Camera *camera, const std::vector<RenderObject> &renderObjects);
-    void renderColorPickingDeferred(Camera *camera, const std::vector<RenderObject> &renderObjects,
+    void lightingPass(Camera *camera, const std::vector<DrawCallCommand> &commands);
+    void renderColorPickingDeferred(Camera *camera, const std::vector<DrawCallCommand> &commands,
                                     const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
     void endDeferredFrame(Camera *camera);
 };

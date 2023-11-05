@@ -11,10 +11,6 @@ Frustum::Frustum(float fov, float aspectRatio, float near, float far)
 {
 }
 
-Frustum::~Frustum()
-{
-}
-
 void Frustum::computePlanes(const glm::vec3 &position, const glm::vec3 &front, const glm::vec3 &up,
                             const glm::vec3 &right)
 {
