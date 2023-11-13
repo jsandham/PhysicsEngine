@@ -342,6 +342,24 @@ class GridShader
     void setColor(const Color &color);
 };
 
+class OcclusionMapShader
+{
+  private:
+    ShaderProgram *mShader;
+
+    int mViewId;
+    int mProjectionId;
+
+  public:
+    OcclusionMapShader();
+    ~OcclusionMapShader();
+
+    void bind();
+    void unbind();
+    void setView(const glm::mat4 &view);
+    void setProjection(const glm::mat4 &projection);
+};
+
 class RendererShaders
 {
   private:
@@ -365,6 +383,7 @@ class RendererShaders
     static GizmoShader *sGizmoShader;
     static GizmoInstancedShader *sGizmoInstancedShader;
     static GridShader *sGridShader;
+    static OcclusionMapShader *sOcclusionMapShader;
 
   public:
     static StandardShader *getStandardShader();
@@ -387,6 +406,7 @@ class RendererShaders
     static GizmoShader *getGizmoShader();
     static GizmoInstancedShader *getGizmoInstancedShader();
     static GridShader *getGridShader();
+    static OcclusionMapShader *getOcclusionMapShader();
 
     static void createInternalShaders();
 };

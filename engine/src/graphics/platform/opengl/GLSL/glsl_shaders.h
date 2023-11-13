@@ -46,6 +46,8 @@ namespace glsl
     std::string getGridFragmentShader();
 	std::string getStandardVertexShader();
 	std::string getStandardFragmentShader();
-}
+    std::string getOcclusionMapVertexShader();
+    std::string getOcclusionMapFragmentShader();
+    }
 
 #endif

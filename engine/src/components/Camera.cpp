@@ -22,6 +22,7 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
+    mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -68,6 +69,7 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mColorPickingFBO = Framebuffer::create(1920, 1080);
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
+    mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -108,6 +110,7 @@ Camera::~Camera()
     delete mTargets.mColorPickingFBO;
     delete mTargets.mGeometryFBO;
     delete mTargets.mSsaoFBO;
+    delete mTargets.mOcclusionMapFBO;
 }
 
 void Camera::serialize(YAML::Node &out) const
@@ -447,6 +450,11 @@ Framebuffer *Camera::getNativeGraphicsSSAOFBO() const
     return mTargets.mSsaoFBO;
 }
 
+Framebuffer *Camera::getNativeGraphicsOcclusionMapFBO() const
+{
+    return mTargets.mOcclusionMapFBO;
+}
+
 RenderTextureHandle *Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
@@ -485,6 +493,11 @@ RenderTextureHandle *Camera::getNativeGraphicsSSAOColorTex() const
 RenderTextureHandle *Camera::getNativeGraphicsSSAONoiseTex() const
 {
     return mTargets.mSsaoFBO->getColorTex();
+}
+
+RenderTextureHandle *Camera::getNativeGraphicsOcclusionMapTex() const
+{
+    return mTargets.mOcclusionMapFBO->getColorTex();
 }
 
 Entity *Camera::getEntity() const

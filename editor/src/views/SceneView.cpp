@@ -122,10 +122,10 @@ void SceneView::drawSceneHeader(Clipboard& clipboard)
 	static bool rotationModeActive = false;
 	static bool scaleModeActive = false;
 
-	clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
-
 	const char* targetNames[] = { "Color", "Color Picking", "Depth", "Linear Depth", "Normals",
-									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise" };
+									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise", "OcclusionMap"};
+
+	clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
 
 	// select draw texture dropdown
 	ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
@@ -359,24 +359,27 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 	}
 
 	// Finally draw scene
-	void* tex = clipboard.mCameraSystem->getNativeGraphicsColorTex()->getIMGUITexture();
+	PhysicsEngine::RenderTextureHandle* tex = clipboard.mCameraSystem->getNativeGraphicsColorTex();
 
 	switch (mActiveDebugTarget)
 	{
 	case DebugTargets::Depth:
-		tex = clipboard.mCameraSystem->getNativeGraphicsDepthTex()->getIMGUITexture();
+		tex = clipboard.mCameraSystem->getNativeGraphicsDepthTex();
 		break;
 	case DebugTargets::ColorPicking:
-		tex = clipboard.mCameraSystem->getNativeGraphicsColorPickingTex()->getIMGUITexture();
+		tex = clipboard.mCameraSystem->getNativeGraphicsColorPickingTex();
 		break;
 	case DebugTargets::AlbedoSpecular:
-		tex = clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex()->getIMGUITexture();
+		tex = clipboard.mCameraSystem->getNativeGraphicsAlbedoSpecTex();
 		break;
 	case DebugTargets::SSAO:
-		tex = clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex()->getIMGUITexture();
+		tex = clipboard.mCameraSystem->getNativeGraphicsSSAOColorTex();
 		break;
 	case DebugTargets::SSAONoise:
-		tex = clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex()->getIMGUITexture();
+		tex = clipboard.mCameraSystem->getNativeGraphicsSSAONoiseTex();
+		break;
+	case DebugTargets::OcclusionMap:
+		tex = clipboard.mCameraSystem->getNativeGraphicsOcclusionMapTex();
 		break;
 	}
 
@@ -384,13 +387,19 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 	{
 		if (PhysicsEngine::RenderContext::getRenderAPI() == PhysicsEngine::RenderAPI::OpenGL)
 		{
+			ImVec2 uv0 = ImVec2(0, std::min(1.0f, mSceneContentSize.y / tex->getHeight()));
+			ImVec2 uv1 = ImVec2(std::min(1.0f, mSceneContentSize.x / tex->getWidth()), 0);
+
 			// opengl
-			ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(tex)), mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+			ImGui::Image((void*)(intptr_t)(*reinterpret_cast<unsigned int*>(tex->getIMGUITexture())), mSceneContentSize, uv0, uv1);
 		}
 		else
 		{
+			ImVec2 uv0 = ImVec2(0, 0);
+			ImVec2 uv1 = ImVec2(std::min(1.0f, mSceneContentSize.x / tex->getWidth()), std::min(1.0f, mSceneContentSize.y / tex->getHeight()));
+
 			// directx
-			ImGui::Image(tex, mSceneContentSize, ImVec2(0, mSceneContentSize.y / 1080.0f), ImVec2(mSceneContentSize.x / 1920.0f, 0));
+			ImGui::Image(tex->getIMGUITexture(), mSceneContentSize, uv0, uv1);
 		}
 	}
 
@@ -647,11 +656,11 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem* cam
 			transform->setScale(scale);
 		}
 
-		// PhysicsEngine::Viewport viewport = cameraSystem->getViewport();
+		PhysicsEngine::Viewport viewport = cameraSystem->getViewport();
 		PhysicsEngine::Frustum frustum = cameraSystem->getFrustum();
 
 		// Viewport settings
-		/*if (ImGui::InputInt("X", &viewport.mX)) {
+		if (ImGui::InputInt("X", &viewport.mX)) {
 			cameraSystem->setViewport(viewport);
 		}
 		if (ImGui::InputInt("Y", &viewport.mY)) {
@@ -662,7 +671,7 @@ void SceneView::drawCameraSettingsPopup(PhysicsEngine::FreeLookCameraSystem* cam
 		}
 		if (ImGui::InputInt("Height", &viewport.mHeight)) {
 			cameraSystem->setViewport(viewport);
-		}*/
+		}
 
 		// Frustum settings
 		if (ImGui::InputFloat("FOV", &frustum.mFov))

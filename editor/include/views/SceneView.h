@@ -25,7 +25,8 @@ namespace PhysicsEditor
 		AlbedoSpecular = 7,
 		SSAO = 8,
 		SSAONoise = 9,
-		Count = 10
+		OcclusionMap = 10,
+		Count = 11
 	};
 
 	class SceneView

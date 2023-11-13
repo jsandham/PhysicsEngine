@@ -35,3 +35,13 @@ RenderTextureHandle *RenderTextureHandle::create(int width, int height, TextureF
 
     return nullptr;
 }
+
+int RenderTextureHandle::getWidth() const
+{
+    return mWidth;
+}
+
+int RenderTextureHandle::getHeight() const
+{
+    return mHeight;
+}

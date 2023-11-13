@@ -178,6 +178,8 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/grid_f.hlsl"] = "getGridFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/standard_v.hlsl"] = "getStandardVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/standard_f.hlsl"] = "getStandardFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/occlusionMap_v.hlsl"] = "getOcclusionMapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/directx/hlsl/occlusionMap_f.hlsl"] = "getOcclusionMapFragmentShader";
 
     write_header("hlsl", out);
 

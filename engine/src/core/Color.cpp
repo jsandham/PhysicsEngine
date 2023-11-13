@@ -12,6 +12,8 @@ const Color Color::yellow(1.0f, 0.91764705f, 0.01568627f, 1.0f);
 const Color Color::gray(0.5f, 0.5f, 0.5f, 1.0f);
 const Color Color::cyan(0.0f, 1.0f, 1.0f, 1.0f);
 const Color Color::magenta(1.0f, 0.0f, 1.0f, 1.0f);
+const Color Color::pink(1.0f, 0.41176f, 0.70588f, 1.0f);
+
 
 Color::Color() : mR(0.0f), mG(0.0f), mB(0.0f), mA(0.0f)
 {
@@ -39,6 +41,7 @@ const Color32 Color32::yellow(255, 234, 4, 255);
 const Color32 Color32::gray(127, 127, 127, 255);
 const Color32 Color32::cyan(0, 255, 255, 255);
 const Color32 Color32::magenta(255, 0, 255, 255);
+const Color32 Color32::pink(255, 105, 180, 255);
 
 Color32::Color32() : mR(0), mG(0), mB(0), mA(0)
 {

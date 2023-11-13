@@ -31,7 +31,7 @@ void DirectXIndexBuffer::resize(size_t size)
     // CHECK_ERROR(device->CreateBuffer(&mBufferDesc, NULL, &mBuffer));
 }
 
-void DirectXIndexBuffer::setData(void *data, size_t offset, size_t size)
+void DirectXIndexBuffer::setData(const void *data, size_t offset, size_t size)
 {
     assert(size <= mSize);
 

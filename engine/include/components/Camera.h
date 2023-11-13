@@ -37,6 +37,7 @@ struct CameraTargets
     Framebuffer *mColorPickingFBO;
     Framebuffer *mGeometryFBO;
     Framebuffer *mSsaoFBO;
+    Framebuffer *mOcclusionMapFBO;
 };
 
 class World;
@@ -58,7 +59,7 @@ class Camera
 
     Color mBackgroundColor;
 
-    GraphicsQuery mQuery;
+    TimingQuery mQuery;
 
     bool mEnabled;
     bool mRenderToScreen;
@@ -72,6 +73,7 @@ class Camera
 
     Frustum mFrustum;
     Viewport mViewport;
+
     CameraTargets mTargets;
 
     glm::vec3 mSsaoSamples[64];
@@ -140,6 +142,7 @@ class Camera
     Framebuffer *getNativeGraphicsColorPickingFBO() const;
     Framebuffer *getNativeGraphicsGeometryFBO() const;
     Framebuffer *getNativeGraphicsSSAOFBO() const;
+    Framebuffer *getNativeGraphicsOcclusionMapFBO() const;
 
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
@@ -149,6 +152,7 @@ class Camera
     RenderTextureHandle *getNativeGraphicsAlbedoSpecTex() const;
     RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
     RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
+    RenderTextureHandle *getNativeGraphicsOcclusionMapTex() const;
 
     Entity *getEntity() const;
 

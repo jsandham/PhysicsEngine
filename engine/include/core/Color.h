@@ -22,6 +22,7 @@ class Color
     static const Color gray;
     static const Color cyan;
     static const Color magenta;
+    static const Color pink;
 
     float mR;
     float mG;
@@ -48,6 +49,7 @@ class Color32
     static const Color32 gray;
     static const Color32 cyan;
     static const Color32 magenta;
+    static const Color32 pink;
 
     unsigned char mR;
     unsigned char mG;

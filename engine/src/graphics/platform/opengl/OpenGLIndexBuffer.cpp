@@ -22,7 +22,7 @@ void OpenGLIndexBuffer::resize(size_t size)
     CHECK_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW));
 }
 
-void OpenGLIndexBuffer::setData(void *data, size_t offset, size_t size)
+void OpenGLIndexBuffer::setData(const void *data, size_t offset, size_t size)
 {
     assert(offset + size <= mSize);
 

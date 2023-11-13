@@ -3,7 +3,15 @@
 
 namespace PhysicsEngine
 {
-struct GraphicsQuery
+struct OcclusionQuery
+{
+    unsigned int samplesDrawn;
+
+    //void begin();
+    //void end();
+};
+
+struct TimingQuery
 {
     unsigned int mNumInstancedDrawCalls;
     unsigned int mNumDrawCalls;
@@ -17,7 +25,7 @@ struct GraphicsQuery
     unsigned int mQueryId[2];
     float mTotalElapsedTime;
 
-    GraphicsQuery()
+    TimingQuery()
     {
         mNumInstancedDrawCalls = 0;
         mNumDrawCalls = 0;

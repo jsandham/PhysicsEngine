@@ -390,7 +390,12 @@ RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsSSAONoiseTex() const
     return getCamera()->getNativeGraphicsSSAONoiseTex();
 }
 
-GraphicsQuery FreeLookCameraSystem::getQuery() const
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsOcclusionMapTex() const
+{
+    return getCamera()->getNativeGraphicsOcclusionMapTex();
+}
+
+TimingQuery FreeLookCameraSystem::getQuery() const
 {
     return getCamera()->mQuery;
 }

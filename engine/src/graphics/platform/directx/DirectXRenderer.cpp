@@ -87,21 +87,23 @@ void DirectXRenderer::turnOff_impl(Capability capability)
 void DirectXRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest)
 {
 }
-void DirectXRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
+void DirectXRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, TimingQuery &query)
 {
-    
+    meshHandle->draw(vertexOffset, vertexCount);
 };
-void DirectXRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
+void DirectXRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, TimingQuery &query)
 {
-  
+    meshHandle->drawIndexed(indexOffset, indexCount);
 };
-void DirectXRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
-{
-  
-};
-void DirectXRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query)
-{
 
+void DirectXRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, TimingQuery &query)
+{
+    meshHandle->drawInstanced(vertexOffset, vertexCount, instanceCount);
+};
+
+void DirectXRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, TimingQuery &query)
+{
+    meshHandle->drawIndexedInstanced(indexOffset, indexCount, instanceCount);
 };
 
 void DirectXRenderer::beginQuery_impl(unsigned int queryId)

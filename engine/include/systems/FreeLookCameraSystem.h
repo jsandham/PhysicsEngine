@@ -117,8 +117,9 @@ class FreeLookCameraSystem
     RenderTextureHandle *getNativeGraphicsAlbedoSpecTex() const;
     RenderTextureHandle *getNativeGraphicsSSAOColorTex() const;
     RenderTextureHandle *getNativeGraphicsSSAONoiseTex() const;
+    RenderTextureHandle *getNativeGraphicsOcclusionMapTex() const;
 
-    GraphicsQuery getQuery() const;
+    TimingQuery getQuery() const;
 
     glm::vec3 getCameraForward() const;
     glm::vec3 getCameraPosition() const;

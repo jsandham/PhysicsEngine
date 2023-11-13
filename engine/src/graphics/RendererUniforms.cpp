@@ -201,8 +201,37 @@ void LightUniform::copyToUniformsToDevice()
     mBuffer->unbind(PipelineStage::PS);
 }
 
+OcclusionUniform::OcclusionUniform()
+{
+    mBuffer = UniformBuffer::create(64 * 20, 2);
+}
+
+OcclusionUniform::~OcclusionUniform()
+{
+    delete mBuffer;
+}
+
+void OcclusionUniform::setModel(const glm::mat4 &model, int index)
+{
+    assert(index >= 0);
+    assert(index < 20);
+    mModels[index] = model;
+}
+
+void OcclusionUniform::copyToUniformsToDevice()
+{
+    mBuffer->setData(glm::value_ptr(mModels[0]), 0, 20 * 64);
+
+    mBuffer->bind(PipelineStage::VS);
+    mBuffer->bind(PipelineStage::PS);
+    mBuffer->copyDataToDevice();
+    mBuffer->unbind(PipelineStage::VS);
+    mBuffer->unbind(PipelineStage::PS);
+}
+
 CameraUniform *RendererUniforms::sCameraUniform = nullptr;
 LightUniform *RendererUniforms::sLightUniform = nullptr;
+OcclusionUniform *RendererUniforms::sOcclusionUniform = nullptr;
 
 void RendererUniforms::createInternalUniforms()
 {
@@ -210,6 +239,7 @@ void RendererUniforms::createInternalUniforms()
     // exist for the length of the program so ... meh?
     sCameraUniform = new CameraUniform();
     sLightUniform = new LightUniform();
+    sOcclusionUniform = new OcclusionUniform();
 }
 
 CameraUniform *RendererUniforms::getCameraUniform()
@@ -220,4 +250,9 @@ CameraUniform *RendererUniforms::getCameraUniform()
 LightUniform *RendererUniforms::getLightUniform()
 {
     return RendererUniforms::sLightUniform;
+}
+
+OcclusionUniform *RendererUniforms::getOcclusionUniform()
+{
+    return RendererUniforms::sOcclusionUniform;
 }

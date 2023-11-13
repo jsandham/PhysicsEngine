@@ -37,6 +37,9 @@ class Mesh
     std::vector<float> mColors;
     std::vector<unsigned int> mIndices;
 
+    size_t mVertexCount;
+    size_t mIndexCount;
+
     std::vector<int> mSubMeshVertexStartIndices;
     std::vector<int> mSubMeshStartIndices;
 
@@ -88,13 +91,23 @@ class Mesh
     const std::vector<float> &getColors() const;
     const std::vector<unsigned int> &getIndices() const;
     const std::vector<int> &getSubMeshStartIndices() const;
+
+    size_t getVertexCount() const;
+    size_t getNormalCount() const;
+    size_t getTexCoordCount() const;
+    size_t getIndexCount() const;
+
     int getSubMeshStartIndex(int subMeshIndex) const;
     int getSubMeshEndIndex(int subMeshIndex) const;
     int getSubMeshCount() const;
     Sphere getBounds() const;
     MeshHandle *getNativeGraphicsHandle() const;
+    VertexBuffer *getNativeGraphicsVertexBuffer() const;
+    VertexBuffer *getNativeGraphicsNormallBuffer() const;
+    VertexBuffer *getNativeGraphicsTexCoordsBuffer() const;
     VertexBuffer *getNativeGraphicsInstanceModelBuffer() const;
     VertexBuffer *getNativeGraphicsInstanceColorBuffer() const;
+    IndexBuffer *getNativeGraphicsIndexBuffer() const;
 
     void setVertices(const std::vector<float> &vertices);
     void setNormals(const std::vector<float> &normals);

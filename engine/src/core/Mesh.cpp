@@ -467,6 +467,9 @@ void Mesh::load(const std::string &filepath)
     std::filesystem::path temp = filepath;
     mSource = temp.filename().string();
 
+    mVertexCount = mVertices.size() / 3;
+    mIndexCount = mIndices.size();
+
     mDeviceUpdateRequired = true;
 }
 
@@ -498,6 +501,9 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
 
     // computeBoundingSphere();
     computeBoundingSphere_SIMD128();
+
+    mVertexCount = mVertices.size() / 3;
+    mIndexCount = mIndices.size();
 
     mDeviceUpdateRequired = true;
 }
@@ -537,6 +543,16 @@ const std::vector<int> &Mesh::getSubMeshStartIndices() const
     return mSubMeshStartIndices;
 }
 
+size_t Mesh::getVertexCount() const
+{
+    return mVertexCount;
+}
+
+size_t Mesh::getIndexCount() const
+{
+    return mIndexCount;
+}
+
 int Mesh::getSubMeshStartIndex(int subMeshIndex) const
 {
     if (subMeshIndex >= mSubMeshStartIndices.size() - 1)
@@ -572,6 +588,21 @@ MeshHandle *Mesh::getNativeGraphicsHandle() const
     return mHandle;
 }
 
+VertexBuffer* Mesh::getNativeGraphicsVertexBuffer() const
+{
+    return mVertexBuffer;
+}
+
+VertexBuffer *Mesh::getNativeGraphicsNormallBuffer() const
+{
+    return mNormalBuffer;
+}
+
+VertexBuffer *Mesh::getNativeGraphicsTexCoordsBuffer() const
+{
+    return mTexCoordsBuffer;
+}
+
 VertexBuffer *Mesh::getNativeGraphicsInstanceModelBuffer() const
 {
     return mInstanceModelBuffer;
@@ -582,34 +613,48 @@ VertexBuffer *Mesh::getNativeGraphicsInstanceColorBuffer() const
     return mInstanceColorBuffer;
 }
 
+IndexBuffer *Mesh::getNativeGraphicsIndexBuffer() const
+{
+    return mIndexBuffer;
+}
+
 void Mesh::setVertices(const std::vector<float> &vertices)
 {
-    mVertices = vertices;
-    // computeBoundingSphere();
-    computeBoundingSphere_SIMD128();
+    if (vertices.size() / 3 == mVertexCount)
+    {
+        mVertices = vertices;
+        mDeviceUpdateRequired = true;
 
-    mDeviceUpdateRequired = true;
+        // computeBoundingSphere();
+        computeBoundingSphere_SIMD128();
+    }
 }
 
 void Mesh::setNormals(const std::vector<float> &normals)
 {
-    mNormals = normals;
-
-    mDeviceUpdateRequired = true;
+    if (normals.size() / 3 == mVertexCount)
+    {
+        mNormals = normals;
+        mDeviceUpdateRequired = true;
+    }
 }
 
 void Mesh::setTexCoords(const std::vector<float> &texCoords)
 {
-    mTexCoords = texCoords;
-
-    mDeviceUpdateRequired = true;
+    if (3 * (texCoords.size() / 2) == mVertexCount)
+    {
+        mTexCoords = texCoords;
+        mDeviceUpdateRequired = true;
+    }
 }
 
 void Mesh::setColors(const std::vector<float> &colors)
 {
-    mColors = colors;
-
-    mDeviceUpdateRequired = true;
+    if (colors.size() / 4 == mVertexCount)
+    {
+        mColors = colors;
+        mDeviceUpdateRequired = true;
+    }
 }
 
 void Mesh::copyMeshToDevice()

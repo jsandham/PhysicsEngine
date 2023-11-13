@@ -451,6 +451,34 @@ return "#version 430 core\n"
 "}\n"
 "\n";
 }
+std::string glsl::getOcclusionMapFragmentShader()
+{
+return "#version 430 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"}\n";
+}
+std::string glsl::getOcclusionMapVertexShader()
+{
+return "#version 430 core\n"
+"layout(std140) uniform OcclusionBlock\n"
+"{\n"
+"    mat4 models[20];\n"
+"}Occlusion;\n"
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 1) in int modelIndex;\n"
+"\n"
+"uniform mat4 projection;\n"
+"uniform mat4 view;\n"
+"\n"
+"void main()\n"
+"{\n"
+"    /*gl_Position = Camera.viewProjection * vec4(aPos, 1.0f);*/\n"
+"    gl_Position = projection * view * Occlusion.models[modelIndex] * vec4(aPos, 1.0f);\n"
+"}\n";
+}
 std::string glsl::getPositionFragmentShader()
 {
 return "#version 430 core\n"

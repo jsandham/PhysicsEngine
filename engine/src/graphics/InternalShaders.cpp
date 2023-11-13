@@ -62,6 +62,8 @@ INSTANIATE_SHADER(getGridVertexShader)
 INSTANIATE_SHADER(getGridFragmentShader)
 INSTANIATE_SHADER(getStandardVertexShader)
 INSTANIATE_SHADER(getStandardFragmentShader)
+INSTANIATE_SHADER(getOcclusionMapVertexShader)
+INSTANIATE_SHADER(getOcclusionMapFragmentShader)
 
 // std::string PhysicsEngine::getGeometryVertexShader()
 //{

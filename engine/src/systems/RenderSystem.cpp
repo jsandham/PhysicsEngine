@@ -37,6 +37,10 @@ RenderSystem::RenderSystem(World *world, const Guid &guid, const Id &id) : mWorl
 
 RenderSystem::~RenderSystem()
 {
+    delete mOcclusionVertexBuffer;
+    delete mOcclusionModelIndexBuffer;
+    delete mOcclusionIndexBuffer;
+    delete mOcclusionMeshHandle;
 }
 
 void RenderSystem::serialize(YAML::Node &out) const
@@ -79,6 +83,30 @@ void RenderSystem::init(World *world)
     mForwardRenderer.init(mWorld);
     mDeferredRenderer.init(mWorld);
     mDebugRenderer.init(mWorld);
+
+    mOcclusionVertexBuffer = VertexBuffer::create();
+    mOcclusionVertexBuffer->bind();
+    mOcclusionVertexBuffer->resize(sizeof(float) * 3 * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
+    mOcclusionVertexBuffer->unbind();
+
+    mOcclusionModelIndexBuffer = VertexBuffer::create();
+    mOcclusionModelIndexBuffer->bind();
+    mOcclusionModelIndexBuffer->resize(sizeof(int) * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
+    mOcclusionModelIndexBuffer->unbind();
+
+    mOcclusionIndexBuffer = IndexBuffer::create();
+    mOcclusionIndexBuffer->bind();
+    mOcclusionIndexBuffer->resize(sizeof(unsigned int) * Renderer::MAX_OCCLUDER_INDEX_COUNT);
+    mOcclusionIndexBuffer->unbind();
+
+    mOcclusionMeshHandle = MeshHandle::create();
+    mOcclusionMeshHandle->addVertexBuffer(mOcclusionVertexBuffer, AttribType::Vec3);
+    mOcclusionMeshHandle->addVertexBuffer(mOcclusionModelIndexBuffer, AttribType::Int);
+    mOcclusionMeshHandle->addIndexBuffer(mOcclusionIndexBuffer);
+
+    mOccluderVertices.resize(3 * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
+    mOccluderModelIndices.resize(Renderer::MAX_OCCLUDER_VERTEX_COUNT);
+    mOccluderIndices.resize(Renderer::MAX_OCCLUDER_INDEX_COUNT);
 }
 
 void RenderSystem::update(const Input &input, const Time &time)
@@ -87,6 +115,8 @@ void RenderSystem::update(const Input &input, const Time &time)
 
     cacheRenderData();
 
+    buildBVH();
+
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
         Camera *camera = mWorld->getActiveScene()->getComponentByIndex<Camera>(i);
@@ -94,6 +124,7 @@ void RenderSystem::update(const Input &input, const Time &time)
         if (camera->mEnabled)
         {
             frustumCulling(camera);
+            occlusionCulling(camera);
 
             buildRenderQueue();
             sortRenderQueue();
@@ -290,173 +321,24 @@ void RenderSystem::cacheRenderData()
     mCachedBoundingVolume.mSize = (boundingVolumeMax - boundingVolumeMin);
 }
 
+void RenderSystem::buildBVH()
+{
+    mBVH.buildBVH(mCachedBoundingAABBs);
+}
 
-//struct Node
-//{
-//    glm::vec3 mCentre;
-//    glm::vec3 mExtent;
-//    std::vector<int> mSphereIndices;
-//};
-//
-//struct OctTree
-//{
-//    AABB mBounds;
-//    int mMaxDepth;
-//    std::vector<Node> mNodes;
-//
-//    static int getDepth(int index)
-//    {
-//        // indices 0           -> depth 0
-//        // indices 1...8       -> depth 1
-//        // indices 9...72      -> depth 2
-//        // indices 73...585    -> depth 3
-//        if (index == 0)
-//        {
-//            return 0;
-//        }
-//        else if (index < 9)
-//        {
-//            return 1;
-//        }
-//        else if (index < 73)
-//        {
-//            return 2;
-//        }
-//        else
-//        {
-//            return 3;
-//        }
-//    }
-//
-//    void create(const AABB& bounds, int maxDepth)
-//    {
-//        mBounds = bounds;
-//        mMaxDepth = maxDepth;
-//
-//        // find total number of nodes in octtree corresponding to input max tree depth
-//        int d = 0;                 // depth
-//        int levelSize = 1;         // number of nodes only at depth d
-//        int totalSize = levelSize; // total number of nodes at all depths
-//        while (d < maxDepth)
-//        {
-//            levelSize *= 8;
-//            d++;
-//            totalSize += levelSize;
-//        }
-//
-//        mNodes.resize(totalSize);
-//
-//        // for all nodes in octtree, determine centre and extents of node
-//        mNodes[0].mExtent = 0.5f * bounds.mSize;
-//        mNodes[0].mCentre = bounds.mCentre;
-//        
-//        std::queue<int> queue;
-//        queue.push(0);
-//        while (!queue.empty())
-//        {
-//            int currentIndex = queue.front();
-//            queue.pop();
-//
-//            int depth = getDepth(currentIndex);
-//
-//            if(depth < maxDepth)
-//            {
-//                for (int i = -1; i <= 1; i += 2)
-//                {
-//                    for (int j = -1; j <= 1; j += 2)
-//                    {
-//                        for (int k = -1; k <= 1; k += 2)
-//                        {
-//                            glm::vec3 newExtent = 0.5f * mNodes[currentIndex].mExtent;
-//                            glm::vec3 newCentre;
-//                            newCentre.x = mNodes[currentIndex].mCentre.x + i * 0.5f * mNodes[currentIndex].mExtent.x;
-//                            newCentre.y = mNodes[currentIndex].mCentre.y + j * 0.5f * mNodes[currentIndex].mExtent.y;
-//                            newCentre.z = mNodes[currentIndex].mCentre.z + k * 0.5f * mNodes[currentIndex].mExtent.z;
-//
-//                            int quadrant = 0;
-//                            for (int l = 0; l < 3; l++)
-//                            {
-//                                float delta = newCentre[l] - mNodes[currentIndex].mCentre[l];
-//                                if (delta > 0.0f)
-//                                {
-//                                    quadrant |= (1 << l);
-//                                }
-//                            }
-//
-//                            int index = 8 * currentIndex + quadrant + 1;
-//                            mNodes[index].mExtent = newExtent;
-//                            mNodes[index].mCentre = newCentre;
-//
-//                            queue.push(index);
-//                        
-//                        // 0
-//                        // 1 2 3 4 5 6 7 8 
-//                        // 9 10 11 12 13 14 15 16   17 18 19 20 21 22 
-//                        
-//                        
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    void insert(const Sphere &sphere, int sphereIndex)
-//    {
-//        std::queue<int> queue;
-//
-//        queue.push(0);
-//        while (!queue.empty())
-//        {
-//            int nodeIndex = queue.front();
-//            queue.pop();
-//
-//            int depth = getDepth(nodeIndex);
-//
-//            // find quadrant that completely contains the object
-//            bool straddle = false;
-//            int quadrant = 0;
-//            for (int i = 0; i < 3; i++)
-//            {
-//                float delta = sphere.mCentre[i] - mNodes[nodeIndex].mCentre[i];
-//                if (std::abs(delta) <= sphere.mRadius)
-//                {
-//                    straddle = true;
-//                    break;
-//                }
-//
-//                if (delta > 0.0f)
-//                {
-//                    quadrant |= (1 << i);
-//                }
-//            }
-//
-//            if (!straddle && depth < mMaxDepth)
-//            {
-//                queue.push(8 * nodeIndex + quadrant + 1);
-//            }
-//            else
-//            {
-//                // insert object into current node
-//                mNodes[nodeIndex].mSphereIndices.push_back(sphereIndex);
-//            }
-//        }
-//    }
-//};
-
-void RenderSystem::frustumCulling(Camera *camera)
+void RenderSystem::frustumCulling(const Camera *camera)
 {
     size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
     if (meshRendererCount > 0)
     {
+        mDistanceToCamera.resize(meshRendererCount);
         mFrustumVisible.resize(meshRendererCount);
         for (size_t i = 0; i < mFrustumVisible.size(); i++)
         {
+            mDistanceToCamera[i] = std::pair<float, int>(std::numeric_limits<float>::max(), static_cast<int>(i));
             mFrustumVisible[i] = 0;
         }
-
-        /*mBVH.buildBVH(mCachedBoundingAABBs);
 
         std::queue<int> queue;
         queue.push(0);
@@ -481,25 +363,134 @@ void RenderSystem::frustumCulling(Camera *camera)
                 }
                 else
                 {
+                    float distanceToCamera = glm::distance2(aabb.mCentre, camera->getPosition());
+
                     int startIndex = node->mStartIndex;
                     int endIndex = startIndex + node->mIndexCount;
                     for (int i = startIndex; i < endIndex; i++)
                     {
-                        mFrustumVisible[mBVH.mPerm[i]] = true;
+                        mFrustumVisible[mBVH.mPerm[i]] = 1;
+
+                        mDistanceToCamera[mBVH.mPerm[i]] = std::pair<float, int>(distanceToCamera, mBVH.mPerm[i]);
+
+                        // Also inside here we want to check the previous frames occlusion query?
                     }
                 }
             }
             else
             {
-                mFrustumVisible[mBVH.mPerm[node->mStartIndex]] = false;
+                mFrustumVisible[mBVH.mPerm[node->mStartIndex]] = 0;
             }
-        }*/
-
-        for (size_t i = 0; i < meshRendererCount; i++)
-        {
-            mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum());
-            //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
         }
+
+        /*for (size_t i = 0; i < meshRendererCount; i++)
+        {
+            mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()); 
+            //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
+        
+            float distanceToCamera = mFrustumVisible[i]
+                                       ? glm::distance2(mCachedBoundingSpheres[i].mCentre, camera->getPosition())
+                                       : std::numeric_limits<float>::max();
+
+            mDistanceToCamera[i] = std::pair<float, int>(distanceToCamera, static_cast<int>(i));
+        }*/
+    }
+}
+
+void RenderSystem::occlusionCulling(const Camera *camera)
+{
+    size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
+    
+    if (meshRendererCount > 0)
+    {
+        //std::sort(mDistanceToCamera.begin(), mDistanceToCamera.end(),
+        //          [=](std::pair<float, int> &a, std::pair<float, int> &b) { return a.first < b.first; });
+
+        std::array<glm::mat4, 20> models;
+
+        size_t cumulativeVertices = 0;
+        size_t cumulativeIndices = 0;
+        std::array<int, 20> occluders;
+
+        int i = 0;
+        int cumulativeMeshCount = 0;
+        while (i < meshRendererCount && cumulativeMeshCount < Renderer::MAX_OCCLUDER_COUNT && cumulativeVertices < Renderer::MAX_OCCLUDER_VERTEX_COUNT && cumulativeIndices < Renderer::MAX_OCCLUDER_INDEX_COUNT)
+        {
+            if (mFrustumVisible[i])
+            {
+                Mesh *mesh = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
+                assert(mesh != nullptr);
+
+                if ((cumulativeVertices + mesh->getVertexCount()) < Renderer::MAX_OCCLUDER_VERTEX_COUNT)
+                {
+                    if ((cumulativeIndices + mesh->getIndexCount()) < Renderer::MAX_OCCLUDER_INDEX_COUNT)
+                    {
+                        const std::vector<float> &vert = mesh->getVertices();
+                        const std::vector<unsigned int> &ind = mesh->getIndices();
+
+                        for (size_t j = 0; j < mesh->getVertexCount(); j++)
+                        {
+                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 0] = vert[3 * j + 0];
+                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 1] = vert[3 * j + 1];
+                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 2] = vert[3 * j + 2];
+                        
+                            mOccluderModelIndices[cumulativeVertices + j] = cumulativeMeshCount;
+                        }
+
+                        for (size_t j = 0; j < mesh->getIndexCount(); j++)
+                        {
+                            mOccluderIndices[cumulativeIndices + j] = cumulativeVertices + ind[j];
+                        }
+
+                        models[cumulativeMeshCount] = mCachedModels[i];
+
+                        occluders[cumulativeMeshCount] = i;
+                        cumulativeVertices += mesh->getVertexCount();
+                        cumulativeIndices += mesh->getIndexCount();
+                        cumulativeMeshCount++;
+                    }
+                }
+            }
+            i++;
+        }
+
+        mOcclusionVertexBuffer->bind();
+        mOcclusionVertexBuffer->setData(mOccluderVertices.data(), 0, sizeof(float) * 3 * cumulativeVertices);
+        mOcclusionVertexBuffer->unbind();
+
+        mOcclusionModelIndexBuffer->bind();
+        mOcclusionModelIndexBuffer->setData(mOccluderModelIndices.data(), 0, sizeof(int) * cumulativeVertices);
+        mOcclusionModelIndexBuffer->unbind();
+
+        mOcclusionIndexBuffer->bind();
+        mOcclusionIndexBuffer->setData(mOccluderIndices.data(), 0, sizeof(unsigned int) * cumulativeIndices);
+        mOcclusionIndexBuffer->unbind();
+
+        mOcclusionMapShader = RendererShaders::getOcclusionMapShader();
+
+        mOcclusionModelMatUniform = RendererUniforms::getOcclusionUniform();
+        for (int j = 0; j < models.size(); j++)
+        {
+            mOcclusionModelMatUniform->setModel(models[j], j);   
+        }
+        mOcclusionModelMatUniform->copyToUniformsToDevice();
+
+        // Drawing
+        camera->getNativeGraphicsOcclusionMapFBO()->bind();
+        Renderer::getRenderer()->setViewport(0, 0, camera->getNativeGraphicsOcclusionMapFBO()->getWidth(), camera->getNativeGraphicsOcclusionMapFBO()->getHeight());
+        camera->getNativeGraphicsOcclusionMapFBO()->clearColor(Color::pink);
+
+        Renderer::getRenderer()->turnOff(Capability::Depth_Testing);
+
+        mOcclusionMapShader->bind();
+        mOcclusionMapShader->setView(camera->getViewMatrix());
+        mOcclusionMapShader->setProjection(camera->getProjMatrix());
+        mOcclusionMeshHandle->drawIndexed(0, cumulativeIndices);
+        mOcclusionMapShader->unbind();
+
+        Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
+
+        camera->getNativeGraphicsOcclusionMapFBO()->unbind();
     }
 }
 
@@ -751,8 +742,8 @@ void RenderSystem::buildDrawCallCommandList()
                     command.instanceColorBuffer = nullptr;
                     command.indexed = false;
                     command.instanceCount = 0;
-                    command.meshStartIndex = terrain->getChunkStart(j);
-                    command.meshEndIndex = terrain->getChunkStart(j) + terrain->getChunkSize(j);
+                    command.meshStartIndex = (int)terrain->getChunkStart(j);
+                    command.meshEndIndex = (int)(terrain->getChunkStart(j) + terrain->getChunkSize(j));
  
                     // Not really efficient but ok for now
                     mDrawCallCommands.push_back(command);

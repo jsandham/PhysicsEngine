@@ -161,7 +161,7 @@ void OpenGLRenderer::setBlending_impl(BlendingFactor source, BlendingFactor dest
     CHECK_ERROR(glBlendFunc(s, d));
 }
 
-void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
+void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, TimingQuery &query)
 {
     meshHandle->draw(vertexOffset, vertexCount);
 
@@ -170,7 +170,7 @@ void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size
     query.mTris += vertexCount / 3;
 }
 
-void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
+void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, TimingQuery &query)
 {
     meshHandle->drawIndexed(indexOffset, indexCount);
 
@@ -181,7 +181,7 @@ void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset
     query.mTris += count / 3;
 }
 
-void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
+void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, TimingQuery &query)
 {
     meshHandle->drawInstanced(vertexOffset, vertexCount, instanceCount);
 
@@ -190,7 +190,7 @@ void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOff
     query.mTris += vertexCount / 3;
 }
 
-void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, GraphicsQuery &query)
+void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, TimingQuery &query)
 {
     meshHandle->drawIndexedInstanced(indexOffset, indexCount, instanceCount);
 

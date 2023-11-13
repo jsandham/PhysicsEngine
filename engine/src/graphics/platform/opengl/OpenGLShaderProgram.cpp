@@ -159,6 +159,12 @@ void OpenGLShaderProgram::compile()
         CHECK_ERROR(glUniformBlockBinding(mHandle, blockIndex, 1));
     }
 
+    blockIndex = glGetUniformBlockIndex(mHandle, "OcclusionBlock");
+    if (blockIndex != GL_INVALID_INDEX)
+    {
+        CHECK_ERROR(glUniformBlockBinding(mHandle, blockIndex, 2));
+    }
+
     // for (int j = 0; j < numBlocks; j++)
     //{
     //     GLint nameLen;

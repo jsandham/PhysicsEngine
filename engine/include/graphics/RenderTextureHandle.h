@@ -24,6 +24,9 @@ class RenderTextureHandle
     RenderTextureHandle &operator=(const RenderTextureHandle &other) = delete;
     virtual ~RenderTextureHandle() = 0;
 
+    int getWidth() const;
+    int getHeight() const;
+
     virtual void *getTexture() = 0;
     virtual void *getIMGUITexture() = 0;
 

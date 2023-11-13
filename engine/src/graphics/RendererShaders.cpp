@@ -701,6 +701,41 @@ void GridShader::setColor(const Color &color)
     mShader->setColor(mColorId, color);
 }
 
+OcclusionMapShader::OcclusionMapShader()
+{
+    mShader = ShaderProgram::create();
+    mShader->load("OcclusionMap", getOcclusionMapVertexShader(), getOcclusionMapFragmentShader());
+    mShader->compile();
+
+    mViewId = Shader::uniformToId("view");
+    mProjectionId = Shader::uniformToId("projection");
+}
+
+OcclusionMapShader ::~OcclusionMapShader()
+{
+    delete mShader;
+}
+
+void OcclusionMapShader::bind()
+{
+    mShader->bind();
+}
+
+void OcclusionMapShader::unbind()
+{
+    mShader->unbind();
+}
+
+void OcclusionMapShader::setView(const glm::mat4 &view)
+{
+    mShader->setMat4(mViewId, view);
+}
+
+void OcclusionMapShader::setProjection(const glm::mat4 &projection)
+{
+    mShader->setMat4(mProjectionId, projection);
+}
+
 StandardShader *RendererShaders::sStandardShader = nullptr;
 SSAOShader *RendererShaders::sSSAOShader = nullptr;
 GeometryShader *RendererShaders::sGeometryShader = nullptr;
@@ -721,6 +756,7 @@ LineShader *RendererShaders::sLineShader = nullptr;
 GizmoShader *RendererShaders::sGizmoShader = nullptr;
 GizmoInstancedShader *RendererShaders::sGizmoInstancedShader = nullptr;
 GridShader *RendererShaders::sGridShader = nullptr;
+OcclusionMapShader *RendererShaders::sOcclusionMapShader = nullptr;
 
 void RendererShaders::createInternalShaders()
 {
@@ -747,6 +783,7 @@ void RendererShaders::createInternalShaders()
     sGizmoShader = new GizmoShader();
     sGizmoInstancedShader = new GizmoInstancedShader();
     sGridShader = new GridShader();
+    sOcclusionMapShader = new OcclusionMapShader();
     Log::warn("Finished compiling internal shaders\n");
 }
 
@@ -848,4 +885,9 @@ GizmoInstancedShader *RendererShaders::getGizmoInstancedShader()
 GridShader *RendererShaders::getGridShader()
 {
     return RendererShaders::sGridShader;
+}
+
+OcclusionMapShader *RendererShaders::getOcclusionMapShader()
+{
+    return RendererShaders::sOcclusionMapShader;
 }

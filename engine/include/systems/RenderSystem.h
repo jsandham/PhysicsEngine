@@ -172,14 +172,28 @@ class RenderSystem
     std::vector<int> mCachedMaterialIndices;
     AABB mCachedBoundingVolume;
 
-    // Frustum culling
+    // Bounding Volume Hierarchy of scene
     BVH mBVH;
-    std::vector<int> mFrustumVisible;
 
-    // RenderQueue scratch array
-    std::vector<std::pair<uint64_t, int>> mRenderQueueScratch;
+    // Frustum culling
+    std::vector<int> mFrustumVisible;
+    std::vector<std::pair<float, int>> mDistanceToCamera;
+
+    // Occlusion culling
+    VertexBuffer *mOcclusionVertexBuffer;
+    VertexBuffer *mOcclusionModelIndexBuffer;
+    IndexBuffer *mOcclusionIndexBuffer;
+    MeshHandle *mOcclusionMeshHandle;
+    OcclusionMapShader *mOcclusionMapShader;
+    OcclusionUniform *mOcclusionModelMatUniform;
+    std::vector<float> mOccluderVertices;
+    std::vector<int> mOccluderModelIndices;
+    std::vector<unsigned int> mOccluderIndices;
+    std::vector<OcclusionQuery> mOcclusionQueries[2];
+    int mOcclusionQuery;
 
     // RenderQueue
+    std::vector<std::pair<uint64_t, int>> mRenderQueueScratch;
     std::vector<std::pair<uint64_t, int>> mRenderQueue;
 
     // Draw call data
@@ -215,7 +229,9 @@ class RenderSystem
   private:
     void registerRenderAssets();
     void cacheRenderData();
-    void frustumCulling(Camera *camera);
+    void buildBVH();
+    void frustumCulling(const Camera *camera);
+    void occlusionCulling(const Camera *camera);
     void buildRenderQueue();
     void sortRenderQueue();
     void buildDrawCallCommandList();

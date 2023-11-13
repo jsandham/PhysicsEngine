@@ -71,15 +71,33 @@ class LightUniform
     void copyToUniformsToDevice();
 };
 
+class OcclusionUniform
+{
+  private:
+    UniformBuffer *mBuffer;
+
+    glm::mat4 mModels[20];
+
+  public:
+    OcclusionUniform();
+    ~OcclusionUniform();
+
+    void setModel(const glm::mat4 &model, int index);
+
+    void copyToUniformsToDevice();
+};
+
 class RendererUniforms
 {
   private:
     static CameraUniform *sCameraUniform;
     static LightUniform *sLightUniform;
+    static OcclusionUniform *sOcclusionUniform;
 
   public:
     static CameraUniform *getCameraUniform();
     static LightUniform *getLightUniform();
+    static OcclusionUniform *getOcclusionUniform();
 
     static void createInternalUniforms();
 };

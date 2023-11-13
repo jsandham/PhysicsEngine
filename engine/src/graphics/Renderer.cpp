@@ -10,6 +10,10 @@
 using namespace PhysicsEngine;
 
 int Renderer::INSTANCE_BATCH_SIZE = 100;
+int Renderer::MAX_OCCLUDER_COUNT = 20;
+int Renderer::MAX_OCCLUDER_VERTEX_COUNT = 10000;
+int Renderer::MAX_OCCLUDER_INDEX_COUNT = 5000;
+
 Renderer *Renderer::sInstance = nullptr;
 
 void Renderer::init()
@@ -91,23 +95,23 @@ void Renderer::setBlending(BlendingFactor source, BlendingFactor dest)
     return sInstance->setBlending_impl(source, dest);
 }
 
-void Renderer::draw(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, GraphicsQuery &query)
+void Renderer::draw(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, TimingQuery &query)
 {
     return sInstance->draw_impl(meshHandle, vertexOffset, vertexCount, query);
 }
 
-void Renderer::drawIndexed(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, GraphicsQuery &query)
+void Renderer::drawIndexed(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, TimingQuery &query)
 {
     return sInstance->drawIndexed_impl(meshHandle, indexOffset, indexCount, query);
 }
 
-void Renderer::drawInstanced(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, GraphicsQuery &query)
+void Renderer::drawInstanced(MeshHandle *meshHandle, size_t vertexOffset, size_t vertexCount, size_t instanceCount, TimingQuery &query)
 {
     return sInstance->drawInstanced_impl(meshHandle, vertexOffset, vertexCount, instanceCount, query);
 }
 
 void Renderer::drawIndexedInstanced(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount,
-                                    GraphicsQuery &query)
+                                    TimingQuery &query)
 {
     return sInstance->drawIndexedInstanced_impl(meshHandle, indexOffset, indexCount, instanceCount, query);
 }

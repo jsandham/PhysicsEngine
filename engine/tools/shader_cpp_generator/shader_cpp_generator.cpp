@@ -719,6 +719,8 @@ void generate_cpp_file(std::vector<File>& files)
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/grid_f.glsl"] = "getGridFragmentShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_v.glsl"] = "getStandardVertexShader";
     filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/standard_f.glsl"] = "getStandardFragmentShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/occlusionMap_v.glsl"] = "getOcclusionMapVertexShader";
+    filePathToFunctionNameMap["../../src/graphics/platform/opengl/glsl/occlusionMap_f.glsl"] = "getOcclusionMapFragmentShader";
 
     write_header("glsl", out);
 
