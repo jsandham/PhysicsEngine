@@ -1,5 +1,4 @@
 #include "../../include/core/GameLayer.h"
-#include "../../include/core/Input.h"
 #include "../../include/core/Log.h"
 
 #include <filesystem>
@@ -66,10 +65,10 @@ void GameLayer::update()
     RenderSystem *renderSystem = mWorld.getSystem<RenderSystem>();
     CleanUpSystem *cleanUpSystem = mWorld.getSystem<CleanUpSystem>();
 
-    cameraSystem->update(getInput(), getTime());
-    terrainSystem->update(getInput(), getTime());
-    renderSystem->update(getInput(), getTime());
-    cleanUpSystem->update(getInput(), getTime());
+    cameraSystem->update();
+    terrainSystem->update();
+    renderSystem->update();
+    cleanUpSystem->update();
 }
 
 void GameLayer::end()

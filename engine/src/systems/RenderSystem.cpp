@@ -109,7 +109,7 @@ void RenderSystem::init(World *world)
     mOccluderIndices.resize(Renderer::MAX_OCCLUDER_INDEX_COUNT);
 }
 
-void RenderSystem::update(const Input &input, const Time &time)
+void RenderSystem::update()
 {
     registerRenderAssets();
 
@@ -135,16 +135,16 @@ void RenderSystem::update(const Input &input, const Time &time)
             {
                 if (camera->mRenderPath == RenderPath::Forward)
                 {
-                    mForwardRenderer.update(input, camera, mDrawCallCommands, mModels, mTransformIds);
+                    mForwardRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds, mOcclusionQueries[0]);
                 }
                 else
                 {
-                    mDeferredRenderer.update(input, camera, mDrawCallCommands, mModels, mTransformIds);
+                    mDeferredRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds);
                 }
             }
             else
             {
-                mDebugRenderer.update(input, camera, mDrawCallCommands, mModels, mTransformIds);
+                mDebugRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds);
             }
         }
     }

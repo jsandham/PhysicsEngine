@@ -7,9 +7,8 @@
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
-#include "../core/Input.h"
-#include "../core/Time.h"
 #include "../core/AABB.h"
+#include "../core/Sphere.h"
 
 #include "../components/Camera.h"
 #include "../components/Transform.h"
@@ -222,7 +221,7 @@ class RenderSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 
     const BVH &getBVH() const;
 
@@ -236,8 +235,6 @@ class RenderSystem
     void sortRenderQueue();
     void buildDrawCallCommandList();
     Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const Sphere &sphere);
-    Sphere computeWorldSpaceBoundingSphere(const glm::vec3 &translation, const glm::vec3 &scale, const Sphere &sphere);
-    Sphere computeWorldSpaceBoundingSphere(const glm::mat4 &model, const glm::vec3 &scale, const Sphere &sphere);
 };
 
 } // namespace PhysicsEngine

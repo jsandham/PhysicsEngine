@@ -9,8 +9,6 @@
 #include "../core/AssetEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
-#include "../core/Input.h"
-#include "../core/Time.h"
 
 namespace PhysicsEngine
 {
@@ -61,7 +59,7 @@ class AssetLoadingSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 
     void loadTexture2DAsync(const std::string &filepath);
 

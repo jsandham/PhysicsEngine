@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../components/Light.h"
-#include "../core/Input.h"
 
 #include "RenderObject.h"
 #include "Renderer.h"
@@ -55,8 +54,8 @@ class ForwardRenderer
     ForwardRenderer &operator=(const ForwardRenderer &other) = delete;
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
-                const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
+    void update(Camera *camera, const std::vector<DrawCallCommand> &commands,
+                const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds, std::vector<OcclusionQuery> &occlusionQueries);
 
   private:
     void beginFrame(Camera *camera);
@@ -65,7 +64,8 @@ class ForwardRenderer
     void renderShadows(Camera *camera, Light *light, Transform *lightTransform,
                        const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
     void renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
-                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
+                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models,
+                       std::vector<OcclusionQuery> &occlusionQueries);
     void renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
     void renderTransparents();

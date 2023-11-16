@@ -503,20 +503,13 @@ void SceneView::initWorld(PhysicsEngine::World* world)
 	renderSystem->init(world);
 	gizmoSystem->init(world);
 	cleanUpSystem->init(world);
-
-	/*for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
-	{
-		PhysicsEngine::System* system = world->getSystemByUpdateOrder(i);
-
-		system->init(world);
-	}*/
 }
 
 void SceneView::updateWorld(PhysicsEngine::World* world)
 {
 	ImGuiIO& io = ImGui::GetIO();
 
-	PhysicsEngine::Input input = isFocused() ? PhysicsEngine::getInput() : PhysicsEngine::Input();
+	PhysicsEngine::Input& input = PhysicsEngine::getInput();
 
 	// Mouse
 	if (isFocused())
@@ -527,16 +520,8 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 			(int)mSceneContentSize.y -
 			std::min(std::max((int)io.MousePos.y - (int)mSceneContentMin.y, 0), (int)mSceneContentSize.y);
 	}
-
+	
 	// call update on all systems in world
-	/*for (int i = 0; i < world->getNumberOfUpdatingSystems(); i++)
-	{
-		PhysicsEngine::System* system = world->getSystemByUpdateOrder(i);
-
-		if (system->mEnabled) {
-			system->update(input, PhysicsEngine::getTime());
-		}
-	}*/
 	PhysicsEngine::FreeLookCameraSystem* cameraSystem = world->getSystem<PhysicsEngine::FreeLookCameraSystem>();
 	PhysicsEngine::TerrainSystem* terrainSystem = world->getSystem<PhysicsEngine::TerrainSystem>();
 	PhysicsEngine::RenderSystem* renderSystem = world->getSystem<PhysicsEngine::RenderSystem>();
@@ -550,19 +535,19 @@ void SceneView::updateWorld(PhysicsEngine::World* world)
 	assert(cleanUpSystem != nullptr);
 
 	if (cameraSystem->mEnabled) {
-		cameraSystem->update(input, PhysicsEngine::getTime());
+		cameraSystem->update();
 	}
 	if (terrainSystem->mEnabled) {
-		terrainSystem->update(input, PhysicsEngine::getTime());
+		terrainSystem->update();
 	}
 	if (renderSystem->mEnabled) {
-		renderSystem->update(input, PhysicsEngine::getTime());
+		renderSystem->update();
 	}
 	if (gizmoSystem->mEnabled) {
-		gizmoSystem->update(input, PhysicsEngine::getTime());
+		gizmoSystem->update();
 	}
 	if (cleanUpSystem->mEnabled) {
-		cleanUpSystem->update(input, PhysicsEngine::getTime());
+		cleanUpSystem->update();
 	}
 }
 

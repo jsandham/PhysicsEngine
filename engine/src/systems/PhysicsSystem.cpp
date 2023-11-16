@@ -4,7 +4,6 @@
 
 #include "../../include/core/SerializationYaml.h"
 #include "../../include/core/AABB.h"
-#include "../../include/core/Input.h"
 #include "../../include/core/Physics.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/Sphere.h"
@@ -75,6 +74,6 @@ void PhysicsSystem::init(World *world)
     mWorld = world;
 }
 
-void PhysicsSystem::update(const Input &input, const Time &time)
+void PhysicsSystem::update()
 {
 }

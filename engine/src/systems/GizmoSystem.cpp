@@ -2,7 +2,6 @@
 
 #include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
-#include "../../include/core/Input.h"
 #include "../../include/core/Intersect.h"
 
 using namespace PhysicsEngine;
@@ -61,7 +60,7 @@ void GizmoSystem::init(World *world)
     mGizmoRenderer.init(mWorld);
 }
 
-void GizmoSystem::update(const Input &input, const Time &time)
+void GizmoSystem::update()
 {
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {

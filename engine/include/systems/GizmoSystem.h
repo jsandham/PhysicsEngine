@@ -9,8 +9,6 @@
 #include "../core/AABB.h"
 #include "../core/Color.h"
 #include "../core/Frustum.h"
-#include "../core/Input.h"
-#include "../core/Time.h"
 #include "../core/Line.h"
 #include "../core/Plane.h"
 #include "../core/Ray.h"
@@ -50,7 +48,7 @@ class GizmoSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 
     void addToDrawList(const Line &line, const Color &color);
     void addToDrawList(const Ray &ray, float t, const Color &color);

@@ -3,7 +3,6 @@
 #include "../../include/systems/DebugSystem.h"
 
 #include "../../include/core/SerializationYaml.h"
-#include "../../include/core/Input.h"
 #include "../../include/core/PoolAllocator.h"
 #include "../../include/core/World.h"
 
@@ -67,6 +66,6 @@ void DebugSystem::init(World *world)
     mWorld = world;
 }
 
-void DebugSystem::update(const Input &input, const Time &time)
+void DebugSystem::update()
 {
 }

@@ -32,7 +32,7 @@ void DebugRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void DebugRenderer::update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
+void DebugRenderer::update(Camera *camera, const std::vector<DrawCallCommand> &commands,
                            const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginDebugFrame(camera);

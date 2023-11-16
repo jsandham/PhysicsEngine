@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../components/Camera.h"
-#include "../core/Input.h"
 
 #include "RenderObject.h"
 #include "Renderer.h"
@@ -37,7 +36,7 @@ class DeferredRenderer
     DeferredRenderer &operator=(const DeferredRenderer &other) = delete;
 
     void init(World *world);
-    void update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
+    void update(Camera *camera, const std::vector<DrawCallCommand> &commands,
                 const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
 
   private:

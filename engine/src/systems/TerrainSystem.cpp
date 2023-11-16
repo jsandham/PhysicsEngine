@@ -61,7 +61,7 @@ void TerrainSystem::init(World *world)
     mWorld = world;
 }
 
-void TerrainSystem::update(const Input &input, const Time &time)
+void TerrainSystem::update()
 {
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
     {

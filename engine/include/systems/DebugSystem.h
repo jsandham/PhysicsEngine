@@ -6,8 +6,6 @@
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
-#include "../core/Input.h"
-#include "../core/Time.h"
 #include "../core/Material.h"
 #include "../core/Shader.h"
 
@@ -41,7 +39,7 @@ class DebugSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 };
 
 } // namespace PhysicsEngine

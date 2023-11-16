@@ -213,7 +213,7 @@ void AssetLoadingSystem::init(World *world)
     mWorld = world;
 }
 
-void AssetLoadingSystem::update(const Input &input, const Time &time)
+void AssetLoadingSystem::update()
 {
     // std::cout << "Queue size: " << mTextureQueue.size() << std::endl;
     for (unsigned int i = 0; i < mNumThreads; i++)

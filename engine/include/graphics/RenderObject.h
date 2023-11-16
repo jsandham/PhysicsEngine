@@ -1,16 +1,9 @@
 #ifndef RENDEROBJECT_H__
 #define RENDEROBJECT_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "../core/Guid.h"
-#include "../core/Id.h"
-#include "../core/Sphere.h"
 #include "../core/Material.h"
 
 #include "../graphics/MeshHandle.h"
-
-#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

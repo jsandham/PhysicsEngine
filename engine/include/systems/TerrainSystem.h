@@ -40,7 +40,7 @@ class TerrainSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 };
 
 } // namespace PhysicsEngine

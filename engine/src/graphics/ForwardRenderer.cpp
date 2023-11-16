@@ -31,8 +31,8 @@ void ForwardRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void ForwardRenderer::update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
-                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
+void ForwardRenderer::update(Camera *camera, const std::vector<DrawCallCommand> &commands,
+                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds, std::vector<OcclusionQuery> &occlusionQueries)
 {
     beginFrame(camera);
 
@@ -56,7 +56,7 @@ void ForwardRenderer::update(const Input &input, Camera *camera, const std::vect
                     renderShadows(camera, light, lightTransform, commands, models);
                 }
 
-                renderOpaques(camera, light, lightTransform, commands, models);
+                renderOpaques(camera, light, lightTransform, commands, models, occlusionQueries);
 
                 renderTransparents();
             }
@@ -342,7 +342,8 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
 
 void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
                                     const std::vector<DrawCallCommand> &commands,
-                                    const std::vector<glm::mat4> &models)
+                                    const std::vector<glm::mat4> &models,
+                                    std::vector<OcclusionQuery> &occlusionQueries)
 {
     // Configure light uniform
     mLightUniform->setLightPosition(lightTransform->getPosition());
@@ -433,19 +434,12 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
     framebuffer->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                              camera->getViewport().mHeight);
 
-    //int currentMaterialIndex = -1;
-    //int currentShaderIndex = -1;
-
     Shader *shader = nullptr;
     Material *material = nullptr;
 
     int modelIndex = 0;
     for (size_t i = 0; i < commands.size(); i++)
     {
-        //int shaderIndex = getShaderIndexFromKey(renderObjects[i].key);
-        //int materialIndex = getMaterialIndexFromKey(renderObjects[i].key);
-
-        //if (currentShaderIndex != shaderIndex)
         if (shader != commands[i].shader)
         {
             shader = commands[i].shader;
@@ -459,8 +453,6 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         {
             shader->bind(shader->getProgramFromVariant(variant) != nullptr ? variant : 0);
         }
-
-        //currentShaderIndex = shaderIndex;
 
         if (light->mShadowType != ShadowType::None)
         {
@@ -482,16 +474,8 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             }
         }
 
-        /*if (currentMaterialIndex != materialIndex)*/
-        //if (material != commands[i].material)
-        //{
-            material = commands[i].material;
-            material->apply();
-
-            //currentMaterialIndex = materialIndex;
-        //}
-
-        //Mesh *mesh = mWorld->getAssetByIndex<Mesh>(getMeshIndexFromKey(renderObjects[i].key));
+        material = commands[i].material;
+        material->apply();
 
         int subMeshVertexStartIndex = commands[i].meshStartIndex;
         int subMeshVertexEndIndex = commands[i].meshEndIndex;

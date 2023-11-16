@@ -121,7 +121,7 @@ void FreeLookCameraSystem::init(World *world)
     mTransformGuid = transform->getGuid();       
 }
 
-void FreeLookCameraSystem::update(const Input &input, const Time &time)
+void FreeLookCameraSystem::update()
 {
     Camera *camera = getCamera();
     Transform *transform = getTransform();
@@ -132,59 +132,59 @@ void FreeLookCameraSystem::update(const Input &input, const Time &time)
     glm::vec3 right = transform->getRight();
 
     // D pad controls
-    if (!getMouseButton(input, MouseButton::RButton))
+    if (!getMouseButton(getInput(), MouseButton::RButton))
     {
-        if (getKey(input, KeyCode::Up))
+        if (getKey(getInput(), KeyCode::Up))
         {
             position += FreeLookCameraSystem::ZOOM_SENSITIVITY * front;
         }
-        if (getKey(input, KeyCode::Down))
+        if (getKey(getInput(), KeyCode::Down))
         {
             position -= FreeLookCameraSystem::ZOOM_SENSITIVITY * front;
         }
-        if (getKey(input, KeyCode::Left))
+        if (getKey(getInput(), KeyCode::Left))
         {
             position += FreeLookCameraSystem::TRANSLATE_SENSITIVITY * right;
         }
-        if (getKey(input, KeyCode::Right))
+        if (getKey(getInput(), KeyCode::Right))
         {
             position -= FreeLookCameraSystem::TRANSLATE_SENSITIVITY * right;
         }
     }
 
     // WASD controls
-    if (getMouseButton(input, MouseButton::RButton))
+    if (getMouseButton(getInput(), MouseButton::RButton))
     {
-        if (getKey(input, KeyCode::W))
+        if (getKey(getInput(), KeyCode::W))
         {
             position += FreeLookCameraSystem::ZOOM_SENSITIVITY * front;
         }
-        if (getKey(input, KeyCode::S))
+        if (getKey(getInput(), KeyCode::S))
         {
             position -= FreeLookCameraSystem::ZOOM_SENSITIVITY * front;
         }
-        if (getKey(input, KeyCode::A))
+        if (getKey(getInput(), KeyCode::A))
         {
             position += FreeLookCameraSystem::TRANSLATE_SENSITIVITY * right;
         }
-        if (getKey(input, KeyCode::D))
+        if (getKey(getInput(), KeyCode::D))
         {
             position -= FreeLookCameraSystem::TRANSLATE_SENSITIVITY * right;
         }
     }
 
     // Mouse scroll wheel
-    position += FreeLookCameraSystem::ZOOM_SENSITIVITY * input.mMouseDelta * front;
+    position += FreeLookCameraSystem::ZOOM_SENSITIVITY * getInput().mMouseDelta * front;
 
     // Mouse position
-    mMousePosX = input.mMousePosX;
-    mMousePosY = input.mMousePosY;
+    mMousePosX = getInput().mMousePosX;
+    mMousePosY = getInput().mMousePosY;
 
     // Mouse buttons
-    mIsLeftMouseClicked = getMouseButtonDown(input, MouseButton::LButton);
-    mIsRightMouseClicked = getMouseButtonDown(input, MouseButton::RButton);
-    mIsLeftMouseHeldDown = getMouseButton(input, MouseButton::LButton);
-    mIsRightMouseHeldDown = getMouseButton(input, MouseButton::RButton);
+    mIsLeftMouseClicked = getMouseButtonDown(getInput(), MouseButton::LButton);
+    mIsRightMouseClicked = getMouseButtonDown(getInput(), MouseButton::RButton);
+    mIsLeftMouseHeldDown = getMouseButton(getInput(), MouseButton::LButton);
+    mIsRightMouseHeldDown = getMouseButton(getInput(), MouseButton::RButton);
 
     if (mIsLeftMouseClicked)
     {

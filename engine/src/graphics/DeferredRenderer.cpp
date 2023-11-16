@@ -29,7 +29,7 @@ void DeferredRenderer::init(World *world)
     Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
 }
 
-void DeferredRenderer::update(const Input &input, Camera *camera, const std::vector<DrawCallCommand> &commands,
+void DeferredRenderer::update(Camera *camera, const std::vector<DrawCallCommand> &commands,
                               const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds)
 {
     beginDeferredFrame(camera);

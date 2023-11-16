@@ -11,8 +11,6 @@
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
-#include "../core/Input.h"
-#include "../core/Time.h"
 
 #include "../components/Camera.h"
 #include "../components/Transform.h"
@@ -77,7 +75,7 @@ class FreeLookCameraSystem
     Id getId() const;
 
     void init(World *world);
-    void update(const Input &input, const Time &time);
+    void update();
 
     void resetCamera();
     void configureCamera(CameraSystemConfig config);

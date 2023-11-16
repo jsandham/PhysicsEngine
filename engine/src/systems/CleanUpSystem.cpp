@@ -59,7 +59,7 @@ void CleanUpSystem::init(World *world)
     mWorld = world;
 }
 
-void CleanUpSystem::update(const Input &input, const Time &time)
+void CleanUpSystem::update()
 {
     std::vector<std::tuple<Guid, Guid, int>> componentIdsMarkedLatentDestroy =
         mWorld->getActiveScene()->getComponentIdsMarkedLatentDestroy();

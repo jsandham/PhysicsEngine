@@ -3,12 +3,18 @@
 
 namespace PhysicsEngine
 {
-struct OcclusionQuery
+class OcclusionQuery
 {
-    unsigned int samplesDrawn;
+  public:
+    OcclusionQuery();
+    OcclusionQuery(const OcclusionQuery &other) = delete;
+    OcclusionQuery &operator=(const OcclusionQuery &other) = delete;
+    virtual ~OcclusionQuery() = 0;
 
-    //void begin();
-    //void end();
+    virtual void beginQuery();
+    virtual void endQuery();
+
+    static OcclusionQuery *create();
 };
 
 struct TimingQuery
