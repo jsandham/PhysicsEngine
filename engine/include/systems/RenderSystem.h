@@ -17,6 +17,7 @@
 #include "../graphics/DeferredRenderer.h"
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/RenderObject.h"
+#include "../graphics/GraphicsQuery.h"
 
 namespace PhysicsEngine
 {
@@ -188,8 +189,8 @@ class RenderSystem
     std::vector<float> mOccluderVertices;
     std::vector<int> mOccluderModelIndices;
     std::vector<unsigned int> mOccluderIndices;
-    std::vector<OcclusionQuery> mOcclusionQueries[2];
-    int mOcclusionQuery;
+    OcclusionQuery* mOcclusionQuery[2];
+    int mOcclusionQueryIndex;
 
     // RenderQueue
     std::vector<std::pair<uint64_t, int>> mRenderQueueScratch;

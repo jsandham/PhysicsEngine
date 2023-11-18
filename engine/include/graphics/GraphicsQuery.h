@@ -11,8 +11,11 @@ class OcclusionQuery
     OcclusionQuery &operator=(const OcclusionQuery &other) = delete;
     virtual ~OcclusionQuery() = 0;
 
-    virtual void beginQuery();
-    virtual void endQuery();
+    virtual void beginQuery(size_t queryIndex) = 0;
+    virtual void endQuery(size_t queryIndex) = 0;
+
+    virtual bool isVisible(size_t queryIndex) = 0;
+    virtual bool isVisibleNoWait(size_t queryIndex) = 0;
 
     static OcclusionQuery *create();
 };

@@ -55,7 +55,7 @@ class ForwardRenderer
 
     void init(World *world);
     void update(Camera *camera, const std::vector<DrawCallCommand> &commands,
-                const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds, std::vector<OcclusionQuery> &occlusionQueries);
+                const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds, OcclusionQuery &occlusionQuery);
 
   private:
     void beginFrame(Camera *camera);
@@ -65,7 +65,7 @@ class ForwardRenderer
                        const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
     void renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
                        const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models,
-                       std::vector<OcclusionQuery> &occlusionQueries);
+                       OcclusionQuery &occlusionQuery);
     void renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);
     void renderTransparents();

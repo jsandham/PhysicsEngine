@@ -17,24 +17,14 @@ typedef struct DrawCallCommand
     int meshStartIndex;
     int meshEndIndex;
     int instanceCount;
+    int meshRendererIndex;
     bool indexed;
 } DrawCallCommand;
 
-enum class RenderFlags
-{
-    Indexed = 1,
-    Instanced = 2,
-    Terrain = 4
-};
-
-uint64_t generateDrawCall(int materialIndex, int meshIndex, int shaderIndex, int subMesh, int flags);
+uint64_t generateDrawCall(int materialIndex, int meshIndex, int subMesh, int depth);
 uint16_t getMaterialIndexFromKey(uint64_t key);
 uint16_t getMeshIndexFromKey(uint64_t key);
-uint16_t getShaderIndexFromKey(uint64_t key);
 uint8_t getSubMeshFromKey(uint64_t key);
-uint8_t getFlagsFromKey(uint64_t key);
-bool isIndexed(uint64_t key);
-bool isInstanced(uint64_t key);
-bool isTerrain(uint64_t key);
+uint32_t getDepthFromKey(uint64_t key);
 } // namespace PhysicsEngine
 #endif

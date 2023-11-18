@@ -41,6 +41,9 @@ RenderSystem::~RenderSystem()
     delete mOcclusionModelIndexBuffer;
     delete mOcclusionIndexBuffer;
     delete mOcclusionMeshHandle;
+
+    delete mOcclusionQuery[0];
+    delete mOcclusionQuery[1];
 }
 
 void RenderSystem::serialize(YAML::Node &out) const
@@ -107,6 +110,10 @@ void RenderSystem::init(World *world)
     mOccluderVertices.resize(3 * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
     mOccluderModelIndices.resize(Renderer::MAX_OCCLUDER_VERTEX_COUNT);
     mOccluderIndices.resize(Renderer::MAX_OCCLUDER_INDEX_COUNT);
+
+    mOcclusionQuery[0] = OcclusionQuery::create();
+    mOcclusionQuery[1] = OcclusionQuery::create();
+    mOcclusionQueryIndex = -1;
 }
 
 void RenderSystem::update()
@@ -135,7 +142,8 @@ void RenderSystem::update()
             {
                 if (camera->mRenderPath == RenderPath::Forward)
                 {
-                    mForwardRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds, mOcclusionQueries[0]);
+                    mForwardRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds,
+                                            *mOcclusionQuery[mOcclusionQueryIndex]);
                 }
                 else
                 {
@@ -146,6 +154,8 @@ void RenderSystem::update()
             {
                 mDebugRenderer.update(camera, mDrawCallCommands, mModels, mTransformIds);
             }
+
+            mOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
         }
     }
 }
@@ -372,8 +382,6 @@ void RenderSystem::frustumCulling(const Camera *camera)
                         mFrustumVisible[mBVH.mPerm[i]] = 1;
 
                         mDistanceToCamera[mBVH.mPerm[i]] = std::pair<float, int>(distanceToCamera, mBVH.mPerm[i]);
-
-                        // Also inside here we want to check the previous frames occlusion query?
                     }
                 }
             }
@@ -399,99 +407,119 @@ void RenderSystem::frustumCulling(const Camera *camera)
 
 void RenderSystem::occlusionCulling(const Camera *camera)
 {
-    size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
-    
-    if (meshRendererCount > 0)
+    //size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
+    //
+    //if (meshRendererCount > 0)
+    //{
+    //    std::sort(mDistanceToCamera.begin(), mDistanceToCamera.end(),
+    //              [=](std::pair<float, int> &a, std::pair<float, int> &b) { return a.first < b.first; });
+
+    //    std::array<glm::mat4, 20> models;
+
+    //    size_t cumulativeVertices = 0;
+    //    size_t cumulativeIndices = 0;
+    //    std::array<int, 20> occluders;
+
+    //    int i = 0;
+    //    int cumulativeMeshCount = 0;
+    //    while (i < meshRendererCount && cumulativeMeshCount < Renderer::MAX_OCCLUDER_COUNT && cumulativeVertices < Renderer::MAX_OCCLUDER_VERTEX_COUNT && cumulativeIndices < Renderer::MAX_OCCLUDER_INDEX_COUNT)
+    //    {
+    //        if (mFrustumVisible[i])
+    //        {
+    //            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
+    //            assert(mesh != nullptr);
+
+    //            if ((cumulativeVertices + mesh->getVertexCount()) < Renderer::MAX_OCCLUDER_VERTEX_COUNT)
+    //            {
+    //                if ((cumulativeIndices + mesh->getIndexCount()) < Renderer::MAX_OCCLUDER_INDEX_COUNT)
+    //                {
+    //                    const std::vector<float> &vert = mesh->getVertices();
+    //                    const std::vector<unsigned int> &ind = mesh->getIndices();
+
+    //                    for (size_t j = 0; j < mesh->getVertexCount(); j++)
+    //                    {
+    //                        mOccluderVertices[3 * cumulativeVertices + 3 * j + 0] = vert[3 * j + 0];
+    //                        mOccluderVertices[3 * cumulativeVertices + 3 * j + 1] = vert[3 * j + 1];
+    //                        mOccluderVertices[3 * cumulativeVertices + 3 * j + 2] = vert[3 * j + 2];
+    //                    
+    //                        mOccluderModelIndices[cumulativeVertices + j] = cumulativeMeshCount;
+    //                    }
+
+    //                    for (size_t j = 0; j < mesh->getIndexCount(); j++)
+    //                    {
+    //                        mOccluderIndices[cumulativeIndices + j] = cumulativeVertices + ind[j];
+    //                    }
+
+    //                    models[cumulativeMeshCount] = mCachedModels[i];
+
+    //                    occluders[cumulativeMeshCount] = i;
+    //                    cumulativeVertices += mesh->getVertexCount();
+    //                    cumulativeIndices += mesh->getIndexCount();
+    //                    cumulativeMeshCount++;
+    //                }
+    //            }
+    //        }
+    //        i++;
+    //    }
+
+    //    mOcclusionVertexBuffer->bind();
+    //    mOcclusionVertexBuffer->setData(mOccluderVertices.data(), 0, sizeof(float) * 3 * cumulativeVertices);
+    //    mOcclusionVertexBuffer->unbind();
+
+    //    mOcclusionModelIndexBuffer->bind();
+    //    mOcclusionModelIndexBuffer->setData(mOccluderModelIndices.data(), 0, sizeof(int) * cumulativeVertices);
+    //    mOcclusionModelIndexBuffer->unbind();
+
+    //    mOcclusionIndexBuffer->bind();
+    //    mOcclusionIndexBuffer->setData(mOccluderIndices.data(), 0, sizeof(unsigned int) * cumulativeIndices);
+    //    mOcclusionIndexBuffer->unbind();
+
+    //    mOcclusionMapShader = RendererShaders::getOcclusionMapShader();
+
+    //    mOcclusionModelMatUniform = RendererUniforms::getOcclusionUniform();
+    //    for (int j = 0; j < models.size(); j++)
+    //    {
+    //        mOcclusionModelMatUniform->setModel(models[j], j);   
+    //    }
+    //    mOcclusionModelMatUniform->copyToUniformsToDevice();
+
+    //    // Drawing
+    //    camera->getNativeGraphicsOcclusionMapFBO()->bind();
+    //    Renderer::getRenderer()->setViewport(0, 0, camera->getNativeGraphicsOcclusionMapFBO()->getWidth(), camera->getNativeGraphicsOcclusionMapFBO()->getHeight());
+    //    camera->getNativeGraphicsOcclusionMapFBO()->clearColor(Color::pink);
+
+    //    Renderer::getRenderer()->turnOff(Capability::Depth_Testing);
+
+    //    mOcclusionMapShader->bind();
+    //    mOcclusionMapShader->setView(camera->getViewMatrix());
+    //    mOcclusionMapShader->setProjection(camera->getProjMatrix());
+    //    mOcclusionMeshHandle->drawIndexed(0, cumulativeIndices);
+    //    mOcclusionMapShader->unbind();
+
+    //    Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
+
+    //    camera->getNativeGraphicsOcclusionMapFBO()->unbind();
+    //}
+
+    /*if (mOcclusionQueryIndex != -1)
     {
-        //std::sort(mDistanceToCamera.begin(), mDistanceToCamera.end(),
-        //          [=](std::pair<float, int> &a, std::pair<float, int> &b) { return a.first < b.first; });
+        int lastFramesOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
 
-        std::array<glm::mat4, 20> models;
-
-        size_t cumulativeVertices = 0;
-        size_t cumulativeIndices = 0;
-        std::array<int, 20> occluders;
-
-        int i = 0;
-        int cumulativeMeshCount = 0;
-        while (i < meshRendererCount && cumulativeMeshCount < Renderer::MAX_OCCLUDER_COUNT && cumulativeVertices < Renderer::MAX_OCCLUDER_VERTEX_COUNT && cumulativeIndices < Renderer::MAX_OCCLUDER_INDEX_COUNT)
+        for (size_t i = 0; i < mFrustumVisible.size(); i++)
         {
             if (mFrustumVisible[i])
             {
-                Mesh *mesh = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
-                assert(mesh != nullptr);
-
-                if ((cumulativeVertices + mesh->getVertexCount()) < Renderer::MAX_OCCLUDER_VERTEX_COUNT)
+                if (!mOcclusionQuery[lastFramesOcclusionQueryIndex]->isVisible(i))
                 {
-                    if ((cumulativeIndices + mesh->getIndexCount()) < Renderer::MAX_OCCLUDER_INDEX_COUNT)
-                    {
-                        const std::vector<float> &vert = mesh->getVertices();
-                        const std::vector<unsigned int> &ind = mesh->getIndices();
-
-                        for (size_t j = 0; j < mesh->getVertexCount(); j++)
-                        {
-                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 0] = vert[3 * j + 0];
-                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 1] = vert[3 * j + 1];
-                            mOccluderVertices[3 * cumulativeVertices + 3 * j + 2] = vert[3 * j + 2];
-                        
-                            mOccluderModelIndices[cumulativeVertices + j] = cumulativeMeshCount;
-                        }
-
-                        for (size_t j = 0; j < mesh->getIndexCount(); j++)
-                        {
-                            mOccluderIndices[cumulativeIndices + j] = cumulativeVertices + ind[j];
-                        }
-
-                        models[cumulativeMeshCount] = mCachedModels[i];
-
-                        occluders[cumulativeMeshCount] = i;
-                        cumulativeVertices += mesh->getVertexCount();
-                        cumulativeIndices += mesh->getIndexCount();
-                        cumulativeMeshCount++;
-                    }
+                    std::cout << "i: " << std::to_string(i) << " not visble" << std::endl;
                 }
             }
-            i++;
         }
-
-        mOcclusionVertexBuffer->bind();
-        mOcclusionVertexBuffer->setData(mOccluderVertices.data(), 0, sizeof(float) * 3 * cumulativeVertices);
-        mOcclusionVertexBuffer->unbind();
-
-        mOcclusionModelIndexBuffer->bind();
-        mOcclusionModelIndexBuffer->setData(mOccluderModelIndices.data(), 0, sizeof(int) * cumulativeVertices);
-        mOcclusionModelIndexBuffer->unbind();
-
-        mOcclusionIndexBuffer->bind();
-        mOcclusionIndexBuffer->setData(mOccluderIndices.data(), 0, sizeof(unsigned int) * cumulativeIndices);
-        mOcclusionIndexBuffer->unbind();
-
-        mOcclusionMapShader = RendererShaders::getOcclusionMapShader();
-
-        mOcclusionModelMatUniform = RendererUniforms::getOcclusionUniform();
-        for (int j = 0; j < models.size(); j++)
-        {
-            mOcclusionModelMatUniform->setModel(models[j], j);   
-        }
-        mOcclusionModelMatUniform->copyToUniformsToDevice();
-
-        // Drawing
-        camera->getNativeGraphicsOcclusionMapFBO()->bind();
-        Renderer::getRenderer()->setViewport(0, 0, camera->getNativeGraphicsOcclusionMapFBO()->getWidth(), camera->getNativeGraphicsOcclusionMapFBO()->getHeight());
-        camera->getNativeGraphicsOcclusionMapFBO()->clearColor(Color::pink);
-
-        Renderer::getRenderer()->turnOff(Capability::Depth_Testing);
-
-        mOcclusionMapShader->bind();
-        mOcclusionMapShader->setView(camera->getViewMatrix());
-        mOcclusionMapShader->setProjection(camera->getProjMatrix());
-        mOcclusionMeshHandle->drawIndexed(0, cumulativeIndices);
-        mOcclusionMapShader->unbind();
-
-        Renderer::getRenderer()->turnOn(Capability::Depth_Testing);
-
-        camera->getNativeGraphicsOcclusionMapFBO()->unbind();
     }
+    else
+    {
+        mOcclusionQueryIndex = 0;
+    }*/
 }
 
 void RenderSystem::buildRenderQueue()
@@ -525,10 +553,10 @@ void RenderSystem::buildRenderQueue()
                         // but we have not yet actually set the material
                         if (material != nullptr)
                         {
-                            //int shaderIndex = mWorld->getIndexOf(material->getShaderGuid());
-
-                            uint64_t key =
-                                generateDrawCall(materialIndex, mCachedMeshIndices[i], 0 /*shaderIndex*/, j, 1);
+                            // [  depth  ][sub mesh][mesh index][ material index]
+                            // [ 24-bits ][ 8 bits ][ 16 bits  ][    16-bits    ]
+                            // 64                                               0
+                            uint64_t key = generateDrawCall(materialIndex, mCachedMeshIndices[i], j, 0);
 
                             mRenderQueueScratch[drawCallCount].first = key;
                             mRenderQueueScratch[drawCallCount].second = static_cast<int>(i);
@@ -558,45 +586,6 @@ void RenderSystem::buildRenderQueue()
     mWorld->mBoundingAABBs = mCachedBoundingAABBs;
     mWorld->mFrustumVisible = mFrustumVisible;
     mWorld->mBoundingVolume = mCachedBoundingVolume;
-
-
-
-    // mRenderQueue.clear();
-
-    // for (size_t i = 0; i < mTotalRenderObjects.size(); i++)
-    //{
-    //     // for now dont sort
-    //     uint64_t key = i;
-
-    //    mRenderQueue.push_back(std::make_pair(key, (int)i));
-
-    //    //if (!mTotalRenderObjects[i].culled)
-    //    //{
-    //    //    uint64_t key = 0;
-
-    //    //    uint32_t matIndex = mTotalRenderObjects[i].materialIndex;
-    //    //    uint32_t depth = 2342;
-    //    //    uint32_t reserved = 112;
-
-    //    //    // [ reserved ][  depth  ][ material index]
-    //    //    // [  8-bits  ][ 24-bits ][    32-bits    ]
-    //    //    // 64                                     0
-    //    //    constexpr uint32_t matMask = 0xFFFFFFFF; // 32 least significant bits mask
-    //    //    constexpr uint32_t depthMask = 0xFFFFFF; // 24 least significant bits mask
-    //    //    constexpr uint32_t reservedMask = 0xFF;  // 8 least significant bits mask
-
-    //    //    matIndex = matMask & matIndex;
-    //    //    depth = depthMask & depth;
-    //    //    reserved = reservedMask & reserved;
-
-    //    //    uint64_t temp = 0;
-    //    //    key |= ((reserved | temp) << 56);
-    //    //    key |= ((depth | temp) << 32); // depth back to front
-    //    //    key |= ((matIndex | temp) << 0);
-
-    //    //    mRenderQueue.push_back(std::make_pair(key, (int)i));
-    //    //}
-    //}
 }
 
 void RenderSystem::sortRenderQueue()
@@ -633,8 +622,12 @@ void RenderSystem::buildDrawCallCommandList()
     {
         uint16_t materialIndex = getMaterialIndexFromKey(mRenderQueue[index].first);
         uint16_t meshIndex = getMeshIndexFromKey(mRenderQueue[index].first);
-        //uint16_t shaderIndex = getShaderIndexFromKey(mRenderQueue[index].first);
         uint8_t subMesh = getSubMeshFromKey(mRenderQueue[index].first);
+        uint32_t depth = getDepthFromKey(mRenderQueue[index].first);
+
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+        Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
+        Shader *shader = mWorld->getAssetByIndex<Shader>(mWorld->getIndexOf(material->getShaderGuid()));
 
         // See if we can use instancing
         bool instanced = false;
@@ -655,16 +648,9 @@ void RenderSystem::buildDrawCallCommandList()
         if (instanced)
         {
             // Can use instanced draw calls
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-            Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
-            Shader *shader = mWorld->getAssetByIndex<Shader>(mWorld->getIndexOf(material->getShaderGuid()));
-
-            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
-            VertexBuffer *instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
-
             mDrawCallCommands[drawCallIndex].meshHandle = mesh->getNativeGraphicsHandle();
-            mDrawCallCommands[drawCallIndex].instanceModelBuffer = instanceModelBuffer;
-            mDrawCallCommands[drawCallIndex].instanceColorBuffer = instanceColorBuffer;
+            mDrawCallCommands[drawCallIndex].instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+            mDrawCallCommands[drawCallIndex].instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
             mDrawCallCommands[drawCallIndex].material = material;
             mDrawCallCommands[drawCallIndex].shader = shader;
             mDrawCallCommands[drawCallIndex].meshStartIndex = mesh->getSubMeshStartIndex(subMesh);
@@ -672,19 +658,12 @@ void RenderSystem::buildDrawCallCommandList()
             mDrawCallCommands[drawCallIndex].instanceCount = Renderer::INSTANCE_BATCH_SIZE;
             mDrawCallCommands[drawCallIndex].indexed = true;
 
-            /*mDrawCallCommands[index].instanceModelBuffer->bind();
-            mDrawCallCommands[index].instanceModelBuffer->setData(
-                mModels.data() + index, 0, sizeof(glm::mat4) * mDrawCallCommands[index].instanceCount);
-            mDrawCallCommands[index].instanceModelBuffer->unbind();*/
+            mDrawCallCommands[drawCallIndex].meshRendererIndex = -1; // dont do occlusion culling on instance draw calls?
 
             index += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
         {
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-            Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
-            Shader *shader = mWorld->getAssetByIndex<Shader>(mWorld->getIndexOf(material->getShaderGuid()));
-
             mDrawCallCommands[drawCallIndex].meshHandle = mesh->getNativeGraphicsHandle();
             mDrawCallCommands[drawCallIndex].instanceModelBuffer = nullptr;
             mDrawCallCommands[drawCallIndex].instanceColorBuffer = nullptr;
@@ -694,6 +673,8 @@ void RenderSystem::buildDrawCallCommandList()
             mDrawCallCommands[drawCallIndex].meshEndIndex = mesh->getSubMeshEndIndex(subMesh);
             mDrawCallCommands[drawCallIndex].instanceCount = 0;
             mDrawCallCommands[drawCallIndex].indexed = true;
+
+            mDrawCallCommands[drawCallIndex].meshRendererIndex = mRenderQueue[index].second;
         
             index++;
         }
@@ -704,13 +685,6 @@ void RenderSystem::buildDrawCallCommandList()
     assert(index == mRenderQueue.size());
 
     mDrawCallCommands.resize(drawCallIndex);
-
-    /*mDrawCalls.resize(mRenderQueue.size());
-    for (size_t i = 0; i < mDrawCalls.size(); i++)
-    {
-        mDrawCalls[i].key = mRenderQueue[i].first;
-        mDrawCalls[i].meshRendererIndex = mRenderQueue[i].second;
-    }*/
 
     // Note: Not really efficient but ok for now. Adds enabled terrain to draw call command list
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Terrain>(); i++)

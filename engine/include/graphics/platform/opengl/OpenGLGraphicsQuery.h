@@ -3,24 +3,30 @@
 
 #include "../../GraphicsQuery.h"
 
+#include <GL/glew.h>
+#include <vector>
+
 namespace PhysicsEngine
 {
 	class OpenGLOcclusionQuery : public OcclusionQuery
 	{
-      private:
-        unsigned int mQuery;
+        private:
+          std::vector<GLuint> mQueryIds;
 
         public:
           OpenGLOcclusionQuery();
           ~OpenGLOcclusionQuery();
 
-          void beginQuery() override;
-          void endQuery() override;
+          void beginQuery(size_t queryIndex) override;
+          void endQuery(size_t queryIndex) override;
+
+          bool isVisible(size_t queryIndex) override;
+          bool isVisibleNoWait(size_t queryIndex) override;
 	};
 
 	class OpenGLTimingQuery : public TimingQuery
     {
     };
-    } // namespace PhysicsEngine
+} // namespace PhysicsEngine
 
 #endif
