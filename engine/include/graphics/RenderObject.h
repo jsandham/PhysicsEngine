@@ -1,30 +1,45 @@
 #ifndef RENDEROBJECT_H__
 #define RENDEROBJECT_H__
 
-#include "../core/Material.h"
-
-#include "../graphics/MeshHandle.h"
+#include <cstdint>
 
 namespace PhysicsEngine
 {
-typedef struct DrawCallCommand
-{
-    MeshHandle *meshHandle;
-    VertexBuffer *instanceModelBuffer;
-    VertexBuffer *instanceColorBuffer;
-    Material *material;
-    Shader *shader;
-    int meshStartIndex;
-    int meshEndIndex;
-    int instanceCount;
-    int meshRendererIndex;
-    bool indexed;
-} DrawCallCommand;
+    enum class DrawCallFlags
+    {
+        Indexed = 1,
+        Instanced = 2,
+        Terrain = 4
+    };
 
-uint64_t generateDrawCall(int materialIndex, int meshIndex, int subMesh, int depth);
-uint16_t getMaterialIndexFromKey(uint64_t key);
-uint16_t getMeshIndexFromKey(uint64_t key);
-uint8_t getSubMeshFromKey(uint64_t key);
-uint32_t getDepthFromKey(uint64_t key);
+    class DrawCallCommand
+    {
+      private:
+        uint64_t mDrawCallCode;
+
+      public:
+        DrawCallCommand();
+        DrawCallCommand(uint64_t drawCallCode);
+
+        uint64_t getCode() const;
+
+        void generateTerrainDrawCall(int materialIndex, int terrainIndex, int chunk, int flags);
+        void generateDrawCall(int materialIndex, int meshIndex, int subMesh, int depth, int flags);
+        
+        uint16_t getMaterialIndex() const;
+        uint16_t getMeshIndex() const;
+        uint8_t getSubMesh() const;
+        uint32_t getDepth() const;
+        uint8_t getFlags() const;
+
+        void markDrawCallAsInstanced();
+        void markDrawCallAsIndexed();
+        void markDrawCallAsTerrain();
+
+        bool isIndexed() const;
+        bool isInstanced() const;
+        bool isTerrain() const; 
+    };
+
 } // namespace PhysicsEngine
 #endif

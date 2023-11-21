@@ -690,7 +690,6 @@ void Mesh::copyMeshToDevice()
         {
             mInstanceModelBuffer->resize(sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        // mInstanceModelBuffer->setData(nullptr, 0, sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceModelBuffer->unbind();
 
         mInstanceColorBuffer->bind();
@@ -698,7 +697,6 @@ void Mesh::copyMeshToDevice()
         {
             mInstanceColorBuffer->resize(sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        // mInstanceColorBuffer->setData(nullptr, 0, sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         mInstanceColorBuffer->unbind();
 
         mIndexBuffer->bind();

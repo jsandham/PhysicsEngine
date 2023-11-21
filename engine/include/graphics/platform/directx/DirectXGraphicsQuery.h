@@ -11,6 +11,8 @@ class DirectXOcclusionQuery : public OcclusionQuery
     DirectXOcclusionQuery();
     ~DirectXOcclusionQuery();
 
+    void increaseQueryCount(size_t count) override;
+
     void beginQuery(size_t queryIndex) override;
     void endQuery(size_t queryIndex) override;
 

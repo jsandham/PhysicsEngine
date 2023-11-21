@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "../core/Id.h"
+
 #include "RenderObject.h"
 #include "Renderer.h"
 #include "RendererMeshes.h"

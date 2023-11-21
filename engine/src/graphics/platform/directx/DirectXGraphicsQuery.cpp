@@ -14,6 +14,10 @@ DirectXOcclusionQuery::~DirectXOcclusionQuery()
     
 }
 
+void DirectXOcclusionQuery::increaseQueryCount(size_t count)
+{
+}
+
 void DirectXOcclusionQuery::beginQuery(size_t queryIndex)
 {
     

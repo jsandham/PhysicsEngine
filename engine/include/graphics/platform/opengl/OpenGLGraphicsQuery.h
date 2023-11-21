@@ -17,6 +17,8 @@ namespace PhysicsEngine
           OpenGLOcclusionQuery();
           ~OpenGLOcclusionQuery();
 
+          void increaseQueryCount(size_t count) override;
+
           void beginQuery(size_t queryIndex) override;
           void endQuery(size_t queryIndex) override;
 

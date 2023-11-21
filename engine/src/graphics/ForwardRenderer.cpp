@@ -137,18 +137,25 @@ void ForwardRenderer::computeSSAO(Camera *camera, const std::vector<DrawCallComm
     int modelIndex = 0;
     for (size_t i = 0; i < commands.size(); i++)
     {
-        int subMeshVertexStartIndex = commands[i].meshStartIndex;
-        int subMeshVertexEndIndex = commands[i].meshEndIndex;
+        uint16_t meshIndex = commands[i].getMeshIndex();
+        uint8_t subMesh = commands[i].getSubMesh();
+        bool instanced = commands[i].isInstanced();
 
-        if (commands[i].instanceCount > 0)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+        if (instanced)
         {
-            modelIndex += commands[i].instanceCount;
+            modelIndex += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
         {
             mGeometryShader->setModel(models[modelIndex]);
 
-            Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex, (subMeshVertexEndIndex - subMeshVertexStartIndex),
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                 (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                  camera->mQuery);
             modelIndex++;
         }
@@ -205,17 +212,23 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
             int modelIndex = 0;
             for (size_t j = 0; j < commands.size(); j++)
             {
-                int subMeshVertexStartIndex = commands[j].meshStartIndex;
-                int subMeshVertexEndIndex = commands[j].meshEndIndex;
+                uint16_t meshIndex = commands[j].getMeshIndex();
+                uint8_t subMesh = commands[j].getSubMesh();
+                bool instanced = commands[j].isInstanced();
 
-                if (commands[j].instanceCount > 0)
+                Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+                int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+                int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+                if (instanced)
                 {
-                    modelIndex += commands[j].instanceCount;
+                    modelIndex += Renderer::INSTANCE_BATCH_SIZE;
                 }
                 else
                 {
                     mDepthShader->setModel(models[modelIndex]);
-                    Renderer::getRenderer()->drawIndexed(commands[j].meshHandle, subMeshVertexStartIndex,
+                    Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                          (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                          camera->mQuery);
                     modelIndex++;
@@ -244,18 +257,24 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         int modelIndex = 0;
         for (size_t i = 0; i < commands.size(); i++)
         {
-            int subMeshVertexStartIndex = commands[i].meshStartIndex;
-            int subMeshVertexEndIndex = commands[i].meshEndIndex;
+            uint16_t meshIndex = commands[i].getMeshIndex();
+            uint8_t subMesh = commands[i].getSubMesh();
+            bool instanced = commands[i].isInstanced();
 
-            if (commands[i].instanceCount > 0)
+            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+            if (instanced)
             {
-                modelIndex += commands[i].instanceCount;
+                modelIndex += Renderer::INSTANCE_BATCH_SIZE;
             }
             else
             {
                 mDepthShader->setModel(models[modelIndex]);
 
-                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                      (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                      camera->mQuery);
                 modelIndex++;
@@ -310,18 +329,24 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
         int modelIndex = 0;
         for (size_t i = 0; i < commands.size(); i++)
         {
-            int subMeshVertexStartIndex = commands[i].meshStartIndex;
-            int subMeshVertexEndIndex = commands[i].meshEndIndex;
+            uint16_t meshIndex = commands[i].getMeshIndex();
+            uint8_t subMesh = commands[i].getSubMesh();
+            bool instanced = commands[i].isInstanced();
 
-            if (commands[i].instanceCount > 0)
+            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+            if (instanced)
             {
-                modelIndex += commands[i].instanceCount;
+                modelIndex += Renderer::INSTANCE_BATCH_SIZE;
             }
             else
             {
                 mDepthCubemapShader->setModel(models[modelIndex]);
 
-                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                      (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                      camera->mQuery);
                 modelIndex++;
@@ -426,18 +451,32 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
     framebuffer->setViewport(camera->getViewport().mX, camera->getViewport().mY, camera->getViewport().mWidth,
                              camera->getViewport().mHeight);
 
-    Shader *shader = nullptr;
-    Material *material = nullptr;
+    //Shader *shader = nullptr;
+    //Material *material = nullptr;
 
     int modelIndex = 0;
     for (size_t i = 0; i < commands.size(); i++)
     {
-        if (shader != commands[i].shader)
-        {
-            shader = commands[i].shader;
-        }
+        uint16_t materialIndex = commands[i].getMaterialIndex();
+        uint16_t meshIndex = commands[i].getMeshIndex();
+        uint8_t subMesh = commands[i].getSubMesh();
+        bool instanced = commands[i].isInstanced();
+        bool indexed = commands[i].isIndexed();
 
-        if (commands[i].instanceCount > 0)
+        Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+        Shader *shader = mWorld->getAssetByIndex<Shader>(mWorld->getIndexOf(material->getShaderGuid()));
+           
+        //if (shader != commands[i].shader)
+        //{
+        //    shader = commands[i].shader;
+        //}
+
+        if (instanced)
         {
             shader->bind(variant | static_cast<int64_t>(ShaderMacro::Instancing));
         }
@@ -465,20 +504,17 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             }
         }
 
-        material = commands[i].material;
         material->apply();
 
-        int subMeshVertexStartIndex = commands[i].meshStartIndex;
-        int subMeshVertexEndIndex = commands[i].meshEndIndex;
-
-        if (commands[i].instanceCount > 0)
+        if (instanced)
         {
-            VertexBuffer *instanceModelBuffer = commands[i].instanceModelBuffer;
+            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
 
             instanceModelBuffer->bind();
-            instanceModelBuffer->setData(models.data() + modelIndex, 0, sizeof(glm::mat4) * commands[i].instanceCount);
+            instanceModelBuffer->setData(models.data() + modelIndex, 0,
+                                         sizeof(glm::mat4) * Renderer::INSTANCE_BATCH_SIZE);
             instanceModelBuffer->unbind();
-            modelIndex += commands[i].instanceCount;
+            modelIndex += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
         {
@@ -486,35 +522,35 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
             modelIndex++;
         }
 
-        if (commands[i].meshRendererIndex >= 0)
-        {
-            occlusionQuery.beginQuery(commands[i].meshRendererIndex);
-        }
+        //if (commands[i].meshRendererIndex >= 0)
+        //{
+        //occlusionQuery.beginQuery(i);
+        //}
 
-        if (commands[i].instanceCount > 0)
+        if (instanced)
         {
-            Renderer::getRenderer()->drawIndexedInstanced(commands[i].meshHandle, subMeshVertexStartIndex,
+            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                           (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                          commands[i].instanceCount, camera->mQuery);
+                                                          Renderer::INSTANCE_BATCH_SIZE, camera->mQuery);
         }
         else
         {
-            if (commands[i].indexed)
+            if (indexed)
             {
-                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                      (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
             }
             else
             {
-                Renderer::getRenderer()->draw(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->draw(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                               (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
             }
         }
 
-        if (commands[i].meshRendererIndex >= 0)
-        {
-            occlusionQuery.endQuery(commands[i].meshRendererIndex);
-        }
+        //if (commands[i].meshRendererIndex >= 0)
+        //{
+        //occlusionQuery.endQuery(i);
+        //}
     }
 
     framebuffer->unbind();
@@ -533,13 +569,20 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawC
     int modelIndex = 0;
     for (size_t i = 0; i < commands.size(); i++)
     {
-        int subMeshVertexStartIndex = commands[i].meshStartIndex;
-        int subMeshVertexEndIndex = commands[i].meshEndIndex;
+        uint16_t meshIndex = commands[i].getMeshIndex();
+        uint8_t subMesh = commands[i].getSubMesh();
+        bool instanced = commands[i].isInstanced();
+        bool indexed = commands[i].isIndexed();
 
-        if (commands[i].instanceCount > 0)
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+        if (instanced)
         {
-            std::vector<glm::uvec4> colors(commands[i].instanceCount);
-            for (size_t j = 0; j < commands[i].instanceCount; j++)
+            std::vector<glm::uvec4> colors(Renderer::INSTANCE_BATCH_SIZE);
+            for (size_t j = 0; j < Renderer::INSTANCE_BATCH_SIZE; j++)
             {
                 Color32 c = Color32::convertUint32ToColor32(color);
                 colors[j].r = c.mR;
@@ -549,26 +592,25 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawC
                 color++;
             }
 
-            VertexBuffer *instanceModelBuffer = commands[i].instanceModelBuffer;
-            VertexBuffer *instanceColorBuffer = commands[i].instanceColorBuffer;
+            VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
+            VertexBuffer *instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
 
             mColorInstancedShader->bind();
 
             instanceModelBuffer->bind();
             instanceModelBuffer->setData(models.data() + modelIndex, 0,
-                                                          sizeof(glm::mat4) * commands[i].instanceCount);
+                                         sizeof(glm::mat4) * Renderer::INSTANCE_BATCH_SIZE);
             instanceModelBuffer->unbind();
 
             instanceColorBuffer->bind();
-            instanceColorBuffer->setData(colors.data(), 0,
-                                                          sizeof(glm::uvec4) * commands[i].instanceCount);
+            instanceColorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * Renderer::INSTANCE_BATCH_SIZE);
             instanceColorBuffer->unbind();
-            Renderer::getRenderer()->drawIndexedInstanced(commands[i].meshHandle, subMeshVertexStartIndex,
+            Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                           (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                          commands[i].instanceCount,
+                                                          Renderer::INSTANCE_BATCH_SIZE,
                                                           camera->mQuery);
 
-            modelIndex += commands[i].instanceCount;
+            modelIndex += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
         {
@@ -576,14 +618,14 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawC
             mColorShader->setModel(models[modelIndex]);
             mColorShader->setColor32(Color32::convertUint32ToColor32(color));
 
-            if (commands[i].indexed)
+            if (indexed)
             {
-                Renderer::getRenderer()->drawIndexed(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                      (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
             }
             else
             {
-                Renderer::getRenderer()->draw(commands[i].meshHandle, subMeshVertexStartIndex,
+                Renderer::getRenderer()->draw(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                               (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
             }
 

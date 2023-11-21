@@ -193,8 +193,8 @@ class RenderSystem
     int mOcclusionQueryIndex;
 
     // RenderQueue
-    std::vector<std::pair<uint64_t, int>> mRenderQueueScratch;
-    std::vector<std::pair<uint64_t, int>> mRenderQueue;
+    std::vector<std::pair<DrawCallCommand, int>> mRenderQueueScratch;
+    std::vector<std::pair<DrawCallCommand, int>> mRenderQueue;
 
     // Draw call data
     std::vector<glm::mat4> mModels;

@@ -9,6 +9,7 @@
 
 #include "../core/Color.h"
 
+#include "MeshHandle.h"
 #include "GraphicsQuery.h"
 #include "RenderObject.h"
 

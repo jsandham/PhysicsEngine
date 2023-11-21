@@ -61,10 +61,10 @@ class ForwardRenderer
     void beginFrame(Camera *camera);
     void computeSSAO(Camera *camera, const std::vector<DrawCallCommand> &commands,
                      const std::vector<glm::mat4> &models);
-    void renderShadows(Camera *camera, Light *light, Transform *lightTransform,
-                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models);
-    void renderOpaques(Camera *camera, Light *light, Transform *lightTransform,
-                       const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models,
+    void renderShadows(Camera *camera, Light *light, Transform *lightTransform, const std::vector<DrawCallCommand> &commands,
+                       const std::vector<glm::mat4> &models);
+    void renderOpaques(Camera *camera, Light *light, Transform *lightTransform, const std::vector<DrawCallCommand> &commands,
+                       const std::vector<glm::mat4> &models,
                        OcclusionQuery &occlusionQuery);
     void renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
                             const std::vector<glm::mat4> &models, const std::vector<Id> &transformIds);

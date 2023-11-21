@@ -391,17 +391,17 @@ void RenderSystem::frustumCulling(const Camera *camera)
             }
         }
 
-        /*for (size_t i = 0; i < meshRendererCount; i++)
-        {
-            mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()); 
-            //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
-        
-            float distanceToCamera = mFrustumVisible[i]
-                                       ? glm::distance2(mCachedBoundingSpheres[i].mCentre, camera->getPosition())
-                                       : std::numeric_limits<float>::max();
+        //for (size_t i = 0; i < meshRendererCount; i++)
+        //{
+        //    mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()); 
+        //    //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
+        //
+        //    float distanceToCamera = mFrustumVisible[i]
+        //                               ? glm::distance2(mCachedBoundingSpheres[i].mCentre, camera->getPosition())
+        //                               : std::numeric_limits<float>::max();
 
-            mDistanceToCamera[i] = std::pair<float, int>(distanceToCamera, static_cast<int>(i));
-        }*/
+        //    mDistanceToCamera[i] = std::pair<float, int>(distanceToCamera, static_cast<int>(i));
+        //}
     }
 }
 
@@ -501,24 +501,32 @@ void RenderSystem::occlusionCulling(const Camera *camera)
     //    camera->getNativeGraphicsOcclusionMapFBO()->unbind();
     //}
 
-    /*if (mOcclusionQueryIndex != -1)
-    {
-        int lastFramesOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
+    /*size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
-        for (size_t i = 0; i < mFrustumVisible.size(); i++)
+    if (meshRendererCount > 0)
+    {
+        mOcclusionQuery[0]->increaseQueryCount(meshRendererCount);
+        mOcclusionQuery[1]->increaseQueryCount(meshRendererCount);
+
+        if (mOcclusionQueryIndex != -1)
         {
-            if (mFrustumVisible[i])
+            int lastFramesOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
+
+            for (size_t i = 0; i < mFrustumVisible.size(); i++)
             {
-                if (!mOcclusionQuery[lastFramesOcclusionQueryIndex]->isVisible(i))
+                if (mFrustumVisible[i])
                 {
-                    std::cout << "i: " << std::to_string(i) << " not visble" << std::endl;
+                    if (!mOcclusionQuery[lastFramesOcclusionQueryIndex]->isVisible(i))
+                    {
+                        std::cout << "i: " << std::to_string(i) << " not visble" << std::endl;
+                    }
                 }
             }
         }
-    }
-    else
-    {
-        mOcclusionQueryIndex = 0;
+        else
+        {
+            mOcclusionQueryIndex = 0;
+        }
     }*/
 }
 
@@ -553,13 +561,12 @@ void RenderSystem::buildRenderQueue()
                         // but we have not yet actually set the material
                         if (material != nullptr)
                         {
-                            // [  depth  ][sub mesh][mesh index][ material index]
-                            // [ 24-bits ][ 8 bits ][ 16 bits  ][    16-bits    ]
-                            // 64                                               0
-                            uint64_t key = generateDrawCall(materialIndex, mCachedMeshIndices[i], j, 0);
-
-                            mRenderQueueScratch[drawCallCount].first = key;
+                            DrawCallCommand command;
+                            command.generateDrawCall(materialIndex, mCachedMeshIndices[i], j, 0, 0);
+                            
+                            mRenderQueueScratch[drawCallCount].first = command;
                             mRenderQueueScratch[drawCallCount].second = static_cast<int>(i);
+
                             drawCallCount++;
                         }
                         else
@@ -592,7 +599,9 @@ void RenderSystem::sortRenderQueue()
 {
     // sort render queue from highest priority key to lowest
     std::sort(mRenderQueue.begin(), mRenderQueue.end(),
-              [=](std::pair<uint64_t, int> &a, std::pair<uint64_t, int> &b) { return a.first > b.first; });
+              [=](std::pair<DrawCallCommand, int> &a, std::pair<DrawCallCommand, int> &b) {
+                  return a.first.getCode() > b.first.getCode();
+              });
 
     mModels.resize(mRenderQueue.size());
     mTransformIds.resize(mRenderQueue.size());
@@ -620,24 +629,22 @@ void RenderSystem::buildDrawCallCommandList()
     int index = 0;
     while (index < mRenderQueue.size())
     {
-        uint16_t materialIndex = getMaterialIndexFromKey(mRenderQueue[index].first);
-        uint16_t meshIndex = getMeshIndexFromKey(mRenderQueue[index].first);
-        uint8_t subMesh = getSubMeshFromKey(mRenderQueue[index].first);
-        uint32_t depth = getDepthFromKey(mRenderQueue[index].first);
+        DrawCallCommand command(mRenderQueue[index].first);
 
-        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-        Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
-        Shader *shader = mWorld->getAssetByIndex<Shader>(mWorld->getIndexOf(material->getShaderGuid()));
+        uint16_t materialIndex = command.getMaterialIndex();
+        uint16_t meshIndex = command.getMeshIndex();
+        uint8_t subMesh = command.getSubMesh();
 
         // See if we can use instancing
         bool instanced = false;
         if (index + Renderer::INSTANCE_BATCH_SIZE < mRenderQueue.size())
         {
-            if (materialIndex == getMaterialIndexFromKey(mRenderQueue[index + Renderer::INSTANCE_BATCH_SIZE].first))
+            DrawCallCommand commandAhead(mRenderQueue[index + Renderer::INSTANCE_BATCH_SIZE].first);
+            if (materialIndex == commandAhead.getMaterialIndex())
             {
-                if (meshIndex == getMeshIndexFromKey(mRenderQueue[index + Renderer::INSTANCE_BATCH_SIZE].first))
+                if (meshIndex == commandAhead.getMeshIndex())
                 {
-                    if (subMesh == getSubMeshFromKey(mRenderQueue[index + Renderer::INSTANCE_BATCH_SIZE].first))
+                    if (subMesh == commandAhead.getSubMesh())
                     {
                         instanced = true;
                     }
@@ -648,33 +655,18 @@ void RenderSystem::buildDrawCallCommandList()
         if (instanced)
         {
             // Can use instanced draw calls
-            mDrawCallCommands[drawCallIndex].meshHandle = mesh->getNativeGraphicsHandle();
-            mDrawCallCommands[drawCallIndex].instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
-            mDrawCallCommands[drawCallIndex].instanceColorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
-            mDrawCallCommands[drawCallIndex].material = material;
-            mDrawCallCommands[drawCallIndex].shader = shader;
-            mDrawCallCommands[drawCallIndex].meshStartIndex = mesh->getSubMeshStartIndex(subMesh);
-            mDrawCallCommands[drawCallIndex].meshEndIndex = mesh->getSubMeshEndIndex(subMesh);
-            mDrawCallCommands[drawCallIndex].instanceCount = Renderer::INSTANCE_BATCH_SIZE;
-            mDrawCallCommands[drawCallIndex].indexed = true;
+            command.markDrawCallAsInstanced();
+            command.markDrawCallAsIndexed();
 
-            mDrawCallCommands[drawCallIndex].meshRendererIndex = -1; // dont do occlusion culling on instance draw calls?
+            mDrawCallCommands[drawCallIndex] = command;
 
             index += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
         {
-            mDrawCallCommands[drawCallIndex].meshHandle = mesh->getNativeGraphicsHandle();
-            mDrawCallCommands[drawCallIndex].instanceModelBuffer = nullptr;
-            mDrawCallCommands[drawCallIndex].instanceColorBuffer = nullptr;
-            mDrawCallCommands[drawCallIndex].material = material;
-            mDrawCallCommands[drawCallIndex].shader = shader;
-            mDrawCallCommands[drawCallIndex].meshStartIndex = mesh->getSubMeshStartIndex(subMesh);
-            mDrawCallCommands[drawCallIndex].meshEndIndex = mesh->getSubMeshEndIndex(subMesh);
-            mDrawCallCommands[drawCallIndex].instanceCount = 0;
-            mDrawCallCommands[drawCallIndex].indexed = true;
+            command.markDrawCallAsIndexed();
 
-            mDrawCallCommands[drawCallIndex].meshRendererIndex = mRenderQueue[index].second;
+            mDrawCallCommands[drawCallIndex] = command;
         
             index++;
         }
@@ -689,36 +681,38 @@ void RenderSystem::buildDrawCallCommandList()
     // Note: Not really efficient but ok for now. Adds enabled terrain to draw call command list
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Terrain>(); i++)
     {
-        Terrain *terrain = mWorld->getActiveScene()->getComponentByIndex<Terrain>(i);
+         Terrain *terrain = mWorld->getActiveScene()->getComponentByIndex<Terrain>(i);
     
-        Transform *transform = terrain->getComponent<Transform>();
+         Transform *transform = terrain->getComponent<Transform>();
     
-        glm::mat4 model = transform->getModelMatrix();
+         glm::mat4 model = transform->getModelMatrix();
     
-        int materialIndex = mWorld->getIndexOf(terrain->getMaterial());
-        Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
+         int materialIndex = mWorld->getIndexOf(terrain->getMaterial());
+         Material *material = mWorld->getAssetByIndex<Material>(materialIndex);
     
-        // could be nullptr if for example we are adding a material to the renderer in the editor
-        // but we have not yet actually set the material
-        if (material != nullptr)
-        {
-            Shader *shader = mWorld->getAssetByGuid<Shader>(material->getShaderGuid());
-    
-            for (int j = 0; j < terrain->getTotalChunkCount(); j++)
-            {
-                if (terrain->isChunkEnabled(j))
-                {
-                    DrawCallCommand command;
-                    command.material = material;
-                    command.meshHandle = terrain->getNativeGraphicsHandle();
-                    command.shader = shader;
-                    command.instanceModelBuffer = nullptr;
-                    command.instanceColorBuffer = nullptr;
-                    command.indexed = false;
-                    command.instanceCount = 0;
-                    command.meshStartIndex = (int)terrain->getChunkStart(j);
-                    command.meshEndIndex = (int)(terrain->getChunkStart(j) + terrain->getChunkSize(j));
- 
+         // could be nullptr if for example we are adding a material to the renderer in the editor
+         // but we have not yet actually set the material
+         if (material != nullptr)
+         {
+             for (int j = 0; j < terrain->getTotalChunkCount(); j++)
+             {
+                 if (terrain->isChunkEnabled(j))
+                 {
+                     DrawCallCommand command;
+                     command.generateTerrainDrawCall(materialIndex, i, j, 0);
+                     command.markDrawCallAsTerrain();
+
+                     //DrawCallCommand command;
+                     //command.meshHandle = terrain->getNativeGraphicsHandle();
+                     //command.instanceModelBuffer = nullptr;
+                     //command.instanceColorBuffer = nullptr;
+                     //command.material = material;
+                     //command.shader = shader;
+                     //command.meshStartIndex = (int)terrain->getChunkStart(j);
+                     //command.meshEndIndex = (int)(terrain->getChunkStart(j) + terrain->getChunkSize(j));
+                     //command.instanceCount = 0;
+                     //command.indexed = false;
+
                     // Not really efficient but ok for now
                     mDrawCallCommands.push_back(command);
                     mModels.push_back(model);

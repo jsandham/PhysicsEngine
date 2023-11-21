@@ -15,18 +15,19 @@ OpenGLOcclusionQuery::~OpenGLOcclusionQuery()
     CHECK_ERROR(glDeleteQueries(queryCount, mQueryIds.data()));
 }
 
+void OpenGLOcclusionQuery::increaseQueryCount(size_t count)
+{
+    size_t oldCount = mQueryIds.size();
+    GLsizei queryCount = count - oldCount;
+    if (queryCount > 0)
+    {
+        mQueryIds.resize(count);
+        CHECK_ERROR(glGenQueries(queryCount, &mQueryIds[oldCount]));
+    }
+}
+
 void OpenGLOcclusionQuery::beginQuery(size_t queryIndex)
 {
-    if (queryIndex >= mQueryIds.size())
-    {
-        size_t oldSize = mQueryIds.size();
-
-        mQueryIds.resize(queryIndex + 1);
-
-        GLsizei queryCount = mQueryIds.size() - oldSize;
-        CHECK_ERROR(glGenQueries(queryCount, &mQueryIds[oldSize]));
-    }
-
     assert(queryIndex < mQueryIds.size());
 
     CHECK_ERROR(glBeginQuery(GL_SAMPLES_PASSED, mQueryIds[queryIndex]));
