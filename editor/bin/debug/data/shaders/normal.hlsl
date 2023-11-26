@@ -13,13 +13,27 @@ struct VS_OUTPUT
 };
 
 // uniforms : external parameters
-matrix worldViewProjection;
+//cbuffer CAMERA_CONSTANT_BUFFER : register(b0)
+//{
+//    float3 cameraPos;
+//    matrix view;
+//    matrix projection;
+//    matrix viewProjection;
+//}
+
+cbuffer VS_CONSTANT_BUFFER2 : register(b0)
+{
+    matrix projection;
+    matrix view;
+    matrix model;
+}
 
 // vertex shader 
 VS_OUTPUT VSMain(VS_INPUT input)
 {
+    float4x4 modelViewProj = mul(model, mul(view, projection));
     VS_OUTPUT output;
-    output.position = mul(worldViewProjection, float4(input.position, 1.0));
+    output.position = mul(modelViewProj, float4(input.position, 1.0));
     output.normal = input.normal;
     return output;
 }
@@ -34,5 +48,6 @@ struct PS_INPUT
 // pixel shader
 float4 PSMain(PS_INPUT input) : SV_TARGET
 {
-    return float4(input.normal, 1.0);
+    return float4(0.0f, 0.0f, 1.0f, 1.0f);
+    //return float4(input.normal, 1.0);
 }

@@ -27,14 +27,14 @@ void OpenGLMeshHandle::unbind()
     CHECK_ERROR(glBindVertexArray(0));
 }
 
-void OpenGLMeshHandle::addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer)
+void OpenGLMeshHandle::addVertexBuffer(VertexBuffer *buffer, std::string name, AttribType type, bool instanceBuffer)
 {
     assert(buffer != nullptr);
 
     int divisor = instanceBuffer ? 1 : 0;
 
     CHECK_ERROR(glBindVertexArray(mVao));
-    buffer->bind();
+    buffer->bind(mVertexAttribIndex);
 
     switch (type)
     {

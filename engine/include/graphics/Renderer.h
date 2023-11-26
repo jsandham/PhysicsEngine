@@ -42,6 +42,9 @@ class Renderer
     static int MAX_OCCLUDER_VERTEX_COUNT;
     static int MAX_OCCLUDER_INDEX_COUNT;
 
+    static int MAX_VERTICES_PER_BATCH;
+    static int MAX_MESH_PER_BATCH;
+
     static void init();
     static Renderer *getRenderer();
     static void present();

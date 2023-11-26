@@ -16,8 +16,8 @@ class VertexBuffer
 
     virtual void resize(size_t size) = 0;
     virtual void setData(const void *data, size_t offset, size_t size) = 0;
-    virtual void bind() = 0;
-    virtual void unbind() = 0;
+    virtual void bind(unsigned int slot) = 0;
+    virtual void unbind(unsigned int slot) = 0;
     virtual void *getBuffer() = 0;
 
     size_t getSize() const;

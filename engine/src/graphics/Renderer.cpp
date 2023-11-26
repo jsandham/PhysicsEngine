@@ -14,6 +14,9 @@ int Renderer::MAX_OCCLUDER_COUNT = 20;
 int Renderer::MAX_OCCLUDER_VERTEX_COUNT = 10000;
 int Renderer::MAX_OCCLUDER_INDEX_COUNT = 5000;
 
+int Renderer::MAX_VERTICES_PER_BATCH = 1000;
+int Renderer::MAX_MESH_PER_BATCH = 20;
+
 Renderer *Renderer::sInstance = nullptr;
 
 void Renderer::init()

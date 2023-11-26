@@ -40,9 +40,9 @@ Terrain::Terrain(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALI
 
     mHandle = MeshHandle::create();
 
-    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
+    mHandle->addVertexBuffer(mVertexBuffer, "POSITION", AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, "NORMAL", AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, "TEXCOORD", AttribType::Vec2);
 }
 
 Terrain::Terrain(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
@@ -76,9 +76,9 @@ Terrain::Terrain(World *world, const Guid &guid, const Id &id) : mWorld(world), 
 
     mHandle = MeshHandle::create();
 
-    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
+    mHandle->addVertexBuffer(mVertexBuffer, "POSITION", AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, "NORMAL", AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, "TEXCOORD", AttribType::Vec2);
 }
 
 Terrain::~Terrain()
@@ -347,29 +347,29 @@ void Terrain::generateTerrain()
         mNormals[9 * j + 8] = nz;
     }
 
-    mVertexBuffer->bind();
+    mVertexBuffer->bind(0);
     if (mVertexBuffer->getSize() < sizeof(float) * mVertices.size())
     {
         mVertexBuffer->resize(sizeof(float) * mVertices.size());
     }
     mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
-    mVertexBuffer->unbind();
+    mVertexBuffer->unbind(0);
 
-    mNormalBuffer->bind();
+    mNormalBuffer->bind(1);
     if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
     {
         mNormalBuffer->resize(sizeof(float) * mNormals.size());
     }
     mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
-    mNormalBuffer->unbind();
+    mNormalBuffer->unbind(1);
 
-    mTexCoordsBuffer->bind();
+    mTexCoordsBuffer->bind(2);
     if (mTexCoordsBuffer->getSize() < sizeof(float) * mTexCoords.size())
     {
         mTexCoordsBuffer->resize(sizeof(float) * mTexCoords.size());
     }
     mTexCoordsBuffer->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size());
-    mTexCoordsBuffer->unbind();
+    mTexCoordsBuffer->unbind(2);
 
     mCreated = true;
 }
@@ -507,29 +507,29 @@ void Terrain::regenerateTerrain()
         mNormals[9 * j + 8] = nz;
     }
 
-    mVertexBuffer->bind();
+    mVertexBuffer->bind(0);
     if (mVertexBuffer->getSize() < sizeof(float) * mVertices.size())
     {
         mVertexBuffer->resize(sizeof(float) * mVertices.size());
     }
     mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
-    mVertexBuffer->unbind();
+    mVertexBuffer->unbind(0);
 
-    mNormalBuffer->bind();
+    mNormalBuffer->bind(1);
     if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
     {
         mNormalBuffer->resize(sizeof(float) * mNormals.size());
     }
     mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
-    mNormalBuffer->unbind();
+    mNormalBuffer->unbind(1);
 
-    mTexCoordsBuffer->bind();
+    mTexCoordsBuffer->bind(2);
     if (mTexCoordsBuffer->getSize() < sizeof(float) * mTexCoords.size())
     {
         mTexCoordsBuffer->resize(sizeof(float) * mTexCoords.size());
     }
     mTexCoordsBuffer->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size());
-    mTexCoordsBuffer->unbind();
+    mTexCoordsBuffer->unbind(2);
 }
 
 void Terrain::updateTerrainHeight(float dx, float dz)
@@ -612,21 +612,21 @@ void Terrain::updateTerrainHeight(float dx, float dz)
         mNormals[9 * j + 8] = nz;
     }
 
-    mVertexBuffer->bind();
+    mVertexBuffer->bind(0);
     if (mVertexBuffer->getSize() < sizeof(float) * mVertices.size())
     {
         mVertexBuffer->resize(sizeof(float) * mVertices.size());
     }
     mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
-    mVertexBuffer->unbind();
+    mVertexBuffer->unbind(0);
 
-    mNormalBuffer->bind();
+    mNormalBuffer->bind(1);
     if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
     {
         mNormalBuffer->resize(sizeof(float) * mNormals.size());
     }
     mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
-    mNormalBuffer->unbind();
+    mNormalBuffer->unbind(1);
 }
 
 std::vector<float> Terrain::getVertices() const

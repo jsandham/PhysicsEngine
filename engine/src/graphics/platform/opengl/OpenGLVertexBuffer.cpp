@@ -30,12 +30,12 @@ void OpenGLVertexBuffer::setData(const void *data, size_t offset, size_t size)
     CHECK_ERROR(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));
 }
 
-void OpenGLVertexBuffer::bind()
+void OpenGLVertexBuffer::bind(unsigned int slot)
 {
     CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, mBuffer));
 }
 
-void OpenGLVertexBuffer::unbind()
+void OpenGLVertexBuffer::unbind(unsigned int slot)
 {
     CHECK_ERROR(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }

@@ -9,7 +9,8 @@ namespace PhysicsEngine
     {
         Indexed = 1,
         Instanced = 2,
-        Terrain = 4
+        Batched = 4,
+        Terrain = 8
     };
 
     class DrawCallCommand
@@ -33,11 +34,13 @@ namespace PhysicsEngine
         uint8_t getFlags() const;
 
         void markDrawCallAsInstanced();
+        void markDrawCallAsBatched();
         void markDrawCallAsIndexed();
         void markDrawCallAsTerrain();
 
-        bool isIndexed() const;
         bool isInstanced() const;
+        bool isBatched() const;
+        bool isIndexed() const;
         bool isTerrain() const; 
     };
 

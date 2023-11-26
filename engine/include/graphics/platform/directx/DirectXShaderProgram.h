@@ -52,9 +52,15 @@ class DirectXShaderProgram : public ShaderProgram
 
     std::vector<ConstantBufferVariable> mConstantBufferVariables;
 
+    static DirectXShaderProgram *sCurrentlyBoundProgram;
+
   public:
     DirectXShaderProgram();
     ~DirectXShaderProgram();
+
+    ID3DBlob *getVSBlob() const;
+    ID3DBlob *getPSBlob() const;
+    ID3DBlob *getGSBlob() const;
 
     void load(const std::string &name, const std::string &vertex, const std::string &fragment,
               const std::string &geometry) override;
@@ -120,6 +126,8 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int uniformId) const override;
     glm::mat3 getMat3(int uniformId) const override;
     glm::mat4 getMat4(int uniformId) const override;
+
+    static DirectXShaderProgram *getCurrentlyBoundProgram();
 
   private:
     void setData(int uniformId, const void *data);

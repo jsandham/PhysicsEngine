@@ -510,10 +510,10 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         {
             VertexBuffer *instanceModelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
 
-            instanceModelBuffer->bind();
+            instanceModelBuffer->bind(3);
             instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                          sizeof(glm::mat4) * Renderer::INSTANCE_BATCH_SIZE);
-            instanceModelBuffer->unbind();
+            instanceModelBuffer->unbind(3);
             modelIndex += Renderer::INSTANCE_BATCH_SIZE;
         }
         else
@@ -597,14 +597,14 @@ void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawC
 
             mColorInstancedShader->bind();
 
-            instanceModelBuffer->bind();
+            instanceModelBuffer->bind(3);
             instanceModelBuffer->setData(models.data() + modelIndex, 0,
                                          sizeof(glm::mat4) * Renderer::INSTANCE_BATCH_SIZE);
-            instanceModelBuffer->unbind();
+            instanceModelBuffer->unbind(3);
 
-            instanceColorBuffer->bind();
+            instanceColorBuffer->bind(7);
             instanceColorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * Renderer::INSTANCE_BATCH_SIZE);
-            instanceColorBuffer->unbind();
+            instanceColorBuffer->unbind(7);
             Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
                                                           (subMeshVertexEndIndex - subMeshVertexStartIndex),
                                                           Renderer::INSTANCE_BATCH_SIZE,

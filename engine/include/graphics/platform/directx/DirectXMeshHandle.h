@@ -5,6 +5,8 @@
 
 #include "../../MeshHandle.h"
 
+#include <d3d11.h>
+
 namespace PhysicsEngine
 {
 class DirectXMeshHandle : public MeshHandle
@@ -13,11 +15,15 @@ class DirectXMeshHandle : public MeshHandle
     std::vector<VertexBuffer *> mBuffers;
     IndexBuffer *mIndexBuffer;
 
+    ID3D11InputLayout *mBufferLayout;
+    std::vector<std::string> mInputSemanticNames;
+    std::vector<D3D11_INPUT_ELEMENT_DESC> mInputDescs; 
+
   public:
     DirectXMeshHandle();
     ~DirectXMeshHandle();
 
-    void addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer = false) override;
+    void addVertexBuffer(VertexBuffer *buffer, std::string name, AttribType type, bool instanceBuffer = false) override;
     void addIndexBuffer(IndexBuffer *buffer) override;
     void bind() override;
     void unbind() override;

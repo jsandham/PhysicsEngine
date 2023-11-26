@@ -12,6 +12,7 @@ class DirectXIndexBuffer : public IndexBuffer
 {
   private:
     D3D11_BUFFER_DESC mBufferDesc;
+    D3D11_MAPPED_SUBRESOURCE mMappedSubresource;
     ID3D11Buffer *mBuffer;
 
   public:

@@ -33,7 +33,6 @@ void DirectXVertexBuffer::resize(size_t size)
     mBufferDesc.ByteWidth = (unsigned int)size;
 
     ID3D11Device *device = DirectXRenderContext::get()->getD3DDevice();
-
     assert(device != nullptr);
 
     CHECK_ERROR(device->CreateBuffer(&mBufferDesc, NULL, &mBuffer));
@@ -53,25 +52,22 @@ void DirectXVertexBuffer::setData(const void *data, size_t offset, size_t size)
     context->Unmap(mBuffer, 0);
 }
 
-void DirectXVertexBuffer::bind()
+void DirectXVertexBuffer::bind(unsigned int slot)
 {
-    // unsigned int offset = 0;
-    // unsigned int stride = m_Layout.GetStride();
-
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    // context->IASetInputLayout(m_InputLayout);
-    // context->IASetVertexBuffers(0, 1, &m_BufferHandle, &stride, &offset);
+    UINT stride = sizeof(float) * 3;
+    UINT offset = 0;
+    context->IASetVertexBuffers(slot, 1, &mBuffer, &stride, &offset);
 }
 
-void DirectXVertexBuffer::unbind()
+void DirectXVertexBuffer::unbind(unsigned int slot)
 {
-    // ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
-    // assert(context != nullptr);
+    //ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    //assert(context != nullptr);
 
-    // context->IASetInputLayout(NULL);
-    // context->IASetVertexBuffers(0, 1, NULL, NULL, NULL);
+    //context->IASetVertexBuffers(slot, 1, NULL, NULL, NULL);
 }
 
 void *DirectXVertexBuffer::getBuffer()

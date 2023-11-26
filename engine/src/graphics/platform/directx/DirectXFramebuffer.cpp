@@ -177,10 +177,10 @@ void DirectXFramebuffer::clearColor(float r, float g, float b, float a)
     assert(context != nullptr);
 
     float color[4];
-    color[0] = 1.0f; // r;
-    color[1] = 0.0f; // g;
-    color[2] = 0.0f; // b;
-    color[3] = 1.0f; // a;
+    color[0] = r; // r;
+    color[1] = g; // g;
+    color[2] = b; // b;
+    color[3] = a; // a;
 
     context->ClearRenderTargetView(mRenderTargetViews[0], color);
 }

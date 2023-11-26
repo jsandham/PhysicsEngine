@@ -151,6 +151,15 @@ struct BVH
     }
 };
 
+struct Batch //BatchDrawCall?
+{
+    VertexBuffer *mVertexBuffer;
+    VertexBuffer *mNormalBuffer;
+    VertexBuffer *mTexCoordsBuffer;
+    IndexBuffer *mIndexBuffer;
+    MeshHandle *mMeshHandle;
+};
+
 class RenderSystem
 {
   private:
@@ -202,6 +211,7 @@ class RenderSystem
     std::vector<Sphere> mBoundingSpheres;
 
     std::vector<DrawCallCommand> mDrawCallCommands;
+    std::vector<Batch> mBatches;
 
   public:
     HideFlag mHide;

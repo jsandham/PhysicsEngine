@@ -4,6 +4,7 @@
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
 #include <assert.h>
+#include <vector>
 
 using namespace PhysicsEngine;
 
@@ -59,18 +60,19 @@ void DirectXUniformBuffer::bind(PipelineStage stage)
     }
 }
 void DirectXUniformBuffer::unbind(PipelineStage stage)
-// void DirectXUniformBuffer::unbind()
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
+    ID3D11Buffer* mNullBuffer = nullptr;
+
     switch (stage)
     {
     case PipelineStage::VS:
-        context->VSSetConstantBuffers(mBindingPoint, 1, NULL);
+        context->VSSetConstantBuffers(mBindingPoint, 1, &mNullBuffer);
         break;
     case PipelineStage::PS:
-        context->PSSetConstantBuffers(mBindingPoint, 1, NULL);
+        context->PSSetConstantBuffers(mBindingPoint, 1, &mNullBuffer);
         break;
     }
 }

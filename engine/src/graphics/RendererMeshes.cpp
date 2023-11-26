@@ -38,18 +38,18 @@ ScreenQuad::ScreenQuad()
         1.0f, 1.0f};
     // clang-format on
 
-    mVertexBuffer->bind();
+    mVertexBuffer->bind(0);
     mVertexBuffer->resize(sizeof(float) * 12);
     mVertexBuffer->setData(quadVertices, 0, sizeof(float) * 12);
-    mVertexBuffer->unbind();
+    mVertexBuffer->unbind(0);
 
-    mTexCoordsBuffer->bind();
+    mTexCoordsBuffer->bind(1);
     mTexCoordsBuffer->resize(sizeof(float) * 12);
     mTexCoordsBuffer->setData(quadTexCoords, 0, sizeof(float) * 12);
-    mTexCoordsBuffer->unbind();
+    mTexCoordsBuffer->unbind(1);
 
-    mMesh->addVertexBuffer(mVertexBuffer, AttribType::Vec2);
-    mMesh->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
+    mMesh->addVertexBuffer(mVertexBuffer, "POSITION", AttribType::Vec2);
+    mMesh->addVertexBuffer(mTexCoordsBuffer, "TEXCOORD", AttribType::Vec2);
 }
 
 ScreenQuad::~ScreenQuad()

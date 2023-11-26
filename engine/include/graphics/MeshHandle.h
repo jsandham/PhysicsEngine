@@ -4,6 +4,8 @@
 #include "IndexBuffer.h"
 #include "VertexBuffer.h"
 
+#include <string>
+
 namespace PhysicsEngine
 {
 enum class AttribType
@@ -30,7 +32,7 @@ class MeshHandle
     MeshHandle &operator=(const MeshHandle &other) = delete;
     virtual ~MeshHandle() = 0;
 
-    virtual void addVertexBuffer(VertexBuffer *buffer, AttribType type, bool instanceBuffer = false) = 0;
+    virtual void addVertexBuffer(VertexBuffer *buffer, std::string name, AttribType type, bool instanceBuffer = false) = 0;
     virtual void addIndexBuffer(IndexBuffer *buffer) = 0;
     virtual void bind() = 0;
     virtual void unbind() = 0;

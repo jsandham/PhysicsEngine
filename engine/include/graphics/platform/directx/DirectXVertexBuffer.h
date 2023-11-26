@@ -14,7 +14,6 @@ class DirectXVertexBuffer : public VertexBuffer
     D3D11_BUFFER_DESC mBufferDesc;
     D3D11_MAPPED_SUBRESOURCE mMappedSubresource;
     ID3D11Buffer *mBuffer;
-    ID3D11InputLayout *mInputLayout;
 
   public:
     DirectXVertexBuffer();
@@ -22,8 +21,8 @@ class DirectXVertexBuffer : public VertexBuffer
 
     void resize(size_t size) override;
     void setData(const void *data, size_t offset, size_t size) override;
-    void bind() override;
-    void unbind() override;
+    void bind(unsigned int slot) override;
+    void unbind(unsigned int slot) override;
     void *getBuffer() override;
 };
 } // namespace PhysicsEngine

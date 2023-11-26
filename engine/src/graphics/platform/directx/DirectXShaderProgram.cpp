@@ -54,6 +54,21 @@ DirectXShaderProgram::~DirectXShaderProgram()
     }
 }
 
+ID3DBlob *DirectXShaderProgram::getVSBlob() const
+{
+    return mVertexShaderBlob;
+}
+
+ID3DBlob *DirectXShaderProgram::getPSBlob() const
+{
+    return mPixelShaderBlob;
+}
+
+ID3DBlob *DirectXShaderProgram::getGSBlob() const
+{
+    return mGeometryShaderBlob;
+}
+
 void DirectXShaderProgram::load(const std::string &name, const std::string &vertex, const std::string &fragment,
                                 const std::string &geometry)
 {
@@ -394,6 +409,8 @@ void DirectXShaderProgram::compile()
 
 void DirectXShaderProgram::bind()
 {
+    sCurrentlyBoundProgram = this;
+
     DirectXRenderContext::get()->getD3DDeviceContext()->VSSetShader(mVertexShader, NULL, 0);
     DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(mPixelShader, NULL, 0);
 
@@ -679,11 +696,43 @@ glm::mat3 DirectXShaderProgram::getMat3(int uniformId) const
 
 glm::mat4 DirectXShaderProgram::getMat4(int uniformId) const
 {
-    return glm::mat4();
+    // Step 1: Find which constant buffer this uniform name belongs to..
+    // Step 2: Find the offset in the constant buffer where this uniform resides
+    // Step 3: Update the value
+    ConstantBufferVariable cbv = {};
+    for (size_t i = 0; i < mConstantBufferVariables.size(); i++)
+    {
+        if (mConstantBufferVariables[i].mUniformId == uniformId)
+        {
+            cbv = mConstantBufferVariables[i];
+            break;
+        }
+    }
+
+    glm::mat4 mat = glm::mat4();
+ 
+    if (cbv.mConstantBufferIndex >= 0)
+    {
+        switch (cbv.mStage)
+        {
+        case PipelineStage::VS:
+            mVSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
+            break;
+        case PipelineStage::PS:
+            mPSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
+            break;
+        case PipelineStage::GS:
+            mGSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
+            break;
+        }
+    }
+   
+    return mat;
 }
 
 void DirectXShaderProgram::setData(int uniformId, const void *data)
 {
+    std::cout << "Name: " << mName << std::endl;
     // Step 1: Find which constant buffer this uniform name belongs to..
     // Step 2: Find the offset in the constant buffer where this uniform resides
     // Step 3: Update the value
@@ -744,4 +793,11 @@ void DirectXShaderProgram::getData(int uniformId, void *data)
             break;
         }
     }
+}
+
+DirectXShaderProgram *DirectXShaderProgram::sCurrentlyBoundProgram = nullptr;
+
+DirectXShaderProgram *DirectXShaderProgram::getCurrentlyBoundProgram()
+{
+    return sCurrentlyBoundProgram;
 }

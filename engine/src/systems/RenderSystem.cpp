@@ -44,6 +44,14 @@ RenderSystem::~RenderSystem()
 
     delete mOcclusionQuery[0];
     delete mOcclusionQuery[1];
+
+    for (size_t i = 0; i < mBatches.size(); i++)
+    {
+        delete mBatches[i].mVertexBuffer;
+        delete mBatches[i].mNormalBuffer;
+        delete mBatches[i].mTexCoordsBuffer;
+        delete mBatches[i].mIndexBuffer;
+    }
 }
 
 void RenderSystem::serialize(YAML::Node &out) const
@@ -88,14 +96,14 @@ void RenderSystem::init(World *world)
     mDebugRenderer.init(mWorld);
 
     mOcclusionVertexBuffer = VertexBuffer::create();
-    mOcclusionVertexBuffer->bind();
+    mOcclusionVertexBuffer->bind(0);
     mOcclusionVertexBuffer->resize(sizeof(float) * 3 * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
-    mOcclusionVertexBuffer->unbind();
+    mOcclusionVertexBuffer->unbind(0);
 
     mOcclusionModelIndexBuffer = VertexBuffer::create();
-    mOcclusionModelIndexBuffer->bind();
+    mOcclusionModelIndexBuffer->bind(1);
     mOcclusionModelIndexBuffer->resize(sizeof(int) * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
-    mOcclusionModelIndexBuffer->unbind();
+    mOcclusionModelIndexBuffer->unbind(1);
 
     mOcclusionIndexBuffer = IndexBuffer::create();
     mOcclusionIndexBuffer->bind();
@@ -103,8 +111,8 @@ void RenderSystem::init(World *world)
     mOcclusionIndexBuffer->unbind();
 
     mOcclusionMeshHandle = MeshHandle::create();
-    mOcclusionMeshHandle->addVertexBuffer(mOcclusionVertexBuffer, AttribType::Vec3);
-    mOcclusionMeshHandle->addVertexBuffer(mOcclusionModelIndexBuffer, AttribType::Int);
+    mOcclusionMeshHandle->addVertexBuffer(mOcclusionVertexBuffer, "POSITION", AttribType::Vec3);
+    mOcclusionMeshHandle->addVertexBuffer(mOcclusionModelIndexBuffer, "MODEL_INDEX", AttribType::Int);
     mOcclusionMeshHandle->addIndexBuffer(mOcclusionIndexBuffer);
 
     mOccluderVertices.resize(3 * Renderer::MAX_OCCLUDER_VERTEX_COUNT);
@@ -114,6 +122,16 @@ void RenderSystem::init(World *world)
     mOcclusionQuery[0] = OcclusionQuery::create();
     mOcclusionQuery[1] = OcclusionQuery::create();
     mOcclusionQueryIndex = -1;
+
+    mBatches.resize(10);
+    for (size_t i = 0; i < mBatches.size(); i++)
+    {
+        mBatches[i].mVertexBuffer = VertexBuffer::create();
+        mBatches[i].mNormalBuffer = VertexBuffer::create();
+        mBatches[i].mTexCoordsBuffer = VertexBuffer::create();
+        mBatches[i].mIndexBuffer = IndexBuffer::create();
+        mBatches[i].mMeshHandle = MeshHandle::create();
+    }
 }
 
 void RenderSystem::update()
@@ -652,6 +670,46 @@ void RenderSystem::buildDrawCallCommandList()
             }
         }
 
+        // If not using instancing, check if batching
+        int batchCount = 0;
+        int batchVertexCount = 0;
+        if (!instanced)
+        {
+            while ((index + batchCount) < mRenderQueue.size())
+            {
+                if (batchCount >= Renderer::MAX_MESH_PER_BATCH)
+                {
+                    break;
+                }
+
+                if (batchVertexCount >= Renderer::MAX_VERTICES_PER_BATCH)
+                {
+                    break;
+                }
+
+                DrawCallCommand commandAhead(mRenderQueue[index + batchCount].first);
+                if (materialIndex == commandAhead.getMaterialIndex())
+                {
+                    Mesh *mesh = mWorld->getAssetByIndex<Mesh>(commandAhead.getMeshIndex());
+                    if (batchVertexCount + mesh->getVertexCount() < Renderer::MAX_VERTICES_PER_BATCH)
+                    {
+                        batchCount++;
+                        batchVertexCount += mesh->getVertexCount();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        std::cout << "batchCount: " << batchCount << " batchVertexCount: " << batchVertexCount << std::endl;
+
         if (instanced)
         {
             // Can use instanced draw calls
@@ -662,6 +720,11 @@ void RenderSystem::buildDrawCallCommandList()
 
             index += Renderer::INSTANCE_BATCH_SIZE;
         }
+        //else if (batchCount > 0)
+        //{
+        //    
+        //    index += batchCount;
+        //}
         else
         {
             command.markDrawCallAsIndexed();

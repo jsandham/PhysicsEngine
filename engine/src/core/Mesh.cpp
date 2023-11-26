@@ -62,11 +62,11 @@ Mesh::Mesh(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mI
 
     mHandle = MeshHandle::create();
 
-    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
-    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4, true);
-    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::UVec4, true);
+    mHandle->addVertexBuffer(mVertexBuffer, "POSITION", AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, "NORMAL", AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, "TEXCOORD", AttribType::Vec2);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, "MODEL", AttribType::Mat4, true);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, "COLOR", AttribType::UVec4, true);
 
     mHandle->addIndexBuffer(mIndexBuffer);
 }
@@ -89,11 +89,11 @@ Mesh::Mesh(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(
 
     mHandle = MeshHandle::create();
 
-    mHandle->addVertexBuffer(mVertexBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mNormalBuffer, AttribType::Vec3);
-    mHandle->addVertexBuffer(mTexCoordsBuffer, AttribType::Vec2);
-    mHandle->addVertexBuffer(mInstanceModelBuffer, AttribType::Mat4, true);
-    mHandle->addVertexBuffer(mInstanceColorBuffer, AttribType::UVec4, true);
+    mHandle->addVertexBuffer(mVertexBuffer, "POSITION", AttribType::Vec3);
+    mHandle->addVertexBuffer(mNormalBuffer, "NORMAL", AttribType::Vec3);
+    mHandle->addVertexBuffer(mTexCoordsBuffer, "TEXCOORD", AttribType::Vec2);
+    mHandle->addVertexBuffer(mInstanceModelBuffer, "MODEL", AttribType::Mat4, true);
+    mHandle->addVertexBuffer(mInstanceColorBuffer, "COLOR", AttribType::UVec4, true);
 
     mHandle->addIndexBuffer(mIndexBuffer);
 }
@@ -661,43 +661,43 @@ void Mesh::copyMeshToDevice()
 {
     if (mDeviceUpdateRequired)
     {
-        mVertexBuffer->bind();
+        mVertexBuffer->bind(0);
         if (mVertexBuffer->getSize() < sizeof(float) * mVertices.size())
         {
             mVertexBuffer->resize(sizeof(float) * mVertices.size());
         }
         mVertexBuffer->setData(mVertices.data(), 0, sizeof(float) * mVertices.size());
-        mVertexBuffer->unbind();
+        mVertexBuffer->unbind(0);
 
-        mNormalBuffer->bind();
+        mNormalBuffer->bind(1);
         if (mNormalBuffer->getSize() < sizeof(float) * mNormals.size())
         {
             mNormalBuffer->resize(sizeof(float) * mNormals.size());
         }
         mNormalBuffer->setData(mNormals.data(), 0, sizeof(float) * mNormals.size());
-        mNormalBuffer->unbind();
+        mNormalBuffer->unbind(1);
 
-        mTexCoordsBuffer->bind();
+        mTexCoordsBuffer->bind(2);
         if (mTexCoordsBuffer->getSize() < sizeof(float) * mTexCoords.size())
         {
             mTexCoordsBuffer->resize(sizeof(float) * mTexCoords.size());
         }
         mTexCoordsBuffer->setData(mTexCoords.data(), 0, sizeof(float) * mTexCoords.size());
-        mTexCoordsBuffer->unbind();
+        mTexCoordsBuffer->unbind(2);
 
-        mInstanceModelBuffer->bind();
+        mInstanceModelBuffer->bind(3);
         if (mInstanceModelBuffer->getSize() < sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
         {
             mInstanceModelBuffer->resize(sizeof(glm::mat4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        mInstanceModelBuffer->unbind();
+        mInstanceModelBuffer->unbind(3);
 
-        mInstanceColorBuffer->bind();
+        mInstanceColorBuffer->bind(7);
         if (mInstanceColorBuffer->getSize() < sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE)
         {
             mInstanceColorBuffer->resize(sizeof(glm::uvec4) * Renderer::getRenderer()->INSTANCE_BATCH_SIZE);
         }
-        mInstanceColorBuffer->unbind();
+        mInstanceColorBuffer->unbind(7);
 
         mIndexBuffer->bind();
         if (mIndexBuffer->getSize() < sizeof(unsigned int) * mIndices.size())

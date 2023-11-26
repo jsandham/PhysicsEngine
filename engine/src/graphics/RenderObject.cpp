@@ -103,6 +103,14 @@ void DrawCallCommand::markDrawCallAsInstanced()
     }
 }
 
+void DrawCallCommand::markDrawCallAsBatched()
+{
+    if (!isBatched())
+    {
+        mDrawCallCode += (static_cast<uint64_t>(DrawCallFlags::Batched) << 59);
+    }
+}
+
 void DrawCallCommand::markDrawCallAsIndexed()
 {
     if (!isIndexed())
@@ -119,14 +127,19 @@ void DrawCallCommand::markDrawCallAsTerrain()
     }
 }
 
-bool DrawCallCommand::isIndexed() const
-{
-    return static_cast<uint8_t>(getFlags()) & static_cast<uint8_t>(DrawCallFlags::Indexed);
-}
-
 bool DrawCallCommand::isInstanced() const
 {
     return static_cast<uint8_t>(getFlags()) & static_cast<uint8_t>(DrawCallFlags::Instanced);
+}
+
+bool DrawCallCommand::isBatched() const
+{
+    return static_cast<uint8_t>(getFlags()) & static_cast<uint8_t>(DrawCallFlags::Batched);
+}
+
+bool DrawCallCommand::isIndexed() const
+{
+    return static_cast<uint8_t>(getFlags()) & static_cast<uint8_t>(DrawCallFlags::Indexed);
 }
 
 bool DrawCallCommand::isTerrain() const

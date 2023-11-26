@@ -38,16 +38,16 @@ void GizmoRenderer::init(World *world)
     mFrustumVertices.resize(108, 0.0f);
     mFrustumNormals.resize(108, 0.0f);
 
-    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->bind(0);
     mFrustumVertexBuffer->resize(sizeof(float) * mFrustumVertices.size());
-    mFrustumVertexBuffer->unbind();
+    mFrustumVertexBuffer->unbind(0);
 
-    mFrustumNormalBuffer->bind();
+    mFrustumNormalBuffer->bind(1);
     mFrustumNormalBuffer->resize(sizeof(float) * mFrustumNormals.size());
-    mFrustumNormalBuffer->unbind();
+    mFrustumNormalBuffer->unbind(1);
 
-    mFrustumHandle->addVertexBuffer(mFrustumVertexBuffer, AttribType::Vec3);
-    mFrustumHandle->addVertexBuffer(mFrustumNormalBuffer, AttribType::Vec3);
+    mFrustumHandle->addVertexBuffer(mFrustumVertexBuffer, "POSITION", AttribType::Vec3);
+    mFrustumHandle->addVertexBuffer(mFrustumNormalBuffer, "NORMAL", AttribType::Vec3);
 
     mGridVertices.reserve(800);
 
@@ -69,12 +69,12 @@ void GizmoRenderer::init(World *world)
         mGridVertices.push_back(end);
     }
 
-    mGridVertexBuffer->bind();
+    mGridVertexBuffer->bind(0);
     mGridVertexBuffer->resize(sizeof(glm::vec3) * mGridVertices.size());
     mGridVertexBuffer->setData(mGridVertices.data(), 0, sizeof(glm::vec3) * mGridVertices.size());
-    mGridVertexBuffer->unbind();
+    mGridVertexBuffer->unbind(0);
 
-    mGridHandle->addVertexBuffer(mGridVertexBuffer, AttribType::Vec3);
+    mGridHandle->addVertexBuffer(mGridVertexBuffer, "POSITION", AttribType::Vec3);
 }
 
 void GizmoRenderer::update(Camera *camera)
@@ -179,18 +179,18 @@ void GizmoRenderer::renderLineGizmos(Camera *camera)
     VertexBuffer *lineColorBuffer = VertexBuffer::create();
     MeshHandle *lineHandle = MeshHandle::create();
 
-    lineVertexBuffer->bind();
+    lineVertexBuffer->bind(0);
     lineVertexBuffer->resize(sizeof(float) * vertices.size());
     lineVertexBuffer->setData(vertices.data(), 0, sizeof(float) * vertices.size());
-    lineVertexBuffer->unbind();
+    lineVertexBuffer->unbind(0);
 
-    lineColorBuffer->bind();
+    lineColorBuffer->bind(1);
     lineColorBuffer->resize(sizeof(float) * colors.size());
     lineColorBuffer->setData(colors.data(), 0, sizeof(float) * colors.size());
-    lineColorBuffer->unbind();
+    lineColorBuffer->unbind(1);
 
-    lineHandle->addVertexBuffer(lineVertexBuffer, AttribType::Vec3);
-    lineHandle->addVertexBuffer(lineColorBuffer, AttribType::Vec4);
+    lineHandle->addVertexBuffer(lineVertexBuffer, "POSITION", AttribType::Vec3);
+    lineHandle->addVertexBuffer(lineColorBuffer, "COLOR", AttribType::Vec4);
 
     camera->getNativeGraphicsMainFBO()->bind();
     camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -286,15 +286,15 @@ void GizmoRenderer::renderSphereGizmos(Camera *camera)
         VertexBuffer *modelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
         VertexBuffer *colorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
 
-        modelBuffer->bind();
+        modelBuffer->bind(3);
         modelBuffer->resize(sizeof(glm::mat4) * models.size());
         modelBuffer->setData(models.data(), 0, sizeof(glm::mat4) * models.size());
-        modelBuffer->unbind();
+        modelBuffer->unbind(3);
 
-        colorBuffer->bind();
+        colorBuffer->bind(7);
         colorBuffer->resize(sizeof(glm::uvec4) * colors.size());
         colorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * colors.size());
-        colorBuffer->unbind();
+        colorBuffer->unbind(7);
 
         Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
                                                       (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
@@ -473,13 +473,13 @@ void GizmoRenderer::renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo 
     mGizmoShader->setColor(gizmo.mColor);
     mGizmoShader->setModel(glm::mat4(1.0f));
 
-    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->bind(0);
     mFrustumVertexBuffer->setData(mFrustumVertices.data(), 0, sizeof(float) * mFrustumVertices.size());
-    mFrustumVertexBuffer->unbind();
+    mFrustumVertexBuffer->unbind(0);
 
-    mFrustumNormalBuffer->bind();
+    mFrustumNormalBuffer->bind(1);
     mFrustumNormalBuffer->setData(mFrustumNormals.data(), 0, sizeof(float) * mFrustumNormals.size());
-    mFrustumNormalBuffer->unbind();
+    mFrustumNormalBuffer->unbind(1);
 
     mFrustumHandle->draw(0, mFrustumVertices.size() / 3);
 }
@@ -526,9 +526,9 @@ void GizmoRenderer::renderWireframeFrustumGizmo(Camera *camera, const FrustumGiz
     mLineShader->bind();
     mLineShader->setMVP(mvp);
 
-    mFrustumVertexBuffer->bind();
+    mFrustumVertexBuffer->bind(0);
     mFrustumVertexBuffer->setData(mFrustumVertices.data(), 0, sizeof(float) * mFrustumVertices.size());
-    mFrustumVertexBuffer->unbind();
+    mFrustumVertexBuffer->unbind(0);
 
     mFrustumHandle->drawLines(0, 24);
 }
@@ -643,15 +643,15 @@ void GizmoRenderer::renderBoundingSpheres(Camera *camera)
     VertexBuffer *modelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
     VertexBuffer *colorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
 
-    modelBuffer->bind();
+    modelBuffer->bind(3);
     modelBuffer->resize(sizeof(glm::mat4) * models.size());
     modelBuffer->setData(models.data(), 0, sizeof(glm::mat4) * models.size());
-    modelBuffer->unbind();
+    modelBuffer->unbind(3);
 
-    colorBuffer->bind();
+    colorBuffer->bind(7);
     colorBuffer->resize(sizeof(glm::uvec4) * colors.size());
     colorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * colors.size());
-    colorBuffer->unbind();
+    colorBuffer->unbind(7);
 
     Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
                                                     (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
@@ -715,15 +715,15 @@ void GizmoRenderer::renderBoundingAABBs(Camera *camera)
     VertexBuffer *modelBuffer = mesh->getNativeGraphicsInstanceModelBuffer();
     VertexBuffer *colorBuffer = mesh->getNativeGraphicsInstanceColorBuffer();
 
-    modelBuffer->bind();
+    modelBuffer->bind(3);
     modelBuffer->resize(sizeof(glm::mat4) * models.size());
     modelBuffer->setData(models.data(), 0, sizeof(glm::mat4) * models.size());
-    modelBuffer->unbind();
+    modelBuffer->unbind(3);
 
-    colorBuffer->bind();
+    colorBuffer->bind(7);
     colorBuffer->resize(sizeof(glm::uvec4) * colors.size());
     colorBuffer->setData(colors.data(), 0, sizeof(glm::uvec4) * colors.size());
-    colorBuffer->unbind();
+    colorBuffer->unbind(7);
 
     Renderer::getRenderer()->drawIndexedInstanced(mesh->getNativeGraphicsHandle(), mesh->getSubMeshStartIndex(0),
                                                   (mesh->getSubMeshEndIndex(0) - mesh->getSubMeshStartIndex(0)),
@@ -920,12 +920,12 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
         MeshHandle *meshHandle = MeshHandle::create();
         VertexBuffer *vertexBuffer = VertexBuffer::create();
 
-        vertexBuffer->bind();
+        vertexBuffer->bind(0);
         vertexBuffer->resize(mLineVertices.size() * sizeof(glm::vec3));
         vertexBuffer->setData(mLineVertices.data(), 0, mLineVertices.size() * sizeof(glm::vec3));
-        vertexBuffer->unbind();
+        vertexBuffer->unbind(0);
 
-        meshHandle->addVertexBuffer(vertexBuffer, AttribType::Vec3);
+        meshHandle->addVertexBuffer(vertexBuffer, "POSITION", AttribType::Vec3);
 
         camera->getNativeGraphicsMainFBO()->bind();
         camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,

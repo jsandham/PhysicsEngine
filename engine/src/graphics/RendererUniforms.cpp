@@ -10,7 +10,6 @@ using namespace PhysicsEngine;
 
 CameraUniform::CameraUniform()
 {
-    /*mBuffer = UniformBuffer::create(204, 0);*/
     mBuffer = UniformBuffer::create(208, 0);
 
     mProjection = glm::mat4(1.0f);
@@ -60,7 +59,6 @@ void CameraUniform::copyToUniformsToDevice()
 
 LightUniform::LightUniform()
 {
-    // mBuffer = UniformBuffer::create(824, 1);
     mBuffer = UniformBuffer::create(800, 1);
 
     for (int i = 0; i < 5; i++)

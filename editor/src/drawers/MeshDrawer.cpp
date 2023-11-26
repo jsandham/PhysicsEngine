@@ -116,8 +116,20 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 		mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
 		mCameraUniform->copyToUniformsToDevice();
 
+		glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
+		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
+
 		shader->bind(static_cast<int64_t>(PhysicsEngine::ShaderMacro::None));
+		shader->setMat4("projection", projection);
+		shader->setMat4("view", view);
 		shader->setMat4("model", mModel);
+
+		glm::mat4 test = projection * view * mModel;
+
+		glm::mat4 a = shader->getMat4("projection");
+		glm::mat4 b = shader->getMat4("view");
+		glm::mat4 c = shader->getMat4("model");
+
 
 		if (mActiveDrawModeIndex == 0)
 		{
