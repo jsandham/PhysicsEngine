@@ -4,31 +4,61 @@
 #include <random>
 
 #include "../../../../include/core/Log.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
 #include "../../../../include/graphics/platform/directx/DirectXRenderer.h"
 
 using namespace PhysicsEngine;
 
-#define CHECK_ERROR_IMPL(ROUTINE, LINE, FILE)                                                                          \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        HRESULT hr = ROUTINE;                                                                                          \
-        LPTSTR lpBuf = NULL;                                                                                           \
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,     \
-                      NULL, hr, 0, (LPTSTR)&lpBuf, 0, NULL);                                                           \
-    } while (0)
-
-#define CHECK_ERROR(ROUTINE) CHECK_ERROR_IMPL(ROUTINE, std::to_string(__LINE__), std::string(__FILE__))
-
 void DirectXRenderer::init_impl()
 {
-    mContext = DirectXRenderContext::get();
-
     DXGI_ADAPTER_DESC descr;
     mContext->getAdapter()->GetDesc(&descr);
 
     // Log::warn(("Vender: " + vender + "\n").c_str());
     Log::warn(("Dedicated video memory: " + std::to_string(descr.DedicatedVideoMemory) + "\n").c_str());
 }
+
+DirectXRenderer::DirectXRenderer()
+{
+    mContext = DirectXRenderContext::get();
+
+    ZeroMemory(&mRasterizerDescr, sizeof(D3D11_RASTERIZER_DESC));
+    mRasterizerDescr.FillMode = D3D11_FILL_SOLID;
+    mRasterizerDescr.CullMode = D3D11_CULL_FRONT;
+    mRasterizerDescr.DepthClipEnable = true;
+
+    CHECK_ERROR(mContext->getD3DDevice()->CreateRasterizerState(&mRasterizerDescr, &mRasterizerState));
+
+    mContext->getD3DDeviceContext()->RSSetState(mRasterizerState);
+
+    ZeroMemory(&mBlendDescr, sizeof(D3D11_BLEND_DESC));
+
+    D3D11_RENDER_TARGET_BLEND_DESC rtBlend;
+    rtBlend.BlendEnable = TRUE;
+    rtBlend.SrcBlend = D3D11_BLEND_ONE;
+    rtBlend.DestBlend = D3D11_BLEND_ZERO;
+    rtBlend.BlendOp = D3D11_BLEND_OP_ADD;
+    rtBlend.SrcBlendAlpha = D3D11_BLEND_ONE;
+    rtBlend.DestBlendAlpha = D3D11_BLEND_ZERO;
+    rtBlend.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    rtBlend.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+    for (auto &i : mBlendDescr.RenderTarget)
+    {
+        i = rtBlend;
+    }
+
+    CHECK_ERROR(mContext->getD3DDevice()->CreateBlendState(&mBlendDescr, &mBlendState));
+
+    mContext->getD3DDeviceContext()->OMSetBlendState(mBlendState, NULL, 0xffffffff);
+}
+
+DirectXRenderer::~DirectXRenderer()
+{
+    mRasterizerState->Release();
+    mBlendState->Release();
+}
+
 void DirectXRenderer::present_impl()
 {
     mContext->present();
@@ -76,6 +106,18 @@ void DirectXRenderer::setViewport_impl(int x, int y, int width, int height)
     viewport.MaxDepth = 1.0f;
 
     mContext->getD3DDeviceContext()->RSSetViewports(1, &viewport);
+}
+
+void DirectXRenderer::setScissor_impl(int x, int y, int width, int height)
+{
+    D3D11_RECT rect = {0};
+
+    rect.left = static_cast<float>(x);
+    rect.top = static_cast<float>(y);
+    rect.right = static_cast<float>(x + width);
+    rect.bottom = static_cast<float>(y + height);
+
+    mContext->getD3DDeviceContext()->RSSetScissorRects(1, &rect);
 }
 
 void DirectXRenderer::turnOn_impl(Capability capability)

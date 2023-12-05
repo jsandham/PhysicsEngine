@@ -84,6 +84,11 @@ void OpenGLRenderer::setViewport_impl(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
+void OpenGLRenderer::setScissor_impl(int x, int y, int width, int height)
+{
+    CHECK_ERROR(glScissor(x, y, width, height));
+}
+
 void OpenGLRenderer::turnOn_impl(Capability capability)
 {
     switch (capability)
@@ -99,6 +104,9 @@ void OpenGLRenderer::turnOn_impl(Capability capability)
         break;
     case Capability::LineSmoothing:
         CHECK_ERROR(glEnable(GL_LINE_SMOOTH));
+        break;
+    case Capability::Scissor:
+        CHECK_ERROR(glEnable(GL_SCISSOR_TEST));
         break;
     }
 }
@@ -118,6 +126,9 @@ void OpenGLRenderer::turnOff_impl(Capability capability)
         break;
     case Capability::LineSmoothing:
         CHECK_ERROR(glDisable(GL_LINE_SMOOTH));
+        break;
+    case Capability::Scissor:
+        CHECK_ERROR(glDisable(GL_SCISSOR_TEST));
         break;
     }
 }

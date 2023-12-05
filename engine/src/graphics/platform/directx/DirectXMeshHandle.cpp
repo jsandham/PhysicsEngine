@@ -8,18 +8,6 @@
 
 using namespace PhysicsEngine;
 
-//struct VS_INPUT
-//{
-//    float3 position : POSITION;
-//    float3 normal : NORMAL;
-//};
-//
-//VS_INPUT VSMain(VS_INPUT input)
-//{
-//    return input;
-//}
-
-
 struct ShaderBlobHelper
 {
     static ID3DBlob *createShaderBlobFromInputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC> &descr);
@@ -135,6 +123,7 @@ ID3DBlob *ShaderBlobHelper::createShaderBlobFromInputLayout(const std::vector<D3
 
 DirectXMeshHandle::DirectXMeshHandle()
 {
+    mIndexBuffer = NULL;
     mBufferLayout = NULL;
 }
 

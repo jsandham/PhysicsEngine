@@ -52,8 +52,6 @@ class DirectXShaderProgram : public ShaderProgram
 
     std::vector<ConstantBufferVariable> mConstantBufferVariables;
 
-    static DirectXShaderProgram *sCurrentlyBoundProgram;
-
   public:
     DirectXShaderProgram();
     ~DirectXShaderProgram();
@@ -126,8 +124,6 @@ class DirectXShaderProgram : public ShaderProgram
     glm::mat2 getMat2(int uniformId) const override;
     glm::mat3 getMat3(int uniformId) const override;
     glm::mat4 getMat4(int uniformId) const override;
-
-    static DirectXShaderProgram *getCurrentlyBoundProgram();
 
   private:
     void setData(int uniformId, const void *data);

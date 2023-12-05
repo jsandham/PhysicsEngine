@@ -11,6 +11,16 @@ class DirectXRenderer : public Renderer
   private:
     DirectXRenderContext *mContext;
 
+    D3D11_RASTERIZER_DESC mRasterizerDescr;
+    ID3D11RasterizerState *mRasterizerState;
+
+    D3D11_BLEND_DESC mBlendDescr;
+    ID3D11BlendState *mBlendState;
+
+  public:
+    DirectXRenderer();
+    ~DirectXRenderer();
+
   protected:
     void init_impl() override;
     void present_impl() override;
@@ -21,6 +31,7 @@ class DirectXRenderer : public Renderer
     void clearBackBufferColor_impl(const Color &color) override;
     void clearBackBufferColor_impl(float r, float g, float b, float a) override;
     void setViewport_impl(int x, int y, int width, int height) override;
+    void setScissor_impl(int x, int y, int width, int height) override;
     void turnOn_impl(Capability capability) override;
     void turnOff_impl(Capability capability) override;
     void setBlending_impl(BlendingFactor source, BlendingFactor dest) override;

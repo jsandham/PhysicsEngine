@@ -20,7 +20,8 @@ enum class Capability
     Depth_Testing,
     Blending,
     BackfaceCulling,
-    LineSmoothing
+    LineSmoothing,
+    Scissor
 };
 
 enum class BlendingFactor
@@ -55,6 +56,7 @@ class Renderer
     static void clearBackBufferColor(const Color &color);
     static void clearBackBufferColor(float r, float g, float b, float a);
     static void setViewport(int x, int y, int width, int height);
+    static void setScissor(int x, int y, int width, int height);
     static void turnOn(Capability capability);
     static void turnOff(Capability capability);
     static void setBlending(BlendingFactor source, BlendingFactor dest);
@@ -77,6 +79,7 @@ class Renderer
     virtual void clearBackBufferColor_impl(const Color &color) = 0;
     virtual void clearBackBufferColor_impl(float r, float g, float b, float a) = 0;
     virtual void setViewport_impl(int x, int y, int width, int height) = 0;
+    virtual void setScissor_impl(int x, int y, int width, int height) = 0;
     virtual void turnOn_impl(Capability capability) = 0;
     virtual void turnOff_impl(Capability capability) = 0;
     virtual void setBlending_impl(BlendingFactor source, BlendingFactor dest) = 0;

@@ -21,7 +21,12 @@ struct VS_OUTPUT
 //    matrix viewProjection;
 //}
 
-cbuffer VS_CONSTANT_BUFFER2 : register(b0)
+//cbuffer VS_CONSTANT_BUFFER2 : register(b3)
+//{
+//    matrix model;
+//}
+
+cbuffer VS_CONSTANT_BUFFER2 : register(b3)
 {
     matrix projection;
     matrix view;
@@ -31,10 +36,11 @@ cbuffer VS_CONSTANT_BUFFER2 : register(b0)
 // vertex shader 
 VS_OUTPUT VSMain(VS_INPUT input)
 {
-    float4x4 modelViewProj = mul(model, mul(view, projection));
+    float4x4 modelViewProj = mul(projection, mul(view, model));
     VS_OUTPUT output;
-    output.position = mul(modelViewProj, float4(input.position, 1.0));
+    output.position = mul(modelViewProj, float4(input.position, 1.0f));
     output.normal = input.normal;
+
     return output;
 }
 
@@ -48,6 +54,5 @@ struct PS_INPUT
 // pixel shader
 float4 PSMain(PS_INPUT input) : SV_TARGET
 {
-    return float4(0.0f, 0.0f, 1.0f, 1.0f);
-    //return float4(input.normal, 1.0);
+    return float4(input.normal, 1.0);
 }

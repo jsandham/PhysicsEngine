@@ -6,6 +6,7 @@
 #include "../../../../include/core/Shader.h"
 
 #include <algorithm>
+#include <assert.h>
 #include <d3dcompiler.h>
 #include <iostream>
 
@@ -409,8 +410,6 @@ void DirectXShaderProgram::compile()
 
 void DirectXShaderProgram::bind()
 {
-    sCurrentlyBoundProgram = this;
-
     DirectXRenderContext::get()->getD3DDeviceContext()->VSSetShader(mVertexShader, NULL, 0);
     DirectXRenderContext::get()->getD3DDeviceContext()->PSSetShader(mPixelShader, NULL, 0);
 
@@ -736,18 +735,21 @@ void DirectXShaderProgram::setData(int uniformId, const void *data)
     // Step 1: Find which constant buffer this uniform name belongs to..
     // Step 2: Find the offset in the constant buffer where this uniform resides
     // Step 3: Update the value
+    bool found = false;
     ConstantBufferVariable cbv = {};
     for (size_t i = 0; i < mConstantBufferVariables.size(); i++)
     {
         if (mConstantBufferVariables[i].mUniformId == uniformId)
         {
             cbv = mConstantBufferVariables[i];
+            found = true;
             break;
         }
     }
 
-    if (cbv.mConstantBufferIndex >= 0)
+    if (found)
     {
+        assert(cbv.mConstantBufferIndex >= 0);
         switch (cbv.mStage)
         {
         case PipelineStage::VS:
@@ -793,11 +795,4 @@ void DirectXShaderProgram::getData(int uniformId, void *data)
             break;
         }
     }
-}
-
-DirectXShaderProgram *DirectXShaderProgram::sCurrentlyBoundProgram = nullptr;
-
-DirectXShaderProgram *DirectXShaderProgram::getCurrentlyBoundProgram()
-{
-    return sCurrentlyBoundProgram;
 }

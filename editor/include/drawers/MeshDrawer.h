@@ -5,6 +5,8 @@
 
 #include <graphics/Framebuffer.h>
 #include <graphics/RendererUniforms.h>
+#include <graphics/VertexBuffer.h>
+#include <graphics/MeshHandle.h>
 
 #include "../EditorClipboard.h"
 
@@ -28,6 +30,11 @@ namespace PhysicsEditor
 
 		ImVec2 mContentMin;
 		ImVec2 mContentMax;
+
+		PhysicsEngine::VertexBuffer* mVertexBuffer;
+		PhysicsEngine::VertexBuffer* mNormalBuffer;
+		PhysicsEngine::MeshHandle* mMeshHandle;
+
 
 	public:
 		MeshDrawer();

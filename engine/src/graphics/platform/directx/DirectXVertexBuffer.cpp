@@ -48,7 +48,7 @@ void DirectXVertexBuffer::setData(const void *data, size_t offset, size_t size)
     assert(context != nullptr);
 
     CHECK_ERROR(context->Map(mBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mMappedSubresource));
-    memcpy(mMappedSubresource.pData, static_cast<const char *>(data) + offset, size);
+    memcpy(mMappedSubresource.pData, static_cast<const char*>(data) + offset, size);
     context->Unmap(mBuffer, 0);
 }
 

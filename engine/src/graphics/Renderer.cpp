@@ -83,6 +83,11 @@ void Renderer::setViewport(int x, int y, int width, int height)
     return sInstance->setViewport_impl(x, y, width, height);
 }
 
+void Renderer::setScissor(int x, int y, int width, int height)
+{
+    return sInstance->setScissor_impl(x, y, width, height);
+}
+
 void Renderer::turnOn(Capability capability)
 {
     return sInstance->turnOn_impl(capability);

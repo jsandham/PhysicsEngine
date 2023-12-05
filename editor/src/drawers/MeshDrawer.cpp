@@ -2,6 +2,7 @@
 
 #include "core/Mesh.h"
 #include "graphics/RenderContext.h"
+#include "graphics/Renderer.h"
 
 #include "imgui.h"
 
@@ -13,16 +14,53 @@ MeshDrawer::MeshDrawer()
 	mWireframeOn = false;
 	mResetModelMatrix = false;
 
-	mFBO = PhysicsEngine::Framebuffer::create(1000, 1000);
+	mFBO = PhysicsEngine::Framebuffer::create(1000, 1000, 1, false);
 
 	mCameraUniform = PhysicsEngine::RendererUniforms::getCameraUniform();
 
 	mModel = glm::mat4(1.0f);
+
+
+	mVertexBuffer = PhysicsEngine::VertexBuffer::create();
+	mNormalBuffer = PhysicsEngine::VertexBuffer::create();
+	mMeshHandle = PhysicsEngine::MeshHandle::create();
+
+	float vertices[] =
+	{
+		0.0f, 0.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f
+	};
+
+	float normals[] =
+	{
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+
+	mVertexBuffer->bind(0);
+	mVertexBuffer->resize(sizeof(float) * 9);
+	mVertexBuffer->setData(vertices, 0, sizeof(float) * 9);
+	mVertexBuffer->unbind(0);
+
+	mNormalBuffer->bind(1);
+	mNormalBuffer->resize(sizeof(float) * 9);
+	mNormalBuffer->setData(normals, 0, sizeof(float) * 9);
+	mNormalBuffer->unbind(1);
+
+	mMeshHandle->addVertexBuffer(mVertexBuffer, "POSITION", PhysicsEngine::AttribType::Vec3);
+	mMeshHandle->addVertexBuffer(mNormalBuffer, "NORMAL", PhysicsEngine::AttribType::Vec3);
+	
 }
 
 MeshDrawer::~MeshDrawer()
 {
 	delete mFBO;
+
+	delete mVertexBuffer;
+	delete mNormalBuffer;
+	delete mMeshHandle;
 }
 
 void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
@@ -111,14 +149,17 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 		float meshRadius = mesh->getBounds().mRadius;
 
-		mCameraUniform->setCameraPos(glm::vec3(0.0f, 0.0f, -4 * meshRadius));
-		mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
-		mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
-		mCameraUniform->copyToUniformsToDevice();
+		//mCameraUniform->setCameraPos(glm::vec3(0.0f, 0.0f, -4 * meshRadius));
+		//mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
+		//mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
+		//mCameraUniform->copyToUniformsToDevice();
 
 		glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
 		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
 
+		shader->setMat4("projection", projection);
+		shader->setMat4("view", view);
+		shader->setMat4("model", mModel);
 		shader->bind(static_cast<int64_t>(PhysicsEngine::ShaderMacro::None));
 		shader->setMat4("projection", projection);
 		shader->setMat4("view", view);
@@ -144,13 +185,13 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 		shader->setInt("wireframe", 1);
 
+		//mMeshHandle->draw(0, 3);
 		mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
 
 		if (mWireframeOn)
 		{
 			shader->setInt("wireframe", 0);
 
-			//Renderer::getRenderer()->render(0, (int)mesh->getVertices().size() / 3, mesh->getNativeGraphicsVAO(), true);
 			mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
 		}
 
@@ -209,9 +250,11 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				else
 				{
 					// directx
-					ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+					/*ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
 						ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), ImVec2(1, 1),
-						ImVec2(0, 0));
+						ImVec2(0, 0));*/
+					ImGui::Image(mFBO->getColorTex()->getIMGUITexture(),
+						ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()));
 				}
 			}
 		}

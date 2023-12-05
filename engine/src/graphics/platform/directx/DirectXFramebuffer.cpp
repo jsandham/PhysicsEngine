@@ -83,7 +83,6 @@ DirectXFramebuffer::DirectXFramebuffer(int width, int height) : Framebuffer(widt
                                                &mRenderTargetViews[0]));
     CHECK_ERROR(device->CreateDepthStencilView(static_cast<ID3D11Texture2D *>(mDepthTex->getTexture()), nullptr,
                                                &mDepthStencilView));
-
     //// D3D Objects To Create Into
     // ID3D11Texture2D *_Texture2D = NULL;
     // ID3D11RenderTargetView *_RenderTargetView = NULL;
@@ -203,10 +202,10 @@ void DirectXFramebuffer::bind()
 
 void DirectXFramebuffer::unbind()
 {
-    ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
-    assert(context != nullptr);
+    //ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    //assert(context != nullptr);
 
-    context->OMSetRenderTargets(mNullRenderTargetViews.size(), mNullRenderTargetViews.data(), nullptr);
+    //context->OMSetRenderTargets(mNullRenderTargetViews.size(), mNullRenderTargetViews.data(), nullptr);
 }
 
 void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
@@ -228,6 +227,25 @@ void DirectXFramebuffer::setViewport(int x, int y, int width, int height)
     viewport.MaxDepth = 1.0f;
 
     context->RSSetViewports(1, &viewport);
+}
+
+void DirectXFramebuffer::setScissor(int x, int y, int width, int height)
+{
+    assert(x >= 0);
+    assert(y >= 0);
+    assert((unsigned int)(x + width) <= mWidth);
+    assert((unsigned int)(y + height) <= mHeight);
+
+    ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    assert(context != nullptr);
+
+    D3D11_RECT rect;
+    rect.left = static_cast<float>(x);
+    rect.top = static_cast<float>(y);
+    rect.right = static_cast<float>(x + width);
+    rect.bottom = static_cast<float>(y + height);
+
+    context->RSSetScissorRects(1, &rect);
 }
 
 void DirectXFramebuffer::readColorAtPixel(int x, int y, Color32 *color)

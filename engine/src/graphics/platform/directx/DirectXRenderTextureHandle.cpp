@@ -56,7 +56,12 @@ DirectXRenderTextureHandle::DirectXRenderTextureHandle(int width, int height, Te
         mTextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
         break;
     case TextureFormat::RG:
+        mTextureDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+        mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     case TextureFormat::RGB:
+        mTextureDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+        mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+        break;
     case TextureFormat::RGBA:
         mTextureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         mTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;

@@ -137,6 +137,16 @@ void OpenGLFramebuffer::setViewport(int x, int y, int width, int height)
     CHECK_ERROR(glViewport(x, y, width, height));
 }
 
+void OpenGLFramebuffer::setScissor(int x, int y, int width, int height)
+{
+    assert(x >= 0);
+    assert(y >= 0);
+    assert((unsigned int)(x + width) <= mWidth);
+    assert((unsigned int)(y + height) <= mHeight);
+
+    CHECK_ERROR(glScissor(x, y, width, height));
+}
+
 void OpenGLFramebuffer::readColorAtPixel(int x, int y, Color32 *color)
 {
     this->bind();

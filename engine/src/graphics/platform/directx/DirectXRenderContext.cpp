@@ -1,4 +1,5 @@
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
+#include "../../../../include/graphics/platform/directx/DirectXError.h"
 
 #pragma comment(lib, "d3d11.lib")
 
@@ -43,7 +44,7 @@ DirectXRenderContext::DirectXRenderContext(void *window)
 
     ID3D11Resource *backbuffer = nullptr;
     mSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), reinterpret_cast<void **>(&backbuffer));
-    hr = mD3DDevice->CreateRenderTargetView(backbuffer, nullptr, &mD3DTarget);
+    CHECK_ERROR(mD3DDevice->CreateRenderTargetView(backbuffer, nullptr, &mD3DTarget));
     backbuffer->Release();
 }
 

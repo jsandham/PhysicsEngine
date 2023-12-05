@@ -23,6 +23,7 @@ class OpenGLRenderer : public Renderer
     void clearBackBufferColor_impl(const Color &color) override;
     void clearBackBufferColor_impl(float r, float g, float b, float a) override;
     void setViewport_impl(int x, int y, int width, int height) override;
+    void setScissor_impl(int x, int y, int width, int height) override;
     void turnOn_impl(Capability capability) override;
     void turnOff_impl(Capability capability) override;
     void setBlending_impl(BlendingFactor source, BlendingFactor dest) override;
