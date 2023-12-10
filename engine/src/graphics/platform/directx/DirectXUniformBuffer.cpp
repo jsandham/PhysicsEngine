@@ -49,8 +49,6 @@ void DirectXUniformBuffer::bind(PipelineStage stage)
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    this->copyDataToDevice();
-
     switch (stage)
     {
     case PipelineStage::VS:
@@ -101,7 +99,6 @@ void DirectXUniformBuffer::copyDataToDevice()
     assert(context != nullptr);
 
     CHECK_ERROR(context->Map(mBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mMappedSubresource));
-    /*memcpy(mMappedSubresource.pData, static_cast<const char *>(mData), mSize);*/
     memcpy(mMappedSubresource.pData, &mData[0], mSize);
     context->Unmap(mBuffer, 0);
 }

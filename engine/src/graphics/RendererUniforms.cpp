@@ -43,6 +43,16 @@ void CameraUniform::setCameraPos(const glm::vec3 &position)
     mCameraPos = position;
 }
 
+void CameraUniform::bind()
+{
+    mBuffer->bind(PipelineStage::VS);
+}
+
+void CameraUniform::unbind()
+{
+    mBuffer->unbind(PipelineStage::VS);
+}
+
 void CameraUniform::copyToUniformsToDevice()
 {
     mBuffer->setData(glm::value_ptr(mProjection), 0, 64);
@@ -50,11 +60,7 @@ void CameraUniform::copyToUniformsToDevice()
     mBuffer->setData(glm::value_ptr(mViewProjection), 128, 64);
     mBuffer->setData(glm::value_ptr(mCameraPos), 192, 12);
 
-    mBuffer->bind(PipelineStage::VS);
-    mBuffer->bind(PipelineStage::PS);
     mBuffer->copyDataToDevice();
-    mBuffer->unbind(PipelineStage::VS);
-    mBuffer->unbind(PipelineStage::PS);
 }
 
 LightUniform::LightUniform()
@@ -168,6 +174,18 @@ void LightUniform::setShadowStrength(float strength)
     mShadowStrength = strength;
 }
 
+void LightUniform::bind()
+{
+    mBuffer->bind(PipelineStage::VS);
+    mBuffer->bind(PipelineStage::PS);
+}
+
+void LightUniform::unbind()
+{
+    mBuffer->unbind(PipelineStage::VS);
+    mBuffer->unbind(PipelineStage::PS);
+}
+
 void LightUniform::copyToUniformsToDevice()
 {
     mBuffer->setData(&mLightProjection[0], 0, 320);
@@ -192,11 +210,7 @@ void LightUniform::copyToUniformsToDevice()
     mBuffer->setData(&mShadowRadius, 792, 4);
     mBuffer->setData(&mShadowStrength, 796, 4);
 
-    mBuffer->bind(PipelineStage::VS);
-    mBuffer->bind(PipelineStage::PS);
     mBuffer->copyDataToDevice();
-    mBuffer->unbind(PipelineStage::VS);
-    mBuffer->unbind(PipelineStage::PS);
 }
 
 OcclusionUniform::OcclusionUniform()
@@ -216,15 +230,23 @@ void OcclusionUniform::setModel(const glm::mat4 &model, int index)
     mModels[index] = model;
 }
 
+void OcclusionUniform::bind()
+{
+    mBuffer->bind(PipelineStage::VS);
+    mBuffer->bind(PipelineStage::PS);
+}
+
+void OcclusionUniform::unbind()
+{
+    mBuffer->unbind(PipelineStage::VS);
+    mBuffer->unbind(PipelineStage::PS);
+}
+
 void OcclusionUniform::copyToUniformsToDevice()
 {
     mBuffer->setData(glm::value_ptr(mModels[0]), 0, 20 * 64);
 
-    mBuffer->bind(PipelineStage::VS);
-    mBuffer->bind(PipelineStage::PS);
     mBuffer->copyDataToDevice();
-    mBuffer->unbind(PipelineStage::VS);
-    mBuffer->unbind(PipelineStage::PS);
 }
 
 CameraUniform *RendererUniforms::sCameraUniform = nullptr;

@@ -57,6 +57,7 @@ void DebugRenderer::beginDebugFrame(Camera *camera)
                                          camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     // update camera state data
+    mCameraUniform->bind();
     mCameraUniform->copyToUniformsToDevice();
 
     Framebuffer *framebuffer = nullptr;
@@ -272,4 +273,6 @@ void DebugRenderer::endDebugFrame(Camera *camera)
     }
 
     camera->endQuery();
+
+    mCameraUniform->unbind();
 }

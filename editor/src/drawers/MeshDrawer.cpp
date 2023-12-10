@@ -149,18 +149,17 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 		float meshRadius = mesh->getBounds().mRadius;
 
-		//mCameraUniform->setCameraPos(glm::vec3(0.0f, 0.0f, -4 * meshRadius));
-		//mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
-		//mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
-		//mCameraUniform->copyToUniformsToDevice();
+		mCameraUniform->setCameraPos(glm::vec3(0.0f, 0.0f, -4 * meshRadius));
+		mCameraUniform->setView(glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f)));
+		mCameraUniform->setProjection(glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius));
 
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-		glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
+		mCameraUniform->bind();
+		mCameraUniform->copyToUniformsToDevice();
+
+		//glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
+		//glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
 
 		shader->bind(static_cast<int64_t>(PhysicsEngine::ShaderMacro::None));
-		shader->setVec3("cameraPos", glm::vec3(0.0f, 0.0f, -4 * meshRadius));
-		shader->setMat4("projection", projection);
-		shader->setMat4("view", view);
 		shader->setMat4("model", mModel);
 
 		if (mActiveDrawModeIndex == 0)
@@ -187,6 +186,8 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 		}
 
 		mFBO->unbind();
+
+		mCameraUniform->unbind();
 
 		if (ImGui::BeginChild("MeshPreviewWindow",
 			ImVec2(ImGui::GetWindowContentRegionWidth(), ImGui::GetWindowContentRegionWidth()), true,

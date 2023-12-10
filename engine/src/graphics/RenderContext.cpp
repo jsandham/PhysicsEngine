@@ -8,7 +8,7 @@
 
 using namespace PhysicsEngine;
 
-RenderAPI RenderContext::sAPI = RenderAPI::DirectX;
+RenderAPI RenderContext::sAPI = RenderAPI::OpenGL;
 RenderContext *RenderContext::sContext = nullptr;
 
 RenderAPI RenderContext::getRenderAPI()

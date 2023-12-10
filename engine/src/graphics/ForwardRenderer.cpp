@@ -85,6 +85,7 @@ void ForwardRenderer::beginFrame(Camera *camera)
                                          camera->getViewport().mWidth, camera->getViewport().mHeight);
 
     // update camera state data
+    mCameraUniform->bind();
     mCameraUniform->copyToUniformsToDevice();
 
     Framebuffer *framebuffer = nullptr;
@@ -391,6 +392,7 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
         mLightUniform->setDirLightCascadeView(0, mShadowViewMatrix);
     }
 
+    mLightUniform->bind();
     mLightUniform->copyToUniformsToDevice();
 
     // Configure shader variant
@@ -554,6 +556,8 @@ void ForwardRenderer::renderOpaques(Camera *camera, Light *light, Transform *lig
     }
 
     framebuffer->unbind();
+
+    mLightUniform->unbind();
 }
 
 void ForwardRenderer::renderColorPicking(Camera *camera, const std::vector<DrawCallCommand> &commands,
@@ -664,6 +668,8 @@ void ForwardRenderer::endFrame(Camera *camera)
     camera->endQuery();
 
     Renderer::getRenderer()->turnOff(Capability::BackfaceCulling);
+
+    mCameraUniform->unbind();
 }
 
 void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection)

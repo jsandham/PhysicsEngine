@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <d3dcompiler.h>
 #include <iostream>
+#include <tchar.h>
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
@@ -227,6 +228,7 @@ void DirectXShaderProgram::compile()
         mVSConstantBuffers.resize(sd.ConstantBuffers);
 
         // Loop through all constant buffers
+        int idx = 0;
         for (unsigned int i = 0; i < sd.ConstantBuffers; i++)
         {
             ID3D11ShaderReflectionConstantBuffer *reflectionBuffer = vertexShaderReflector->GetConstantBufferByIndex(i);
@@ -244,7 +246,12 @@ void DirectXShaderProgram::compile()
 
             std::cout << "inputBindDesc.BindPoint: " << inputBindDesc.BindPoint << std::endl;
 
-            mVSConstantBuffers[i] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
+            if (lstrcmpA(constantBufferDesc.Name, _T("CAMERA_CONSTANT_BUFFER")) == 0)
+            {
+                continue;
+            }
+
+            mVSConstantBuffers[idx] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
 
             for (unsigned int j = 0; j < constantBufferDesc.Variables; j++)
             {
@@ -256,7 +263,7 @@ void DirectXShaderProgram::compile()
                 ConstantBufferVariable cbv;
                 cbv.mStage = PipelineStage::VS;
                 cbv.mUniformId = Shader::uniformToId(svd.Name);
-                cbv.mConstantBufferIndex = i;
+                cbv.mConstantBufferIndex = idx;// i;
                 cbv.mSize = svd.Size;
                 cbv.mOffset = svd.StartOffset;
 
@@ -266,7 +273,11 @@ void DirectXShaderProgram::compile()
                 std::cout << "svd.Size: " << svd.Size << std::endl;
                 std::cout << "svd.StartOffset: " << svd.StartOffset << std::endl;
             }
+
+            idx++;
         }
+
+        mVSConstantBuffers.resize(idx);
 
         vertexShaderReflector->Release();
     }
@@ -287,6 +298,7 @@ void DirectXShaderProgram::compile()
         mPSConstantBuffers.resize(sd.ConstantBuffers);
 
         // Loop through all constant buffers
+        int idx = 0;
         for (unsigned int i = 0; i < sd.ConstantBuffers; i++)
         {
             ID3D11ShaderReflectionConstantBuffer *reflectionBuffer = pixelShaderReflector->GetConstantBufferByIndex(i);
@@ -304,7 +316,12 @@ void DirectXShaderProgram::compile()
 
             std::cout << "inputBindDesc.BindPoint: " << inputBindDesc.BindPoint << std::endl;
 
-            mPSConstantBuffers[i] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
+            if (lstrcmpA(constantBufferDesc.Name, _T ("LIGHT_CONSTANT_BUFFER")) == 0)
+            {
+                continue;
+            }
+
+            mPSConstantBuffers[idx] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
 
             for (unsigned int j = 0; j < constantBufferDesc.Variables; j++)
             {
@@ -316,7 +333,7 @@ void DirectXShaderProgram::compile()
                 ConstantBufferVariable cbv;
                 cbv.mStage = PipelineStage::PS;
                 cbv.mUniformId = Shader::uniformToId(svd.Name);
-                cbv.mConstantBufferIndex = i;
+                cbv.mConstantBufferIndex = idx;// i;
                 cbv.mSize = svd.Size;
                 cbv.mOffset = svd.StartOffset;
 
@@ -326,7 +343,11 @@ void DirectXShaderProgram::compile()
                 std::cout << "svd.Size: " << svd.Size << std::endl;
                 std::cout << "svd.StartOffset: " << svd.StartOffset << std::endl;
             }
+
+            idx++;
         }
+
+        mPSConstantBuffers.resize(idx);
 
         pixelShaderReflector->Release();
     }
@@ -347,6 +368,7 @@ void DirectXShaderProgram::compile()
         mGSConstantBuffers.resize(sd.ConstantBuffers);
 
         // Loop through all constant buffers
+        int idx = 0;
         for (unsigned int i = 0; i < sd.ConstantBuffers; i++)
         {
             ID3D11ShaderReflectionConstantBuffer *reflectionBuffer =
@@ -365,7 +387,7 @@ void DirectXShaderProgram::compile()
 
             std::cout << "inputBindDesc.BindPoint: " << inputBindDesc.BindPoint << std::endl;
 
-            mGSConstantBuffers[i] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
+            mGSConstantBuffers[idx] = UniformBuffer::create(constantBufferDesc.Size, inputBindDesc.BindPoint);
 
             for (unsigned int j = 0; j < constantBufferDesc.Variables; j++)
             {
@@ -377,7 +399,7 @@ void DirectXShaderProgram::compile()
                 ConstantBufferVariable cbv;
                 cbv.mStage = PipelineStage::GS;
                 cbv.mUniformId = Shader::uniformToId(svd.Name);
-                cbv.mConstantBufferIndex = i;
+                cbv.mConstantBufferIndex = idx;// i;
                 cbv.mSize = svd.Size;
                 cbv.mOffset = svd.StartOffset;
 
@@ -387,7 +409,11 @@ void DirectXShaderProgram::compile()
                 std::cout << "svd.Size: " << svd.Size << std::endl;
                 std::cout << "svd.StartOffset: " << svd.StartOffset << std::endl;
             }
+
+            idx++;
         }
+
+        mGSConstantBuffers.resize(idx);
 
         geometryShaderReflector->Release();
     }
@@ -416,11 +442,13 @@ void DirectXShaderProgram::bind()
     for (size_t i = 0; i < mVSConstantBuffers.size(); i++)
     {
         mVSConstantBuffers[i]->bind(PipelineStage::VS);
+        mVSConstantBuffers[i]->copyDataToDevice();
     }
 
     for (size_t i = 0; i < mPSConstantBuffers.size(); i++)
     {
         mPSConstantBuffers[i]->bind(PipelineStage::PS);
+        mPSConstantBuffers[i]->copyDataToDevice();
     }
 }
 

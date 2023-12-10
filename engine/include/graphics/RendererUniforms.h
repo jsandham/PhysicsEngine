@@ -26,6 +26,9 @@ class CameraUniform
     void setViewProjection(const glm::mat4 &viewProj);
     void setCameraPos(const glm::vec3 &position);
 
+    void bind();
+    void unbind();
+
     void copyToUniformsToDevice();
 };
 
@@ -68,6 +71,9 @@ class LightUniform
     void setShadowRadius(float radius);
     void setShadowStrength(float strength);
 
+    void bind();
+    void unbind();
+
     void copyToUniformsToDevice();
 };
 
@@ -83,6 +89,9 @@ class OcclusionUniform
     ~OcclusionUniform();
 
     void setModel(const glm::mat4 &model, int index);
+
+    void bind();
+    void unbind();
 
     void copyToUniformsToDevice();
 };

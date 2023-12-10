@@ -12,24 +12,17 @@ struct VS_OUTPUT
     float3 normal : NORMAL;
 };
 
-// uniforms : external parameters
-//cbuffer CAMERA_CONSTANT_BUFFER : register(b0)
-//{
-//    float3 cameraPos;
-//    matrix view;
-//    matrix projection;
-//    matrix viewProjection;
-//}
-
-//cbuffer VS_CONSTANT_BUFFER2 : register(b3)
-//{
-//    matrix model;
-//}
-
-cbuffer VS_CONSTANT_BUFFER2 : register(b3)
+// constant buffers
+cbuffer CAMERA_CONSTANT_BUFFER : register(b0)
 {
     matrix projection;
     matrix view;
+    matrix viewProjection;
+    float3 cameraPos;
+}
+
+cbuffer VS_CONSTANT_BUFFER2 : register(b3)
+{
     matrix model;
 }
 
@@ -45,6 +38,7 @@ VS_OUTPUT VSMain(VS_INPUT input)
 }
 
 #fragment
+// INPUT structures
 struct PS_INPUT
 {
     float4 position : SV_POSITION;

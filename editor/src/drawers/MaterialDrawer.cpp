@@ -150,6 +150,8 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				mLightUniform->setShadowRadius(0.0f);
 				mLightUniform->setShadowStrength(1.0f);
 
+				mCameraUniform->bind();
+				mLightUniform->bind();
 				mCameraUniform->copyToUniformsToDevice();
 				mLightUniform->copyToUniformsToDevice();
 
@@ -168,6 +170,9 @@ void MaterialDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 				mFBO->clearDepth(1.0f);
 				mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
 				mFBO->unbind();
+
+				mCameraUniform->unbind();
+				mLightUniform->unbind();
 			}
 
 			mDrawRequired = false;

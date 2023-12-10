@@ -52,6 +52,7 @@ void DeferredRenderer::beginDeferredFrame(Camera *camera)
     mCameraUniform->setCameraPos(camera->getComponent<Transform>()->getPosition());
 
     // set camera state binding point and update camera state data
+    mCameraUniform->bind();
     mCameraUniform->copyToUniformsToDevice();
 
     Renderer::getRenderer()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
@@ -277,4 +278,6 @@ void DeferredRenderer::endDeferredFrame(Camera *camera)
     }
 
     camera->endQuery();
+
+    mCameraUniform->unbind();
 }
