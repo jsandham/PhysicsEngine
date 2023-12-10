@@ -112,10 +112,10 @@ void DirectXRenderer::setScissor_impl(int x, int y, int width, int height)
 {
     D3D11_RECT rect = {0};
 
-    rect.left = static_cast<float>(x);
-    rect.top = static_cast<float>(y);
-    rect.right = static_cast<float>(x + width);
-    rect.bottom = static_cast<float>(y + height);
+    rect.left = x;
+    rect.top = y;
+    rect.right = x + width;
+    rect.bottom = y + height;
 
     mContext->getD3DDeviceContext()->RSSetScissorRects(1, &rect);
 }

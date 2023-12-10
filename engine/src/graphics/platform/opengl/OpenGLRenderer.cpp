@@ -177,15 +177,15 @@ void OpenGLRenderer::draw_impl(MeshHandle *meshHandle, size_t vertexOffset, size
     meshHandle->draw(vertexOffset, vertexCount);
 
     query.mNumDrawCalls++;
-    query.mVerts += vertexCount;
-    query.mTris += vertexCount / 3;
+    query.mVerts += (unsigned int)vertexCount;
+    query.mTris += (unsigned int)vertexCount / 3;
 }
 
 void OpenGLRenderer::drawIndexed_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, TimingQuery &query)
 {
     meshHandle->drawIndexed(indexOffset, indexCount);
 
-    unsigned int count = indexCount;
+    unsigned int count = (unsigned int)indexCount;
 
     query.mNumDrawCalls++;
     query.mVerts += count;
@@ -197,15 +197,15 @@ void OpenGLRenderer::drawInstanced_impl(MeshHandle *meshHandle, size_t vertexOff
     meshHandle->drawInstanced(vertexOffset, vertexCount, instanceCount);
 
     query.mNumInstancedDrawCalls++;
-    query.mVerts += vertexCount;
-    query.mTris += vertexCount / 3;
+    query.mVerts += (unsigned int)vertexCount;
+    query.mTris += (unsigned int)vertexCount / 3;
 }
 
 void OpenGLRenderer::drawIndexedInstanced_impl(MeshHandle *meshHandle, size_t indexOffset, size_t indexCount, size_t instanceCount, TimingQuery &query)
 {
     meshHandle->drawIndexedInstanced(indexOffset, indexCount, instanceCount);
 
-    unsigned int count = indexCount;
+    unsigned int count = (unsigned int)indexCount;
 
     query.mNumInstancedDrawCalls++;
     query.mVerts += count;

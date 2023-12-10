@@ -197,7 +197,7 @@ void DirectXFramebuffer::bind()
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    context->OMSetRenderTargets(mRenderTargetViews.size(), mRenderTargetViews.data(), mDepthStencilView);
+    context->OMSetRenderTargets((UINT)mRenderTargetViews.size(), mRenderTargetViews.data(), mDepthStencilView);
 }
 
 void DirectXFramebuffer::unbind()
@@ -240,10 +240,10 @@ void DirectXFramebuffer::setScissor(int x, int y, int width, int height)
     assert(context != nullptr);
 
     D3D11_RECT rect;
-    rect.left = static_cast<float>(x);
-    rect.top = static_cast<float>(y);
-    rect.right = static_cast<float>(x + width);
-    rect.bottom = static_cast<float>(y + height);
+    rect.left = x;
+    rect.top = y;
+    rect.right = x + width;
+    rect.bottom = y + height;
 
     context->RSSetScissorRects(1, &rect);
 }

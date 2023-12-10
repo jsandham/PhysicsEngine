@@ -143,7 +143,7 @@ void DirectXMeshHandle::addVertexBuffer(VertexBuffer *buffer, std::string name, 
 
     int increment = (type == AttribType::Mat4) ? 4 : 1;
 
-    UINT layoutSlot = mInputDescs.size();
+    UINT layoutSlot = (UINT)mInputDescs.size();
     mInputDescs.resize(layoutSlot + increment);
     mInputSemanticNames.resize(layoutSlot + increment);
 
@@ -243,7 +243,7 @@ void DirectXMeshHandle::addVertexBuffer(VertexBuffer *buffer, std::string name, 
     }
 
     ID3DBlob *blob = ShaderBlobHelper::createShaderBlobFromInputLayout(mInputDescs); // this is so annoying DirectX!
-    CHECK_ERROR(device->CreateInputLayout(mInputDescs.data(), mInputDescs.size(), blob->GetBufferPointer(),
+    CHECK_ERROR(device->CreateInputLayout(mInputDescs.data(), (UINT)mInputDescs.size(), blob->GetBufferPointer(),
                                           blob->GetBufferSize(), &mBufferLayout));
     
     mBuffers.push_back(buffer);
@@ -266,7 +266,7 @@ void DirectXMeshHandle::bind()
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->IASetInputLayout(mBufferLayout);
 
-    for (size_t i = 0; i < 2 /*mBuffers.size()*/; i++)
+    for (unsigned int i = 0; i < 2 /*mBuffers.size()*/; i++)
     {
         mBuffers[i]->bind(i);
     }
@@ -285,7 +285,7 @@ void DirectXMeshHandle::unbind()
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED);
     context->IASetInputLayout(NULL);
 
-    for (size_t i = 0; i < 2/*mBuffers.size()*/; i++)
+    for (unsigned int i = 0; i < 2/*mBuffers.size()*/; i++)
     {
         mBuffers[i]->unbind(i);
     }

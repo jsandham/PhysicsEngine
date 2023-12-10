@@ -127,7 +127,7 @@ class DirectXShaderProgram : public ShaderProgram
 
   private:
     void setData(int uniformId, const void *data);
-    void getData(int uniformId, void *data);
+    void getData(int uniformId, void *data, size_t sizeInBytes) const;
 };
 } // namespace PhysicsEngine
 

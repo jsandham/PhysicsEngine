@@ -642,96 +642,83 @@ glm::mat4 DirectXShaderProgram::getMat4(const char *name) const
 
 bool DirectXShaderProgram::getBool(int uniformId) const
 {
-    // bool value = false;
-    // this->getData(uniformId, &value);
-    // return value;
-    return false;
+    bool value = false;
+    this->getData(uniformId, &value, sizeof(bool));
+    return value;
 }
 
 int DirectXShaderProgram::getInt(int uniformId) const
 {
-    return -1;
+    int value = 0;
+    this->getData(uniformId, &value, sizeof(int));
+    return value;
 }
 
 float DirectXShaderProgram::getFloat(int uniformId) const
 {
-    return 0.0f;
+    float value = 0.0f;
+    this->getData(uniformId, &value, sizeof(float));
+    return value;
 }
 
 Color DirectXShaderProgram::getColor(int uniformId) const
 {
-    return Color::black;
+    Color color = Color::black;
+    this->getData(uniformId, &color.mR, sizeof(Color));
+    return color;
 }
 
 Color32 DirectXShaderProgram::getColor32(int uniformId) const
 {
-    return Color32::black;
+    Color32 color = Color32::black;
+    this->getData(uniformId, &color.mR, sizeof(Color32));
+    return color;
 }
 
 glm::vec2 DirectXShaderProgram::getVec2(int uniformId) const
 {
-    return glm::vec2();
+    glm::vec2 vec = glm::vec2();
+    this->getData(uniformId, &vec[0], sizeof(glm::vec2));
+    return vec;
 }
 
 glm::vec3 DirectXShaderProgram::getVec3(int uniformId) const
 {
-    return glm::vec3();
+    glm::vec3 vec = glm::vec3();
+    this->getData(uniformId, &vec[0], sizeof(glm::vec3));
+    return vec;
 }
 
 glm::vec4 DirectXShaderProgram::getVec4(int uniformId) const
 {
-    return glm::vec4();
+    glm::vec4 vec = glm::vec4();
+    this->getData(uniformId, &vec[0], sizeof(glm::vec4));
+    return vec;
 }
 
 glm::mat2 DirectXShaderProgram::getMat2(int uniformId) const
 {
-    return glm::mat2();
+    glm::mat2 mat = glm::mat2();
+    this->getData(uniformId, &mat[0][0], sizeof(glm::mat2));
+    return mat;
 }
 
 glm::mat3 DirectXShaderProgram::getMat3(int uniformId) const
 {
-    return glm::mat3();
+    glm::mat3 mat = glm::mat3();
+    this->getData(uniformId, &mat[0][0], sizeof(glm::mat3));
+    return mat;
 }
 
 glm::mat4 DirectXShaderProgram::getMat4(int uniformId) const
 {
-    // Step 1: Find which constant buffer this uniform name belongs to..
-    // Step 2: Find the offset in the constant buffer where this uniform resides
-    // Step 3: Update the value
-    ConstantBufferVariable cbv = {};
-    for (size_t i = 0; i < mConstantBufferVariables.size(); i++)
-    {
-        if (mConstantBufferVariables[i].mUniformId == uniformId)
-        {
-            cbv = mConstantBufferVariables[i];
-            break;
-        }
-    }
-
     glm::mat4 mat = glm::mat4();
- 
-    if (cbv.mConstantBufferIndex >= 0)
-    {
-        switch (cbv.mStage)
-        {
-        case PipelineStage::VS:
-            mVSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
-            break;
-        case PipelineStage::PS:
-            mPSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
-            break;
-        case PipelineStage::GS:
-            mGSConstantBuffers[cbv.mConstantBufferIndex]->getData(&mat[0][0], cbv.mOffset, cbv.mSize);
-            break;
-        }
-    }
-   
+    this->getData(uniformId, &mat[0][0], sizeof(glm::mat4));
     return mat;
 }
 
 void DirectXShaderProgram::setData(int uniformId, const void *data)
 {
-    std::cout << "Name: " << mName << std::endl;
     // Step 1: Find which constant buffer this uniform name belongs to..
     // Step 2: Find the offset in the constant buffer where this uniform resides
     // Step 3: Update the value
@@ -765,23 +752,27 @@ void DirectXShaderProgram::setData(int uniformId, const void *data)
     }
 }
 
-void DirectXShaderProgram::getData(int uniformId, void *data)
+void DirectXShaderProgram::getData(int uniformId, void *data, size_t sizeInBytes) const
 {
     // Step 1: Find which constant buffer this uniform name belongs to..
     // Step 2: Find the offset in the constant buffer where this uniform resides
     // Step 3: Update the value
+    bool found = false;
     ConstantBufferVariable cbv = {};
     for (size_t i = 0; i < mConstantBufferVariables.size(); i++)
     {
         if (mConstantBufferVariables[i].mUniformId == uniformId)
         {
             cbv = mConstantBufferVariables[i];
+            found = true;
             break;
         }
     }
 
-    if (cbv.mConstantBufferIndex >= 0)
+    if (found)
     {
+        assert(sizeInBytes == cbv.mSize);
+        assert(cbv.mConstantBufferIndex >= 0);
         switch (cbv.mStage)
         {
         case PipelineStage::VS:
