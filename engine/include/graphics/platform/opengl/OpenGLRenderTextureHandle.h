@@ -15,6 +15,8 @@ class OpenGLRenderTextureHandle : public RenderTextureHandle
                               TextureFilterMode filterMode);
     ~OpenGLRenderTextureHandle();
 
+    void load(const std::vector<unsigned char> &data) override;
+
     void *getTexture() override;
     void *getIMGUITexture() override;
 };

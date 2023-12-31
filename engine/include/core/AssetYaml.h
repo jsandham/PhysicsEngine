@@ -5,10 +5,7 @@
 
 #include "yaml-cpp/yaml.h"
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
+#include "glm.h"
 #include "AssetEnums.h"
 #include "Guid.h"
 #include "Color.h"

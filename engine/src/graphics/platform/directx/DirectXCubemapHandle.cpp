@@ -2,8 +2,6 @@
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/directx/DirectXTextureHandle.h"
 
-#include <glm/glm.hpp>
-
 using namespace PhysicsEngine;
 
 DirectXCubemapHandle::DirectXCubemapHandle(int width, TextureFormat format, TextureWrapMode wrapMode,

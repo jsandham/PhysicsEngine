@@ -109,6 +109,11 @@ DirectXRenderTextureHandle::~DirectXRenderTextureHandle()
     }
 }
 
+void DirectXRenderTextureHandle::load(const std::vector<unsigned char> &data)
+{
+
+}
+
 void *DirectXRenderTextureHandle::getTexture()
 {
     return static_cast<void *>(mTexture);

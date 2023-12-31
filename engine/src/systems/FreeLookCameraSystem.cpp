@@ -208,10 +208,10 @@ void FreeLookCameraSystem::update()
         //    glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0));
         transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
     }
-
-    camera->computeViewMatrix(position, front, up, right);
-
     transform->setPosition(position);
+
+    camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(),
+                              transform->getRight());
 }
 
 void FreeLookCameraSystem::resetCamera()
@@ -348,6 +348,11 @@ Id FreeLookCameraSystem::getTransformUnderMouse(float nx, float ny) const
 Framebuffer *FreeLookCameraSystem::getNativeGraphicsMainFBO() const
 {
     return getCamera()->getNativeGraphicsMainFBO();
+}
+
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsRaytracingTex() const
+{
+    return getCamera()->getNativeGraphicsRaytracingTex();
 }
 
 RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsColorTex() const

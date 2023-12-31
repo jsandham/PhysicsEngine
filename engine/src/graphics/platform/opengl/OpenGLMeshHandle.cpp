@@ -1,8 +1,9 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLMeshHandle.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
+#include "../../../../include/core/glm.h"
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
+#include <assert.h>
 
 using namespace PhysicsEngine;
 

@@ -2,8 +2,9 @@
 #include "../../../../include/core/Log.h"
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
+#include "../../../../include/core/glm.h"
+
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 
 using namespace PhysicsEngine;
 

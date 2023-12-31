@@ -6,7 +6,7 @@ Ray::Ray() : mOrigin(glm::vec3(0.0f, 0.0f, 0.0f)), mDirection(glm::vec3(1.0f, 0.
 {
 }
 
-Ray::Ray(glm::vec3 origin, glm::vec3 direction) : mOrigin(origin), mDirection(direction)
+Ray::Ray(const glm::vec3 &origin, const glm::vec3 &direction) : mOrigin(origin), mDirection(direction)
 {
 }
 

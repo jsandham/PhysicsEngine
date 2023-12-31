@@ -3,11 +3,7 @@
 #include <string>
 #include <vector>
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-#include "glm/gtx/quaternion.hpp"
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
@@ -107,6 +103,7 @@ class FreeLookCameraSystem
     glm::vec2 distanceTraveledSinceRightMouseClick() const;
 
     Framebuffer *getNativeGraphicsMainFBO() const;
+    RenderTextureHandle *getNativeGraphicsRaytracingTex() const;
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
     RenderTextureHandle *getNativeGraphicsColorPickingTex() const;

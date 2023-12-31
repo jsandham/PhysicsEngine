@@ -1,10 +1,7 @@
 #ifndef BOXCOLLIDER_H__
 #define BOXCOLLIDER_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/AABB.h"
 #include "../core/Guid.h"

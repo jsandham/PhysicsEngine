@@ -1,12 +1,9 @@
 #ifndef PHYSICS_H__
 #define PHYSICS_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
 #include "../components/SphereCollider.h"
 
+#include "glm.h"
 #include "OctTree.h"
 
 namespace PhysicsEngine

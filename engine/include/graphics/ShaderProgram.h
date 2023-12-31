@@ -6,7 +6,7 @@
 
 #include "../core/AssetEnums.h"
 #include "../core/Color.h"
-#include <glm/glm.hpp>
+#include "../core/glm.h"
 
 namespace PhysicsEngine
 {

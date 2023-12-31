@@ -36,6 +36,8 @@ class Util
     static bool writeToBMP(const std::string &filepath, const std::vector<float> &data, int width, int height,
                            int numChannels);
 
+    static bool writeToPPM(const std::string &filepath, const std::vector<unsigned char> &data, int width, int height);
+
     static bool isAssetYamlExtension(const std::string &extension);
     static bool isTextureYamlExtension(const std::string &extension);
     static bool isMaterialYamlExtension(const std::string &extension);

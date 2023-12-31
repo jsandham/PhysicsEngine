@@ -2,6 +2,7 @@
 #include "../../include/core/Types.h"
 
 #include <iostream>
+#include <fstream>
 
 using namespace PhysicsEngine;
 
@@ -141,6 +142,45 @@ bool Util::writeToBMP(const std::string &filepath, const std::vector<float> &dat
 
     return true;
 }
+
+bool Util::writeToPPM(const std::string &filepath, const std::vector<unsigned char> &data, int width, int height)
+{
+    if (width * height * 3 != data.size())
+    {
+        return false;
+    }
+
+    std::ofstream file;
+    file.open(filepath.c_str(), std::ios::out);
+
+    if (file.is_open())
+    {
+        file << std::to_string(width) << " " << std::to_string(height) << "\n";
+        file << "255\n";
+        for (int r = 0; r < height; r++)
+        {
+            for (int c = 0; c < width; c++)
+            {
+                file << (int)data[3 * width * r + 3 * c + 0] << " ";
+                file << (int)data[3 * width * r + 3 * c + 1] << " ";
+                file << (int)data[3 * width * r + 3 * c + 2] << "\n";
+            }
+        }
+
+        file.close();
+    }
+    else
+    {
+        std::cout << "Could not open file" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
+
+
 
 bool Util::isAssetYamlExtension(const std::string &extension)
 {

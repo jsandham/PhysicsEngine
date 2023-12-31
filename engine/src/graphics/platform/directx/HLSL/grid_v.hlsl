@@ -2,23 +2,27 @@
 struct VS_INPUT
 {
     float3 position : POSITION;
-    float3 normal : NORMAL;
 };
 
 struct VS_OUTPUT
 {
     float4 position : SV_POSITION;
-    float3 normal : NORMAL;
+    float4 color : COLOR;
 };
 
-// uniforms : external parameters
-matrix worldViewProjection;
+// constant buffers
+cbuffer VS_CONSTANT_BUFFER : register(b3)
+{
+    matrix mvp;
+    float4 color;
+}
 
-// vertex shader 
+// vertex shader
 VS_OUTPUT VSMain(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.position = mul(worldViewProjection, float4(input.position, 1.0));
-    output.normal = input.normal;
+    output.position = mul(mvp, float4(input.position, 1.0f));
+    output.color = color;
+
     return output;
 }

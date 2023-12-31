@@ -1,11 +1,7 @@
 #ifndef LIGHT_H__
 #define LIGHT_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"

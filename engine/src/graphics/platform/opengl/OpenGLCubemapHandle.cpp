@@ -4,7 +4,6 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLTextureHandle.h"
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 
 using namespace PhysicsEngine;
 

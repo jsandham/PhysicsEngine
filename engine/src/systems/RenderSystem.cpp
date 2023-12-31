@@ -9,16 +9,15 @@
 #include <stack>
 #include <queue>
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/gtc/matrix_transform.hpp"
-
 #include "../../include/systems/RenderSystem.h"
 
+#include "../../include/core/glm.h"
 #include "../../include/core/SerializationYaml.h"
 #include "../../include/core/Intersect.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
+#include "../../include/core/Util.h"
+#include "../../include/core/Ray.h"
 
 #include "../../include/graphics/DeferredRenderer.h"
 #include "../../include/graphics/ForwardRenderer.h"
@@ -28,11 +27,13 @@ using namespace PhysicsEngine;
 RenderSystem::RenderSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)
 {
     mEnabled = true;
+    mRaytraceEnabled = false;
 }
 
 RenderSystem::RenderSystem(World *world, const Guid &guid, const Id &id) : mWorld(world), mGuid(guid), mId(id), mHide(HideFlag::None)
 {
     mEnabled = true;
+    mRaytraceEnabled = false;
 }
 
 RenderSystem::~RenderSystem()
@@ -94,6 +95,7 @@ void RenderSystem::init(World *world)
     mForwardRenderer.init(mWorld);
     mDeferredRenderer.init(mWorld);
     mDebugRenderer.init(mWorld);
+    mRaytracer.init(mWorld);
 
     mOcclusionVertexBuffer = VertexBuffer::create();
     mOcclusionVertexBuffer->bind(0);
@@ -174,6 +176,16 @@ void RenderSystem::update()
             }
 
             mOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
+
+            if (getKeyUp(getInput(), KeyCode::Z))
+            {
+                mRaytraceEnabled = !mRaytraceEnabled;
+            }
+
+            if (mRaytraceEnabled)
+            {
+                mRaytracer.update(camera);
+            }
         }
     }
 }
@@ -708,7 +720,7 @@ void RenderSystem::buildDrawCallCommandList()
             }
         }
 
-        std::cout << "batchCount: " << batchCount << " batchVertexCount: " << batchVertexCount << std::endl;
+        //std::cout << "batchCount: " << batchCount << " batchVertexCount: " << batchVertexCount << std::endl;
 
         if (instanced)
         {

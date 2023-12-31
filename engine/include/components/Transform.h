@@ -1,17 +1,12 @@
 #ifndef TRANSFORM_H__
 #define TRANSFORM_H__
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_INTRINSICS
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
 
 #include "ComponentEnums.h"
-
-#include "glm/glm.hpp"
-#include "glm/gtx/quaternion.hpp"
 
 namespace PhysicsEngine
 {

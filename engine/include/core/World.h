@@ -3,8 +3,6 @@
 
 #include <filesystem>
 
-#define GLM_FORCE_RADIANS
-
 #include "Guid.h"
 #include "PoolAllocator.h"
 

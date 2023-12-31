@@ -8,12 +8,7 @@
 #undef near
 #undef far
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"
@@ -24,6 +19,7 @@
 #include "../core/Viewport.h"
 
 #include "../graphics/Framebuffer.h"
+#include "../graphics/TextureHandle.h"
 #include "../graphics/GraphicsQuery.h"
 #include "../graphics/RenderTextureHandle.h"
 
@@ -38,6 +34,8 @@ struct CameraTargets
     Framebuffer *mGeometryFBO;
     Framebuffer *mSsaoFBO;
     Framebuffer *mOcclusionMapFBO;
+
+    RenderTextureHandle *mRaytracingTex;
 };
 
 class World;
@@ -82,6 +80,10 @@ class Camera
     glm::mat4 mViewMatrix;
     glm::mat4 mInvViewMatrix;
     glm::mat4 mProjMatrix;
+    glm::mat4 mInvProjMatrix;
+    glm::mat4 mViewProjMatrix;
+    glm::mat4 mInvViewProjMatrix;
+
     glm::vec3 mPosition;
     glm::vec3 mForward;
     glm::vec3 mUp;
@@ -90,6 +92,7 @@ class Camera
     std::vector<Id> mColoringIds;
 
     bool mIsViewportChanged;
+    bool mMoved;
 
   public:
     Camera(World *world, const Id &id);
@@ -116,12 +119,18 @@ class Camera
 
     bool isCreated() const;
     bool isViewportChanged() const;
+    bool moved() const;
     glm::vec3 getPosition() const;
     glm::vec3 getForward() const;
     glm::vec3 getUp() const;
+    glm::vec3 getRight() const;
     glm::mat4 getViewMatrix() const;
     glm::mat4 getInvViewMatrix() const;
     glm::mat4 getProjMatrix() const;
+    glm::mat4 getInvProjMatrix() const;
+    glm::mat4 getViewProjMatrix() const;
+    glm::mat4 getInvViewProjMatrix() const;
+
     glm::vec3 getSSAOSample(int sample) const;
     Id getTransformIdAtScreenPos(int x, int y) const;
 
@@ -143,6 +152,7 @@ class Camera
     Framebuffer *getNativeGraphicsGeometryFBO() const;
     Framebuffer *getNativeGraphicsSSAOFBO() const;
     Framebuffer *getNativeGraphicsOcclusionMapFBO() const;
+    RenderTextureHandle *getNativeGraphicsRaytracingTex() const;
 
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
@@ -160,6 +170,9 @@ class Camera
     {
         return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
     }
+
+    Ray getCameraRay(int u, int v, float du, float dv) const;
+    void updateRayTracingTexture(const std::vector<unsigned char> &data);
 
   private:
     friend class Scene;

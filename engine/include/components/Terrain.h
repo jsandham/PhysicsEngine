@@ -1,10 +1,7 @@
 #ifndef TERRAIN_H__
 #define TERRAIN_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
+#include "../core/glm.h"
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"

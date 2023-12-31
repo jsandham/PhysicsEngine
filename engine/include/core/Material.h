@@ -1,16 +1,13 @@
 #ifndef MATERIAL_H__
 #define MATERIAL_H__
 
+#include "glm.h"
 #include "SerializationEnums.h"
 #include "AssetEnums.h"
 #include "Guid.h"
 #include "Id.h"
 #include "Shader.h"
 #include "Texture2D.h"
-
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

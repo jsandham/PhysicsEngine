@@ -1,8 +1,7 @@
 #include "../../include/core/ClosestDistance.h"
 #include "../../include/core/PolynomialRoots.h"
 
-#include "glm/glm.hpp"
-
+#include "../../include/core/glm.h"
 #include "../../include/core/Log.h"
 #include <array>
 #include <string>

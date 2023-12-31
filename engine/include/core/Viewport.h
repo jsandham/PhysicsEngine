@@ -1,8 +1,7 @@
 #ifndef VIEWPORT_H__
 #define VIEWPORT_H__
 
-#include "GLM.h"
-#include "yaml-cpp/yaml.h"
+#include "GlmYaml.h"
 
 namespace PhysicsEngine
 {

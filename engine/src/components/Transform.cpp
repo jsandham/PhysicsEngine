@@ -2,13 +2,9 @@
 
 #include "../../include/core/SerializationYaml.h"
 #include "../../include/core/World.h"
-#include "../../include/core/GLM.h"
-
-#include "glm/gtx/matrix_decompose.hpp"
+#include "../../include/core/GlmYaml.h"
 
 using namespace PhysicsEngine;
-
-#define GLM_ENABLE_EXPERIMENTAL
 
 TransformData::TransformData()
     : mPosition(glm::vec3(0.0f, 0.0f, 0.0f)), mRotation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)),

@@ -1,8 +1,6 @@
 #ifndef EDITOR_CLIPBOARD_H__
 #define EDITOR_CLIPBOARD_H__
 
-#define GLM_FORCE_RADIANS
-
 #include <set>
 #include <string>
 #include <filesystem>

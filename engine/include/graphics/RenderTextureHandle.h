@@ -27,6 +27,8 @@ class RenderTextureHandle
     int getWidth() const;
     int getHeight() const;
 
+    virtual void load(const std::vector<unsigned char> &data) = 0;
+
     virtual void *getTexture() = 0;
     virtual void *getIMGUITexture() = 0;
 

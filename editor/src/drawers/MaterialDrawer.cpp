@@ -1,8 +1,6 @@
 #include "../../include/drawers/MaterialDrawer.h"
 #include "../../include/ProjectDatabase.h"
 
-#define GLM_FORCE_RADIANS
-
 #include "components/Camera.h"
 #include "components/Light.h"
 #include "components/Transform.h"

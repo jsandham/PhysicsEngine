@@ -72,6 +72,16 @@ class ForwardRenderer
     void postProcessing();
     void endFrame(Camera *camera);
     void calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirection);
+    void renderDirLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                                         const std::vector<DrawCallCommand> &commands,
+                                         const std::vector<glm::mat4> &models);
+    void renderSpotLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                                         const std::vector<DrawCallCommand> &commands,
+                                         const std::vector<glm::mat4> &models);
+    void renderPointLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                                         const std::vector<DrawCallCommand> &commands,
+                                         const std::vector<glm::mat4> &models);
+
 };
 
 } // namespace PhysicsEngine

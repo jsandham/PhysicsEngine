@@ -1,8 +1,8 @@
 #include "../../include/core/WorldPrimitives.h"
 #include "../../include/core/Log.h"
 #include "../../include/core/World.h"
+#include "../../include/core/glm.h"
 
-#include <glm/glm.hpp>
 #include <set>
 
 using namespace PhysicsEngine;

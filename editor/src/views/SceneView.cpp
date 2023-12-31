@@ -123,7 +123,7 @@ void SceneView::drawSceneHeader(Clipboard& clipboard)
 	static bool scaleModeActive = false;
 
 	const char* targetNames[] = { "Color", "Color Picking", "Depth", "Linear Depth", "Normals",
-									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise", "OcclusionMap"};
+									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise", "OcclusionMap", "Raytracing"};
 
 	clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
 
@@ -381,6 +381,9 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 	case DebugTargets::OcclusionMap:
 		tex = clipboard.mCameraSystem->getNativeGraphicsOcclusionMapTex();
 		break;
+	case DebugTargets::Raytracing:
+		tex = clipboard.mCameraSystem->getNativeGraphicsRaytracingTex();
+		break;
 	}
 
 	if (tex != nullptr)
@@ -397,9 +400,10 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 		{
 			ImVec2 uv0 = ImVec2(0, 0);
 			ImVec2 uv1 = ImVec2(std::min(1.0f, mSceneContentSize.x / tex->getWidth()), std::min(1.0f, mSceneContentSize.y / tex->getHeight()));
-
+			
 			// directx
-			ImGui::Image(tex->getIMGUITexture(), mSceneContentSize, uv0, uv1);
+			//ImGui::Image(tex->getIMGUITexture(), mSceneContentSize, uv0, uv1);
+			ImGui::Image(tex->getIMGUITexture(), mSceneContentSize);
 		}
 	}
 

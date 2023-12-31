@@ -1,8 +1,6 @@
 #ifndef SCENE_VIEW_H__
 #define SCENE_VIEW_H__
 
-#define GLM_FORCE_RADIANS
-
 #include "core/World.h"
 #include "systems/FreeLookCameraSystem.h"
 
@@ -26,7 +24,8 @@ namespace PhysicsEditor
 		SSAO = 8,
 		SSAONoise = 9,
 		OcclusionMap = 10,
-		Count = 11
+		Raytracing = 11,
+		Count = 12
 	};
 
 	class SceneView

@@ -263,10 +263,9 @@ void DirectXMeshHandle::bind()
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     context->IASetInputLayout(mBufferLayout);
 
-    for (unsigned int i = 0; i < 2 /*mBuffers.size()*/; i++)
+    for (unsigned int i = 0; i < mBuffers.size(); i++)
     {
         mBuffers[i]->bind(i);
     }
@@ -282,10 +281,9 @@ void DirectXMeshHandle::unbind()
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED);
     context->IASetInputLayout(NULL);
 
-    for (unsigned int i = 0; i < 2/*mBuffers.size()*/; i++)
+    for (unsigned int i = 0; i < mBuffers.size(); i++)
     {
         mBuffers[i]->unbind(i);
     }
@@ -298,12 +296,22 @@ void DirectXMeshHandle::unbind()
 
 void DirectXMeshHandle::drawLines(size_t vertexOffset, size_t vertexCount)
 {
+    ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
+    assert(context != nullptr);
+
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+
+    this->bind();
+    context->Draw((unsigned int)vertexCount, (unsigned int)vertexOffset);
+    this->unbind();
 }
 
 void DirectXMeshHandle::draw(size_t vertexOffset, size_t vertexCount)
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
+
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     this->bind();
     context->Draw((unsigned int)vertexCount, (unsigned int)vertexOffset);
@@ -315,6 +323,8 @@ void DirectXMeshHandle::drawIndexed(size_t indexOffset, size_t indexCount)
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     this->bind();
     context->DrawIndexed((unsigned int)indexCount, (unsigned int)indexOffset, 0);
     this->unbind();
@@ -325,6 +335,8 @@ void DirectXMeshHandle::drawInstanced(size_t vertexOffset, size_t vertexCount, s
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
 
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     this->bind();
     context->DrawInstanced((unsigned int)vertexCount, (unsigned int)instanceCount, (unsigned int)vertexOffset, 0);
     this->unbind();
@@ -334,6 +346,8 @@ void DirectXMeshHandle::drawIndexedInstanced(size_t indexOffset, size_t indexCou
 {
     ID3D11DeviceContext *context = DirectXRenderContext::get()->getD3DDeviceContext();
     assert(context != nullptr);
+
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     this->bind();
     context->DrawIndexedInstanced((unsigned int)indexCount, (unsigned int)instanceCount, (unsigned int)indexOffset,

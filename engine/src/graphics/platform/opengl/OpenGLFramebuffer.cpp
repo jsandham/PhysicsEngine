@@ -3,7 +3,6 @@
 #include "../../../../include/graphics/platform/opengl/OpenGLError.h"
 
 #include <GL/glew.h>
-#include <glm/glm.hpp>
 
 using namespace PhysicsEngine;
 

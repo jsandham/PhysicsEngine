@@ -25,6 +25,8 @@ class DirectXRenderTextureHandle : public RenderTextureHandle
                                TextureFilterMode filterMode);
     ~DirectXRenderTextureHandle();
 
+    void load(const std::vector<unsigned char> &data) override;
+
     void *getTexture() override;
     void *getIMGUITexture() override;
 };

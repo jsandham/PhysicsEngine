@@ -1,9 +1,11 @@
 #include <algorithm>
+#include <random>
 
 #include "../../include/components/Camera.h"
 #include "../../include/components/ComponentYaml.h"
 
 #include "../../include/core/SerializationYaml.h"
+#include "../../include/core/AssetEnums.h"
 #include "../../include/core/World.h"
 
 #include "../../include/graphics/Renderer.h"
@@ -23,6 +25,8 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
+    mTargets.mRaytracingTex = RenderTextureHandle::create(
+        400, 400, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -49,11 +53,12 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mFrustum.mNearPlane = 0.1f;
     mFrustum.mFarPlane = 250.0f;
 
-    mProjMatrix =
-        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mInvProjMatrix = glm::inverse(mProjMatrix);
 
     mEnabled = true;
     mIsViewportChanged = false;
+    mMoved = false;
     mRenderToScreen = false;
 }
 
@@ -70,6 +75,8 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
+    mTargets.mRaytracingTex = RenderTextureHandle::create(400, 400, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+                                                          TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -96,11 +103,13 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mFrustum.mNearPlane = 0.1f;
     mFrustum.mFarPlane = 250.0f;
 
-    mProjMatrix =
-        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane,
+                                                mFrustum.mFarPlane);
+    mInvProjMatrix = glm::inverse(mProjMatrix);
 
     mEnabled = true;
     mIsViewportChanged = false;
+    mMoved = false;
     mRenderToScreen = false;
 }
 
@@ -111,6 +120,7 @@ Camera::~Camera()
     delete mTargets.mGeometryFBO;
     delete mTargets.mSsaoFBO;
     delete mTargets.mOcclusionMapFBO;
+    delete mTargets.mRaytracingTex;
 }
 
 void Camera::serialize(YAML::Node &out) const
@@ -155,8 +165,8 @@ void Camera::deserialize(const YAML::Node &in)
     mCascadeSplits = YAML::getValue<std::array<int, 5>>(in, "cascade splits");
     mEnabled = YAML::getValue<bool>(in, "enabled");
 
-    mProjMatrix =
-        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mInvProjMatrix = glm::inverse(mProjMatrix);
 
     mIsViewportChanged = true;
 }
@@ -189,6 +199,11 @@ Id Camera::getId() const
 bool Camera::isViewportChanged() const
 {
     return mIsViewportChanged;
+}
+
+bool Camera::moved() const
+{
+    return mMoved;
 }
 
 void Camera::resizeTargets()
@@ -232,12 +247,21 @@ void Camera::endQuery()
 void Camera::computeViewMatrix(const glm::vec3 &position, const glm::vec3 &forward, const glm::vec3 &up,
                                const glm::vec3 &right)
 {
+    mMoved = false;
+    if (mPosition != position || mForward != forward || mUp != up || mRight != right)
+    {
+        mMoved = true;
+    }
+
     mPosition = position;
     mForward = forward;
     mUp = up;
     mRight = right;
+
     mViewMatrix = glm::lookAt(position, position + forward, up);
+    mViewProjMatrix = mProjMatrix * mViewMatrix;
     mInvViewMatrix = glm::inverse(mViewMatrix);
+    mInvViewProjMatrix = glm::inverse(mViewProjMatrix);
 
     // update frustum planes
     mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
@@ -263,6 +287,11 @@ glm::vec3 Camera::getUp() const
     return mUp;
 }
 
+glm::vec3 Camera::getRight() const
+{
+    return mRight;
+}
+
 glm::mat4 Camera::getViewMatrix() const
 {
     return mViewMatrix;
@@ -276,6 +305,21 @@ glm::mat4 Camera::getInvViewMatrix() const
 glm::mat4 Camera::getProjMatrix() const
 {
     return mProjMatrix;
+}
+
+glm::mat4 Camera::getInvProjMatrix() const
+{
+    return mInvProjMatrix;
+}
+
+glm::mat4 Camera::getViewProjMatrix() const
+{
+    return mViewProjMatrix;
+}
+
+glm::mat4 Camera::getInvViewProjMatrix() const
+{
+    return mInvViewProjMatrix;
 }
 
 glm::vec3 Camera::getSSAOSample(int sample) const
@@ -315,8 +359,8 @@ void Camera::setFrustum(float fov, float aspectRatio, float nearPlane, float far
     mFrustum.mNearPlane = nearPlane;
     mFrustum.mFarPlane = farPlane;
 
-    mProjMatrix =
-        glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mProjMatrix = glm::perspective(glm::radians(mFrustum.mFov), mFrustum.mAspectRatio, mFrustum.mNearPlane, mFrustum.mFarPlane);
+    mInvProjMatrix = glm::inverse(mProjMatrix);
 
     // update frustum planes
     mFrustum.computePlanes(mPosition, mForward, mUp, mRight);
@@ -455,6 +499,11 @@ Framebuffer *Camera::getNativeGraphicsOcclusionMapFBO() const
     return mTargets.mOcclusionMapFBO;
 }
 
+RenderTextureHandle *Camera::getNativeGraphicsRaytracingTex() const
+{
+    return mTargets.mRaytracingTex;
+}
+
 RenderTextureHandle *Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
@@ -503,4 +552,42 @@ RenderTextureHandle *Camera::getNativeGraphicsOcclusionMapTex() const
 Entity *Camera::getEntity() const
 {
     return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
+}
+
+void Camera::updateRayTracingTexture(const std::vector<unsigned char> &data)
+{
+    mTargets.mRaytracingTex->load(data);
+}
+
+Ray Camera::getCameraRay(int u, int v, float du, float dv) const
+{
+    // NDC coordinates for 2x2x2 cube [-1, 1]x[-1, 1]x[-1, 1]
+    //         +y |   * +z
+    //            |  *
+    //            | *
+    // -x ________|*________ +x
+    // In frustum plane, bottom, left, far corner correspnds to NDC point [-1, -1, 1]
+    glm::vec3 farBottomLeft_NDC = glm::vec3(-1.0f, -1.0f, 1.0f);
+
+    // Far, bottom, left corner pixel centre in NDC
+    glm::vec3 pixelCentreFarBottomLeft_NDC = farBottomLeft_NDC + glm::vec3(0.5f * du, 0.5f * dv, 0.0f);
+
+    // Far plane pixel centre in NDC
+    glm::vec3 pixelCentre_NDC =
+        pixelCentreFarBottomLeft_NDC + glm::vec3(u * du, 0.0f, 0.0f) + glm::vec3(0.0f, v * dv, 0.0f);
+
+    // Randomly sample from pixel
+    static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
+    static std::mt19937 generator;
+    glm::vec3 pixelSample_NDC = pixelCentre_NDC + glm::vec3(dist(generator) * du, dist(generator) * dv, 0.0f);
+
+    // Transform NDC coordinate back to world space
+    glm::vec4 temp = this->getInvViewProjMatrix() * glm::vec4(pixelSample_NDC, 1.0f);
+    glm::vec3 pixelCentre_WorldSpace = glm::vec3(temp / temp.w);
+
+    Ray ray;
+    ray.mOrigin = this->getPosition();
+    ray.mDirection = pixelCentre_WorldSpace - this->getPosition();
+
+    return ray;
 }

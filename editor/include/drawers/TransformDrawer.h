@@ -1,8 +1,6 @@
 #ifndef TRANSFORM_DRAWER_H__
 #define TRANSFORM_DRAWER_H__
 
-#define GLM_FORCE_RADIANS
-
 #include <imgui.h>
 #include "../EditorClipboard.h"
 

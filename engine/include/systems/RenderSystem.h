@@ -18,6 +18,7 @@
 #include "../graphics/ForwardRenderer.h"
 #include "../graphics/RenderObject.h"
 #include "../graphics/GraphicsQuery.h"
+#include "../graphics/Raytracer.h"
 
 namespace PhysicsEngine
 {
@@ -171,6 +172,7 @@ class RenderSystem
     ForwardRenderer mForwardRenderer;
     DeferredRenderer mDeferredRenderer;
     DebugRenderer mDebugRenderer;
+    Raytracer mRaytracer;
 
     // Cache data that is used in contructing draw call lists once
     std::vector<glm::mat4> mCachedModels;
@@ -216,6 +218,7 @@ class RenderSystem
   public:
     HideFlag mHide;
     bool mEnabled;
+    bool mRaytraceEnabled;
 
   public:
     RenderSystem(World *world, const Id &id);

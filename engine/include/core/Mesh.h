@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "glm.h"
 #include "SerializationEnums.h"
 #include "Sphere.h"
 #include "AssetEnums.h"
@@ -12,10 +13,6 @@
 #include "../graphics/IndexBuffer.h"
 #include "../graphics/MeshHandle.h"
 #include "../graphics/VertexBuffer.h"
-
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
 
 namespace PhysicsEngine
 {

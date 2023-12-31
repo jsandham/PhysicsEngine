@@ -1,10 +1,7 @@
 #ifndef AABB_H__
 #define AABB_H__
 
-#define GLM_FORCE_RADIANS
-#include "GLM.h"
-#include "glm/glm.hpp"
-#include "yaml-cpp/yaml.h"
+#include "GlmYaml.h"
 
 namespace PhysicsEngine
 {

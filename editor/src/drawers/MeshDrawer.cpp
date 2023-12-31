@@ -156,9 +156,6 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 		mCameraUniform->bind();
 		mCameraUniform->copyToUniformsToDevice();
 
-		//glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 8 * meshRadius);
-		//glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, -4 * meshRadius), glm::vec3(0.0f, 0.0f, -4 * meshRadius) + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0, 1.0f, 0.0f));
-
 		shader->bind(static_cast<int64_t>(PhysicsEngine::ShaderMacro::None));
 		shader->setMat4("model", mModel);
 
@@ -175,7 +172,6 @@ void MeshDrawer::render(Clipboard& clipboard, const PhysicsEngine::Guid& id)
 
 		shader->setInt("wireframe", 1);
 
-		//mMeshHandle->draw(0, 3);
 		mesh->getNativeGraphicsHandle()->drawIndexed(0, mesh->getIndices().size());
 
 		if (mWireframeOn)

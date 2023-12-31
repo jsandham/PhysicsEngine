@@ -3,7 +3,7 @@
 
 #include "../include/UnitTests.h"
 
-#include <glm/glm.hpp>
+#include <core/glm.h>
 
 #include <core/Log.h>
 #include <core/PoolAllocator.h>

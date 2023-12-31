@@ -1,13 +1,7 @@
 #ifndef PLANE_H__
 #define PLANE_H__
 
-#define GLM_FORCE_RADIANS
-
-#include "GLM.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "yaml-cpp/yaml.h"
+#include "GlmYaml.h"
 
 namespace PhysicsEngine
 {

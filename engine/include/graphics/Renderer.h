@@ -3,10 +3,7 @@
 
 #include <string>
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
+#include "../core/glm.h"
 #include "../core/Color.h"
 
 #include "MeshHandle.h"

@@ -2,7 +2,8 @@
 #define RENDERER_UNIFORMS_H__
 
 #include "UniformBuffer.h"
-#include <glm/glm.hpp>
+#include "../core/glm.h"
+
 #include <string>
 
 namespace PhysicsEngine

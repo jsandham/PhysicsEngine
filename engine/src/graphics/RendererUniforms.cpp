@@ -1,10 +1,7 @@
 #include "../../include/core/Log.h"
+#include "../../include/core/glm.h"
 
 #include "../../include/graphics/RendererUniforms.h"
-
-#include <glm/gtc/type_ptr.hpp>
-
-#define GLM_FORCE_RADIANS
 
 using namespace PhysicsEngine;
 

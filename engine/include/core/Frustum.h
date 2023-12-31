@@ -1,19 +1,14 @@
 #ifndef FRUSTUM_H__
 #define FRUSTUM_H__
 
-#define GLM_FORCE_RADIANS
-
 #undef NEAR
 #undef FAR
 #undef near
 #undef far
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 #include "yaml-cpp/yaml.h"
 
+#include "glm.h"
 #include "Plane.h"
 
 namespace PhysicsEngine

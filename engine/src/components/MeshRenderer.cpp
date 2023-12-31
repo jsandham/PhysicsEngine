@@ -1,8 +1,8 @@
 #include "../../include/components/MeshRenderer.h"
 
 #include "../../include/core/SerializationYaml.h"
+#include "../../include/core/GlmYaml.h"
 #include "../../include/core/World.h"
-#include "../../include/core/GLM.h"
 
 using namespace PhysicsEngine;
 

@@ -1,10 +1,7 @@
 #ifndef RAY_H__
 #define RAY_H__
 
-#define GLM_FORCE_RADIANS
-#include "GLM.h"
-#include "glm/glm.hpp"
-#include "yaml-cpp/yaml.h"
+#include "GlmYaml.h"
 
 namespace PhysicsEngine
 {
@@ -16,7 +13,7 @@ class Ray
 
   public:
     Ray();
-    Ray(glm::vec3 origin, glm::vec3 direction);
+    Ray(const glm::vec3 &origin, const glm::vec3 &direction);
     ~Ray();
 
     glm::vec3 getPoint(float t) const;

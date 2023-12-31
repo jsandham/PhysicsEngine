@@ -26,6 +26,7 @@ DirectXRenderer::DirectXRenderer()
     mRasterizerDescr.FillMode = D3D11_FILL_SOLID;
     mRasterizerDescr.CullMode = D3D11_CULL_FRONT;
     mRasterizerDescr.DepthClipEnable = true;
+    mRasterizerDescr.MultisampleEnable = true;
 
     CHECK_ERROR(mContext->getD3DDevice()->CreateRasterizerState(&mRasterizerDescr, &mRasterizerState));
 

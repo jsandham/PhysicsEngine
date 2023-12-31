@@ -188,173 +188,17 @@ void ForwardRenderer::renderShadows(Camera *camera, Light *light, Transform *lig
                                     const std::vector<DrawCallCommand> &commands,
                                     const std::vector<glm::mat4> &models)
 {
-    if (light->mLightType == LightType::Directional)
+    switch (light->mLightType)
     {
-        std::array<float, 6> cascadeEnds = camera->calcViewSpaceCascadeEnds();
-        for (size_t i = 0; i < cascadeEnds.size(); i++)
-        {
-            mCascadeEnds[i] = cascadeEnds[i];
-        }
-
-        calcCascadeOrthoProj(camera, lightTransform->getForward());
-
-        for (int i = 0; i < 5; i++)
-        {
-            light->getNativeGraphicsShadowCascadeFBO(i)->bind();
-            light->getNativeGraphicsShadowCascadeFBO(i)->setViewport(0, 0,
-                                                                     static_cast<int>(light->getShadowMapResolution()),
-                                                                     static_cast<int>(light->getShadowMapResolution()));
-            light->getNativeGraphicsShadowCascadeFBO(i)->clearDepth(1.0f);
-
-            mDepthShader->bind();
-            mDepthShader->setView(mCascadeLightView[i]);
-            mDepthShader->setProjection(mCascadeOrthoProj[i]);
-
-            int modelIndex = 0;
-            for (size_t j = 0; j < commands.size(); j++)
-            {
-                uint16_t meshIndex = commands[j].getMeshIndex();
-                uint8_t subMesh = commands[j].getSubMesh();
-                bool instanced = commands[j].isInstanced();
-
-                Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-
-                int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
-                int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
-
-                if (instanced)
-                {
-                    modelIndex += Renderer::INSTANCE_BATCH_SIZE;
-                }
-                else
-                {
-                    mDepthShader->setModel(models[modelIndex]);
-                    Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
-                                                         (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                         camera->mQuery);
-                    modelIndex++;
-                }
-            }
-
-            light->getNativeGraphicsShadowCascadeFBO(i)->unbind();
-        }
-    }
-    else if (light->mLightType == LightType::Spot)
-    {
-        light->getNativeGraphicsShadowSpotlightFBO()->bind();
-        light->getNativeGraphicsShadowSpotlightFBO()->setViewport(
-            0, 0, static_cast<int>(light->getShadowMapResolution()), static_cast<int>(light->getShadowMapResolution()));
-        light->getNativeGraphicsShadowSpotlightFBO()->clearDepth(1.0f);
-
-        mShadowProjMatrix = light->getProjMatrix();
-        mShadowViewMatrix =
-            glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
-                        glm::vec3(0.0f, 1.0f, 0.0f));
-
-        mDepthShader->bind();
-        mDepthShader->setView(mShadowViewMatrix);
-        mDepthShader->setProjection(mShadowProjMatrix);
-
-        int modelIndex = 0;
-        for (size_t i = 0; i < commands.size(); i++)
-        {
-            uint16_t meshIndex = commands[i].getMeshIndex();
-            uint8_t subMesh = commands[i].getSubMesh();
-            bool instanced = commands[i].isInstanced();
-
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-
-            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
-            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
-
-            if (instanced)
-            {
-                modelIndex += Renderer::INSTANCE_BATCH_SIZE;
-            }
-            else
-            {
-                mDepthShader->setModel(models[modelIndex]);
-
-                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
-                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                     camera->mQuery);
-                modelIndex++;
-            }
-        }
-
-        light->getNativeGraphicsShadowSpotlightFBO()->unbind();
-    }
-    else if (light->mLightType == LightType::Point)
-    {
-
-        mCubeViewProjMatrices[0] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(1.0, 0.0, 0.0),
-                                                  glm::vec3(0.0, -1.0, 0.0)));
-        mCubeViewProjMatrices[1] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(-1.0, 0.0, 0.0),
-                                                  glm::vec3(0.0, -1.0, 0.0)));
-        mCubeViewProjMatrices[2] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(0.0, 1.0, 0.0),
-                                                  glm::vec3(0.0, 0.0, 1.0)));
-        mCubeViewProjMatrices[3] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(0.0, -1.0, 0.0),
-                                                  glm::vec3(0.0, 0.0, -1.0)));
-        mCubeViewProjMatrices[4] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(0.0, 0.0, 1.0),
-                                                  glm::vec3(0.0, -1.0, 0.0)));
-        mCubeViewProjMatrices[5] =
-            (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
-                                                  lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
-                                                  glm::vec3(0.0, -1.0, 0.0)));
-
-        light->getNativeGraphicsShadowCubemapFBO()->bind();
-        light->getNativeGraphicsShadowCubemapFBO()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
-                                                                static_cast<int>(light->getShadowMapResolution()));
-        light->getNativeGraphicsShadowCubemapFBO()->clearDepth(1.0f);
-
-        mDepthCubemapShader->bind();
-        mDepthCubemapShader->setLightPos(lightTransform->getPosition());
-        mDepthCubemapShader->setFarPlane(camera->getFrustum().mFarPlane);
-        mDepthCubemapShader->setCubeViewProj(0, mCubeViewProjMatrices[0]);
-        mDepthCubemapShader->setCubeViewProj(1, mCubeViewProjMatrices[1]);
-        mDepthCubemapShader->setCubeViewProj(2, mCubeViewProjMatrices[2]);
-        mDepthCubemapShader->setCubeViewProj(3, mCubeViewProjMatrices[3]);
-        mDepthCubemapShader->setCubeViewProj(4, mCubeViewProjMatrices[4]);
-        mDepthCubemapShader->setCubeViewProj(5, mCubeViewProjMatrices[5]);
-
-        int modelIndex = 0;
-        for (size_t i = 0; i < commands.size(); i++)
-        {
-            uint16_t meshIndex = commands[i].getMeshIndex();
-            uint8_t subMesh = commands[i].getSubMesh();
-            bool instanced = commands[i].isInstanced();
-
-            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
-
-            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
-            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
-
-            if (instanced)
-            {
-                modelIndex += Renderer::INSTANCE_BATCH_SIZE;
-            }
-            else
-            {
-                mDepthCubemapShader->setModel(models[modelIndex]);
-
-                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
-                                                     (subMeshVertexEndIndex - subMeshVertexStartIndex),
-                                                     camera->mQuery);
-                modelIndex++;
-            }
-        }
-
-        light->getNativeGraphicsShadowCubemapFBO()->unbind();
+    case LightType::Directional:
+        renderDirLightShadowMap(camera, light, lightTransform, commands, models);
+        break;
+    case LightType::Spot:
+        renderSpotLightShadowMap(camera, light, lightTransform, commands, models);
+        break;
+    case LightType::Point:
+        renderPointLightShadowMap(camera, light, lightTransform, commands, models);
+        break;
     }
 }
 
@@ -752,4 +596,175 @@ void ForwardRenderer::calcCascadeOrthoProj(Camera *camera, glm::vec3 lightDirect
         // respectively to capture all objects that can cast a show
         mCascadeOrthoProj[i] = glm::ortho(minX, maxX, minY, maxY, 0.0f, -minZ);
     }
+}
+
+void ForwardRenderer::renderDirLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                                     const std::vector<DrawCallCommand> &commands,
+                                     const std::vector<glm::mat4> &models)
+{
+    std::array<float, 6> cascadeEnds = camera->calcViewSpaceCascadeEnds();
+    for (size_t i = 0; i < cascadeEnds.size(); i++)
+    {
+        mCascadeEnds[i] = cascadeEnds[i];
+    }
+
+    calcCascadeOrthoProj(camera, lightTransform->getForward());
+
+    for (int i = 0; i < 5; i++)
+    {
+        light->getNativeGraphicsShadowCascadeFBO(i)->bind();
+        light->getNativeGraphicsShadowCascadeFBO(i)->setViewport(0, 0,
+                                                                    static_cast<int>(light->getShadowMapResolution()),
+                                                                    static_cast<int>(light->getShadowMapResolution()));
+        light->getNativeGraphicsShadowCascadeFBO(i)->clearDepth(1.0f);
+
+        mDepthShader->bind();
+        mDepthShader->setView(mCascadeLightView[i]);
+        mDepthShader->setProjection(mCascadeOrthoProj[i]);
+
+        int modelIndex = 0;
+        for (size_t j = 0; j < commands.size(); j++)
+        {
+            uint16_t meshIndex = commands[j].getMeshIndex();
+            uint8_t subMesh = commands[j].getSubMesh();
+            bool instanced = commands[j].isInstanced();
+
+            Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+            int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+            int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+            if (instanced)
+            {
+                modelIndex += Renderer::INSTANCE_BATCH_SIZE;
+            }
+            else
+            {
+                mDepthShader->setModel(models[modelIndex]);
+                Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                        (subMeshVertexEndIndex - subMeshVertexStartIndex),
+                                                        camera->mQuery);
+                modelIndex++;
+            }
+        }
+
+        light->getNativeGraphicsShadowCascadeFBO(i)->unbind();
+    }
+}
+void ForwardRenderer::renderSpotLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                              const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models)
+{
+    light->getNativeGraphicsShadowSpotlightFBO()->bind();
+    light->getNativeGraphicsShadowSpotlightFBO()->setViewport(
+        0, 0, static_cast<int>(light->getShadowMapResolution()), static_cast<int>(light->getShadowMapResolution()));
+    light->getNativeGraphicsShadowSpotlightFBO()->clearDepth(1.0f);
+
+    mShadowProjMatrix = light->getProjMatrix();
+    mShadowViewMatrix =
+        glm::lookAt(lightTransform->getPosition(), lightTransform->getPosition() + lightTransform->getForward(),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
+
+    mDepthShader->bind();
+    mDepthShader->setView(mShadowViewMatrix);
+    mDepthShader->setProjection(mShadowProjMatrix);
+
+    int modelIndex = 0;
+    for (size_t i = 0; i < commands.size(); i++)
+    {
+        uint16_t meshIndex = commands[i].getMeshIndex();
+        uint8_t subMesh = commands[i].getSubMesh();
+        bool instanced = commands[i].isInstanced();
+
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+        if (instanced)
+        {
+            modelIndex += Renderer::INSTANCE_BATCH_SIZE;
+        }
+        else
+        {
+            mDepthShader->setModel(models[modelIndex]);
+
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                    (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
+            modelIndex++;
+        }
+    }
+
+    light->getNativeGraphicsShadowSpotlightFBO()->unbind();
+}
+
+void ForwardRenderer::renderPointLightShadowMap(Camera *camera, Light *light, Transform *lightTransform,
+                               const std::vector<DrawCallCommand> &commands, const std::vector<glm::mat4> &models)
+{
+    mCubeViewProjMatrices[0] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(1.0, 0.0, 0.0),
+                                                glm::vec3(0.0, -1.0, 0.0)));
+    mCubeViewProjMatrices[1] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(-1.0, 0.0, 0.0),
+                                                glm::vec3(0.0, -1.0, 0.0)));
+    mCubeViewProjMatrices[2] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(0.0, 1.0, 0.0),
+                                                glm::vec3(0.0, 0.0, 1.0)));
+    mCubeViewProjMatrices[3] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(0.0, -1.0, 0.0),
+                                                glm::vec3(0.0, 0.0, -1.0)));
+    mCubeViewProjMatrices[4] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(0.0, 0.0, 1.0),
+                                                glm::vec3(0.0, -1.0, 0.0)));
+    mCubeViewProjMatrices[5] =
+        (light->getProjMatrix() * glm::lookAt(lightTransform->getPosition(),
+                                                lightTransform->getPosition() + glm::vec3(0.0, 0.0, -1.0),
+                                                glm::vec3(0.0, -1.0, 0.0)));
+
+    light->getNativeGraphicsShadowCubemapFBO()->bind();
+    light->getNativeGraphicsShadowCubemapFBO()->setViewport(0, 0, static_cast<int>(light->getShadowMapResolution()),
+                                                            static_cast<int>(light->getShadowMapResolution()));
+    light->getNativeGraphicsShadowCubemapFBO()->clearDepth(1.0f);
+
+    mDepthCubemapShader->bind();
+    mDepthCubemapShader->setLightPos(lightTransform->getPosition());
+    mDepthCubemapShader->setFarPlane(camera->getFrustum().mFarPlane);
+    mDepthCubemapShader->setCubeViewProj(0, mCubeViewProjMatrices[0]);
+    mDepthCubemapShader->setCubeViewProj(1, mCubeViewProjMatrices[1]);
+    mDepthCubemapShader->setCubeViewProj(2, mCubeViewProjMatrices[2]);
+    mDepthCubemapShader->setCubeViewProj(3, mCubeViewProjMatrices[3]);
+    mDepthCubemapShader->setCubeViewProj(4, mCubeViewProjMatrices[4]);
+    mDepthCubemapShader->setCubeViewProj(5, mCubeViewProjMatrices[5]);
+
+    int modelIndex = 0;
+    for (size_t i = 0; i < commands.size(); i++)
+    {
+        uint16_t meshIndex = commands[i].getMeshIndex();
+        uint8_t subMesh = commands[i].getSubMesh();
+        bool instanced = commands[i].isInstanced();
+
+        Mesh *mesh = mWorld->getAssetByIndex<Mesh>(meshIndex);
+
+        int subMeshVertexStartIndex = mesh->getSubMeshStartIndex(subMesh);
+        int subMeshVertexEndIndex = mesh->getSubMeshEndIndex(subMesh);
+
+        if (instanced)
+        {
+            modelIndex += Renderer::INSTANCE_BATCH_SIZE;
+        }
+        else
+        {
+            mDepthCubemapShader->setModel(models[modelIndex]);
+
+            Renderer::getRenderer()->drawIndexed(mesh->getNativeGraphicsHandle(), subMeshVertexStartIndex,
+                                                    (subMeshVertexEndIndex - subMeshVertexStartIndex), camera->mQuery);
+            modelIndex++;
+        }
+    }
+
+    light->getNativeGraphicsShadowCubemapFBO()->unbind();
 }

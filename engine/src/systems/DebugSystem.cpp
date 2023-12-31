@@ -9,9 +9,6 @@
 #include "../../include/components/MeshRenderer.h"
 #include "../../include/components/Transform.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 using namespace PhysicsEngine;
 
 DebugSystem::DebugSystem(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID), mId(id), mHide(HideFlag::None)

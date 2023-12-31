@@ -11,8 +11,6 @@
 #include "core/Log.h"
 #include "graphics/RenderContext.h"
 
-#include "glm/glm.hpp"
-
 using namespace PhysicsEditor;
 
 ShaderDrawer::ShaderDrawer()

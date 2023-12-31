@@ -8,10 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#define GLM_FORCE_RADIANS
-
-#include "glm/glm.hpp"
-
+#include "glm.h"
 #include "SerializationEnums.h"
 #include "Color.h"
 #include "AssetEnums.h"

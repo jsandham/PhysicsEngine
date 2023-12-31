@@ -1,10 +1,7 @@
+#include "../../include/core/glm.h"
 #include "../../include/core/PolynomialRoots.h"
 
 #include <algorithm>
-
-#include "glm/glm.hpp"
-//#include "glm/detail/func_trigonometric.hpp"
-#include "glm/gtc/constants.hpp"
 
 using namespace PhysicsEngine;
 

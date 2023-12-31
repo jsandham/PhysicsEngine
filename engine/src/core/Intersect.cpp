@@ -3,8 +3,6 @@
 
 #include "../../include/core/Intersect.h"
 
-#include "glm/glm.hpp"
-
 using namespace PhysicsEngine;
 
 float Intersect::EPSILON = 0.000001f;

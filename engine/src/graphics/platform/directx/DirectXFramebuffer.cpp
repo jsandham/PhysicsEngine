@@ -3,8 +3,6 @@
 #include "../../../../include/graphics/platform/directx/DirectXError.h"
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
-#include <glm/glm.hpp>
-
 using namespace PhysicsEngine;
 
 //// Initialize the render target texture description.
