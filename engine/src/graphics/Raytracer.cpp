@@ -55,16 +55,20 @@ struct RaytraceMaterial
         return r0 + (1 - r0) * glm::pow((1 - cosine), 5);
     }
 
+    static glm::vec3 refract(const glm::vec3 &uv, const glm::vec3 &n, float etai_over_etat)
+    {
+        auto cos_theta = glm::min(glm::dot(-uv, n), 1.0f);
+        glm::vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+        glm::vec3 r_out_parallel = -glm::sqrt(glm::abs(1.0f - glm::length2(r_out_perp))) * n;
+        return r_out_perp + r_out_parallel;
+    }
+
     static Ray generate_dialectric_ray_on_sphere(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, double ir)
     {
         bool front_face = glm::dot(v, normal) < 0.0f;
         float refraction_ratio = front_face ? (1.0f / ir) : ir;
 
-        glm::vec3 normal2 = normal;
-        if (!front_face)
-        {
-            normal2 = -1.0f * normal2;
-        }
+        glm::vec3 normal2 = front_face ? normal : -1.0f * normal;
 
         glm::vec3 unit_direction = glm::normalize(v);
         float cos_theta = glm::min(glm::dot(-unit_direction, normal2), 1.0f);
@@ -76,7 +80,7 @@ struct RaytraceMaterial
         if (cannot_refract || reflectance(cos_theta, refraction_ratio) > glm::linearRand(0.0f, 1.0f))
             direction = glm::reflect(unit_direction, normal2);
         else
-            direction = glm::refract(unit_direction, normal2, refraction_ratio);
+            direction = refract(unit_direction, normal2, refraction_ratio);
 
         Ray ray;
         ray.mOrigin = point;
@@ -252,31 +256,39 @@ void Raytracer::init(World *world)
 
 void Raytracer::update(Camera *camera)
 {
+    //world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
+    //world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
+    //world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
+    //world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
     std::vector<Sphere> spheres(5);
-    spheres[0] = Sphere(glm::vec3(0.0, -100.0, 0.0f), 100.0f);
-    spheres[1] = Sphere(glm::vec3(-2.0, 1.0, 0.0f), 1.0f);
-    spheres[2] = Sphere(glm::vec3(0.0, 1.0, 0.0f), 1.0f);
-    spheres[3] = Sphere(glm::vec3(2.0, 1.0, 0.0f), 1.0f);
-    spheres[4] = Sphere(glm::vec3(0.0, 3.0, 0.0f), -1.0f);
+    spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
+    spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
+    spheres[2] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), -0.4f);
+    spheres[3] = Sphere(glm::vec3(0.0, 0.0, -1.0f), 0.5f);
+    spheres[4] = Sphere(glm::vec3(1.0, 0.0, -1.0f), 0.5f);
 
 
     std::vector<RaytraceMaterial> materials(5);
     materials[0].mAlbedo = glm::vec3(0.8f, 0.8f, 0.0f);
 
-    materials[1].mType = RaytraceMaterial::MaterialType::Metallic;
-    materials[1].mAlbedo = glm::vec3(0.8f, 0.8f, 0.8f);
-    materials[1].mFuzz = 0.0f;
+    materials[1].mType = RaytraceMaterial::MaterialType::Dialectric;
+    materials[1].mAlbedo = glm::vec3(1.0f, 1.0f, 1.0f);
+    materials[1].mRefractionIndex = 1.5f;
 
-    materials[2].mType = RaytraceMaterial::MaterialType::Lambertian;
-    materials[2].mAlbedo = glm::vec3(0.7f, 0.3f, 0.3f);
+    materials[2].mType = RaytraceMaterial::MaterialType::Dialectric;
+    materials[2].mAlbedo = glm::vec3(1.0f, 1.0f, 1.0f);
+    materials[2].mRefractionIndex = 1.5f;
 
-    materials[3].mType = RaytraceMaterial::MaterialType::Metallic;
-    materials[3].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
-    materials[3].mFuzz = 0.2f;
+    materials[3].mType = RaytraceMaterial::MaterialType::Lambertian;
+    materials[3].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
 
-    materials[4].mType = RaytraceMaterial::MaterialType::Dialectric;
-    materials[4].mAlbedo = glm::vec3(0.6f, 0.5f, 0.7f);
-    materials[4].mRefractionIndex = 1.5f;
+    materials[4].mType = RaytraceMaterial::MaterialType::Metallic;
+    materials[4].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
+    materials[4].mFuzz = 0.1f;
+
+    //materials[4].mType = RaytraceMaterial::MaterialType::Dialectric;
+    //materials[4].mAlbedo = glm::vec3(0.6f, 0.5f, 0.7f);
+    //materials[4].mRefractionIndex = 1.5f;
 
     //size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
     //
@@ -324,8 +336,8 @@ void Raytracer::update(Camera *camera)
     float du = 2.0f / width;
     float dv = 2.0f / height;
 
-    int max_bounces = 10;
-    if (mSamplesPerRay < 100)
+    int max_bounces = 50;
+    if (mSamplesPerRay < 1000)
     {
         #pragma omp parallel for
         for (int row = 0; row < height; row++)

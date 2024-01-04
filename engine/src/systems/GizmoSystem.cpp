@@ -70,7 +70,7 @@ void GizmoSystem::update()
         {
             if (camera->mGizmos == CameraGizmos::Gizmos_On)
             {
-                //drawSphereIntersectionTest(); // debugging intersection tests
+                drawSphereIntersectionTest(); // debugging intersection tests
 
                 mGizmoRenderer.update(camera);
             }
@@ -123,13 +123,13 @@ void GizmoSystem::drawSphereIntersectionTest()
 
     if (PhysicsEngine::getKey(getInput(), KeyCode::F))
     {
-        //sphere.mCentre.x -= 0.1f;
-        aabb.mCentre.x -= 0.1f;
+        //sphere.mCentre.x += 0.1f;
+        aabb.mCentre.x += 0.1f;
     }
     if (PhysicsEngine::getKey(getInput(), KeyCode::H))
     {
-        //sphere.mCentre.x += 0.1f;
-        aabb.mCentre.x += 0.1f;
+        //sphere.mCentre.x -= 0.1f;
+        aabb.mCentre.x -= 0.1f;
     }
 
     if (PhysicsEngine::getKey(getInput(), KeyCode::T))

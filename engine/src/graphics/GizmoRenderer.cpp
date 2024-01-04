@@ -81,11 +81,11 @@ void GizmoRenderer::update(Camera *camera)
 {
     //addToDrawList(mWorld->mBoundingVolume, Color(1.0f, 0.91764705f, 0.01568627f, 0.3f), true);
 
-    //renderLineGizmos(camera);
-    //renderPlaneGizmos(camera);
-    //renderAABBGizmos(camera);
-    //renderSphereGizmos(camera);
-    //renderFrustumGizmos(camera);
+    renderLineGizmos(camera);
+    renderPlaneGizmos(camera);
+    renderAABBGizmos(camera);
+    renderSphereGizmos(camera);
+    renderFrustumGizmos(camera);
 
     //renderBoundingSpheres(camera);
     renderBoundingAABBs(camera);
