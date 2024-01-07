@@ -68,14 +68,16 @@ void GizmoSystem::update()
 
         if (camera->mEnabled)
         {
-            if (camera->mGizmos == CameraGizmos::Gizmos_On)
+            if (camera->mGizmos.mTurnOnSphereIntersectDemo)
             {
                 drawSphereIntersectionTest(); // debugging intersection tests
-
-                mGizmoRenderer.update(camera);
+            }
+            else if (camera->mGizmos.mTurnOnAABBIntersectionDemo)
+            {
+                drawAABBIntersectionTest();
             }
 
-            mGizmoRenderer.drawGrid(camera);
+            mGizmoRenderer.update(camera);
         }
     }
 }
@@ -108,6 +110,11 @@ void GizmoSystem::addToDrawList(const Frustum &frustum, const Color &color, bool
 void GizmoSystem::addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe)
 {
     mGizmoRenderer.addToDrawList(plane, extents, color, wireframe);
+}
+
+void GizmoSystem::addToDrawList(const BVH &bvh, const Color &color)
+{
+    mGizmoRenderer.addToDrawList(bvh, color);
 }
 
 void GizmoSystem::clearDrawList()

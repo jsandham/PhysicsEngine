@@ -93,23 +93,6 @@ template <> struct convert<PhysicsEngine::CameraSSAO>
     }
 };
 
-// CameraGizmos
-template <> struct convert<PhysicsEngine::CameraGizmos>
-{
-    static Node encode(const PhysicsEngine::CameraGizmos &rhs)
-    {
-        Node node;
-        node = static_cast<int>(rhs);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::CameraGizmos &rhs)
-    {
-        rhs = static_cast<PhysicsEngine::CameraGizmos>(node.as<int>());
-        return true;
-    }
-};
-
 // RenderPath
 template <> struct convert<PhysicsEngine::RenderPath>
 {

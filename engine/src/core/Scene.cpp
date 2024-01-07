@@ -462,7 +462,7 @@ void Scene::deserialize(const YAML::Node &in)
                         break;
                     }
                     case ComponentType<Camera>::type: {
-                        deserializeOrLoadComponent<Rigidbody>(this, objectGuid, it->second);
+                        deserializeOrLoadComponent<Camera>(this, objectGuid, it->second);
                         break;
                     }
                     case ComponentType<MeshRenderer>::type: {

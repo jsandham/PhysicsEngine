@@ -13,6 +13,7 @@
 #include "../core/Plane.h"
 #include "../core/Ray.h"
 #include "../core/Sphere.h"
+#include "../core/BVH.h"
 
 #include "../components/Camera.h"
 
@@ -56,14 +57,12 @@ class GizmoSystem
     void addToDrawList(const AABB &aabb, const Color &color, bool wireframe = false);
     void addToDrawList(const Frustum &frustum, const Color &color, bool wireframe = false);
     void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe = false);
+    void addToDrawList(const BVH &bvh, const Color &color);
 
     void clearDrawList();
 
     void drawSphereIntersectionTest();
     void drawAABBIntersectionTest();
-
-
-
 };
 
 } // namespace PhysicsEngine

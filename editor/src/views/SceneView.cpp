@@ -127,6 +127,9 @@ void SceneView::drawSceneHeader(Clipboard& clipboard)
 
 	clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
 
+	//clipboard.mGizmoSystem->mEnabled = true;
+	//clipboard.mGizmoSystem->clearDrawList();
+
 	// select draw texture dropdown
 	ImGui::PushItemWidth(0.25f * ImGui::GetWindowSize().x);
 	if (ImGui::BeginCombo("##DrawTexture", targetNames[static_cast<int>(mActiveDebugTarget)]))
@@ -168,11 +171,62 @@ void SceneView::drawSceneHeader(Clipboard& clipboard)
 	ImGui::SameLine();
 
 	// whether to render gizmos or not
-	if (ImGui::Checkbox("Gizmos", &gizmosChecked))
+	//if (ImGui::Checkbox("Gizmos", &gizmosChecked))
+	//{
+	//	clipboard.mCameraSystem->setGizmos(gizmosChecked ? PhysicsEngine::CameraGizmos::Gizmos_On : PhysicsEngine::CameraGizmos::Gizmos_Off);
+	//}
+	//ImGui::SameLine();
+
+	static bool showFrustums = false;
+	static bool showLights = false;
+	static bool showBVH = false;
+	static bool showBoundingSheres = false;
+	static bool showBoundingAABBs = false;
+	static bool showGrid = true;
+	static bool turnOnSphereIntersectDemo = false;
+	static bool turnOnAABBIntersectionDemo = false;
+	
+	ImGui::SetNextItemWidth(200);
+	if (ImGui::BeginCombo("##Gizmo Settings", "Gizmos"))
 	{
-		clipboard.mCameraSystem->setGizmos(gizmosChecked ? PhysicsEngine::CameraGizmos::Gizmos_On : PhysicsEngine::CameraGizmos::Gizmos_Off);
+		ImGui::SetNextItemWidth(200);
+		ImGui::BeginListBox("##Gizmo listbox");
+		ImGui::Checkbox("Camera Frustums", &showFrustums);
+		ImGui::Checkbox("Lights", &showLights);
+		ImGui::Checkbox("BVH", &showBVH);
+		if (ImGui::TreeNodeEx("Bounding Volumes", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Checkbox("Spheres", &showBoundingSheres);
+			ImGui::Checkbox("AABB", &showBoundingAABBs);
+
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNodeEx("Intersection Testing", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::Checkbox("Sphere", &turnOnSphereIntersectDemo);
+			ImGui::Checkbox("AABB", &turnOnAABBIntersectionDemo);
+
+			ImGui::TreePop();
+		}
+		ImGui::Checkbox("Grid", &showGrid);
+
+		ImGui::EndListBox();
+		ImGui::EndCombo();
 	}
+
 	ImGui::SameLine();
+
+	PhysicsEngine::CameraGizmos gizmos;
+	gizmos.mShowFrustums = showFrustums;
+	gizmos.mShowLights = showLights;
+	gizmos.mShowBVH = showBVH;
+	gizmos.mShowBoundingSheres = showBoundingSheres;
+	gizmos.mShowBoundingAABBs = showBoundingAABBs;
+	gizmos.mShowGrid = showGrid;
+	gizmos.mTurnOnSphereIntersectDemo = turnOnSphereIntersectDemo;
+	gizmos.mTurnOnAABBIntersectionDemo = turnOnAABBIntersectionDemo;
+
+	clipboard.mCameraSystem->setGizmos(gizmos);
 
 	// editor rendering performance overlay
 	if (ImGui::Checkbox("Perf", &overlayChecked))

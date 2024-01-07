@@ -96,8 +96,131 @@ bool Intersect::intersect(const Ray &ray, const Sphere &sphere)
     return (a1 * a1 >= a0);
 }
 
+bool Intersect::intersect(const Ray &ray, const glm::vec3 &bmin, const glm::vec3 &bmax)
+{
+    // float tx1 = (bmin.x - ray.mOrigin.x) / ray.mDirection.x, tx2 = (bmax.x - ray.mOrigin.x) /
+    // ray.mDirection.x; float tmin = glm::min(tx1, tx2), tmax = glm::max(tx1, tx2); float ty1 = (bmin.y -
+    // ray.mOrigin.y) / ray.mDirection.y,
+    //       ty2 = (bmax.y - ray.mOrigin.y) / ray.mDirection.y;
+    // tmin = glm::max(tmin, glm::min(ty1, ty2)), tmax = glm::min(tmax, glm::max(ty1, ty2));
+    // float tz1 = (bmin.z - ray.mOrigin.z) / ray.mDirection.z, tz2 = (bmax.z - ray.mOrigin.z) /
+    // ray.mDirection.z; tmin = glm::max(tmin, glm::min(tz1, tz2)), tmax = glm::min(tmax, glm::max(tz1, tz2)); return
+    // tmax >= tmin && tmin < 1e30/*ray.t*/ && tmax > 0;
+
+    glm::vec3 invDirection;
+    invDirection.x = 1.0f / ray.mDirection.x;
+    invDirection.y = 1.0f / ray.mDirection.y;
+    invDirection.z = 1.0f / ray.mDirection.z;
+
+    float tx0 = (bmin.x - ray.mOrigin.x) * invDirection.x;
+    float tx1 = (bmax.x - ray.mOrigin.x) * invDirection.x;
+    float ty0 = (bmin.y - ray.mOrigin.y) * invDirection.y;
+    float ty1 = (bmax.y - ray.mOrigin.y) * invDirection.y;
+    float tz0 = (bmin.z - ray.mOrigin.z) * invDirection.z;
+    float tz1 = (bmax.z - ray.mOrigin.z) * invDirection.z;
+
+    float xmin;
+    float xmax;
+    if (tx0 < tx1)
+    {
+        xmin = tx0;
+        xmax = tx1;
+    }
+    else
+    {
+        xmin = tx1;
+        xmax = tx0;
+    }
+
+    float ymin;
+    float ymax;
+    if (ty0 < ty1)
+    {
+        ymin = ty0;
+        ymax = ty1;
+    }
+    else
+    {
+        ymin = ty1;
+        ymax = ty0;
+    }
+
+    float zmin;
+    float zmax;
+    if (tz0 < tz1)
+    {
+        zmin = tz0;
+        zmax = tz1;
+    }
+    else
+    {
+        zmin = tz1;
+        zmax = tz0;
+    }
+
+    float a;
+    if (xmin < ymin)
+    {
+        a = ymin;
+    }
+    else
+    {
+        a = xmin;
+    }
+
+    float b;
+    if (xmax < ymax)
+    {
+        b = xmax;
+    }
+    else
+    {
+        b = ymax;
+    }
+
+    float tmin;
+    if (a < zmin)
+    {
+        tmin = zmin;
+    }
+    else
+    {
+        tmin = a;
+    }
+
+    float tmax;
+    if (b < zmax)
+    {
+        tmax = b;
+    }
+    else
+    {
+        tmax = zmax;
+    }
+
+    //float tmin = glm::max(a, zmin);
+    //float tmax = glm::min(b, zmax);
+
+    /*float tmin = glm::max(glm::max(glm::min(tx0, tx1), glm::min(ty0, ty1)), glm::min(tz0, tz1));
+    float tmax = glm::min(glm::min(glm::max(tx0, tx1), glm::max(ty0, ty1)), glm::max(tz0, tz1));*/
+
+    return tmax >= tmin && tmax >= 0.0f;
+}
+
+
 bool Intersect::intersect(const Ray &ray, const AABB &aabb)
 {
+    //float tx1 = (aabb.getMin().x - ray.mOrigin.x) / ray.mDirection.x, tx2 = (aabb.getMax().x - ray.mOrigin.x) / ray.mDirection.x;
+    //float tmin = glm::min(tx1, tx2), tmax = glm::max(tx1, tx2);
+    //float ty1 = (aabb.getMin().y - ray.mOrigin.y) / ray.mDirection.y,
+    //      ty2 = (aabb.getMax().y - ray.mOrigin.y) / ray.mDirection.y;
+    //tmin = glm::max(tmin, glm::min(ty1, ty2)), tmax = glm::min(tmax, glm::max(ty1, ty2));
+    //float tz1 = (aabb.getMin().z - ray.mOrigin.z) / ray.mDirection.z, tz2 = (aabb.getMax().z - ray.mOrigin.z) / ray.mDirection.z;
+    //tmin = glm::max(tmin, glm::min(tz1, tz2)), tmax = glm::min(tmax, glm::max(tz1, tz2));
+    //return tmax >= tmin && tmin < 1e30/*ray.t*/ && tmax > 0;
+
+
+
     glm::vec3 min = aabb.mCentre - 0.5f * aabb.mSize;
     glm::vec3 max = aabb.mCentre + 0.5f * aabb.mSize;
 

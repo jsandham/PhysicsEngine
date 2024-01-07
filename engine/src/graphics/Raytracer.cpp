@@ -7,6 +7,7 @@
 #include "../../include/core/Sphere.h"
 #include "../../include/core/Ray.h"
 #include "../../include/core/glm.h"
+#include "../../include/core/BVH.h"
 
 using namespace PhysicsEngine;
 
@@ -40,19 +41,19 @@ struct RaytraceMaterial
 
     MaterialType mType;
     float mFuzz;
-    double mRefractionIndex;
+    float mRefractionIndex;
     glm::vec3 mAlbedo;
 
     RaytraceMaterial() : mType(MaterialType::Lambertian), mFuzz(0.0f), mRefractionIndex(1.0f), mAlbedo(glm::vec3(0.5f, 0.5f, 0.5f)){};
-    RaytraceMaterial(MaterialType type, float fuzz, double ir, const glm::vec3 &albedo)
+    RaytraceMaterial(MaterialType type, float fuzz, float ir, const glm::vec3 &albedo)
         : mType(type), mFuzz(glm::max(0.0f, glm::min(1.0f, fuzz))), mRefractionIndex(ir), mAlbedo(albedo){};
 
     static float reflectance(float cosine, float ref_idx)
     {
         // Use Schlick's approximation for reflectance.
-        auto r0 = (1 - ref_idx) / (1 + ref_idx);
+        auto r0 = (1.0f - ref_idx) / (1 + ref_idx);
         r0 = r0 * r0;
-        return r0 + (1 - r0) * glm::pow((1 - cosine), 5);
+        return r0 + (1.0f - r0) * glm::pow((1.0f - cosine), 5.0f);
     }
 
     static glm::vec3 refract(const glm::vec3 &uv, const glm::vec3 &n, float etai_over_etat)
@@ -63,7 +64,22 @@ struct RaytraceMaterial
         return r_out_perp + r_out_parallel;
     }
 
-    static Ray generate_dialectric_ray_on_sphere(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, double ir)
+    static uint32_t pcg_hash(uint32_t seed)
+    {
+        uint32_t state = seed * 747796405u + 2891336453u;
+        uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+        return (word >> 22u) ^ word;
+    }
+
+    static float generate_rand(float a = 0.0f, float b = 1.0f)
+    {
+        static uint32_t seed = 1234567;
+        seed++;
+        float uniform = (float)pcg_hash(seed) / (float)std::numeric_limits<uint32_t>::max();
+        return a + (b - a) * uniform;
+    }
+
+    static Ray generate_dialectric_ray_on_sphere(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float ir)
     {
         bool front_face = glm::dot(v, normal) < 0.0f;
         float refraction_ratio = front_face ? (1.0f / ir) : ir;
@@ -74,10 +90,10 @@ struct RaytraceMaterial
         float cos_theta = glm::min(glm::dot(-unit_direction, normal2), 1.0f);
         float sin_theta = glm::sqrt(1.0f - cos_theta * cos_theta);
 
-        bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+        bool cannot_refract = refraction_ratio * sin_theta > 1.0f;
         glm::vec3 direction;
 
-        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > glm::linearRand(0.0f, 1.0f))
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > generate_rand(0.0f, 1.0f))
             direction = glm::reflect(unit_direction, normal2);
         else
             direction = refract(unit_direction, normal2, refraction_ratio);
@@ -93,18 +109,15 @@ struct RaytraceMaterial
     {
         Ray ray;
         ray.mOrigin = point;
-        ray.mDirection = glm::reflect(glm::normalize(v), normal) + fuzz * glm::ballRand(1.0f);
+        ray.mDirection = glm::reflect(glm::normalize(v), normal) + fuzz * glm::vec3(generate_rand(), generate_rand(), generate_rand());
 
         return ray;
     }
 
     static Ray generate_lambertian_ray_on_hemisphere(const glm::vec3 &point, const glm::vec3 &normal)
     {
-        static std::normal_distribution<float> dist(0.0f, 1.0f);
-        static std::mt19937 generator;
-
         glm::vec3 unitSphereVector =
-            normal + glm::normalize(glm::vec3(dist(generator), dist(generator), dist(generator)));
+            normal + glm::normalize(glm::vec3(generate_rand(), generate_rand(), generate_rand()));
 
         Ray ray;
         ray.mOrigin = point;
@@ -122,13 +135,18 @@ struct RaytraceMaterial
     }
 };
 
+// Recursive computeColor
 static glm::vec3 computeColor(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
-                              const Ray &ray, int depth)
+                              const BVH& bvh, const Ray &ray, int depth)
 {
     if (depth < 0)
     {
         return glm::vec3(0.0f, 0.0f, 0.0f);
     }
+
+    //int closest_index = -1;
+    //float closest_t = std::numeric_limits<float>::max();
+    //bvh.intersectBVH(ray, spheres, 0, closest_t, closest_index);
 
     int closest_index = -1;
     float closest_t = std::numeric_limits<float>::max();
@@ -162,24 +180,76 @@ static glm::vec3 computeColor(const std::vector<Sphere> &spheres, const std::vec
             break;
         }
 
-        return materials[closest_index].mAlbedo * computeColor(spheres, materials, newRay, depth - 1);
+        return materials[closest_index].mAlbedo * computeColor(spheres, materials, bvh, newRay, depth - 1);
     }
 
     glm::vec3 unit_direction = glm::normalize(ray.mDirection);
     float a = 0.5f * (unit_direction.y + 1.0f);
     return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
 }
-/*static glm::vec3 computeColor(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
-                              const Ray &ray)
+
+// Iterative computeColor
+static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
+                              const BVH &bvh, const Ray &ray, int maxDepth)
 {
     Ray ray2 = ray;
 
-    glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
-    float frac = 1.0f;
-    
-    for (int depth = 0; depth < 10; depth++)
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    //std::queue<int> queue;
+    //int top = 0;
+    int stack[20];
+
+    for (int depth = 0; depth < maxDepth; depth++)
     {
         int closest_index = -1;
+        float closest_t = std::numeric_limits<float>::max();
+
+        //assert(queue.empty());
+        //queue.push(0);
+        assert(top == 0);
+        stack[0] = 0;
+        top++;
+
+
+        //while (!queue.empty())
+        while (top > 0)
+        {
+            //mm = glm::max(mm, (int)queue.size());
+            //int nodeIndex = queue.front();
+            //queue.pop();
+            int nodeIndex = stack[top - 1];
+            top--;
+
+            const BVHNode *node = &bvh.mNodes[nodeIndex];
+
+            if (Intersect::intersect(ray2, node->mMin, node->mMax))
+            {
+                if (!node->isLeaf())
+                {
+                    //queue.push(node->mLeft);
+                    //queue.push(node->mLeft + 1);
+                    stack[top++] = node->mLeft;
+                    stack[top++] = node->mLeft + 1;
+                }
+                else
+                {
+                    int startIndex = node->mStartIndex;
+                    int endIndex = node->mStartIndex + node->mIndexCount;
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        float t = hit_sphere(spheres[bvh.mPerm[i]].mCentre, spheres[bvh.mPerm[i]].mRadius, ray2);
+                        if (t > 0.001f && t < closest_t)
+                        {
+                            closest_t = t;
+                            closest_index = (int)bvh.mPerm[i];
+                        }
+                    }
+                }
+            }
+        }
+
+        /*int closest_index = -1;
         float closest_t = std::numeric_limits<float>::max();
         for (size_t i = 0; i < spheres.size(); i++)
         {
@@ -189,55 +259,42 @@ static glm::vec3 computeColor(const std::vector<Sphere> &spheres, const std::vec
                 closest_t = t;
                 closest_index = (int)i;
             }
-        }
+        }*/
 
         if (closest_index >= 0)
         {
-            glm::vec3 point = ray.getPoint(closest_t);
-            glm::vec3 normal = glm::normalize(point - spheres[closest_index].mCentre);
+            glm::vec3 point = ray2.getPoint(closest_t);
+            glm::vec3 normal =
+                glm::normalize((point - spheres[closest_index].mCentre) / spheres[closest_index].mRadius);
 
-            //Ray newRay;
-            if (materials[closest_index].metallic)
+            switch (materials[closest_index].mType)
             {
-                ray2 = generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal);
-            }
-            else
-            {
-                ray2 = generate_diffuse_ray_on_hemisphere(point, normal);
+            case RaytraceMaterial::MaterialType::Lambertian:
+                ray2 = RaytraceMaterial::generate_lambertian_ray_on_hemisphere(point, normal);
+                break;
+            case RaytraceMaterial::MaterialType::Metallic:
+                ray2 = RaytraceMaterial::generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal,
+                                                                               materials[closest_index].mFuzz);
+                break;
+            case RaytraceMaterial::MaterialType::Dialectric:
+                ray2 = RaytraceMaterial::generate_dialectric_ray_on_sphere(point, ray.mDirection, normal,
+                                                                             materials[closest_index].mRefractionIndex);
+                break;
             }
 
-            //color += 0.5f * computeColor(spheres, materials, ray2);
-
-            //glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
-            //float a = 0.5f * (unit_direction.y + 1.0f);
-            //color += (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
-            frac *= 0.5f;
+            color *= materials[closest_index].mAlbedo;
         }
         else
         {
             glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
             float a = 0.5f * (unit_direction.y + 1.0f);
-            color += (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
             break;
         }
     }
 
-    return frac * color;
-}*/
-
-/*static Ray generateRay(const glm::vec3 &eye, const glm::vec3 &pixelCentre, float du, float dv)
-{
-    static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
-    static std::mt19937 generator;
-
-    glm::vec3 pixelSample = pixelCentre + glm::vec3(dist(generator) * du, dist(generator) * dv, 0.0f);
-
-    Ray ray;
-    ray.mOrigin = eye;
-    ray.mDirection = pixelSample - eye;
-
-    return ray;
-}*/
+    return color;
+}
 
 Raytracer::Raytracer()
 {
@@ -256,19 +313,33 @@ void Raytracer::init(World *world)
 
 void Raytracer::update(Camera *camera)
 {
-    //world.add(make_shared<sphere>(point3(0.0, -100.5, -1.0), 100.0, material_ground));
-    //world.add(make_shared<sphere>(point3(0.0, 0.0, -1.0), 0.5, material_center));
-    //world.add(make_shared<sphere>(point3(-1.0, 0.0, -1.0), 0.5, material_left));
-    //world.add(make_shared<sphere>(point3(1.0, 0.0, -1.0), 0.5, material_right));
-    std::vector<Sphere> spheres(5);
+    srand(0);
+
+    std::vector<Sphere> spheres(100);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
     spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
     spheres[2] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), -0.4f);
     spheres[3] = Sphere(glm::vec3(0.0, 0.0, -1.0f), 0.5f);
     spheres[4] = Sphere(glm::vec3(1.0, 0.0, -1.0f), 0.5f);
+    for (int i = 5; i < 100; i++)
+    {
+        spheres[i] = Sphere(glm::linearRand(glm::vec3(-20.0f, 0.0f, -20.0f), glm::vec3(20.0f, 0.0f, 20.0f)), glm::linearRand(0.4f, 2.0f));
+    }
 
+    std::vector<AABB> boundingVolumes(100);
+    for (int i = 0; i < 100; i++)
+    {
+        boundingVolumes[i].mCentre = spheres[i].mCentre;
+        boundingVolumes[i].mSize = 2.0f * glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius);
+    }
 
-    std::vector<RaytraceMaterial> materials(5);
+    GizmoSystem *gizmoSystem = mWorld->getSystem<GizmoSystem>();
+    for (int i = 0; i < 100; i++)
+    {
+        gizmoSystem->addToDrawList(boundingVolumes[i], Color(0.0f, 0.0f, 1.0f, 0.3f));    
+    }
+
+    std::vector<RaytraceMaterial> materials(100);
     materials[0].mAlbedo = glm::vec3(0.8f, 0.8f, 0.0f);
 
     materials[1].mType = RaytraceMaterial::MaterialType::Dialectric;
@@ -286,9 +357,18 @@ void Raytracer::update(Camera *camera)
     materials[4].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
     materials[4].mFuzz = 0.1f;
 
-    //materials[4].mType = RaytraceMaterial::MaterialType::Dialectric;
-    //materials[4].mAlbedo = glm::vec3(0.6f, 0.5f, 0.7f);
-    //materials[4].mRefractionIndex = 1.5f;
+    for (int i = 5; i < 100; i++)
+    {
+        materials[i].mType =
+            (i % 2 == 0) ? RaytraceMaterial::MaterialType::Lambertian : RaytraceMaterial::MaterialType::Metallic;
+        materials[i].mAlbedo = glm::linearRand(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        materials[i].mFuzz = glm::linearRand(0.0f, 0.2f);
+    }
+
+    BVH bvh;
+    bvh.buildBVH(boundingVolumes);
+
+    gizmoSystem->addToDrawList(bvh, Color::green);
 
     //size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
     //
@@ -350,7 +430,8 @@ void Raytracer::update(Camera *camera)
                 float b = mImage[3 * width * row + 3 * col + 2];
                 glm::vec3 color = glm::vec3(r, g, b);
 
-                color += computeColor(spheres, materials, camera->getCameraRay(col, row, du, dv), max_bounces);
+                //color += computeColor(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+                color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
 
                 // Store computed color to image
                 mImage[3 * width * row + 3 * col + 0] = color.r;

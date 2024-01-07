@@ -1,5 +1,5 @@
 IMGUI_VERSION: 1.89.7
-Current_Style: 7
+Current_Style: 2
 Style: Classic
 ImGuiCol_Text: 0.9 0.9 0.9 1
 ImGuiCol_TextDisabled: 0.6 0.6 0.6 1
@@ -538,7 +538,7 @@ FrameRounding: 3
 FrameBorderSize: 0
 IndentSpacing: 22
 ColumnsMinSpacing: 6
-ScrollbarSize: 16
+ScrollbarSize: 13
 ScrollbarRounding: 3
 GrabMinSize: 12
 GrabRounding: 2
@@ -552,18 +552,18 @@ CurveTessellationTol: 1.25
 CircleTessellationMaxError: 0.3
 WindowPadding: 8 8
 WindowMinSize: 32 32
-WindowTitleAlign: 0 0.5
+WindowTitleAlign: 0 0.48
 FramePadding: 6 4
-ItemSpacing: 10 4
+ItemSpacing: 10 3
 ItemInnerSpacing: 4 4
-CellPadding: 4 2
+CellPadding: 3 2
 TouchExtraPadding: 0 0
 ButtonTextAlign: 0.5 0.5
 SelectableTextAlign: 0 0
 SeparatorTextAlign: 0 0.5
 SeparatorTextPadding: 20 3
 DisplayWindowPadding: 19 19
-DisplaySafeAreaPadding: 3 3
+DisplaySafeAreaPadding: 2 3
 Style: Yellow
 ImGuiCol_Text: 0.8 0.8 0.83 1
 ImGuiCol_TextDisabled: 0.24 0.23 0.29 1

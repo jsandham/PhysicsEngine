@@ -10,6 +10,7 @@
 #include "../core/Plane.h"
 #include "../core/Ray.h"
 #include "../core/Sphere.h"
+#include "../core/BVH.h"
 
 #include "Renderer.h"
 #include "RendererShaders.h"
@@ -90,6 +91,15 @@ struct PlaneGizmo
     }
 };
 
+struct BVHGizmo
+{
+    BVH mBVH;
+    Color mColor;
+
+    BVHGizmo(){};
+    BVHGizmo(const BVH &bvh, const Color &color) : mBVH(bvh), mColor(color){};
+};
+
 class GizmoRenderer
 {
   private:
@@ -117,6 +127,7 @@ class GizmoRenderer
     std::vector<SphereGizmo> mSpheres;
     std::vector<FrustumGizmo> mFrustums;
     std::vector<PlaneGizmo> mPlanes;
+    std::vector<BVHGizmo> mBVHs;
 
   public:
     GizmoRenderer();
@@ -126,7 +137,6 @@ class GizmoRenderer
 
     void init(World *world);
     void update(Camera *camera);
-    void drawGrid(Camera *camera);
 
     void addToDrawList(const Line &line, const Color &color);
     void addToDrawList(const Ray &ray, float t, const Color &color);
@@ -134,6 +144,7 @@ class GizmoRenderer
     void addToDrawList(const AABB &aabb, const Color &color, bool wireframe = false);
     void addToDrawList(const Frustum &frustum, const Color &color, bool wireframe = false);
     void addToDrawList(const Plane &plane, const glm::vec3 &extents, const Color &color, bool wireframe = false);
+    void addToDrawList(const BVH &bvh, const Color &color);
     void clearDrawList();
 
   private:
@@ -145,6 +156,8 @@ class GizmoRenderer
     void renderShadedFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
     void renderWireframeFrustumGizmo(Camera *camera, const FrustumGizmo &gizmo);
     void renderGridGizmo(Camera *camera);
+    void renderBVHGizmos(Camera *camera);
+    
     void renderBoundingSpheres(Camera* camera);
     void renderBoundingAABBs(Camera* camera);
     void renderBoundingVolumeHeirarchy(Camera *camera);

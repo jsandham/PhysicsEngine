@@ -38,6 +38,18 @@ struct CameraTargets
     RenderTextureHandle *mRaytracingTex;
 };
 
+struct CameraGizmos
+{
+    bool mShowFrustums;
+    bool mShowLights;
+    bool mShowBVH;
+    bool mShowBoundingSheres;
+    bool mShowBoundingAABBs;
+    bool mShowGrid;
+    bool mTurnOnSphereIntersectDemo;
+    bool mTurnOnAABBIntersectionDemo;
+};
+
 class World;
 class Entity;
 
@@ -52,8 +64,8 @@ class Camera
     ColorTarget mColorTarget;
     CameraMode mMode;
     CameraSSAO mSSAO;
-    CameraGizmos mGizmos;
     ShadowCascades mShadowCascades;
+    CameraGizmos mGizmos;
 
     Color mBackgroundColor;
 

@@ -26,14 +26,22 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
     mTargets.mRaytracingTex = RenderTextureHandle::create(
-        400, 400, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
+        200, 200, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
-    mGizmos = CameraGizmos::Gizmos_Off;
     mShadowCascades = ShadowCascades::FiveCascades;
+
+    mGizmos.mShowFrustums = false;
+    mGizmos.mShowLights = false;
+    mGizmos.mShowBVH = false;
+    mGizmos.mShowBoundingSheres = false;
+    mGizmos.mShowBoundingAABBs = false;
+    mGizmos.mShowGrid = false;
+    mGizmos.mTurnOnSphereIntersectDemo = false;
+    mGizmos.mTurnOnAABBIntersectionDemo = false;
 
     mCascadeSplits[0] = 2;
     mCascadeSplits[1] = 4;
@@ -75,15 +83,23 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(400, 400, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(200, 200, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
     mMode = CameraMode::Main;
     mSSAO = CameraSSAO::SSAO_Off;
-    mGizmos = CameraGizmos::Gizmos_Off;
     mShadowCascades = ShadowCascades::FiveCascades;
+
+    mGizmos.mShowFrustums = false;
+    mGizmos.mShowLights = false;
+    mGizmos.mShowBVH = false;
+    mGizmos.mShowBoundingSheres = false;
+    mGizmos.mShowBoundingAABBs = false;
+    mGizmos.mShowGrid = false;
+    mGizmos.mTurnOnSphereIntersectDemo = false;
+    mGizmos.mTurnOnAABBIntersectionDemo = false;
 
     mCascadeSplits[0] = 2;
     mCascadeSplits[1] = 4;
@@ -136,7 +152,6 @@ void Camera::serialize(YAML::Node &out) const
     out["colorTarget"] = mColorTarget;
     out["cameraMode"] = mMode;
     out["cameraSSAO"] = mSSAO;
-    out["cameraGizmos"] = mGizmos;
     out["shadowCascades"] = mShadowCascades;
     out["viewport"] = mViewport;
     out["frustum"] = mFrustum;
@@ -157,7 +172,6 @@ void Camera::deserialize(const YAML::Node &in)
     mColorTarget = YAML::getValue<ColorTarget>(in, "colorTarget");
     mMode = YAML::getValue<CameraMode>(in, "cameraMode");
     mSSAO = YAML::getValue<CameraSSAO>(in, "cameraSSAO");
-    mGizmos = YAML::getValue<CameraGizmos>(in, "cameraGizmos");
     mShadowCascades = YAML::getValue<ShadowCascades>(in, "shadowCascades");
     mViewport = YAML::getValue<Viewport>(in, "viewport");
     mFrustum = YAML::getValue<Frustum>(in, "frustum");
@@ -559,6 +573,21 @@ void Camera::updateRayTracingTexture(const std::vector<unsigned char> &data)
     mTargets.mRaytracingTex->load(data);
 }
 
+static uint32_t pcg_hash(uint32_t seed)
+{
+    uint32_t state = seed * 747796405u + 2891336453u;
+    uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}
+
+static float generate_rand(float a = 0.0f, float b = 1.0f)
+{
+    static uint32_t seed = 1234567;
+    seed++;
+    float uniform = (float)pcg_hash(seed) / (float)std::numeric_limits<uint32_t>::max();
+    return a + (b - a) * uniform;
+}
+
 Ray Camera::getCameraRay(int u, int v, float du, float dv) const
 {
     // NDC coordinates for 2x2x2 cube [-1, 1]x[-1, 1]x[-1, 1]
@@ -577,9 +606,11 @@ Ray Camera::getCameraRay(int u, int v, float du, float dv) const
         pixelCentreFarBottomLeft_NDC + glm::vec3(u * du, 0.0f, 0.0f) + glm::vec3(0.0f, v * dv, 0.0f);
 
     // Randomly sample from pixel
-    static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
-    static std::mt19937 generator;
-    glm::vec3 pixelSample_NDC = pixelCentre_NDC + glm::vec3(dist(generator) * du, dist(generator) * dv, 0.0f);
+    //static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
+    //static std::mt19937 generator;
+    //glm::vec3 pixelSample_NDC = pixelCentre_NDC + glm::vec3(dist(generator) * du, dist(generator) * dv, 0.0f);
+    glm::vec3 pixelSample_NDC =
+        pixelCentre_NDC + glm::vec3(generate_rand(-0.5f, 0.5f) * du, generate_rand(-0.5f, 0.5f) * dv, 0.0f);
 
     // Transform NDC coordinate back to world space
     glm::vec4 temp = this->getInvViewProjMatrix() * glm::vec4(pixelSample_NDC, 1.0f);

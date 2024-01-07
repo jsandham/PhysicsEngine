@@ -3,8 +3,6 @@
 
 #include <vector>
 
-#include "../core/glm.h"
-
 namespace PhysicsEngine
 {
 	class World;
@@ -16,13 +14,8 @@ namespace PhysicsEngine
       private:
         World *mWorld;
 
-        //glm::vec3 mEye;
-        //glm::vec3 mCentre;
-        //glm::vec3 mUp;
-
         int mSamplesPerRay;
         std::vector<float> mImage;
-        //std::vector<unsigned char> mFinalImage;
 
       public:
         Raytracer();

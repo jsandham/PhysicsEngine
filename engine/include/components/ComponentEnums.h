@@ -16,12 +16,6 @@ namespace PhysicsEngine
         SSAO_Off,
     };
 
-    enum class CameraGizmos
-    {
-        Gizmos_On,
-        Gizmos_Off,
-    };
-
     enum class RenderPath
     {
         Forward,
@@ -65,17 +59,6 @@ namespace PhysicsEngine
             return "SSAO On";
         case CameraSSAO::SSAO_Off:
             return "SSAO Off";
-        }
-    }
-
-    constexpr auto CameraGizmosToString(CameraGizmos gizmo)
-    {
-        switch (gizmo)
-        {
-        case CameraGizmos::Gizmos_On:
-            return "Gizmos On";
-        case CameraGizmos::Gizmos_Off:
-            return "Gizmos Off";
         }
     }
 
