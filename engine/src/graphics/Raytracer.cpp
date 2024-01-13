@@ -25,7 +25,7 @@ static float hit_sphere(const glm::vec3 &center, float radius, const Ray &ray)
     }
     else
     {
-        return (-b - sqrt(discriminant)) / (2.0f * a);
+        return (-b - glm::sqrt(discriminant)) / (2.0f * a);
     }
 }
 
@@ -197,7 +197,7 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     //std::queue<int> queue;
-    //int top = 0;
+    int top = 0;
     int stack[20];
 
     for (int depth = 0; depth < maxDepth; depth++)
@@ -227,15 +227,15 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
             {
                 if (!node->isLeaf())
                 {
-                    //queue.push(node->mLeft);
-                    //queue.push(node->mLeft + 1);
-                    stack[top++] = node->mLeft;
-                    stack[top++] = node->mLeft + 1;
+                    //queue.push(node->mLeftOrStartIndex);
+                    //queue.push(node->mLeftOrStartIndex + 1);
+                    stack[top++] = node->mLeftOrStartIndex;
+                    stack[top++] = node->mLeftOrStartIndex + 1;
                 }
                 else
                 {
-                    int startIndex = node->mStartIndex;
-                    int endIndex = node->mStartIndex + node->mIndexCount;
+                    int startIndex = node->mLeftOrStartIndex;
+                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
                     for (int i = startIndex; i < endIndex; i++)
                     {
                         float t = hit_sphere(spheres[bvh.mPerm[i]].mCentre, spheres[bvh.mPerm[i]].mRadius, ray2);
@@ -314,32 +314,20 @@ void Raytracer::init(World *world)
 void Raytracer::update(Camera *camera)
 {
     srand(0);
+    int sphereCount = 5;
 
-    std::vector<Sphere> spheres(100);
+    std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
     spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
     spheres[2] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), -0.4f);
     spheres[3] = Sphere(glm::vec3(0.0, 0.0, -1.0f), 0.5f);
     spheres[4] = Sphere(glm::vec3(1.0, 0.0, -1.0f), 0.5f);
-    for (int i = 5; i < 100; i++)
+    for (int i = 5; i < sphereCount; i++)
     {
         spheres[i] = Sphere(glm::linearRand(glm::vec3(-20.0f, 0.0f, -20.0f), glm::vec3(20.0f, 0.0f, 20.0f)), glm::linearRand(0.4f, 2.0f));
     }
 
-    std::vector<AABB> boundingVolumes(100);
-    for (int i = 0; i < 100; i++)
-    {
-        boundingVolumes[i].mCentre = spheres[i].mCentre;
-        boundingVolumes[i].mSize = 2.0f * glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius);
-    }
-
-    GizmoSystem *gizmoSystem = mWorld->getSystem<GizmoSystem>();
-    for (int i = 0; i < 100; i++)
-    {
-        gizmoSystem->addToDrawList(boundingVolumes[i], Color(0.0f, 0.0f, 1.0f, 0.3f));    
-    }
-
-    std::vector<RaytraceMaterial> materials(100);
+    std::vector<RaytraceMaterial> materials(sphereCount);
     materials[0].mAlbedo = glm::vec3(0.8f, 0.8f, 0.0f);
 
     materials[1].mType = RaytraceMaterial::MaterialType::Dialectric;
@@ -357,7 +345,7 @@ void Raytracer::update(Camera *camera)
     materials[4].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
     materials[4].mFuzz = 0.1f;
 
-    for (int i = 5; i < 100; i++)
+    for (int i = 5; i < sphereCount; i++)
     {
         materials[i].mType =
             (i % 2 == 0) ? RaytraceMaterial::MaterialType::Lambertian : RaytraceMaterial::MaterialType::Metallic;
@@ -365,28 +353,35 @@ void Raytracer::update(Camera *camera)
         materials[i].mFuzz = glm::linearRand(0.0f, 0.2f);
     }
 
+    /*size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
+    std::vector<Sphere> spheres(meshRendererCount);
+    std::vector<RaytraceMaterial> materials(meshRendererCount);
+    for (size_t i = 0; i < meshRendererCount; i++)
+    {
+        spheres[i].mCentre = mWorld->getActiveScene()->getTransformDataByMeshRendererIndex(i)->mPosition;
+        spheres[i].mRadius = 1.0f;
+        materials[i].metallic = (i < 5) ? false : true;
+    }*/
+
+    std::vector<AABB> boundingVolumes(sphereCount);
+    for (int i = 0; i < sphereCount; i++)
+    {
+        boundingVolumes[i].mCentre = spheres[i].mCentre;
+        boundingVolumes[i].mSize = 2.0f * glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius);
+    }
+
+    GizmoSystem *gizmoSystem = mWorld->getSystem<GizmoSystem>();
+    for (int i = 0; i < sphereCount; i++)
+    {
+        gizmoSystem->addToDrawList(boundingVolumes[i], Color(0.0f, 0.0f, 1.0f, 0.3f));
+    }
+
     BVH bvh;
-    bvh.buildBVH(boundingVolumes);
+    bvh.allocateBVH(boundingVolumes.size());
+
+    bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
 
     gizmoSystem->addToDrawList(bvh, Color::green);
-
-    //size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
-    //
-    //std::vector<Sphere> spheres(meshRendererCount);
-    //std::vector<RaytraceMaterial> materials(meshRendererCount);
-    //for (size_t i = 0; i < meshRendererCount; i++)
-    //{
-    //    spheres[i].mCentre = mWorld->getActiveScene()->getTransformDataByMeshRendererIndex(i)->mPosition;
-    //    spheres[i].mRadius = 1.0f;
-    //    materials[i].metallic = (i < 5) ? false : true;
-    //}
-
-
-
-
-
-
-
 
     // If camera is moved, re-compute image
     if (mSamplesPerRay == 0 || camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
@@ -475,4 +470,6 @@ void Raytracer::update(Camera *camera)
     }
 
     camera->updateRayTracingTexture(finalImage);
+
+    bvh.freeBVH();
 }

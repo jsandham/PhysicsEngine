@@ -115,6 +115,8 @@ class RenderSystem
   private:
     void registerRenderAssets();
     void cacheRenderData();
+    void allocateBVH();
+    void freeBVH();
     void buildBVH();
     void frustumCulling(const Camera *camera);
     void occlusionCulling(const Camera *camera);

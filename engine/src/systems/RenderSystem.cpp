@@ -142,6 +142,7 @@ void RenderSystem::update()
 
     cacheRenderData();
 
+    allocateBVH();
     buildBVH();
 
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
@@ -188,6 +189,8 @@ void RenderSystem::update()
             }
         }
     }
+
+    freeBVH();
 }
 
 void RenderSystem::registerRenderAssets()
@@ -361,9 +364,28 @@ void RenderSystem::cacheRenderData()
     mCachedBoundingVolume.mSize = (boundingVolumeMax - boundingVolumeMin);
 }
 
+void RenderSystem::allocateBVH()
+{
+    if (mCachedBoundingAABBs.size() > 0)
+    {
+        mBVH.allocateBVH(mCachedBoundingAABBs.size());
+    }
+}
+
 void RenderSystem::buildBVH()
 {
-    mBVH.buildBVH(mCachedBoundingAABBs);
+    if (mCachedBoundingAABBs.size() > 0)
+    {
+        mBVH.buildBVH(mCachedBoundingAABBs.data(), mCachedBoundingAABBs.size());
+    }
+}
+
+void RenderSystem::freeBVH()
+{
+    if (mCachedBoundingAABBs.size() > 0)
+    {
+        mBVH.freeBVH();
+    }
 }
 
 void RenderSystem::frustumCulling(const Camera *camera)
@@ -398,14 +420,14 @@ void RenderSystem::frustumCulling(const Camera *camera)
             {
                 if (node->mIndexCount == 0)
                 {
-                    queue.push(node->mLeft);
-                    queue.push(node->mLeft + 1);
+                    queue.push(node->mLeftOrStartIndex);
+                    queue.push(node->mLeftOrStartIndex + 1);
                 }
                 else
                 {
                     float distanceToCamera = glm::distance2(aabb.mCentre, camera->getPosition());
 
-                    int startIndex = node->mStartIndex;
+                    int startIndex = node->mLeftOrStartIndex;
                     int endIndex = startIndex + node->mIndexCount;
                     for (int i = startIndex; i < endIndex; i++)
                     {
@@ -417,7 +439,7 @@ void RenderSystem::frustumCulling(const Camera *camera)
             }
             else
             {
-                mFrustumVisible[mBVH.mPerm[node->mStartIndex]] = 0;
+                mFrustumVisible[mBVH.mPerm[node->mLeftOrStartIndex]] = 0;
             }
         }
 

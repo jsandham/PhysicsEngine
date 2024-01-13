@@ -620,9 +620,9 @@ void GizmoRenderer::renderBVHGizmos(Camera *camera)
         Renderer::getRenderer()->turnOn(Capability::Blending);
         Renderer::getRenderer()->setBlending(BlendingFactor::SRC_ALPHA, BlendingFactor::ONE_MINUS_SRC_ALPHA);
 
-        std::vector<glm::vec3> mLineVertices(36 * mBVHs[j].mBVH.mNodes.size());
+        std::vector<glm::vec3> mLineVertices(36 * mBVHs[j].mBVH.getNodeCount());
 
-        for (size_t i = 0; i < mBVHs[j].mBVH.mNodes.size(); i++)
+        for (size_t i = 0; i < mBVHs[j].mBVH.getNodeCount(); i++)
         {
             glm::vec3 min = mBVHs[j].mBVH.mNodes[i].mMin;
             glm::vec3 max = mBVHs[j].mBVH.mNodes[i].mMax;
@@ -986,9 +986,9 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
 
         const BVH &bvh = renderSystem->getBVH();
 
-        std::vector<glm::vec3> mLineVertices(36 * bvh.mNodes.size());
+        std::vector<glm::vec3> mLineVertices(36 * bvh.getNodeCount());
 
-        for (size_t i = 0; i < bvh.mNodes.size(); i++)
+        for (size_t i = 0; i < bvh.getNodeCount(); i++)
         {
             glm::vec3 min = bvh.mNodes[i].mMin;
             glm::vec3 max = bvh.mNodes[i].mMax;
