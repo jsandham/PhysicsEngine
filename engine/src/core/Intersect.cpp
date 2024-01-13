@@ -55,6 +55,45 @@ bool Intersect::intersect(const Ray &ray, const Triangle &triangle)
     return true;
 }
 
+// Moller-Trumbore algorithm
+// https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
+bool Intersect::intersect(const Ray &ray, const Triangle &triangle, glm::vec3 &intersectionPoint)
+{
+    constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
+    glm::vec3 edge1 = triangle.mV1 - triangle.mV0;
+    glm::vec3 edge2 = triangle.mV2 - triangle.mV0;
+    glm::vec3 ray_cross_e2 = glm::cross(ray.mDirection, edge2);
+    float det = glm::dot(edge1, ray_cross_e2);
+
+    if (det > -epsilon && det < epsilon)
+        return false; // This ray is parallel to this triangle.
+
+    float inv_det = 1.0f / det;
+    glm::vec3 s = ray.mOrigin - triangle.mV0;
+    float u = inv_det * glm::dot(s, ray_cross_e2);
+
+    if (u < 0 || u > 1)
+        return false;
+
+    glm::vec3 s_cross_e1 = glm::cross(s, edge1);
+    float v = inv_det * glm::dot(ray.mDirection, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return false;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * glm::dot(edge2, s_cross_e1);
+
+    if (t > epsilon) // ray intersection
+    {
+        intersectionPoint = ray.mOrigin + ray.mDirection * t;
+        return true;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return false;
+}
+
 bool Intersect::intersect(const Ray &ray, const Plane &plane)
 {
     float denom = glm::dot(plane.mNormal, ray.mDirection);

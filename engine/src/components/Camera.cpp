@@ -584,6 +584,7 @@ static float generate_rand(float a = 0.0f, float b = 1.0f)
 {
     static uint32_t seed = 1234567;
     seed++;
+
     float uniform = (float)pcg_hash(seed) / (float)std::numeric_limits<uint32_t>::max();
     return a + (b - a) * uniform;
 }

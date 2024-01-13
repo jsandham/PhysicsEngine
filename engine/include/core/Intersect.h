@@ -22,6 +22,7 @@ class Intersect
     static bool intersect(const Ray &ray, const glm::vec3 &bmin, const glm::vec3 &bmax);
 
     static bool intersect(const Ray &ray, const Triangle &triangle);
+    static bool intersect(const Ray &ray, const Triangle &triangle, glm::vec3 &intersectionPoint);
     static bool intersect(const Ray &ray, const Plane &plane);
     static bool intersect(const Ray &ray, const Plane &plane, float &dist);
     static bool intersect(const Ray &ray, const Sphere &sphere);

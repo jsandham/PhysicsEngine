@@ -36,17 +36,24 @@ struct RaytraceMaterial
     {
         Lambertian,
         Metallic,
-        Dialectric
+        Dialectric,
+        DiffuseLight
     };
 
     MaterialType mType;
     float mFuzz;
     float mRefractionIndex;
     glm::vec3 mAlbedo;
+    glm::vec3 mEmissive;
 
-    RaytraceMaterial() : mType(MaterialType::Lambertian), mFuzz(0.0f), mRefractionIndex(1.0f), mAlbedo(glm::vec3(0.5f, 0.5f, 0.5f)){};
-    RaytraceMaterial(MaterialType type, float fuzz, float ir, const glm::vec3 &albedo)
-        : mType(type), mFuzz(glm::max(0.0f, glm::min(1.0f, fuzz))), mRefractionIndex(ir), mAlbedo(albedo){};
+    RaytraceMaterial() : mType(MaterialType::Lambertian), 
+                         mFuzz(0.0f), 
+                         mRefractionIndex(1.0f), 
+                         mAlbedo(glm::vec3(0.5f, 0.5f, 0.5f)),
+                         mEmissive(glm::vec3(0.0f, 0.0f, 0.0f)){};
+    RaytraceMaterial(MaterialType type, float fuzz, float ir, const glm::vec3 &albedo, const glm::vec3 &emissive)
+        : mType(type), mFuzz(glm::max(0.0f, glm::min(1.0f, fuzz))), mRefractionIndex(ir), mAlbedo(albedo),
+          mEmissive(emissive){};
 
     static float reflectance(float cosine, float ref_idx)
     {
@@ -135,59 +142,6 @@ struct RaytraceMaterial
     }
 };
 
-// Recursive computeColor
-static glm::vec3 computeColor(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
-                              const BVH& bvh, const Ray &ray, int depth)
-{
-    if (depth < 0)
-    {
-        return glm::vec3(0.0f, 0.0f, 0.0f);
-    }
-
-    //int closest_index = -1;
-    //float closest_t = std::numeric_limits<float>::max();
-    //bvh.intersectBVH(ray, spheres, 0, closest_t, closest_index);
-
-    int closest_index = -1;
-    float closest_t = std::numeric_limits<float>::max();
-    for (size_t i = 0; i < spheres.size(); i++)
-    {
-        float t = hit_sphere(spheres[i].mCentre, spheres[i].mRadius, ray);
-        if (t > 0.001f && t < closest_t)
-        {
-            closest_t = t;
-            closest_index = (int)i;
-        }
-    }
-
-    if (closest_index >= 0)
-    {
-        glm::vec3 point = ray.getPoint(closest_t);
-        glm::vec3 normal = glm::normalize((point - spheres[closest_index].mCentre) / spheres[closest_index].mRadius);
-
-        Ray newRay;
-        switch (materials[closest_index].mType)
-        {
-        case RaytraceMaterial::MaterialType::Lambertian:
-            newRay = RaytraceMaterial::generate_lambertian_ray_on_hemisphere(point, normal);
-            break;
-        case RaytraceMaterial::MaterialType::Metallic:
-            newRay = RaytraceMaterial::generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal,
-                                                                           materials[closest_index].mFuzz);
-            break;
-        case RaytraceMaterial::MaterialType::Dialectric:
-            newRay = RaytraceMaterial::generate_dialectric_ray_on_sphere(point, ray.mDirection, normal, materials[closest_index].mRefractionIndex);
-            break;
-        }
-
-        return materials[closest_index].mAlbedo * computeColor(spheres, materials, bvh, newRay, depth - 1);
-    }
-
-    glm::vec3 unit_direction = glm::normalize(ray.mDirection);
-    float a = 0.5f * (unit_direction.y + 1.0f);
-    return (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
-}
-
 // Iterative computeColor
 static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
                               const BVH &bvh, const Ray &ray, int maxDepth)
@@ -263,6 +217,12 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
 
         if (closest_index >= 0)
         {
+            if (materials[closest_index].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+            {
+                color *= materials[closest_index].mEmissive;
+                break;
+            }
+
             glm::vec3 point = ray2.getPoint(closest_t);
             glm::vec3 normal =
                 glm::normalize((point - spheres[closest_index].mCentre) / spheres[closest_index].mRadius);
@@ -286,6 +246,7 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
         }
         else
         {
+            //color *= glm::vec3(0.0f, 0.0f, 0.0f);
             glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
             float a = 0.5f * (unit_direction.y + 1.0f);
             color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
@@ -314,7 +275,7 @@ void Raytracer::init(World *world)
 void Raytracer::update(Camera *camera)
 {
     srand(0);
-    int sphereCount = 5;
+    int sphereCount = 100;
 
     std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
@@ -322,7 +283,8 @@ void Raytracer::update(Camera *camera)
     spheres[2] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), -0.4f);
     spheres[3] = Sphere(glm::vec3(0.0, 0.0, -1.0f), 0.5f);
     spheres[4] = Sphere(glm::vec3(1.0, 0.0, -1.0f), 0.5f);
-    for (int i = 5; i < sphereCount; i++)
+    spheres[5] = Sphere(glm::vec3(0.75f, 2.25f, -0.5f), 0.7f);
+    for (int i = 6; i < sphereCount; i++)
     {
         spheres[i] = Sphere(glm::linearRand(glm::vec3(-20.0f, 0.0f, -20.0f), glm::vec3(20.0f, 0.0f, 20.0f)), glm::linearRand(0.4f, 2.0f));
     }
@@ -345,23 +307,16 @@ void Raytracer::update(Camera *camera)
     materials[4].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
     materials[4].mFuzz = 0.1f;
 
-    for (int i = 5; i < sphereCount; i++)
+    materials[5].mType = RaytraceMaterial::MaterialType::Lambertian;
+    materials[5].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
+
+    for (int i = 6; i < sphereCount; i++)
     {
         materials[i].mType =
             (i % 2 == 0) ? RaytraceMaterial::MaterialType::Lambertian : RaytraceMaterial::MaterialType::Metallic;
         materials[i].mAlbedo = glm::linearRand(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         materials[i].mFuzz = glm::linearRand(0.0f, 0.2f);
     }
-
-    /*size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
-    std::vector<Sphere> spheres(meshRendererCount);
-    std::vector<RaytraceMaterial> materials(meshRendererCount);
-    for (size_t i = 0; i < meshRendererCount; i++)
-    {
-        spheres[i].mCentre = mWorld->getActiveScene()->getTransformDataByMeshRendererIndex(i)->mPosition;
-        spheres[i].mRadius = 1.0f;
-        materials[i].metallic = (i < 5) ? false : true;
-    }*/
 
     std::vector<AABB> boundingVolumes(sphereCount);
     for (int i = 0; i < sphereCount; i++)
@@ -378,7 +333,6 @@ void Raytracer::update(Camera *camera)
 
     BVH bvh;
     bvh.allocateBVH(boundingVolumes.size());
-
     bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
 
     gizmoSystem->addToDrawList(bvh, Color::green);
@@ -425,7 +379,6 @@ void Raytracer::update(Camera *camera)
                 float b = mImage[3 * width * row + 3 * col + 2];
                 glm::vec3 color = glm::vec3(r, g, b);
 
-                //color += computeColor(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
                 color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
 
                 // Store computed color to image
