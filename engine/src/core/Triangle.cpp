@@ -17,7 +17,7 @@ Triangle::~Triangle()
 {
 }
 
-glm::vec3 Triangle::getBarycentric(const glm::vec3 &p)
+glm::vec3 Triangle::getBarycentric(const glm::vec3 &p) const
 {
     glm::vec3 e1 = mV1 - mV0;
     glm::vec3 e2 = mV2 - mV0;
@@ -33,4 +33,30 @@ glm::vec3 Triangle::getBarycentric(const glm::vec3 &p)
     float w = (d00 * d21 - d01 * d20) / d;
     float u = 1 - v - w;
     return glm::vec3(u, v, w);
+}
+
+glm::vec3 Triangle::getNormal() const
+{
+    //glm::vec3 p = mV1 - mV0;
+    //glm::vec3 q = mV2 - mV0;
+
+    // Calculate p vector
+    float px = mV1.x - mV0.x;
+    float py = mV1.y - mV0.y;
+    float pz = mV1.z - mV0.z;
+
+    // Calculate q vector
+    float qx = mV2.x - mV0.x;
+    float qy = mV2.y - mV0.y;
+    float qz = mV2.z - mV0.z;
+
+    // Calculate normal (p x q)
+    // i  j  k
+    // px py pz
+    // qx qy qz
+    float nx = py * qz - pz * qy;
+    float ny = pz * qx - px * qz;
+    float nz = px * qy - py * qx;
+
+    return glm::vec3(nx, ny, nz);
 }

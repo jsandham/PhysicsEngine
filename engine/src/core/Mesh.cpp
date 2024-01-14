@@ -749,6 +749,7 @@ void Mesh::computeNormals()
         float nx = py * qz - pz * qy;
         float ny = pz * qx - px * qz;
         float nz = px * qy - py * qx;
+
         // Scale to unit vector
         float s = sqrt(nx * nx + ny * ny + nz * nz);
         nx /= s;

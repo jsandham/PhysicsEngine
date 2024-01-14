@@ -29,6 +29,42 @@ static float hit_sphere(const glm::vec3 &center, float radius, const Ray &ray)
     }
 }
 
+static float hit_triangle(const Triangle &triangle, const Ray &ray)
+{
+    constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
+    glm::vec3 edge1 = triangle.mV1 - triangle.mV0;
+    glm::vec3 edge2 = triangle.mV2 - triangle.mV0;
+    glm::vec3 ray_cross_e2 = glm::cross(ray.mDirection, edge2);
+    float det = glm::dot(edge1, ray_cross_e2);
+
+    if (det > -epsilon && det < epsilon)
+        return -1.0f; // This ray is parallel to this triangle.
+
+    float inv_det = 1.0f / det;
+    glm::vec3 s = ray.mOrigin - triangle.mV0;
+    float u = inv_det * glm::dot(s, ray_cross_e2);
+
+    if (u < 0 || u > 1)
+        return -1.0f;
+
+    glm::vec3 s_cross_e1 = glm::cross(s, edge1);
+    float v = inv_det * glm::dot(ray.mDirection, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return -1.0f;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * glm::dot(edge2, s_cross_e1);
+
+    if (t > epsilon) // ray intersection
+    {
+        return t;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return -1.0f;
+}
+
 
 struct RaytraceMaterial
 {
@@ -152,7 +188,7 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
 
     //std::queue<int> queue;
     int top = 0;
-    int stack[20];
+    int stack[32];
 
     for (int depth = 0; depth < maxDepth; depth++)
     {
@@ -165,11 +201,9 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
         stack[0] = 0;
         top++;
 
-
         //while (!queue.empty())
         while (top > 0)
         {
-            //mm = glm::max(mm, (int)queue.size());
             //int nodeIndex = queue.front();
             //queue.pop();
             int nodeIndex = stack[top - 1];
@@ -257,6 +291,133 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
     return color;
 }
 
+
+
+static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
+                                       const std::vector<RaytraceMaterial> &materials, const std::vector<int> &materialPtr, const BVH &bvh, const Ray &ray,
+                                       int maxDepth)
+{
+    Ray ray2 = ray;
+
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    // std::queue<int> queue;
+    int top = 0;
+    int stack[32];
+
+    for (int depth = 0; depth < maxDepth; depth++)
+    {
+        int closest_index = -1;
+        float closest_t = std::numeric_limits<float>::max();
+
+        // assert(queue.empty());
+        // queue.push(0);
+        assert(top == 0);
+        stack[0] = 0;
+        top++;
+
+        // while (!queue.empty())
+        while (top > 0)
+        {
+            // mm = glm::max(mm, (int)queue.size());
+            // int nodeIndex = queue.front();
+            // queue.pop();
+            int nodeIndex = stack[top - 1];
+            top--;
+
+            const BVHNode *node = &bvh.mNodes[nodeIndex];
+
+            if (Intersect::intersect(ray2, node->mMin, node->mMax))
+            {
+                if (!node->isLeaf())
+                {
+                    // queue.push(node->mLeftOrStartIndex);
+                    // queue.push(node->mLeftOrStartIndex + 1);
+                    stack[top++] = node->mLeftOrStartIndex;
+                    stack[top++] = node->mLeftOrStartIndex + 1;
+                }
+                else
+                {
+                    int startIndex = node->mLeftOrStartIndex;
+                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        float t = hit_triangle(triangles[bvh.mPerm[i]], ray2);
+                        if (t > 0.001f && t < closest_t)
+                        {
+                            closest_t = t;
+                            closest_index = (int)bvh.mPerm[i];
+                        }
+                    }
+                }
+            }
+        }
+
+        /*int closest_index = -1;
+        float closest_t = std::numeric_limits<float>::max();
+        for (size_t i = 0; i < triangles.size(); i++)
+        {
+            float t = hit_triangle(triangles[i], ray2);
+            if (t > 0.0f && t < closest_t)
+            {
+                closest_t = t;
+                closest_index = (int)i;
+            }
+        }*/
+
+        if (closest_index >= 0)
+        {
+            int materialIndex = -1;
+            for (int i = 0; i < (int)materialPtr.size(); i++)
+            {
+                if (closest_index >= materialPtr[i] && closest_index < materialPtr[i + 1])
+                {
+                    materialIndex = i; 
+                    break;
+                }
+            }
+
+            assert(materialIndex >= 0);
+
+            /*if (materials[materialIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+            {
+                color *= materials[materialIndex].mEmissive;
+                break;
+            }*/
+
+            glm::vec3 normal = glm::normalize(triangles[closest_index].getNormal());
+            glm::vec3 point = ray2.getPoint(closest_t);
+
+            switch (materials[materialIndex].mType)
+            {
+            case RaytraceMaterial::MaterialType::Lambertian:
+                ray2 = RaytraceMaterial::generate_lambertian_ray_on_hemisphere(point, normal);
+                break;
+            case RaytraceMaterial::MaterialType::Metallic:
+                ray2 = RaytraceMaterial::generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal,
+                                                                             materials[materialIndex].mFuzz);
+                break;
+            case RaytraceMaterial::MaterialType::Dialectric:
+                ray2 = RaytraceMaterial::generate_dialectric_ray_on_sphere(point, ray.mDirection, normal,
+                                                                           materials[materialIndex].mRefractionIndex);
+                break;
+            }
+
+            color *= materials[materialIndex].mAlbedo;
+        }
+        else
+        {
+            // color *= glm::vec3(0.0f, 0.0f, 0.0f);
+            glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
+            float a = 0.5f * (unit_direction.y + 1.0f);
+            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+            break;
+        }
+    }
+
+    return color;
+}
+
 Raytracer::Raytracer()
 {
     mSamplesPerRay = 0;
@@ -275,8 +436,7 @@ void Raytracer::init(World *world)
 void Raytracer::update(Camera *camera)
 {
     srand(0);
-    int sphereCount = 100;
-
+    int sphereCount = 6;
     std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
     spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
@@ -325,17 +485,102 @@ void Raytracer::update(Camera *camera)
         boundingVolumes[i].mSize = 2.0f * glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius);
     }
 
-    GizmoSystem *gizmoSystem = mWorld->getSystem<GizmoSystem>();
-    for (int i = 0; i < sphereCount; i++)
+
+
+
+
+    /*srand(0);
+    Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
+    const std::vector<float> &vertices = sphereMesh->getVertices();
+    
+    size_t sphereCount = 3;
+    size_t triCount = sphereMesh->getVertexCount() / 3;
+    std::vector<Triangle> triangles(sphereCount * triCount);
+    for (size_t i = 0; i < sphereCount; i++)
     {
-        gizmoSystem->addToDrawList(boundingVolumes[i], Color(0.0f, 0.0f, 1.0f, 0.3f));
+        for (size_t j = 0; j < triCount; j++)
+        {
+            glm::vec3 v0 =
+                glm::vec3(vertices[9 * j + 3 * 0 + 0], vertices[9 * j + 3 * 0 + 1], vertices[9 * j + 3 * 0 + 2]);
+            glm::vec3 v1 =
+                glm::vec3(vertices[9 * j + 3 * 1 + 0], vertices[9 * j + 3 * 1 + 1], vertices[9 * j + 3 * 1 + 2]);
+            glm::vec3 v2 =
+                glm::vec3(vertices[9 * j + 3 * 2 + 0], vertices[9 * j + 3 * 2 + 1], vertices[9 * j + 3 * 2 + 2]);
+
+            if (i == 1)
+            {
+                v0 = v0 + glm::vec3(-2.0, 0.0f, 0.0f);
+                v1 = v1 + glm::vec3(-2.0, 0.0f, 0.0f);
+                v2 = v2 + glm::vec3(-2.0, 0.0f, 0.0f);
+            }
+            else if (i == 2)
+            {
+                v0 = v0 + glm::vec3(2.0, 0.0f, 0.0f);
+                v1 = v1 + glm::vec3(2.0, 0.0f, 0.0f);
+                v2 = v2 + glm::vec3(2.0, 0.0f, 0.0f);
+            }
+
+            triangles[triCount * i + j].mV0 = v0;   
+            triangles[triCount * i + j].mV1 = v1;
+            triangles[triCount * i + j].mV2 = v2;
+                
+        }
     }
+
+    std::vector<int> materialPtr(sphereCount + 1, 0);
+    std::vector<RaytraceMaterial> materials(sphereCount);
+    for (size_t i = 0; i < sphereCount; i++)
+    {
+        RaytraceMaterial::MaterialType type = RaytraceMaterial::MaterialType::Lambertian;
+        glm::vec3 albedo = glm::vec3(0.1f, 0.2f, 0.5f);
+        if (i == 1)
+        {
+            albedo = glm::vec3(0.8f, 0.6f, 0.2f);
+            type = RaytraceMaterial::MaterialType::Metallic;
+        }
+        else if (i == 2)
+        {
+            albedo = glm::vec3(1.0f, 1.0f, 1.0f);
+            type = RaytraceMaterial::MaterialType::Dialectric;
+        }
+
+        materials[i].mType = type;
+        materials[i].mAlbedo = albedo;
+        materials[i].mFuzz = 0.1f;
+        materials[i].mRefractionIndex = 1.5f;
+
+        materialPtr[i + 1] += materialPtr[i] + (int)triCount;
+    }
+
+    std::vector<AABB> boundingVolumes(triangles.size());
+    for (int i = 0; i < triangles.size(); i++)
+    {
+        glm::vec3 bmin = glm::min(triangles[i].mV0, glm::min(triangles[i].mV1, triangles[i].mV2));
+        glm::vec3 bmax = glm::max(triangles[i].mV0, glm::max(triangles[i].mV1, triangles[i].mV2));
+
+        glm::vec3 bsize = bmax - bmin;
+        bsize.x = glm::max(0.1f, bsize.x);
+        bsize.y = glm::max(0.1f, bsize.y);
+        bsize.z = glm::max(0.1f, bsize.z);
+
+        boundingVolumes[i].mCentre = bmin + 0.5f * bsize;
+        boundingVolumes[i].mSize = bsize;
+    }*/
+
+
+
+
+
+
+
+
+
+
+   
 
     BVH bvh;
     bvh.allocateBVH(boundingVolumes.size());
     bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
-
-    gizmoSystem->addToDrawList(bvh, Color::green);
 
     // If camera is moved, re-compute image
     if (mSamplesPerRay == 0 || camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
@@ -380,6 +625,8 @@ void Raytracer::update(Camera *camera)
                 glm::vec3 color = glm::vec3(r, g, b);
 
                 color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+                //color +=
+                //    computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
 
                 // Store computed color to image
                 mImage[3 * width * row + 3 * col + 0] = color.r;
