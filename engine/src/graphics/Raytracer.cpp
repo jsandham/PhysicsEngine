@@ -122,7 +122,7 @@ struct RaytraceMaterial
         return a + (b - a) * uniform;
     }
 
-    static Ray generate_dialectric_ray_on_sphere(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float ir)
+    static Ray generate_dialectric_ray(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float ir)
     {
         bool front_face = glm::dot(v, normal) < 0.0f;
         float refraction_ratio = front_face ? (1.0f / ir) : ir;
@@ -148,7 +148,7 @@ struct RaytraceMaterial
         return ray;
     }
 
-    static Ray generate_metallic_ray_on_hemisphere(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float fuzz)
+    static Ray generate_metallic_ray(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float fuzz)
     {
         Ray ray;
         ray.mOrigin = point;
@@ -157,7 +157,7 @@ struct RaytraceMaterial
         return ray;
     }
 
-    static Ray generate_lambertian_ray_on_hemisphere(const glm::vec3 &point, const glm::vec3 &normal)
+    static Ray generate_lambertian_ray(const glm::vec3 &point, const glm::vec3 &normal)
     {
         glm::vec3 unitSphereVector =
             normal + glm::normalize(glm::vec3(generate_rand(), generate_rand(), generate_rand()));
@@ -186,7 +186,6 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    //std::queue<int> queue;
     int top = 0;
     int stack[32];
 
@@ -195,17 +194,15 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
         int closest_index = -1;
         float closest_t = std::numeric_limits<float>::max();
 
-        //assert(queue.empty());
-        //queue.push(0);
         assert(top == 0);
         stack[0] = 0;
         top++;
 
-        //while (!queue.empty())
+        BVHLeaf leafs[32];
+
+        int leafCount = 0;
         while (top > 0)
         {
-            //int nodeIndex = queue.front();
-            //queue.pop();
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -215,39 +212,36 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
             {
                 if (!node->isLeaf())
                 {
-                    //queue.push(node->mLeftOrStartIndex);
-                    //queue.push(node->mLeftOrStartIndex + 1);
                     stack[top++] = node->mLeftOrStartIndex;
                     stack[top++] = node->mLeftOrStartIndex + 1;
                 }
                 else
                 {
-                    int startIndex = node->mLeftOrStartIndex;
-                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
-                    for (int i = startIndex; i < endIndex; i++)
+                    if (leafCount < 32)
                     {
-                        float t = hit_sphere(spheres[bvh.mPerm[i]].mCentre, spheres[bvh.mPerm[i]].mRadius, ray2);
-                        if (t > 0.001f && t < closest_t)
-                        {
-                            closest_t = t;
-                            closest_index = (int)bvh.mPerm[i];
-                        }
+                        leafs[leafCount].mStartIndex = node->mLeftOrStartIndex;
+                        leafs[leafCount].mIndexCount = node->mIndexCount;
+                        leafCount++;
                     }
                 }
             }
         }
 
-        /*int closest_index = -1;
-        float closest_t = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < spheres.size(); i++)
+        for (int i = 0; i < leafCount; i++)
         {
-            float t = hit_sphere(spheres[i].mCentre, spheres[i].mRadius, ray2);
-            if (t > 0.0f && t < closest_t)
+            int startIndex = leafs[i].mStartIndex;
+            int endIndex = leafs[i].mStartIndex + leafs[i].mIndexCount;
+        
+            for (int j = startIndex; j < endIndex; j++)
             {
-                closest_t = t;
-                closest_index = (int)i;
+                float t = hit_sphere(spheres[bvh.mPerm[j]].mCentre, spheres[bvh.mPerm[j]].mRadius, ray2);
+                if (t > 0.001f && t < closest_t)
+                {
+                    closest_t = t;
+                    closest_index = (int)bvh.mPerm[j];
+                }
             }
-        }*/
+        }
 
         if (closest_index >= 0)
         {
@@ -258,20 +252,19 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
             }
 
             glm::vec3 point = ray2.getPoint(closest_t);
-            glm::vec3 normal =
-                glm::normalize((point - spheres[closest_index].mCentre) / spheres[closest_index].mRadius);
+            glm::vec3 normal = spheres[closest_index].getNormal(point);
 
             switch (materials[closest_index].mType)
             {
             case RaytraceMaterial::MaterialType::Lambertian:
-                ray2 = RaytraceMaterial::generate_lambertian_ray_on_hemisphere(point, normal);
+                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
                 break;
             case RaytraceMaterial::MaterialType::Metallic:
-                ray2 = RaytraceMaterial::generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal,
+                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
                                                                                materials[closest_index].mFuzz);
                 break;
             case RaytraceMaterial::MaterialType::Dialectric:
-                ray2 = RaytraceMaterial::generate_dialectric_ray_on_sphere(point, ray.mDirection, normal,
+                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
                                                                              materials[closest_index].mRefractionIndex);
                 break;
             }
@@ -301,7 +294,6 @@ static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    // std::queue<int> queue;
     int top = 0;
     int stack[32];
 
@@ -310,18 +302,12 @@ static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
         int closest_index = -1;
         float closest_t = std::numeric_limits<float>::max();
 
-        // assert(queue.empty());
-        // queue.push(0);
         assert(top == 0);
         stack[0] = 0;
         top++;
 
-        // while (!queue.empty())
         while (top > 0)
         {
-            // mm = glm::max(mm, (int)queue.size());
-            // int nodeIndex = queue.front();
-            // queue.pop();
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -331,8 +317,6 @@ static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
             {
                 if (!node->isLeaf())
                 {
-                    // queue.push(node->mLeftOrStartIndex);
-                    // queue.push(node->mLeftOrStartIndex + 1);
                     stack[top++] = node->mLeftOrStartIndex;
                     stack[top++] = node->mLeftOrStartIndex + 1;
                 }
@@ -391,14 +375,14 @@ static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
             switch (materials[materialIndex].mType)
             {
             case RaytraceMaterial::MaterialType::Lambertian:
-                ray2 = RaytraceMaterial::generate_lambertian_ray_on_hemisphere(point, normal);
+                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
                 break;
             case RaytraceMaterial::MaterialType::Metallic:
-                ray2 = RaytraceMaterial::generate_metallic_ray_on_hemisphere(point, ray.mDirection, normal,
+                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
                                                                              materials[materialIndex].mFuzz);
                 break;
             case RaytraceMaterial::MaterialType::Dialectric:
-                ray2 = RaytraceMaterial::generate_dialectric_ray_on_sphere(point, ray.mDirection, normal,
+                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
                                                                            materials[materialIndex].mRefractionIndex);
                 break;
             }
@@ -436,7 +420,7 @@ void Raytracer::init(World *world)
 void Raytracer::update(Camera *camera)
 {
     srand(0);
-    int sphereCount = 6;
+    int sphereCount = 100;
     std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
     spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
@@ -613,25 +597,61 @@ void Raytracer::update(Camera *camera)
     int max_bounces = 50;
     if (mSamplesPerRay < 1000)
     {
-        #pragma omp parallel for
-        for (int row = 0; row < height; row++)
+        //#pragma omp parallel for schedule(dynamic)
+        //for (int row = 0; row < height; row++)
+        //{
+        //    for (int col = 0; col < width; col++)
+        //    {
+        //        // Read color from image
+        //        float r = mImage[3 * width * row + 3 * col + 0];
+        //        float g = mImage[3 * width * row + 3 * col + 1];
+        //        float b = mImage[3 * width * row + 3 * col + 2];
+        //        glm::vec3 color = glm::vec3(r, g, b);
+
+        //        color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+        //        //color +=
+        //        //    computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+
+        //        // Store computed color to image
+        //        mImage[3 * width * row + 3 * col + 0] = color.r;
+        //        mImage[3 * width * row + 3 * col + 1] = color.g;
+        //        mImage[3 * width * row + 3 * col + 2] = color.b;
+        //    }
+        //}
+        int row_dim = 4;
+        int col_dim = 4;
+        #pragma omp parallel for schedule(dynamic)
+        for (int brow = 0; brow < height / row_dim; brow++)
         {
-            for (int col = 0; col < width; col++)
+            for (int bcol = 0; bcol < width / col_dim; bcol++)
             {
-                // Read color from image
-                float r = mImage[3 * width * row + 3 * col + 0];
-                float g = mImage[3 * width * row + 3 * col + 1];
-                float b = mImage[3 * width * row + 3 * col + 2];
-                glm::vec3 color = glm::vec3(r, g, b);
+                for (int r = 0; r < row_dim; r++)
+                {
+                    for (int c = 0; c < col_dim; c++)
+                    {
+                        int row = (row_dim * brow + r);
+                        int col = (col_dim * bcol + c);
 
-                color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
-                //color +=
-                //    computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+                        int offset = width * row + col; 
 
-                // Store computed color to image
-                mImage[3 * width * row + 3 * col + 0] = color.r;
-                mImage[3 * width * row + 3 * col + 1] = color.g;
-                mImage[3 * width * row + 3 * col + 2] = color.b;
+                        // Read color from image
+                        float red = mImage[3 * offset + 0];
+                        float green = mImage[3 * offset + 1];
+                        float blue = mImage[3 * offset + 2];
+                        glm::vec3 color = glm::vec3(red, green, blue);
+
+                        color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv),
+                                                       max_bounces);
+                        // color +=
+                        //     computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col,
+                        //     row, du, dv), max_bounces);
+
+                        // Store computed color to image
+                        mImage[3 * offset + 0] = color.r;
+                        mImage[3 * offset + 1] = color.g;
+                        mImage[3 * offset + 2] = color.b;
+                    }
+                }
             }
         }
 

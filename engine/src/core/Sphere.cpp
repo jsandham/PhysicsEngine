@@ -16,3 +16,8 @@ float Sphere::getVolume() const
 {
     return (4.0f / 3.0f) * glm::pi<float>() * mRadius * mRadius * mRadius;
 }
+
+glm::vec3 Sphere::getNormal(const glm::vec3 &point) const
+{
+    return glm::normalize((point - mCentre) / mRadius);
+}

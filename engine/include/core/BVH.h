@@ -26,6 +26,12 @@ struct BVHNode
     }
 };
 
+struct BVHLeaf
+{
+    int mStartIndex;
+    int mIndexCount;
+};
+
 struct BVH
 {
     BVHNode *mNodes;

@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "../core/BVH.h"
+
 namespace PhysicsEngine
 {
 	class World;
@@ -16,6 +18,8 @@ namespace PhysicsEngine
 
         int mSamplesPerRay;
         std::vector<float> mImage;
+
+        std::vector<BVH> mBVHs;
 
       public:
         Raytracer();

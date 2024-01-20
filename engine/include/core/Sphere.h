@@ -16,6 +16,7 @@ class Sphere
     Sphere(const glm::vec3 &centre, float radius);
 
     float getVolume() const;
+    glm::vec3 getNormal(const glm::vec3 &point) const;
 };
 } // namespace PhysicsEngine
 
