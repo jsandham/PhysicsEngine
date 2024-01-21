@@ -60,3 +60,15 @@ glm::vec3 Triangle::getNormal() const
 
     return glm::vec3(nx, ny, nz);
 }
+
+AABB Triangle::getAABBBounds() const
+{
+    glm::vec3 bmin = glm::min(mV0, glm::min(mV1, mV2));
+    glm::vec3 bmax = glm::max(mV0, glm::max(mV1, mV2));
+
+    AABB aabb;
+    aabb.mSize = bmax - bmin;
+    aabb.mCentre = bmin + 0.5f * aabb.mSize;
+
+    return aabb;
+}

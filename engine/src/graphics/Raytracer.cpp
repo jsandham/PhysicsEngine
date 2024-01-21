@@ -65,172 +65,27 @@ static float hit_triangle(const Triangle &triangle, const Ray &ray)
         return -1.0f;
 }
 
-
-struct RaytraceMaterial
-{
-    enum class MaterialType
-    {
-        Lambertian,
-        Metallic,
-        Dialectric,
-        DiffuseLight
-    };
-
-    MaterialType mType;
-    float mFuzz;
-    float mRefractionIndex;
-    glm::vec3 mAlbedo;
-    glm::vec3 mEmissive;
-
-    RaytraceMaterial() : mType(MaterialType::Lambertian), 
-                         mFuzz(0.0f), 
-                         mRefractionIndex(1.0f), 
-                         mAlbedo(glm::vec3(0.5f, 0.5f, 0.5f)),
-                         mEmissive(glm::vec3(0.0f, 0.0f, 0.0f)){};
-    RaytraceMaterial(MaterialType type, float fuzz, float ir, const glm::vec3 &albedo, const glm::vec3 &emissive)
-        : mType(type), mFuzz(glm::max(0.0f, glm::min(1.0f, fuzz))), mRefractionIndex(ir), mAlbedo(albedo),
-          mEmissive(emissive){};
-
-    static float reflectance(float cosine, float ref_idx)
-    {
-        // Use Schlick's approximation for reflectance.
-        auto r0 = (1.0f - ref_idx) / (1 + ref_idx);
-        r0 = r0 * r0;
-        return r0 + (1.0f - r0) * glm::pow((1.0f - cosine), 5.0f);
-    }
-
-    static glm::vec3 refract(const glm::vec3 &uv, const glm::vec3 &n, float etai_over_etat)
-    {
-        auto cos_theta = glm::min(glm::dot(-uv, n), 1.0f);
-        glm::vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
-        glm::vec3 r_out_parallel = -glm::sqrt(glm::abs(1.0f - glm::length2(r_out_perp))) * n;
-        return r_out_perp + r_out_parallel;
-    }
-
-    static uint32_t pcg_hash(uint32_t seed)
-    {
-        uint32_t state = seed * 747796405u + 2891336453u;
-        uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
-        return (word >> 22u) ^ word;
-    }
-
-    static float generate_rand(float a = 0.0f, float b = 1.0f)
-    {
-        static uint32_t seed = 1234567;
-        seed++;
-        float uniform = (float)pcg_hash(seed) / (float)std::numeric_limits<uint32_t>::max();
-        return a + (b - a) * uniform;
-    }
-
-    static Ray generate_dialectric_ray(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float ir)
-    {
-        bool front_face = glm::dot(v, normal) < 0.0f;
-        float refraction_ratio = front_face ? (1.0f / ir) : ir;
-
-        glm::vec3 normal2 = front_face ? normal : -1.0f * normal;
-
-        glm::vec3 unit_direction = glm::normalize(v);
-        float cos_theta = glm::min(glm::dot(-unit_direction, normal2), 1.0f);
-        float sin_theta = glm::sqrt(1.0f - cos_theta * cos_theta);
-
-        bool cannot_refract = refraction_ratio * sin_theta > 1.0f;
-        glm::vec3 direction;
-
-        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > generate_rand(0.0f, 1.0f))
-            direction = glm::reflect(unit_direction, normal2);
-        else
-            direction = refract(unit_direction, normal2, refraction_ratio);
-
-        Ray ray;
-        ray.mOrigin = point;
-        ray.mDirection = direction;
-
-        return ray;
-    }
-
-    static Ray generate_metallic_ray(const glm::vec3 &point, const glm::vec3 &v, const glm::vec3 &normal, float fuzz)
-    {
-        Ray ray;
-        ray.mOrigin = point;
-        ray.mDirection = glm::reflect(glm::normalize(v), normal) + fuzz * glm::vec3(generate_rand(), generate_rand(), generate_rand());
-
-        return ray;
-    }
-
-    static Ray generate_lambertian_ray(const glm::vec3 &point, const glm::vec3 &normal)
-    {
-        glm::vec3 unitSphereVector =
-            normal + glm::normalize(glm::vec3(generate_rand(), generate_rand(), generate_rand()));
-
-        Ray ray;
-        ray.mOrigin = point;
-
-        if (glm::dot(unitSphereVector, normal) > 0.0f)
-        {
-            ray.mDirection = unitSphereVector;
-        }
-        else
-        {
-            ray.mDirection = -unitSphereVector;
-        }
-
-        return ray;
-    }
-};
-
-// Iterative computeColor
-static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials,
-                              const BVH &bvh, const Ray &ray, int maxDepth)
+// Iterative computeColor for spheres
+static glm::vec3 computeColorIterative(const BVH &bvh,
+                                       const std::vector<Sphere> &spheres, 
+                                       const std::vector<RaytraceMaterial> &materials,
+                                       const Ray &ray, 
+                                       int maxDepth)
 {
     Ray ray2 = ray;
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    int top = 0;
-    int stack[32];
-
     for (int depth = 0; depth < maxDepth; depth++)
     {
+        BVHHit hit = bvh.intersect(ray2);
+
         int closest_index = -1;
         float closest_t = std::numeric_limits<float>::max();
-
-        assert(top == 0);
-        stack[0] = 0;
-        top++;
-
-        BVHLeaf leafs[32];
-
-        int leafCount = 0;
-        while (top > 0)
+        for (int i = 0; i < hit.mLeafCount; i++)
         {
-            int nodeIndex = stack[top - 1];
-            top--;
-
-            const BVHNode *node = &bvh.mNodes[nodeIndex];
-
-            if (Intersect::intersect(ray2, node->mMin, node->mMax))
-            {
-                if (!node->isLeaf())
-                {
-                    stack[top++] = node->mLeftOrStartIndex;
-                    stack[top++] = node->mLeftOrStartIndex + 1;
-                }
-                else
-                {
-                    if (leafCount < 32)
-                    {
-                        leafs[leafCount].mStartIndex = node->mLeftOrStartIndex;
-                        leafs[leafCount].mIndexCount = node->mIndexCount;
-                        leafCount++;
-                    }
-                }
-            }
-        }
-
-        for (int i = 0; i < leafCount; i++)
-        {
-            int startIndex = leafs[i].mStartIndex;
-            int endIndex = leafs[i].mStartIndex + leafs[i].mIndexCount;
+            int startIndex = hit.mLeafs[i].mStartIndex;
+            int endIndex = hit.mLeafs[i].mStartIndex + hit.mLeafs[i].mIndexCount;
         
             for (int j = startIndex; j < endIndex; j++)
             {
@@ -284,55 +139,36 @@ static glm::vec3 computeColorIterative(const std::vector<Sphere> &spheres, const
     return color;
 }
 
-
-
-static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
-                                       const std::vector<RaytraceMaterial> &materials, const std::vector<int> &materialPtr, const BVH &bvh, const Ray &ray,
+// Iterative computeColor for triangles
+static glm::vec3 computeColorIterative(const BVH &bvh,
+                                       const std::vector<Triangle> &triangles,
+                                       const std::vector<RaytraceMaterial> &materials, 
+                                       const std::vector<int> &materialPtr, 
+                                       const Ray &ray,
                                        int maxDepth)
 {
     Ray ray2 = ray;
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    int top = 0;
-    int stack[32];
-
     for (int depth = 0; depth < maxDepth; depth++)
     {
+        BVHHit hit = bvh.intersect(ray2);
+
         int closest_index = -1;
         float closest_t = std::numeric_limits<float>::max();
-
-        assert(top == 0);
-        stack[0] = 0;
-        top++;
-
-        while (top > 0)
+        for (int i = 0; i < hit.mLeafCount; i++)
         {
-            int nodeIndex = stack[top - 1];
-            top--;
+            int startIndex = hit.mLeafs[i].mStartIndex;
+            int endIndex = hit.mLeafs[i].mStartIndex + hit.mLeafs[i].mIndexCount;
 
-            const BVHNode *node = &bvh.mNodes[nodeIndex];
-
-            if (Intersect::intersect(ray2, node->mMin, node->mMax))
+            for (int j = startIndex; j < endIndex; j++)
             {
-                if (!node->isLeaf())
+                float t = hit_triangle(triangles[bvh.mPerm[j]], ray2);
+                if (t > 0.001f && t < closest_t)
                 {
-                    stack[top++] = node->mLeftOrStartIndex;
-                    stack[top++] = node->mLeftOrStartIndex + 1;
-                }
-                else
-                {
-                    int startIndex = node->mLeftOrStartIndex;
-                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
-                    for (int i = startIndex; i < endIndex; i++)
-                    {
-                        float t = hit_triangle(triangles[bvh.mPerm[i]], ray2);
-                        if (t > 0.001f && t < closest_t)
-                        {
-                            closest_t = t;
-                            closest_index = (int)bvh.mPerm[i];
-                        }
-                    }
+                    closest_t = t;
+                    closest_index = (int)bvh.mPerm[j];
                 }
             }
         }
@@ -402,6 +238,61 @@ static glm::vec3 computeColorIterative(const std::vector<Triangle> &triangles,
     return color;
 }
 
+// Iterative computeColor using TLAS and BLAS
+static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS> &blas,
+                                       const std::vector<RaytraceMaterial> &materials,
+                                       const Ray &ray, int maxDepth)
+{
+    Ray ray2 = ray;
+
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    for (int depth = 0; depth < maxDepth; depth++)
+    {
+        TLASHit hit = tlas.intersectTLAS(ray2);
+
+        if (hit.blasIndex >= 0)
+        {
+            /*if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+            {
+                color *= materials[hit.blasIndex].mEmissive;
+                break;
+            }*/
+
+            glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.blasHit.mTriIndex).getNormal());
+            glm::vec3 point = ray2.getPoint(hit.blasHit.mT);
+
+            switch (materials[hit.blasIndex].mType)
+            {
+            case RaytraceMaterial::MaterialType::Lambertian:
+                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
+                break;
+            case RaytraceMaterial::MaterialType::Metallic:
+                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
+                                                               materials[hit.blasIndex].mFuzz);
+                break;
+            case RaytraceMaterial::MaterialType::Dialectric:
+                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
+                                                                 materials[hit.blasIndex].mRefractionIndex);
+                break;
+            }
+
+            color *= materials[hit.blasIndex].mAlbedo;
+        }
+        else
+        {
+            // color *= glm::vec3(0.0f, 0.0f, 0.0f);
+            glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
+            float a = 0.5f * (unit_direction.y + 1.0f);
+            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+            break;
+        }
+    }
+
+    return color;
+}
+
+
 Raytracer::Raytracer()
 {
     mSamplesPerRay = 0;
@@ -419,7 +310,8 @@ void Raytracer::init(World *world)
 
 void Raytracer::update(Camera *camera)
 {
-    srand(0);
+    // Spheres
+    /*srand(0);
     int sphereCount = 100;
     std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
@@ -467,12 +359,14 @@ void Raytracer::update(Camera *camera)
     {
         boundingVolumes[i].mCentre = spheres[i].mCentre;
         boundingVolumes[i].mSize = 2.0f * glm::vec3(spheres[i].mRadius, spheres[i].mRadius, spheres[i].mRadius);
-    }
+    }*/
 
 
 
 
 
+
+    //Triangles
     /*srand(0);
     Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
     const std::vector<float> &vertices = sphereMesh->getVertices();
@@ -557,14 +451,100 @@ void Raytracer::update(Camera *camera)
 
 
 
+    // TLAS and BLAS
+    static bool generate_blas = true;
+    if (generate_blas)
+    {
+        Mesh *planeMesh = mWorld->getPrimtiveMesh(PrimitiveType::Plane);
+        Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
+    
+        std::vector<float> planeVertices = planeMesh->getVertices();
+        std::vector<float> sphereVertices = sphereMesh->getVertices();
 
+        std::vector<unsigned int> planeIndices = planeMesh->getIndices();
+        std::vector<unsigned int> sphereIndices = sphereMesh->getIndices();
+
+        std::vector<Triangle> planeTriangles(planeIndices.size() / 3);
+        std::vector<Triangle> sphereTriangles(sphereIndices.size() / 3);
+
+        for (size_t i = 0; i < planeIndices.size() / 3; i++)
+        {
+            unsigned int i0 = planeIndices[3 * i + 0];
+            unsigned int i1 = planeIndices[3 * i + 1];
+            unsigned int i2 = planeIndices[3 * i + 2];
+
+            glm::vec3 v0 = glm::vec3(planeVertices[3 * i0 + 0], planeVertices[3 * i0 + 1], planeVertices[3 * i0 + 2]);
+            glm::vec3 v1 = glm::vec3(planeVertices[3 * i1 + 0], planeVertices[3 * i1 + 1], planeVertices[3 * i1 + 2]);
+            glm::vec3 v2 = glm::vec3(planeVertices[3 * i2 + 0], planeVertices[3 * i2 + 1], planeVertices[3 * i2 + 2]);
+
+            planeTriangles[i].mV0 = v0;
+            planeTriangles[i].mV1 = v1;
+            planeTriangles[i].mV2 = v2;
+        }
+
+        for (size_t i = 0; i < sphereIndices.size() / 3; i++)
+        {
+            unsigned int i0 = sphereIndices[3 * i + 0];
+            unsigned int i1 = sphereIndices[3 * i + 1];
+            unsigned int i2 = sphereIndices[3 * i + 2];
+
+            glm::vec3 v0 = glm::vec3(sphereVertices[3 * i0 + 0], sphereVertices[3 * i0 + 1], sphereVertices[3 * i0 + 2]);
+            glm::vec3 v1 = glm::vec3(sphereVertices[3 * i1 + 0], sphereVertices[3 * i1 + 1], sphereVertices[3 * i1 + 2]);
+            glm::vec3 v2 = glm::vec3(sphereVertices[3 * i2 + 0], sphereVertices[3 * i2 + 1], sphereVertices[3 * i2 + 2]);
+
+            sphereTriangles[i].mV0 = v0;
+            sphereTriangles[i].mV1 = v1;
+            sphereTriangles[i].mV2 = v2;
+        }
+
+        glm::mat4 planeModel = glm::mat4(1.0f);
+        planeModel[0] *= 10.0f;
+        planeModel[1] *= 10.0f;
+        planeModel[2] *= 10.0f;
+        glm::mat4 sphereModelLeft = glm::mat4(1.0f);
+        sphereModelLeft[3] = glm::vec4(-2.0f, 2.0f, 0.0f, 1.0f);
+        glm::mat4 sphereModelCentre = glm::mat4(1.0f);
+        sphereModelCentre[3] = glm::vec4(0.0f, 2.0f, 0.0f, 1.0f);
+        glm::mat4 sphereModelRight = glm::mat4(1.0f);
+        sphereModelRight[3] = glm::vec4(2.0f, 2.0f, 0.0f, 1.0f);
+
+        mBLAS.resize(4);
+        mBLAS[0].allocateBLAS(planeTriangles.size());
+        mBLAS[0].buildBLAS(planeTriangles, planeModel, planeTriangles.size());
+        mBLAS[1].allocateBLAS(sphereTriangles.size());
+        mBLAS[1].buildBLAS(sphereTriangles, sphereModelLeft, sphereTriangles.size());
+        mBLAS[2].allocateBLAS(sphereTriangles.size());
+        mBLAS[2].buildBLAS(sphereTriangles, sphereModelCentre, sphereTriangles.size());
+        mBLAS[3].allocateBLAS(sphereTriangles.size());
+        mBLAS[3].buildBLAS(sphereTriangles, sphereModelRight, sphereTriangles.size());
+
+        mMaterials.resize(4);
+        mMaterials[0].mType = RaytraceMaterial::MaterialType::Lambertian;
+        mMaterials[0].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
+
+        mMaterials[1].mType = RaytraceMaterial::MaterialType::Dialectric;
+        mMaterials[1].mAlbedo = glm::vec3(1.0f, 1.0f, 1.0f);
+        mMaterials[1].mRefractionIndex = 1.5f;
+
+        mMaterials[2].mType = RaytraceMaterial::MaterialType::Lambertian;
+        mMaterials[2].mAlbedo = glm::vec3(0.8f, 0.2f, 0.5f);
+
+        mMaterials[3].mType = RaytraceMaterial::MaterialType::Metallic;
+        mMaterials[3].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
+        mMaterials[3].mFuzz = 0.1f;
+
+        generate_blas = false;
+    }
+
+    mTLAS.allocateTLAS(4);
+    mTLAS.buildTLAS(mBLAS.data(), 4);
 
 
    
 
-    BVH bvh;
-    bvh.allocateBVH(boundingVolumes.size());
-    bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
+    //BVH bvh;
+    //bvh.allocateBVH(boundingVolumes.size());
+    //bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
 
     // If camera is moved, re-compute image
     if (mSamplesPerRay == 0 || camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
@@ -620,7 +600,7 @@ void Raytracer::update(Camera *camera)
         //}
         int row_dim = 4;
         int col_dim = 4;
-        #pragma omp parallel for schedule(dynamic)
+        //#pragma omp parallel for schedule(dynamic)
         for (int brow = 0; brow < height / row_dim; brow++)
         {
             for (int bcol = 0; bcol < width / col_dim; bcol++)
@@ -640,11 +620,12 @@ void Raytracer::update(Camera *camera)
                         float blue = mImage[3 * offset + 2];
                         glm::vec3 color = glm::vec3(red, green, blue);
 
-                        color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv),
-                                                       max_bounces);
-                        // color +=
-                        //     computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col,
-                        //     row, du, dv), max_bounces);
+                        //color += computeColorIterative(bvh, spheres, materials, camera->getCameraRay(col, row, du, dv),
+                        //                               max_bounces);
+                        //color +=
+                        //    computeColorIterative(bvh, triangles, materials, materialPtr, camera->getCameraRay(col,
+                        //    row, du, dv), max_bounces);
+                        color += computeColorIterative(mTLAS, mBLAS, mMaterials, camera->getCameraRay(col, row, du, dv), max_bounces);
 
                         // Store computed color to image
                         mImage[3 * offset + 0] = color.r;
@@ -659,7 +640,7 @@ void Raytracer::update(Camera *camera)
     }
     
     std::vector<unsigned char> finalImage(3 * width * height);
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int row = 0; row < height; row++)
     {
         for (int col = 0; col < width; col++)
@@ -691,5 +672,6 @@ void Raytracer::update(Camera *camera)
 
     camera->updateRayTracingTexture(finalImage);
 
-    bvh.freeBVH();
+    //bvh.freeBVH();
+    mTLAS.freeTLAS();
 }
