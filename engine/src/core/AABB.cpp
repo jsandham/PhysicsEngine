@@ -32,3 +32,13 @@ glm::vec3 AABB::getMax() const
 {
     return mCentre + 0.5f * mSize;
 }
+
+float AABB::getHalfSurfaceArea() const
+{
+    return mSize.x * mSize.y + mSize.y * mSize.z + mSize.z * mSize.x;
+}
+
+float AABB::getSurfaceArea() const
+{
+    return 2.0f * getHalfSurfaceArea();
+}

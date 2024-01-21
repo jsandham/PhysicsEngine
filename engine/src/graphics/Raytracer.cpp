@@ -457,15 +457,19 @@ void Raytracer::update(Camera *camera)
     {
         Mesh *planeMesh = mWorld->getPrimtiveMesh(PrimitiveType::Plane);
         Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
-    
+        Mesh *cubeMesh = mWorld->getPrimtiveMesh(PrimitiveType::Cube);
+
         std::vector<float> planeVertices = planeMesh->getVertices();
         std::vector<float> sphereVertices = sphereMesh->getVertices();
+        std::vector<float> cubeVertices = cubeMesh->getVertices();
 
         std::vector<unsigned int> planeIndices = planeMesh->getIndices();
         std::vector<unsigned int> sphereIndices = sphereMesh->getIndices();
+        std::vector<unsigned int> cubeIndices = cubeMesh->getIndices();
 
         std::vector<Triangle> planeTriangles(planeIndices.size() / 3);
         std::vector<Triangle> sphereTriangles(sphereIndices.size() / 3);
+        std::vector<Triangle> cubeTriangles(cubeIndices.size() / 3);
 
         for (size_t i = 0; i < planeIndices.size() / 3; i++)
         {
@@ -497,18 +501,38 @@ void Raytracer::update(Camera *camera)
             sphereTriangles[i].mV2 = v2;
         }
 
+        for (size_t i = 0; i < cubeIndices.size() / 3; i++)
+        {
+            unsigned int i0 = cubeIndices[3 * i + 0];
+            unsigned int i1 = cubeIndices[3 * i + 1];
+            unsigned int i2 = cubeIndices[3 * i + 2];
+
+            glm::vec3 v0 =
+                glm::vec3(cubeVertices[3 * i0 + 0], cubeVertices[3 * i0 + 1], cubeVertices[3 * i0 + 2]);
+            glm::vec3 v1 =
+                glm::vec3(cubeVertices[3 * i1 + 0], cubeVertices[3 * i1 + 1], cubeVertices[3 * i1 + 2]);
+            glm::vec3 v2 =
+                glm::vec3(cubeVertices[3 * i2 + 0], cubeVertices[3 * i2 + 1], cubeVertices[3 * i2 + 2]);
+
+            cubeTriangles[i].mV0 = v0;
+            cubeTriangles[i].mV1 = v1;
+            cubeTriangles[i].mV2 = v2;
+        }
+
         glm::mat4 planeModel = glm::mat4(1.0f);
         planeModel[0] *= 10.0f;
         planeModel[1] *= 10.0f;
         planeModel[2] *= 10.0f;
         glm::mat4 sphereModelLeft = glm::mat4(1.0f);
-        sphereModelLeft[3] = glm::vec4(-2.0f, 2.0f, 0.0f, 1.0f);
+        sphereModelLeft[3] = glm::vec4(-2.0f, 1.0f, 0.0f, 1.0f);
         glm::mat4 sphereModelCentre = glm::mat4(1.0f);
-        sphereModelCentre[3] = glm::vec4(0.0f, 2.0f, 0.0f, 1.0f);
+        sphereModelCentre[3] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
         glm::mat4 sphereModelRight = glm::mat4(1.0f);
-        sphereModelRight[3] = glm::vec4(2.0f, 2.0f, 0.0f, 1.0f);
+        sphereModelRight[3] = glm::vec4(2.0f, 1.0f, 0.0f, 1.0f);
+        glm::mat4 cubeModel = glm::mat4(1.0f);
+        cubeModel[3] = glm::vec4(0.0f, 3.0f, 0.0f, 1.0f);
 
-        mBLAS.resize(4);
+        mBLAS.resize(5);
         mBLAS[0].allocateBLAS(planeTriangles.size());
         mBLAS[0].buildBLAS(planeTriangles, planeModel, planeTriangles.size());
         mBLAS[1].allocateBLAS(sphereTriangles.size());
@@ -517,8 +541,10 @@ void Raytracer::update(Camera *camera)
         mBLAS[2].buildBLAS(sphereTriangles, sphereModelCentre, sphereTriangles.size());
         mBLAS[3].allocateBLAS(sphereTriangles.size());
         mBLAS[3].buildBLAS(sphereTriangles, sphereModelRight, sphereTriangles.size());
+        mBLAS[4].allocateBLAS(cubeTriangles.size());
+        mBLAS[4].buildBLAS(cubeTriangles, cubeModel, cubeTriangles.size());
 
-        mMaterials.resize(4);
+        mMaterials.resize(5);
         mMaterials[0].mType = RaytraceMaterial::MaterialType::Lambertian;
         mMaterials[0].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
 
@@ -533,11 +559,15 @@ void Raytracer::update(Camera *camera)
         mMaterials[3].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
         mMaterials[3].mFuzz = 0.1f;
 
+        mMaterials[4].mType = RaytraceMaterial::MaterialType::Metallic;
+        mMaterials[4].mAlbedo = glm::vec3(0.75f, 0.75f, 0.75f);
+        mMaterials[4].mFuzz = 0.05f;
+
         generate_blas = false;
     }
 
-    mTLAS.allocateTLAS(4);
-    mTLAS.buildTLAS(mBLAS.data(), 4);
+    mTLAS.allocateTLAS(5);
+    mTLAS.buildTLAS(mBLAS.data(), 5);
 
 
    
@@ -600,7 +630,7 @@ void Raytracer::update(Camera *camera)
         //}
         int row_dim = 4;
         int col_dim = 4;
-        //#pragma omp parallel for schedule(dynamic)
+        #pragma omp parallel for schedule(dynamic)
         for (int brow = 0; brow < height / row_dim; brow++)
         {
             for (int bcol = 0; bcol < width / col_dim; bcol++)
@@ -640,7 +670,7 @@ void Raytracer::update(Camera *camera)
     }
     
     std::vector<unsigned char> finalImage(3 * width * height);
-    //#pragma omp parallel for
+    #pragma omp parallel for
     for (int row = 0; row < height; row++)
     {
         for (int col = 0; col < width; col++)

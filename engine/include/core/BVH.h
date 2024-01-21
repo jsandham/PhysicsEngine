@@ -787,30 +787,173 @@ struct TLASNode
 {
     glm::vec3 mMin;
     glm::vec3 mMax;
-    unsigned int mLeftRight;
+    unsigned int mLeft;
+    unsigned int mRight;
     unsigned int mBLAS;
-    inline bool isLeaf()
+    inline bool isLeaf() const
     {
-        return mLeftRight == 0;
+        return (mLeft == 0 && mRight == 0);
     }
 };
 
 struct TLAS2
 {
+    TLASNode *mNodes;
+    size_t mSize;
+    BLAS *mBlas;
 
-    void allocateTLAS2()
+    void allocateTLAS2(size_t size)
     {
-    
+        mSize = size;
+
+        if (mSize > 0)
+        {
+            mNodes = (TLASNode *)malloc(sizeof(TLASNode) * 2 * mSize);
+        }
     }
 
     void freeTLAS2()
     {
-    
+        if (mSize > 0)
+        {
+            mSize = 0;
+            free(mNodes);
+        }
+    }
+
+    int findSmallestSAMatch(const std::vector<int> &nodeIndices, int N, int nodeIndex)
+    {
+        float maxSurfaceArea = std::numeric_limits<float>::max();
+        int match = -1;
+
+        for (int i = 0; i < N; i++)
+        {
+            if (nodeIndices[i] != nodeIndex)
+            {
+                glm::vec3 bmin = glm::min(mNodes[nodeIndices[i]].mMin, mNodes[nodeIndices[nodeIndex]].mMin);
+                glm::vec3 bmax = glm::max(mNodes[nodeIndices[i]].mMax, mNodes[nodeIndices[nodeIndex]].mMax);
+            
+                glm::vec3 bsize = bmax - bmin;
+                float surfaceArea = bsize.x * bsize.y + bsize.y * bsize.z + bsize.z * bsize.x;
+                if (surfaceArea < maxSurfaceArea)
+                {
+                    maxSurfaceArea = surfaceArea;
+                    match = nodeIndices[i];
+                }
+            }
+        }
+
+        return match;
     }
 
     void buildTLAS2(BLAS* blas, size_t size)
     {
-    
+        assert(mSize == size);
+
+        if (mSize == 0)
+        {
+            return;
+        }
+
+        assert(mNodes != nullptr);
+        assert(mBlas != nullptr);
+
+        mBlas = blas;
+
+        std::vector<int> nodeIndices(size);
+
+        int index = 1;
+        for (size_t i = 0; i < size; i++)
+        {
+            nodeIndices[i] = index;
+
+            mNodes[index].mMin = blas[i].getAABBBounds().getMin();
+            mNodes[index].mMax = blas[i].getAABBBounds().getMax();
+            mNodes[index].mBLAS = (unsigned int)i;
+            mNodes[index].mLeft = 0;
+            mNodes[index].mRight = 0;
+            index++;
+        }
+
+        // Find best match to A
+        int A = 0;
+        int B = findSmallestSAMatch(nodeIndices, (int)nodeIndices.size(), A);
+
+        int count = (int)nodeIndices.size();
+        while (count > 1)
+        {
+            int C = findSmallestSAMatch(nodeIndices, count, B);
+        
+            if (A == C)
+            {
+                int A_Idx = nodeIndices[A];
+                int B_Idx = nodeIndices[B];
+
+                TLASNode *nodeA = &mNodes[A_Idx];
+                TLASNode *nodeB = &mNodes[B_Idx];
+
+                TLASNode *parentAB = &mNodes[index];
+                parentAB->mLeft = A_Idx;
+                parentAB->mRight = B_Idx;
+                parentAB->mMin = glm::min(nodeA->mMin, nodeB->mMin);
+                parentAB->mMax = glm::max(nodeA->mMax, nodeB->mMax);
+
+                nodeIndices[A] = index++;
+                nodeIndices[B] = nodeIndices[count - 1];
+                B = findSmallestSAMatch(nodeIndices, --count, A);
+            }
+            else
+            {
+                A = B;
+                B = C;
+            }
+        }
+
+        mNodes[0] = mNodes[nodeIndices[A]];
+    }
+
+    TLASHit intersectTLAS2(const Ray &ray) const
+    {
+        TLASHit hit;
+        hit.blasHit.mTriIndex = -1;
+        hit.blasHit.mT = std::numeric_limits<float>::max();
+        hit.blasIndex = -1;
+
+        int top = 0;
+        int stack[32];
+
+        stack[0] = 0;
+        top++;
+
+        while (top > 0)
+        {
+            int nodeIndex = stack[top - 1];
+            top--;
+
+            const TLASNode *node = &mNodes[nodeIndex];
+
+            if (Intersect::intersect(ray, node->mMin, node->mMax))
+            {
+                if (!node->isLeaf())
+                {
+                    stack[top++] = node->mLeft;
+                    stack[top++] = node->mRight;
+                }
+                else
+                {
+                    BLASHit h = mBlas[node->mBLAS].intersectBLAS(ray);
+
+                    if (h.mT > 0.001f && h.mT < hit.blasHit.mT)
+                    {
+                        hit.blasHit.mT = h.mT;
+                        hit.blasHit.mTriIndex = h.mTriIndex;
+                        hit.blasIndex = node->mBLAS;
+                    }
+                }
+            }
+        }
+
+        return hit;
     }
 };
 

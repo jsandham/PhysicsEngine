@@ -19,6 +19,8 @@ class AABB
     glm::vec3 getExtents() const;
     glm::vec3 getMin() const;
     glm::vec3 getMax() const;
+    float getHalfSurfaceArea() const;
+    float getSurfaceArea() const;
 };
 } // namespace PhysicsEngine
 
