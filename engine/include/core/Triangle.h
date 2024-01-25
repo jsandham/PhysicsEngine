@@ -19,6 +19,7 @@ class Triangle
     ~Triangle();
 
     glm::vec3 getBarycentric(const glm::vec3 &p) const;
+    glm::vec3 getCentroid() const;
     glm::vec3 getNormal() const;
     AABB getAABBBounds() const;
 };

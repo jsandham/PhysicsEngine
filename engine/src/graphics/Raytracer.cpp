@@ -139,105 +139,6 @@ static glm::vec3 computeColorIterative(const BVH &bvh,
     return color;
 }
 
-// Iterative computeColor for triangles
-static glm::vec3 computeColorIterative(const BVH &bvh,
-                                       const std::vector<Triangle> &triangles,
-                                       const std::vector<RaytraceMaterial> &materials, 
-                                       const std::vector<int> &materialPtr, 
-                                       const Ray &ray,
-                                       int maxDepth)
-{
-    Ray ray2 = ray;
-
-    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    for (int depth = 0; depth < maxDepth; depth++)
-    {
-        BVHHit hit = bvh.intersect(ray2);
-
-        int closest_index = -1;
-        float closest_t = std::numeric_limits<float>::max();
-        for (int i = 0; i < hit.mLeafCount; i++)
-        {
-            int startIndex = hit.mLeafs[i].mStartIndex;
-            int endIndex = hit.mLeafs[i].mStartIndex + hit.mLeafs[i].mIndexCount;
-
-            for (int j = startIndex; j < endIndex; j++)
-            {
-                float t = hit_triangle(triangles[bvh.mPerm[j]], ray2);
-                if (t > 0.001f && t < closest_t)
-                {
-                    closest_t = t;
-                    closest_index = (int)bvh.mPerm[j];
-                }
-            }
-        }
-
-        /*int closest_index = -1;
-        float closest_t = std::numeric_limits<float>::max();
-        for (size_t i = 0; i < triangles.size(); i++)
-        {
-            float t = hit_triangle(triangles[i], ray2);
-            if (t > 0.0f && t < closest_t)
-            {
-                closest_t = t;
-                closest_index = (int)i;
-            }
-        }*/
-
-        if (closest_index >= 0)
-        {
-            int materialIndex = -1;
-            for (int i = 0; i < (int)materialPtr.size(); i++)
-            {
-                if (closest_index >= materialPtr[i] && closest_index < materialPtr[i + 1])
-                {
-                    materialIndex = i; 
-                    break;
-                }
-            }
-
-            assert(materialIndex >= 0);
-
-            /*if (materials[materialIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
-            {
-                color *= materials[materialIndex].mEmissive;
-                break;
-            }*/
-
-            glm::vec3 normal = glm::normalize(triangles[closest_index].getNormal());
-            glm::vec3 point = ray2.getPoint(closest_t);
-
-            switch (materials[materialIndex].mType)
-            {
-            case RaytraceMaterial::MaterialType::Lambertian:
-                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
-                break;
-            case RaytraceMaterial::MaterialType::Metallic:
-                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
-                                                                             materials[materialIndex].mFuzz);
-                break;
-            case RaytraceMaterial::MaterialType::Dialectric:
-                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
-                                                                           materials[materialIndex].mRefractionIndex);
-                break;
-            }
-
-            color *= materials[materialIndex].mAlbedo;
-        }
-        else
-        {
-            // color *= glm::vec3(0.0f, 0.0f, 0.0f);
-            glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
-            float a = 0.5f * (unit_direction.y + 1.0f);
-            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
-            break;
-        }
-    }
-
-    return color;
-}
-
 // Iterative computeColor using TLAS and BLAS
 static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS> &blas,
                                        const std::vector<RaytraceMaterial> &materials,
@@ -366,90 +267,6 @@ void Raytracer::update(Camera *camera)
 
 
 
-    //Triangles
-    /*srand(0);
-    Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
-    const std::vector<float> &vertices = sphereMesh->getVertices();
-    
-    size_t sphereCount = 3;
-    size_t triCount = sphereMesh->getVertexCount() / 3;
-    std::vector<Triangle> triangles(sphereCount * triCount);
-    for (size_t i = 0; i < sphereCount; i++)
-    {
-        for (size_t j = 0; j < triCount; j++)
-        {
-            glm::vec3 v0 =
-                glm::vec3(vertices[9 * j + 3 * 0 + 0], vertices[9 * j + 3 * 0 + 1], vertices[9 * j + 3 * 0 + 2]);
-            glm::vec3 v1 =
-                glm::vec3(vertices[9 * j + 3 * 1 + 0], vertices[9 * j + 3 * 1 + 1], vertices[9 * j + 3 * 1 + 2]);
-            glm::vec3 v2 =
-                glm::vec3(vertices[9 * j + 3 * 2 + 0], vertices[9 * j + 3 * 2 + 1], vertices[9 * j + 3 * 2 + 2]);
-
-            if (i == 1)
-            {
-                v0 = v0 + glm::vec3(-2.0, 0.0f, 0.0f);
-                v1 = v1 + glm::vec3(-2.0, 0.0f, 0.0f);
-                v2 = v2 + glm::vec3(-2.0, 0.0f, 0.0f);
-            }
-            else if (i == 2)
-            {
-                v0 = v0 + glm::vec3(2.0, 0.0f, 0.0f);
-                v1 = v1 + glm::vec3(2.0, 0.0f, 0.0f);
-                v2 = v2 + glm::vec3(2.0, 0.0f, 0.0f);
-            }
-
-            triangles[triCount * i + j].mV0 = v0;   
-            triangles[triCount * i + j].mV1 = v1;
-            triangles[triCount * i + j].mV2 = v2;
-                
-        }
-    }
-
-    std::vector<int> materialPtr(sphereCount + 1, 0);
-    std::vector<RaytraceMaterial> materials(sphereCount);
-    for (size_t i = 0; i < sphereCount; i++)
-    {
-        RaytraceMaterial::MaterialType type = RaytraceMaterial::MaterialType::Lambertian;
-        glm::vec3 albedo = glm::vec3(0.1f, 0.2f, 0.5f);
-        if (i == 1)
-        {
-            albedo = glm::vec3(0.8f, 0.6f, 0.2f);
-            type = RaytraceMaterial::MaterialType::Metallic;
-        }
-        else if (i == 2)
-        {
-            albedo = glm::vec3(1.0f, 1.0f, 1.0f);
-            type = RaytraceMaterial::MaterialType::Dialectric;
-        }
-
-        materials[i].mType = type;
-        materials[i].mAlbedo = albedo;
-        materials[i].mFuzz = 0.1f;
-        materials[i].mRefractionIndex = 1.5f;
-
-        materialPtr[i + 1] += materialPtr[i] + (int)triCount;
-    }
-
-    std::vector<AABB> boundingVolumes(triangles.size());
-    for (int i = 0; i < triangles.size(); i++)
-    {
-        glm::vec3 bmin = glm::min(triangles[i].mV0, glm::min(triangles[i].mV1, triangles[i].mV2));
-        glm::vec3 bmax = glm::max(triangles[i].mV0, glm::max(triangles[i].mV1, triangles[i].mV2));
-
-        glm::vec3 bsize = bmax - bmin;
-        bsize.x = glm::max(0.1f, bsize.x);
-        bsize.y = glm::max(0.1f, bsize.y);
-        bsize.z = glm::max(0.1f, bsize.z);
-
-        boundingVolumes[i].mCentre = bmin + 0.5f * bsize;
-        boundingVolumes[i].mSize = bsize;
-    }*/
-
-
-
-
-
-
 
     // TLAS and BLAS
     static bool generate_blas = true;
@@ -557,7 +374,7 @@ void Raytracer::update(Camera *camera)
 
         mMaterials[3].mType = RaytraceMaterial::MaterialType::Metallic;
         mMaterials[3].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
-        mMaterials[3].mFuzz = 0.1f;
+        mMaterials[3].mFuzz = 0.0f;
 
         mMaterials[4].mType = RaytraceMaterial::MaterialType::Metallic;
         mMaterials[4].mAlbedo = glm::vec3(0.75f, 0.75f, 0.75f);
@@ -566,15 +383,27 @@ void Raytracer::update(Camera *camera)
         generate_blas = false;
     }
 
+    // BVH bvh;
+    // bvh.allocateBVH(boundingVolumes.size());
+    // bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
     mTLAS.allocateTLAS(5);
     mTLAS.buildTLAS(mBLAS.data(), 5);
 
 
-   
-
-    //BVH bvh;
-    //bvh.allocateBVH(boundingVolumes.size());
-    //bvh.buildBVH(boundingVolumes.data(), boundingVolumes.size());
+    /*for (size_t i = 0; i < mBLAS.size(); i++)
+    {
+        std::cout << "i: " << i << std::endl;
+        for (int j = 0; j < (2 * mBLAS[i].mSize - 1); j++)
+        {
+            if (mBLAS[i].mNodes[j].mIndexCount > 0)
+            {
+                std::cout << "index count: " << mBLAS[i].mNodes[j].mIndexCount
+                          << " start index: " << mBLAS[i].mNodes[j].mLeftOrStartIndex << std::endl;
+            }
+       
+        }
+        std::cout << "" << std::endl;
+    }*/
 
     // If camera is moved, re-compute image
     if (mSamplesPerRay == 0 || camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
@@ -604,64 +433,43 @@ void Raytracer::update(Camera *camera)
     float du = 2.0f / width;
     float dv = 2.0f / height;
 
-    int max_bounces = 50;
+    int max_bounces = 5;
     if (mSamplesPerRay < 1000)
     {
-        //#pragma omp parallel for schedule(dynamic)
-        //for (int row = 0; row < height; row++)
-        //{
-        //    for (int col = 0; col < width; col++)
-        //    {
-        //        // Read color from image
-        //        float r = mImage[3 * width * row + 3 * col + 0];
-        //        float g = mImage[3 * width * row + 3 * col + 1];
-        //        float b = mImage[3 * width * row + 3 * col + 2];
-        //        glm::vec3 color = glm::vec3(r, g, b);
+        constexpr int TILE_WIDTH = 8;
+        constexpr int TILE_HEIGHT = 8;
 
-        //        color += computeColorIterative(spheres, materials, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
-        //        //color +=
-        //        //    computeColorIterative(triangles, materials, materialPtr, bvh, camera->getCameraRay(col, row, du, dv), max_bounces);
+        int tile_rows = height / TILE_HEIGHT;
+        int tile_columns = width / TILE_WIDTH;
 
-        //        // Store computed color to image
-        //        mImage[3 * width * row + 3 * col + 0] = color.r;
-        //        mImage[3 * width * row + 3 * col + 1] = color.g;
-        //        mImage[3 * width * row + 3 * col + 2] = color.b;
-        //    }
-        //}
-        int row_dim = 4;
-        int col_dim = 4;
         #pragma omp parallel for schedule(dynamic)
-        for (int brow = 0; brow < height / row_dim; brow++)
+        for (int t = 0; t < tile_rows * tile_columns; t++)
         {
-            for (int bcol = 0; bcol < width / col_dim; bcol++)
+            int brow = t / tile_rows;
+            int bcol = t % tile_columns;
+
+            for (int r = 0; r < TILE_HEIGHT; r++)
             {
-                for (int r = 0; r < row_dim; r++)
+                for (int c = 0; c < TILE_WIDTH; c++)
                 {
-                    for (int c = 0; c < col_dim; c++)
-                    {
-                        int row = (row_dim * brow + r);
-                        int col = (col_dim * bcol + c);
+                    int row = (TILE_HEIGHT * brow + r);
+                    int col = (TILE_WIDTH * bcol + c);
 
-                        int offset = width * row + col; 
+                    int offset = width * row + col;
 
-                        // Read color from image
-                        float red = mImage[3 * offset + 0];
-                        float green = mImage[3 * offset + 1];
-                        float blue = mImage[3 * offset + 2];
-                        glm::vec3 color = glm::vec3(red, green, blue);
+                    // Read color from image
+                    float red = mImage[3 * offset + 0];
+                    float green = mImage[3 * offset + 1];
+                    float blue = mImage[3 * offset + 2];
+                    glm::vec3 color = glm::vec3(red, green, blue);
 
-                        //color += computeColorIterative(bvh, spheres, materials, camera->getCameraRay(col, row, du, dv),
-                        //                               max_bounces);
-                        //color +=
-                        //    computeColorIterative(bvh, triangles, materials, materialPtr, camera->getCameraRay(col,
-                        //    row, du, dv), max_bounces);
-                        color += computeColorIterative(mTLAS, mBLAS, mMaterials, camera->getCameraRay(col, row, du, dv), max_bounces);
+                    //color += computeColorIterative(bvh, spheres, materials, camera->getCameraRay(col, row, du, dv), max_bounces);
+                    color += computeColorIterative(mTLAS, mBLAS, mMaterials, camera->getCameraRay(col, row, du, dv), max_bounces);
 
-                        // Store computed color to image
-                        mImage[3 * offset + 0] = color.r;
-                        mImage[3 * offset + 1] = color.g;
-                        mImage[3 * offset + 2] = color.b;
-                    }
+                    // Store computed color to image
+                    mImage[3 * offset + 0] = color.r;
+                    mImage[3 * offset + 1] = color.g;
+                    mImage[3 * offset + 2] = color.b;
                 }
             }
         }

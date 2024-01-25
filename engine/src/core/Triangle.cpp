@@ -35,6 +35,11 @@ glm::vec3 Triangle::getBarycentric(const glm::vec3 &p) const
     return glm::vec3(u, v, w);
 }
 
+glm::vec3 Triangle::getCentroid() const
+{
+    return (mV0 + mV1 + mV2) / 3.0f;
+}
+
 glm::vec3 Triangle::getNormal() const
 {
     //glm::vec3 p = mV1 - mV0;

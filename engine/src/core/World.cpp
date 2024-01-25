@@ -315,7 +315,7 @@ World::World()
     mTerrainSystem = new TerrainSystem(this, Guid::newGuid(), Id::newId());
 
     mActiveScene = createScene();
-    mPrimitives.createPrimitiveMeshes(this, 10, 10);
+    mPrimitives.createPrimitiveMeshes(this, 100, 100);
 }
 
 World::~World()

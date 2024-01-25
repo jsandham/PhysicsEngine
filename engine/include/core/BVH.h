@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <queue>
+#include <stack>
+#include <iostream>
 
 #include "../core/glm.h"
 #include "../core/AABB.h"
@@ -129,15 +131,11 @@ struct BVH
             // Find split (by splitting along longest axis)
             glm::vec3 aabbSize = node->mMax - node->mMin;
             int splitPlane = 0;
-            if (aabbSize.y > aabbSize.x && aabbSize.y > aabbSize.z)
-            {
+            if (aabbSize.y > aabbSize.x)
                 splitPlane = 1;
-            }
-            else if (aabbSize.z > aabbSize.x && aabbSize.z > aabbSize.y)
-            {
+            if (aabbSize.z > aabbSize[splitPlane])
                 splitPlane = 2;
-            }
-            float splitPosition = node->mMin[splitPlane] + 0.5f * aabbSize[splitPlane];
+            float splitPosition = node->mMin[splitPlane] + aabbSize[splitPlane] * 0.5f;
 
             // Split bounding AABB's to the left or right of split position
             int i = node->mLeftOrStartIndex;
@@ -322,6 +320,104 @@ struct BLAS
         return mTriangles[index];
     }
 
+    inline void findMidPointSplitPlane(const BVHNode* node, int& splitPlane, float& splitPosition)
+    {
+        glm::vec3 aabbSize = node->mMax - node->mMin;
+        splitPlane = 0;
+        if (aabbSize.y > aabbSize.x)
+            splitPlane = 1;
+        if (aabbSize.z > aabbSize[splitPlane])
+            splitPlane = 2;
+        splitPosition = node->mMin[splitPlane] + aabbSize[splitPlane] * 0.5f;
+    }
+
+    inline float findSAHSplitPlane(const BVHNode *node, int &splitPlane, float &splitPosition)
+    {
+        splitPlane = 0;
+        float cost = std::numeric_limits<float>::max();
+
+        for (int axis = 0; axis < 3; axis++)
+        {
+            float min = node->mMin[axis];
+            float max = node->mMax[axis];
+            float ds = (max - min) / 16.0f;
+
+            for (int i = 0; i < 16; i++)
+            {
+                float position = min + ds * i;
+                float c = computeSAHCost(node, axis, position);
+                if (c < cost)
+                {
+                    cost = c;
+                    splitPlane = axis;
+                    splitPosition = position;
+                }
+            }
+        }
+
+        return cost;
+    }
+
+    inline float computeSAHCost(const BVHNode* node, int splitPlane, float splitPosition)
+    {
+        int startIndex = node->mLeftOrStartIndex;
+        int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+
+        glm::vec3 leftMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                                      std::numeric_limits<float>::max());
+        glm::vec3 leftMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                                      std::numeric_limits<float>::lowest());
+
+        glm::vec3 rightMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                                      std::numeric_limits<float>::max());
+        glm::vec3 rightMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                                      std::numeric_limits<float>::lowest());
+
+        int leftTriCount = 0;
+        int rightTriCount = 0;
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            const Triangle &tri = mTriangles[mPerm[i]];
+            
+            // split triangles to the 'left' or 'right' of split plane based on its centroid
+            if (tri.getCentroid()[splitPlane] < splitPosition)
+            {
+                leftMin = glm::min(leftMin, tri.mV0);
+                leftMin = glm::min(leftMin, tri.mV1);
+                leftMin = glm::min(leftMin, tri.mV2);
+
+                leftMax = glm::max(leftMax, tri.mV0);
+                leftMax = glm::max(leftMax, tri.mV1);
+                leftMax = glm::max(leftMax, tri.mV2);
+
+                leftTriCount++;
+            }
+            else
+            {
+                rightMin = glm::min(rightMin, tri.mV0);
+                rightMin = glm::min(rightMin, tri.mV1);
+                rightMin = glm::min(rightMin, tri.mV2);
+
+                rightMax = glm::max(rightMax, tri.mV0);
+                rightMax = glm::max(rightMax, tri.mV1);
+                rightMax = glm::max(rightMax, tri.mV2);
+
+                rightTriCount++;
+            }
+        }
+
+        glm::vec3 leftSize = leftMax - leftMin;
+        glm::vec3 rightSize = rightMax - rightMin;
+
+        float leftArea = leftSize.x * leftSize.y + leftSize.y * leftSize.z + leftSize.z * leftSize.x;
+        float rightArea = rightSize.x * rightSize.y + rightSize.y * rightSize.z + rightSize.z * rightSize.x;
+
+        // Surface are heuristic
+        float cost = leftTriCount * leftArea + rightTriCount * rightArea;
+
+        return cost > 0.0f ? cost : std::numeric_limits<float>::max();
+    }
+
     void allocateBLAS(size_t size)
     {
         mSize = size;
@@ -361,11 +457,9 @@ struct BLAS
         mModel = model;
         mInverseModel = glm::inverse(model);
 
-        std::vector<AABB> boundingAABBs(mSize);
         for (size_t i = 0; i < mSize; i++)
         {
             mTriangles[i] = triangles[i];
-            boundingAABBs[i] = triangles[i].getAABBBounds();
         }
 
         for (size_t i = 0; i < mSize; i++)
@@ -381,14 +475,17 @@ struct BLAS
         glm::vec3 MIN_VEC3 = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
                                        std::numeric_limits<float>::lowest());
 
-        std::queue<int> queue;
-        queue.push(0);
+        int top = 0;
+        int stack[32];
+
+        stack[0] = 0;
+        top++;
 
         int index = 0; // start at one for alignment
-        while (!queue.empty())
+        while (top > 0)
         {
-            int nodeIndex = queue.front();
-            queue.pop();
+            int nodeIndex = stack[top - 1];
+            top--;
 
             assert(index < getNodeCount());
             assert(nodeIndex < getNodeCount());
@@ -404,66 +501,74 @@ struct BLAS
 
             for (int i = startIndex; i < endIndex; i++)
             {
-                const AABB *aabb = &boundingAABBs[mPerm[i]];
-                nodeMin = glm::min(nodeMin, aabb->getMin());
-                nodeMax = glm::max(nodeMax, aabb->getMax());
+                const Triangle *tri = &triangles[mPerm[i]];
+                nodeMin = glm::min(nodeMin, tri->mV0);
+                nodeMin = glm::min(nodeMin, tri->mV1);
+                nodeMin = glm::min(nodeMin, tri->mV2);
+
+                nodeMax = glm::max(nodeMax, tri->mV0);
+                nodeMax = glm::max(nodeMax, tri->mV1);
+                nodeMax = glm::max(nodeMax, tri->mV2);
             }
 
             node->mMin = nodeMin;
             node->mMax = nodeMax;
 
-            // Find split (by splitting along longest axis)
-            glm::vec3 aabbSize = node->mMax - node->mMin;
-            int splitPlane = 0;
-            if (aabbSize.y > aabbSize.x && aabbSize.y > aabbSize.z)
+            //if (node->mIndexCount > 10)
             {
-                splitPlane = 1;
-            }
-            else if (aabbSize.z > aabbSize.x && aabbSize.z > aabbSize.y)
-            {
-                splitPlane = 2;
-            }
-            float splitPosition = node->mMin[splitPlane] + 0.5f * aabbSize[splitPlane];
+                // Find split (by splitting along longest axis)
+                int splitPlane;
+                float splitPosition;
+                //findMidPointSplitPlane(node, splitPlane, splitPosition);
+                float splitCost = findSAHSplitPlane(node, splitPlane, splitPosition);
 
-            // Split bounding AABB's to the left or right of split position
-            int i = node->mLeftOrStartIndex;
-            int j = i + node->mIndexCount - 1;
-            while (i <= j)
-            {
-                if (boundingAABBs[mPerm[i]].mCentre[splitPlane] < splitPosition)
+                glm::vec3 e = node->mMax - node->mMin; // extent of the node
+                float surfaceArea = e.x * e.y + e.y * e.z + e.z * e.x;
+                float noSplitCost = node->mIndexCount * surfaceArea;
+
+                if (splitCost < noSplitCost)
                 {
-                    i++;
+                    // Split triangles to the left or right of split position
+                    int i = node->mLeftOrStartIndex;
+                    int j = i + node->mIndexCount - 1;
+                    while (i <= j)
+                    {
+                        if (triangles[mPerm[i]].getCentroid()[splitPlane] < splitPosition)
+                        {
+                            i++;
+                        }
+                        else
+                        {
+                            int temp = mPerm[i];
+                            mPerm[i] = mPerm[j];
+                            mPerm[j] = temp;
+                            j--;
+                        }
+                    }
+
+                    int leftChildIndexCount = i - node->mLeftOrStartIndex;
+                    int rightChildIndexCount = node->mIndexCount - leftChildIndexCount;
+
+                    if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
+                    {
+                        int leftChildIndex = ++index;
+                        int rightChildIndex = ++index;
+
+                        assert(index < getNodeCount());
+
+                        mNodes[leftChildIndex].mLeftOrStartIndex = node->mLeftOrStartIndex;
+                        mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
+
+                        mNodes[rightChildIndex].mLeftOrStartIndex = i;
+                        mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
+
+                        node->mLeftOrStartIndex = leftChildIndex;
+                        node->mIndexCount = 0;
+
+                        stack[top++] = leftChildIndex;
+                        stack[top++] = rightChildIndex;
+                    }
                 }
-                else
-                {
-                    int temp = mPerm[i];
-                    mPerm[i] = mPerm[j];
-                    mPerm[j] = temp;
-                    j--;
-                }
-            }
-
-            int leftChildIndexCount = i - node->mLeftOrStartIndex;
-            int rightChildIndexCount = node->mIndexCount - leftChildIndexCount;
-
-            if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
-            {
-                int leftChildIndex = ++index;
-                int rightChildIndex = ++index;
-
-                assert(index < getNodeCount());
-
-                mNodes[leftChildIndex].mLeftOrStartIndex = node->mLeftOrStartIndex;
-                mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
-
-                mNodes[rightChildIndex].mLeftOrStartIndex = i;
-                mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
-
-                node->mLeftOrStartIndex = leftChildIndex;
-                node->mIndexCount = 0;
-
-                queue.push(leftChildIndex);
-                queue.push(rightChildIndex);
             }
         }
     }
@@ -627,14 +732,17 @@ struct TLAS
         glm::vec3 MIN_VEC3 = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
                                        std::numeric_limits<float>::lowest());
 
-        std::queue<int> queue;
-        queue.push(0);
+        int top = 0;
+        int stack[32];
+
+        stack[0] = 0;
+        top++;
 
         int index = 0; // start at one for alignment
-        while (!queue.empty())
+        while (top > 0)
         {
-            int nodeIndex = queue.front();
-            queue.pop();
+            int nodeIndex = stack[top - 1];
+            top--;
 
             assert(index < getNodeCount());
             assert(nodeIndex < getNodeCount());
@@ -658,58 +766,57 @@ struct TLAS
             node->mMin = nodeMin;
             node->mMax = nodeMax;
 
-            // Find split (by splitting along longest axis)
-            glm::vec3 aabbSize = node->mMax - node->mMin;
-            int splitPlane = 0;
-            if (aabbSize.y > aabbSize.x && aabbSize.y > aabbSize.z)
+            if (node->mIndexCount > 2)
             {
-                splitPlane = 1;
-            }
-            else if (aabbSize.z > aabbSize.x && aabbSize.z > aabbSize.y)
-            {
-                splitPlane = 2;
-            }
-            float splitPosition = node->mMin[splitPlane] + 0.5f * aabbSize[splitPlane];
+                // Find split (by splitting along longest axis)
+                glm::vec3 aabbSize = node->mMax - node->mMin;
+                int splitPlane = 0;
+                if (aabbSize.y > aabbSize.x)
+                    splitPlane = 1;
+                if (aabbSize.z > aabbSize[splitPlane])
+                    splitPlane = 2;
+                float splitPosition = node->mMin[splitPlane] + aabbSize[splitPlane] * 0.5f;
 
-            // Split bounding AABB's to the left or right of split position
-            int i = node->mLeftOrStartIndex;
-            int j = i + node->mIndexCount - 1;
-            while (i <= j)
-            {
-                if (boundingAABBs[mPerm[i]].mCentre[splitPlane] < splitPosition)
+                // Split bounding AABB's to the left or right of split position
+                int i = node->mLeftOrStartIndex;
+                int j = i + node->mIndexCount - 1;
+                while (i <= j)
                 {
-                    i++;
+                    if (boundingAABBs[mPerm[i]].mCentre[splitPlane] < splitPosition)
+                    {
+                        i++;
+                    }
+                    else
+                    {
+                        int temp = mPerm[i];
+                        mPerm[i] = mPerm[j];
+                        mPerm[j] = temp;
+                        j--;
+                    }
                 }
-                else
+
+                int leftChildIndexCount = i - node->mLeftOrStartIndex;
+                int rightChildIndexCount = node->mIndexCount - leftChildIndexCount;
+
+                if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
                 {
-                    int temp = mPerm[i];
-                    mPerm[i] = mPerm[j];
-                    mPerm[j] = temp;
-                    j--;
+                    int leftChildIndex = ++index;
+                    int rightChildIndex = ++index;
+
+                    assert(index < getNodeCount());
+
+                    mNodes[leftChildIndex].mLeftOrStartIndex = node->mLeftOrStartIndex;
+                    mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
+
+                    mNodes[rightChildIndex].mLeftOrStartIndex = i;
+                    mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
+
+                    node->mLeftOrStartIndex = leftChildIndex;
+                    node->mIndexCount = 0;
+
+                    stack[top++] = leftChildIndex;
+                    stack[top++] = rightChildIndex;
                 }
-            }
-
-            int leftChildIndexCount = i - node->mLeftOrStartIndex;
-            int rightChildIndexCount = node->mIndexCount - leftChildIndexCount;
-
-            if (leftChildIndexCount != 0 && rightChildIndexCount != 0)
-            {
-                int leftChildIndex = ++index;
-                int rightChildIndex = ++index;
-
-                assert(index < getNodeCount());
-
-                mNodes[leftChildIndex].mLeftOrStartIndex = node->mLeftOrStartIndex;
-                mNodes[leftChildIndex].mIndexCount = leftChildIndexCount;
-
-                mNodes[rightChildIndex].mLeftOrStartIndex = i;
-                mNodes[rightChildIndex].mIndexCount = rightChildIndexCount;
-
-                node->mLeftOrStartIndex = leftChildIndex;
-                node->mIndexCount = 0;
-
-                queue.push(leftChildIndex);
-                queue.push(rightChildIndex);
             }
         }
     }
@@ -828,7 +935,7 @@ struct TLAS2
 
         for (int i = 0; i < N; i++)
         {
-            if (nodeIndices[i] != nodeIndex)
+            if (i != nodeIndex)
             {
                 glm::vec3 bmin = glm::min(mNodes[nodeIndices[i]].mMin, mNodes[nodeIndices[nodeIndex]].mMin);
                 glm::vec3 bmax = glm::max(mNodes[nodeIndices[i]].mMax, mNodes[nodeIndices[nodeIndex]].mMax);
@@ -838,7 +945,7 @@ struct TLAS2
                 if (surfaceArea < maxSurfaceArea)
                 {
                     maxSurfaceArea = surfaceArea;
-                    match = nodeIndices[i];
+                    match = i;
                 }
             }
         }
