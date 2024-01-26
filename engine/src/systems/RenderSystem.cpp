@@ -52,6 +52,7 @@ RenderSystem::~RenderSystem()
         delete mBatches[i].mNormalBuffer;
         delete mBatches[i].mTexCoordsBuffer;
         delete mBatches[i].mIndexBuffer;
+        delete mBatches[i].mMeshHandle;
     }
 }
 
@@ -151,6 +152,10 @@ void RenderSystem::update()
 
         if (camera->mEnabled)
         {
+            Transform *cameraTransform = camera->getComponent<Transform>();
+            
+            camera->computeViewMatrix(cameraTransform->getPosition(), cameraTransform->getForward(), cameraTransform->getUp(), cameraTransform->getRight());
+
             frustumCulling(camera);
             occlusionCulling(camera);
 
@@ -177,10 +182,14 @@ void RenderSystem::update()
             }
 
             mOcclusionQueryIndex = (mOcclusionQueryIndex == 0) ? 1 : 0;
-
+        
             if (getKeyUp(getInput(), KeyCode::Z))
             {
-                mRaytraceEnabled = !mRaytraceEnabled;
+                mRaytraceEnabled = true;
+            }
+            else if (getKeyUp(getInput(), KeyCode::X))
+            {
+                mRaytraceEnabled = false;
             }
 
             if (mRaytraceEnabled)

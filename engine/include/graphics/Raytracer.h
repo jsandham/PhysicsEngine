@@ -129,8 +129,8 @@ namespace PhysicsEngine
       private:
         World *mWorld;
 
-        int mSamplesPerRay;
-        std::vector<float> mImage;
+        //int mSamplesPerRay;
+        //std::vector<float> mImage;
 
         TLAS mTLAS;
         std::vector<BLAS> mBLAS;

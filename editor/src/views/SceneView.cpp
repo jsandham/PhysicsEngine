@@ -499,8 +499,6 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 			PhysicsEngine::Camera* camera = clipboard.getWorld()->getActiveScene()->getComponent<PhysicsEngine::Camera>(clipboard.getSelectedId());
 			if (camera != nullptr && camera->mEnabled)
 			{
-				camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(), transform->getRight());
-
 				ImVec2 min = mSceneContentMin;
 				ImVec2 max = mSceneContentMax;
 

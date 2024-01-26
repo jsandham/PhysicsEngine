@@ -123,7 +123,6 @@ void FreeLookCameraSystem::init(World *world)
 
 void FreeLookCameraSystem::update()
 {
-    Camera *camera = getCamera();
     Transform *transform = getTransform();
 
     glm::vec3 position = transform->getPosition();
@@ -209,9 +208,6 @@ void FreeLookCameraSystem::update()
         transform->setRotation(glm::angleAxis(yaw, glm::vec3(0, 1, 0)) * rotationOnClick * glm::angleAxis(pitch, glm::vec3(1, 0, 0)));
     }
     transform->setPosition(position);
-
-    camera->computeViewMatrix(transform->getPosition(), transform->getForward(), transform->getUp(),
-                              transform->getRight());
 }
 
 void FreeLookCameraSystem::resetCamera()

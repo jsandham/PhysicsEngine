@@ -1,5 +1,6 @@
 #include <vector>
 #include <random>
+#include <omp.h>
 
 #include "../../include/graphics/Raytracer.h"
 
@@ -196,7 +197,7 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS>
 
 Raytracer::Raytracer()
 {
-    mSamplesPerRay = 0;
+    //mSamplesPerRay = 0;
 }
 
 Raytracer ::~Raytracer()
@@ -406,12 +407,16 @@ void Raytracer::update(Camera *camera)
     }*/
 
     // If camera is moved, re-compute image
-    if (mSamplesPerRay == 0 || camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
+    if (/*camera->mSamplesPerRay == 0 ||*/
+        camera->moved()) // add a mWorld->getActiveScene()->sceneChangedThisFrame()??
     {
-        mSamplesPerRay = 0;
-        for (size_t i = 0; i < mImage.size(); i++)
+        for (size_t i = 0; i < camera->mImage.size(); i++)
         {
-            mImage[i] = 0.0f;
+            camera->mImage[i] = 0.0f;
+        }
+        for (size_t i = 0; i < camera->mSamplesPerRay.size(); i++)
+        {
+            camera->mSamplesPerRay[i] = 0;
         }
     }
 
@@ -419,34 +424,38 @@ void Raytracer::update(Camera *camera)
     int width = camera->getNativeGraphicsRaytracingTex()->getWidth();
     int height = camera->getNativeGraphicsRaytracingTex()->getHeight();
 
-    if (width * height * 3 != mImage.size())
+    if (width * height * 3 != camera->mImage.size())
     {
-        mImage.resize(width * height * 3);
-        mSamplesPerRay = 0;
-        for (size_t i = 0; i < mImage.size(); i++)
+        camera->mImage.resize(width * height * 3);
+        camera->mSamplesPerRay.resize(width * height);
+        for (size_t i = 0; i < camera->mImage.size(); i++)
         {
-            mImage[i] = 0.0f;
+            camera->mImage[i] = 0.0f;
+        }
+
+        for (size_t i = 0; i < camera->mSamplesPerRay.size(); i++)
+        {
+            camera->mSamplesPerRay[i] = 0;
         }
     }
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    float du = 2.0f / width;
-    float dv = 2.0f / height;
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
 
-    int max_bounces = 5;
-    if (mSamplesPerRay < 1000)
+    int max_bounces = 1;
     {
         constexpr int TILE_WIDTH = 8;
         constexpr int TILE_HEIGHT = 8;
 
-        int tile_rows = height / TILE_HEIGHT;
-        int tile_columns = width / TILE_WIDTH;
+        constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+        constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
 
         #pragma omp parallel for schedule(dynamic)
-        for (int t = 0; t < tile_rows * tile_columns; t++)
+        for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
         {
-            int brow = t / tile_rows;
-            int bcol = t % tile_columns;
+            int brow = t / TILE_ROWS;
+            int bcol = t % TILE_COLUMNS;
 
             for (int r = 0; r < TILE_HEIGHT; r++)
             {
@@ -455,26 +464,37 @@ void Raytracer::update(Camera *camera)
                     int row = (TILE_HEIGHT * brow + r);
                     int col = (TILE_WIDTH * bcol + c);
 
-                    int offset = width * row + col;
+                    glm::vec2 pixelSampleNDC = camera->generatePixelSampleNDC(col, row, du, dv);
+
+                    int irow = (int)(height * (0.5f * (pixelSampleNDC.y + 1.0f)));
+                    int icol = (int)(width * (0.5f * (pixelSampleNDC.x + 1.0f)));
+
+                    irow = glm::min(height - 1, glm::max(0, irow));
+                    icol = glm::min(width - 1, glm::max(0, icol));
+
+                    int offset = width * irow + icol;
+
+                    assert(offset >= 0);
+                    assert(offset < width * height);
+
+                    camera->mSamplesPerRay[offset]++;
 
                     // Read color from image
-                    float red = mImage[3 * offset + 0];
-                    float green = mImage[3 * offset + 1];
-                    float blue = mImage[3 * offset + 2];
+                    float red = camera->mImage[3 * offset + 0];
+                    float green = camera->mImage[3 * offset + 1];
+                    float blue = camera->mImage[3 * offset + 2];
                     glm::vec3 color = glm::vec3(red, green, blue);
 
-                    //color += computeColorIterative(bvh, spheres, materials, camera->getCameraRay(col, row, du, dv), max_bounces);
-                    color += computeColorIterative(mTLAS, mBLAS, mMaterials, camera->getCameraRay(col, row, du, dv), max_bounces);
+                    // color += computeColorIterative(bvh, spheres, materials, camera->getCameraRay(pixelSampleNDC), max_bounces);
+                    color += computeColorIterative(mTLAS, mBLAS, mMaterials, camera->getCameraRay(pixelSampleNDC), max_bounces);
 
                     // Store computed color to image
-                    mImage[3 * offset + 0] = color.r;
-                    mImage[3 * offset + 1] = color.g;
-                    mImage[3 * offset + 2] = color.b;
+                    camera->mImage[3 * offset + 0] = color.r;
+                    camera->mImage[3 * offset + 1] = color.g;
+                    camera->mImage[3 * offset + 2] = color.b;
                 }
             }
         }
-
-        mSamplesPerRay++;
     }
     
     std::vector<unsigned char> finalImage(3 * width * height);
@@ -483,28 +503,39 @@ void Raytracer::update(Camera *camera)
     {
         for (int col = 0; col < width; col++)
         {
-            // Read color from image
-            float r = mImage[3 * width * row + 3 * col + 0];
-            float g = mImage[3 * width * row + 3 * col + 1];
-            float b = mImage[3 * width * row + 3 * col + 2];
+            int sampleCount = camera->mSamplesPerRay[width * row + col];
+    
+            if (sampleCount > 0)
+            {
+                // Read color from image
+                float r = camera->mImage[3 * width * row + 3 * col + 0];
+                float g = camera->mImage[3 * width * row + 3 * col + 1];
+                float b = camera->mImage[3 * width * row + 3 * col + 2];
 
-            float scale = 1.0f / mSamplesPerRay;
-            r *= scale;
-            g *= scale;
-            b *= scale;
+                float scale = 1.0f / sampleCount;
+                r *= scale;
+                g *= scale;
+                b *= scale;
 
-            // Gamma correction
-            r = glm::sqrt(r);
-            g = glm::sqrt(g);
-            b = glm::sqrt(b);
+                // Gamma correction
+                r = glm::sqrt(r);
+                g = glm::sqrt(g);
+                b = glm::sqrt(b);
 
-            int ir = (int)(255 * glm::clamp(r, 0.0f, 1.0f));
-            int ig = (int)(255 * glm::clamp(g, 0.0f, 1.0f));
-            int ib = (int)(255 * glm::clamp(b, 0.0f, 1.0f));
+                int ir = (int)(255 * glm::clamp(r, 0.0f, 1.0f));
+                int ig = (int)(255 * glm::clamp(g, 0.0f, 1.0f));
+                int ib = (int)(255 * glm::clamp(b, 0.0f, 1.0f));
 
-            finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(ir);
-            finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(ig);
-            finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(ib);
+                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(ir);
+                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(ig);
+                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(ib);
+            }
+            else
+            {
+                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(0);
+                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(0);
+                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(0);
+            }
         }
     }
 

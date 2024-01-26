@@ -26,7 +26,7 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
     mTargets.mRaytracingTex = RenderTextureHandle::create(
-        256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
+        1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -83,7 +83,7 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
@@ -589,6 +589,39 @@ static float generate_rand(float a = 0.0f, float b = 1.0f)
     return a + (b - a) * uniform;
 }
 
+glm::vec2 Camera::generatePixelSampleNDC(int u, int v, float du, float dv) const
+{
+    // NDC coordinates for 2x2x2 cube [-1, 1]x[-1, 1]x[-1, 1]
+    //         +y |   * +z
+    //            |  *
+    //            | *
+    // -x ________|*________ +x
+    // In frustum plane, bottom, left, far corner correspnds to NDC point [-1, -1, 1]
+    glm::vec2 bottomLeft_NDC = glm::vec2(-1.0f, -1.0f);
+
+    // Bottom, left corner pixel centre in NDC
+    glm::vec2 pixelCentreBottomLeft_NDC = bottomLeft_NDC + glm::vec2(0.5f * du, 0.5f * dv);
+
+    // Plane pixel centre in NDC
+    glm::vec2 pixelCentre_NDC = pixelCentreBottomLeft_NDC + glm::vec2(u * du, v * dv);
+
+    // Randomly sample from pixel
+    return pixelCentre_NDC + glm::vec2(generate_rand(-0.5f, 0.5f) * du, generate_rand(-0.5f, 0.5f) * dv);
+}
+
+Ray Camera::getCameraRay(const glm::vec2 &pixelSampleNDC) const
+{
+    // Transform NDC coordinate back to world space
+    glm::vec4 temp = this->getInvViewProjMatrix() * glm::vec4(pixelSampleNDC, 1.0f, 1.0f);
+    glm::vec3 pixelCentre_WorldSpace = glm::vec3(temp / temp.w);
+
+    Ray ray;
+    ray.mOrigin = this->getPosition();
+    ray.mDirection = pixelCentre_WorldSpace - this->getPosition();
+
+    return ray;
+}
+
 Ray Camera::getCameraRay(int u, int v, float du, float dv) const
 {
     // NDC coordinates for 2x2x2 cube [-1, 1]x[-1, 1]x[-1, 1]
@@ -607,9 +640,6 @@ Ray Camera::getCameraRay(int u, int v, float du, float dv) const
         pixelCentreFarBottomLeft_NDC + glm::vec3(u * du, 0.0f, 0.0f) + glm::vec3(0.0f, v * dv, 0.0f);
 
     // Randomly sample from pixel
-    //static std::uniform_real_distribution<float> dist(-0.5f, 0.5f);
-    //static std::mt19937 generator;
-    //glm::vec3 pixelSample_NDC = pixelCentre_NDC + glm::vec3(dist(generator) * du, dist(generator) * dv, 0.0f);
     glm::vec3 pixelSample_NDC =
         pixelCentre_NDC + glm::vec3(generate_rand(-0.5f, 0.5f) * du, generate_rand(-0.5f, 0.5f) * dv, 0.0f);
 

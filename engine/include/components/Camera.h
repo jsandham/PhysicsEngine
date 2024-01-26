@@ -71,6 +71,9 @@ class Camera
 
     TimingQuery mQuery;
 
+    std::vector<int> mSamplesPerRay;
+    std::vector<float> mImage;
+
     bool mEnabled;
     bool mRenderToScreen;
 
@@ -183,6 +186,8 @@ class Camera
         return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
     }
 
+    glm::vec2 generatePixelSampleNDC(int u, int v, float du, float dv) const;
+    Ray getCameraRay(const glm::vec2 &pixelSampleNDC) const;
     Ray getCameraRay(int u, int v, float du, float dv) const;
     void updateRayTracingTexture(const std::vector<unsigned char> &data);
 
