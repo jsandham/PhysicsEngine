@@ -27,7 +27,7 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
     mTargets.mRaytracingTex = RenderTextureHandle::create(
-        256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
+        1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -84,7 +84,7 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
@@ -684,7 +684,7 @@ static uint32_t pcg_hash(uint32_t seed)
 
 static float generate_rand(float a = 0.0f, float b = 1.0f)
 {
-    static uint32_t seed = 1234567;
+    static thread_local uint32_t seed = 1234567;
     seed++;
 
     float uniform = (float)pcg_hash(seed) / (float)std::numeric_limits<uint32_t>::max();
@@ -753,14 +753,18 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    float du = 2.0f / 256;
-    float dv = 2.0f / 256;
+    //float du = 2.0f / 256;
+    //float dv = 2.0f / 256;
+    float du = 2.0f / 1024;
+    float dv = 2.0f / 1024;
 
     constexpr int TILE_WIDTH = 8;
     constexpr int TILE_HEIGHT = 8;
 
-    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
-    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+    //constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    //constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+    constexpr int TILE_ROWS = 1024 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 1024 / TILE_WIDTH;
 
     #pragma omp parallel for schedule(dynamic)
     for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
