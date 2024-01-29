@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <random>
+#include <omp.h>
 
 #include "../../include/components/Camera.h"
 #include "../../include/components/ComponentYaml.h"
@@ -26,7 +27,7 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
     mTargets.mRaytracingTex = RenderTextureHandle::create(
-        1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
+        256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -83,7 +84,7 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
@@ -568,9 +569,110 @@ Entity *Camera::getEntity() const
     return mWorld->getActiveScene()->getEntityByGuid(mEntityGuid);
 }
 
-void Camera::updateRayTracingTexture(const std::vector<unsigned char> &data)
+// Iterative computeColor for spheres
+static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere> &spheres,
+                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth)
 {
-    mTargets.mRaytracingTex->load(data);
+    Ray ray2 = ray;
+
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    for (int depth = 0; depth < maxDepth; depth++)
+    {
+        BVHHit hit = bvh.intersect(ray2, spheres);
+
+        if (hit.mIndex >= 0)
+        {
+            if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+            {
+                color *= materials[hit.mIndex].mEmissive;
+                break;
+            }
+
+            glm::vec3 point = ray2.getPoint(hit.mT);
+            glm::vec3 normal = spheres[hit.mIndex].getNormal(point);
+
+            switch (materials[hit.mIndex].mType)
+            {
+            case RaytraceMaterial::MaterialType::Lambertian:
+                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
+                break;
+            case RaytraceMaterial::MaterialType::Metallic:
+                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
+                                                               materials[hit.mIndex].mFuzz);
+                break;
+            case RaytraceMaterial::MaterialType::Dialectric:
+                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
+                                                                 materials[hit.mIndex].mRefractionIndex);
+                break;
+            }
+
+            color *= materials[hit.mIndex].mAlbedo;
+        }
+        else
+        {
+            // color *= glm::vec3(0.0f, 0.0f, 0.0f);
+            glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
+            float a = 0.5f * (unit_direction.y + 1.0f);
+            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+            break;
+        }
+    }
+
+    return color;
+}
+
+// Iterative computeColor using TLAS and BLAS
+static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS> &blas,
+                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth)
+{
+    Ray ray2 = ray;
+
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    for (int depth = 0; depth < maxDepth; depth++)
+    {
+        TLASHit hit = tlas.intersectTLAS(ray2);
+
+        if (hit.blasIndex >= 0)
+        {
+            if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+            {
+                color *= materials[hit.blasIndex].mEmissive;
+                break;
+            }
+
+            glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getNormal());
+            glm::vec3 point = ray2.getPoint(hit.mT);
+
+            switch (materials[hit.blasIndex].mType)
+            {
+            case RaytraceMaterial::MaterialType::Lambertian:
+                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
+                break;
+            case RaytraceMaterial::MaterialType::Metallic:
+                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
+                                                               materials[hit.blasIndex].mFuzz);
+                break;
+            case RaytraceMaterial::MaterialType::Dialectric:
+                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
+                                                                 materials[hit.blasIndex].mRefractionIndex);
+                break;
+            }
+
+            color *= materials[hit.blasIndex].mAlbedo;
+        }
+        else
+        {
+            color *= glm::vec3(0.01f, 0.01f, 0.01f);
+            //glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
+            //float a = 0.5f * (unit_direction.y + 1.0f);
+            //color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
+            break;
+        }
+    }
+
+    return color;
 }
 
 static uint32_t pcg_hash(uint32_t seed)
@@ -589,7 +691,7 @@ static float generate_rand(float a = 0.0f, float b = 1.0f)
     return a + (b - a) * uniform;
 }
 
-glm::vec2 Camera::generatePixelSampleNDC(int u, int v, float du, float dv) const
+static glm::vec2 generatePixelSampleNDC(int u, int v, float du, float dv)
 {
     // NDC coordinates for 2x2x2 cube [-1, 1]x[-1, 1]x[-1, 1]
     //         +y |   * +z
@@ -607,6 +709,215 @@ glm::vec2 Camera::generatePixelSampleNDC(int u, int v, float du, float dv) const
 
     // Randomly sample from pixel
     return pixelCentre_NDC + glm::vec2(generate_rand(-0.5f, 0.5f) * du, generate_rand(-0.5f, 0.5f) * dv);
+}
+
+void Camera::clearPixels()
+{
+    for (size_t i = 0; i < mImage.size(); i++)
+    {
+        mImage[i] = 0.0f;
+    }
+    for (size_t i = 0; i < mSamplesPerRay.size(); i++)
+    {
+        mSamplesPerRay[i] = 0;
+    }
+}
+
+void Camera::resizePixels()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    if (width * height * 3 != mImage.size())
+    {
+        mImage.resize(width * height * 3);
+        mSamplesPerRay.resize(width * height);
+        for (size_t i = 0; i < mImage.size(); i++)
+        {
+            mImage[i] = 0.0f;
+        }
+
+        for (size_t i = 0; i < mSamplesPerRay.size(); i++)
+        {
+            mSamplesPerRay[i] = 0;
+        }
+    }
+}
+
+void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
+                           const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
+
+    constexpr int TILE_WIDTH = 8;
+    constexpr int TILE_HEIGHT = 8;
+
+    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+
+    #pragma omp parallel for schedule(dynamic)
+    for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
+    {
+        int brow = t / TILE_ROWS;
+        int bcol = t % TILE_COLUMNS;
+
+        for (int r = 0; r < TILE_HEIGHT; r++)
+        {
+            for (int c = 0; c < TILE_WIDTH; c++)
+            {
+                int row = (TILE_HEIGHT * brow + r);
+                int col = (TILE_WIDTH * bcol + c);
+
+                glm::vec2 pixelSampleNDC = generatePixelSampleNDC(col, row, du, dv);
+
+                int irow = (int)(height * (0.5f * (pixelSampleNDC.y + 1.0f)));
+                int icol = (int)(width * (0.5f * (pixelSampleNDC.x + 1.0f)));
+
+                irow = glm::min(height - 1, glm::max(0, irow));
+                icol = glm::min(width - 1, glm::max(0, icol));
+
+                int offset = width * irow + icol;
+
+                assert(offset >= 0);
+                assert(offset < width * height);
+
+                mSamplesPerRay[offset]++;
+
+                // Read color from image
+                float red = mImage[3 * offset + 0];
+                float green = mImage[3 * offset + 1];
+                float blue = mImage[3 * offset + 2];
+                glm::vec3 color = glm::vec3(red, green, blue);
+
+                color += computeColorIterative(bvh, spheres, materials, getCameraRay(pixelSampleNDC), maxBounces);
+                
+                // Store computed color to image
+                mImage[3 * offset + 0] = color.r;
+                mImage[3 * offset + 1] = color.g;
+                mImage[3 * offset + 2] = color.b;
+            }
+        }
+    }
+}
+
+void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
+
+    constexpr int TILE_WIDTH = 8;
+    constexpr int TILE_HEIGHT = 8;
+
+    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+
+    #pragma omp parallel for schedule(dynamic)
+    for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
+    {
+        int brow = t / TILE_ROWS;
+        int bcol = t % TILE_COLUMNS;
+
+        for (int r = 0; r < TILE_HEIGHT; r++)
+        {
+            for (int c = 0; c < TILE_WIDTH; c++)
+            {
+                int row = (TILE_HEIGHT * brow + r);
+                int col = (TILE_WIDTH * bcol + c);
+
+                glm::vec2 pixelSampleNDC = generatePixelSampleNDC(col, row, du, dv);
+
+                int irow = (int)(height * (0.5f * (pixelSampleNDC.y + 1.0f)));
+                int icol = (int)(width * (0.5f * (pixelSampleNDC.x + 1.0f)));
+
+                irow = glm::min(height - 1, glm::max(0, irow));
+                icol = glm::min(width - 1, glm::max(0, icol));
+
+                int offset = width * irow + icol;
+
+                assert(offset >= 0);
+                assert(offset < width * height);
+
+                mSamplesPerRay[offset]++;
+
+                // Read color from image
+                float red = mImage[3 * offset + 0];
+                float green = mImage[3 * offset + 1];
+                float blue = mImage[3 * offset + 2];
+                glm::vec3 color = glm::vec3(red, green, blue);
+
+                color += computeColorIterative(tlas, blas, materials, getCameraRay(pixelSampleNDC),
+                                                maxBounces);
+
+                // Store computed color to image
+                mImage[3 * offset + 0] = color.r;
+                mImage[3 * offset + 1] = color.g;
+                mImage[3 * offset + 2] = color.b;
+            }
+        }
+    }
+}
+
+void Camera::updateFinalImage()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    std::vector<unsigned char> finalImage(3 * width * height);
+    #pragma omp parallel for
+    for (int row = 0; row < height; row++)
+    {
+        for (int col = 0; col < width; col++)
+        {
+            int sampleCount = mSamplesPerRay[width * row + col];
+
+            if (sampleCount > 0)
+            {
+                // Read color from image
+                float r = mImage[3 * width * row + 3 * col + 0];
+                float g = mImage[3 * width * row + 3 * col + 1];
+                float b = mImage[3 * width * row + 3 * col + 2];
+
+                float scale = 1.0f / sampleCount;
+                r *= scale;
+                g *= scale;
+                b *= scale;
+
+                // Gamma correction
+                r = glm::sqrt(r);
+                g = glm::sqrt(g);
+                b = glm::sqrt(b);
+
+                int ir = (int)(255 * glm::clamp(r, 0.0f, 1.0f));
+                int ig = (int)(255 * glm::clamp(g, 0.0f, 1.0f));
+                int ib = (int)(255 * glm::clamp(b, 0.0f, 1.0f));
+
+                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(ir);
+                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(ig);
+                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(ib);
+            }
+            else
+            {
+                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(0);
+                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(0);
+                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(0);
+            }
+        }
+    }
+
+    mTargets.mRaytracingTex->load(finalImage);
 }
 
 Ray Camera::getCameraRay(const glm::vec2 &pixelSampleNDC) const

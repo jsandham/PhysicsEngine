@@ -1,18 +1,103 @@
 #ifndef BVH_H__
 #define BVH_H__
 
+// no sorting
+// head on 5.3 million intersectAABB
+// rotated 3.4 million intersectAABB
+// fully culled 65536 intersectAABB
+
+// with sorting
+// head on 4.2 million intersectAABB
+// rotated 1.8 million intersectAABB
+// fully culled 65536 intersectAABB
+
 #include <vector>
 #include <queue>
 #include <stack>
 #include <iostream>
 
 #include "../core/glm.h"
+#include "../core/Sphere.h"
 #include "../core/AABB.h"
+#include "../core/Triangle.h"
 #include "../core/Ray.h"
-#include "../core/Intersect.h"
 
 namespace PhysicsEngine
 {
+inline float intersectSphere(const glm::vec3 &center, float radius, const Ray &ray)
+{
+    glm::vec3 oc = (ray.mOrigin - center);
+    float a = glm::dot(ray.mDirection, ray.mDirection);
+    float b = 2.0f * glm::dot(oc, ray.mDirection);
+    float c = glm::dot(oc, oc) - radius * radius;
+    float discriminant = b * b - 4 * a * c;
+
+    if (discriminant < 0.0f)
+    {
+        return -1.0f;
+    }
+    else
+    {
+        return (-b - glm::sqrt(discriminant)) / (2.0f * a);
+    }
+}
+
+inline float intersectAABB(const Ray &ray, const glm::vec3 &bmin, const glm::vec3 &bmax)
+{
+    glm::vec3 invDirection;
+    invDirection.x = 1.0f / ray.mDirection.x;
+    invDirection.y = 1.0f / ray.mDirection.y;
+    invDirection.z = 1.0f / ray.mDirection.z;
+
+    float tx0 = (bmin.x - ray.mOrigin.x) * invDirection.x;
+    float tx1 = (bmax.x - ray.mOrigin.x) * invDirection.x;
+    float ty0 = (bmin.y - ray.mOrigin.y) * invDirection.y;
+    float ty1 = (bmax.y - ray.mOrigin.y) * invDirection.y;
+    float tz0 = (bmin.z - ray.mOrigin.z) * invDirection.z;
+    float tz1 = (bmax.z - ray.mOrigin.z) * invDirection.z;
+
+    float tmin = glm::max(glm::max(glm::min(tx0, tx1), glm::min(ty0, ty1)), glm::min(tz0, tz1));
+    float tmax = glm::min(glm::min(glm::max(tx0, tx1), glm::max(ty0, ty1)), glm::max(tz0, tz1));
+
+    return (tmax >= tmin && tmax >= 0.0f) ? tmin : std::numeric_limits<float>::max();
+}
+
+inline float intersectTri(const Triangle &triangle, const Ray &ray)
+{
+    constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
+    glm::vec3 edge1 = triangle.mV1 - triangle.mV0;
+    glm::vec3 edge2 = triangle.mV2 - triangle.mV0;
+    glm::vec3 ray_cross_e2 = glm::cross(ray.mDirection, edge2);
+    float det = glm::dot(edge1, ray_cross_e2);
+
+    if (det > -epsilon && det < epsilon)
+        return -1.0f; // This ray is parallel to this triangle.
+
+    float inv_det = 1.0f / det;
+    glm::vec3 s = ray.mOrigin - triangle.mV0;
+    float u = inv_det * glm::dot(s, ray_cross_e2);
+
+    if (u < 0 || u > 1)
+        return -1.0f;
+
+    glm::vec3 s_cross_e1 = glm::cross(s, edge1);
+    float v = inv_det * glm::dot(ray.mDirection, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return -1.0f;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * glm::dot(edge2, s_cross_e1);
+
+    if (t > epsilon) // ray intersection
+    {
+        return t;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return -1.0f;
+}
+
 struct BVHNode
 {
     glm::vec3 mMin;
@@ -28,16 +113,10 @@ struct BVHNode
     }
 };
 
-struct BVHLeaf
-{
-    int mStartIndex;
-    int mIndexCount;
-};
-
 struct BVHHit
 {
-    BVHLeaf mLeafs[32];
-    int mLeafCount;
+    int mIndex;
+    float mT;
 };
 
 struct BVH
@@ -180,10 +259,17 @@ struct BVH
         }
     }
 
-    BVHHit intersect(const Ray &ray) const
+    BVHHit intersect(const Ray &ray, const std::vector<Sphere> &spheres) const
     {
         BVHHit hit;
-        hit.mLeafCount = 0;
+        hit.mT = std::numeric_limits<float>::max();
+        hit.mIndex = -1;
+
+        float root_t = intersectAABB(ray, mNodes[0].mMin, mNodes[0].mMax);
+        if (root_t == std::numeric_limits<float>::max())
+        {
+            return hit;
+        }
 
         int top = 0;
         int stack[32];
@@ -198,20 +284,53 @@ struct BVH
 
             const BVHNode *node = &mNodes[nodeIndex];
 
-            if (Intersect::intersect(ray, node->mMin, node->mMax))
+            if (node->isLeaf())
             {
-                if (!node->isLeaf())
+                int startIndex = node->mLeftOrStartIndex;
+                int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+
+                for (int j = startIndex; j < endIndex; j++)
                 {
-                    stack[top++] = node->mLeftOrStartIndex;
-                    stack[top++] = node->mLeftOrStartIndex + 1;
+                    float t = intersectSphere(spheres[mPerm[j]].mCentre, spheres[mPerm[j]].mRadius, ray);
+                    if (t > 0.001f && t < hit.mT)
+                    {
+                        hit.mT = t;
+                        hit.mIndex = (int)mPerm[j];
+                    }
+                }
+            }
+            else
+            {
+                const BVHNode *left = &mNodes[node->mLeftOrStartIndex];
+                const BVHNode *right = &mNodes[node->mLeftOrStartIndex + 1];
+                
+                float lt = intersectAABB(ray, left->mMin, left->mMax);
+                float rt = intersectAABB(ray, right->mMin, right->mMax);
+
+                if (lt <= rt)
+                {
+                    // Left node is closer than right node. Place right node on stack followed by left node
+                    // so that the left node (now top of the stack) will be processed first
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
+                    }
+                    if (hit.mT > lt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex;
+                    }
                 }
                 else
                 {
-                    if (hit.mLeafCount < 32)
+                    // Right node is closer than left node. Place left node on stack followed by right node
+                    // so that the right node (now top of the stack) will be processed first
+                    if (hit.mT > lt)
                     {
-                        hit.mLeafs[hit.mLeafCount].mStartIndex = node->mLeftOrStartIndex;
-                        hit.mLeafs[hit.mLeafCount].mIndexCount = node->mIndexCount;
-                        hit.mLeafCount++;
+                        stack[top++] = node->mLeftOrStartIndex;
+                    }
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
                     }
                 }
             }
@@ -220,80 +339,6 @@ struct BVH
         return hit;
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-inline float intersectTri(const Triangle &triangle, const Ray &ray)
-{
-    constexpr float epsilon = std::numeric_limits<float>::epsilon();
-
-    glm::vec3 edge1 = triangle.mV1 - triangle.mV0;
-    glm::vec3 edge2 = triangle.mV2 - triangle.mV0;
-    glm::vec3 ray_cross_e2 = glm::cross(ray.mDirection, edge2);
-    float det = glm::dot(edge1, ray_cross_e2);
-
-    if (det > -epsilon && det < epsilon)
-        return -1.0f; // This ray is parallel to this triangle.
-
-    float inv_det = 1.0f / det;
-    glm::vec3 s = ray.mOrigin - triangle.mV0;
-    float u = inv_det * glm::dot(s, ray_cross_e2);
-
-    if (u < 0 || u > 1)
-        return -1.0f;
-
-    glm::vec3 s_cross_e1 = glm::cross(s, edge1);
-    float v = inv_det * glm::dot(ray.mDirection, s_cross_e1);
-
-    if (v < 0 || u + v > 1)
-        return -1.0f;
-
-    // At this stage we can compute t to find out where the intersection point is on the line.
-    float t = inv_det * glm::dot(edge2, s_cross_e1);
-
-    if (t > epsilon) // ray intersection
-    {
-        return t;
-    }
-    else // This means that there is a line intersection but not a ray intersection.
-        return -1.0f;
-}
 
 struct BLASHit
 {
@@ -331,6 +376,112 @@ struct BLAS
         splitPosition = node->mMin[splitPlane] + aabbSize[splitPlane] * 0.5f;
     }
 
+    struct Bin
+    {
+        glm::vec3 mMin;
+        glm::vec3 mMax;
+        int mTriCount;
+    };
+
+    inline float findSAHSplitPlane2(const BVHNode *node, int &splitPlane, float &splitPosition)
+    {
+        splitPlane = 0;
+        float cost = std::numeric_limits<float>::max();
+
+        int startIndex = node->mLeftOrStartIndex;
+        int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+
+        for (int axis = 0; axis < 3; axis++)
+        {
+            float min = node->mMin[axis];
+            float max = node->mMax[axis];
+
+            if (min < max)
+            {
+                float ds = (max - min) / 16.0f;
+
+                Bin bins[16];
+                for (int i = 0; i < 16; i++)
+                {
+                    bins[i].mMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                        std::numeric_limits<float>::max());
+                    bins[i].mMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                        std::numeric_limits<float>::lowest());
+                    bins[i].mTriCount = 0;
+                }
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    const Triangle& tri = mTriangles[mPerm[i]];
+
+                    // Find which bin each triangle belongs to
+                    int binIdx = glm::min(16 - 1, (int)((tri.getCentroid()[axis] - min) / ds));
+
+                    bins[binIdx].mMin = glm::min(bins[binIdx].mMin, tri.mV0);
+                    bins[binIdx].mMin = glm::min(bins[binIdx].mMin, tri.mV1);
+                    bins[binIdx].mMin = glm::min(bins[binIdx].mMin, tri.mV2);
+
+                    bins[binIdx].mMax = glm::max(bins[binIdx].mMax, tri.mV0);
+                    bins[binIdx].mMax = glm::max(bins[binIdx].mMax, tri.mV1);
+                    bins[binIdx].mMax = glm::max(bins[binIdx].mMax, tri.mV2);
+
+                    bins[binIdx].mTriCount++;
+                }
+
+                float leftArea[16 - 1];
+                float rightArea[16 - 1];
+                int leftCount[16 - 1];
+                int rightCount[16 - 1];
+
+                glm::vec3 leftMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                    std::numeric_limits<float>::max());
+                glm::vec3 leftMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                    std::numeric_limits<float>::lowest());
+                glm::vec3 rightMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
+                    std::numeric_limits<float>::max());
+                glm::vec3 rightMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
+                    std::numeric_limits<float>::lowest());
+                int leftSum = 0;
+                int rightSum = 0;
+                for (int i = 0; i < (16 - 1); i++)
+                {
+                    leftMin = glm::min(leftMin, bins[i].mMin);
+                    leftMax = glm::max(leftMax, bins[i].mMax);
+                    leftSum += bins[i].mTriCount;
+
+                    glm::vec3 leftSize = leftMax - leftMin;
+                    leftArea[i] = leftSize.x * leftSize.y + leftSize.y * leftSize.z + leftSize.z * leftSize.x;
+                    leftCount[i] = leftSum;
+
+                    rightMin = glm::min(rightMin, bins[16 - 1 - i].mMin);
+                    rightMax = glm::max(rightMax, bins[16 - 1 - i].mMax);
+                    rightSum += bins[16 - 1 - i].mTriCount;
+
+                    glm::vec3 rightSize = rightMax - rightMin;
+                    rightArea[16 - 2 - i] = rightSize.x * rightSize.y + rightSize.y * rightSize.z + rightSize.z * rightSize.x;
+                    rightCount[16 - 2 - i] = rightSum;
+                }
+
+                for (int i = 0; i < 16 - 1; i++)
+                {
+                    // Surface are heuristic
+                    float c = leftCount[i] * leftArea[i] + rightCount[i] * rightArea[i];
+                    c = (c > 0.0f) ? c : std::numeric_limits<float>::max();
+
+                    if (c < cost)
+                    {
+                        cost = c;
+                        splitPlane = axis;
+                        splitPosition = min + ds * (i + 1);
+                    }
+                }
+            }
+        }
+
+        return cost;
+    }
+
+
     inline float findSAHSplitPlane(const BVHNode *node, int &splitPlane, float &splitPosition)
     {
         splitPlane = 0;
@@ -340,17 +491,21 @@ struct BLAS
         {
             float min = node->mMin[axis];
             float max = node->mMax[axis];
-            float ds = (max - min) / 16.0f;
 
-            for (int i = 0; i < 16; i++)
+            if (min < max)
             {
-                float position = min + ds * i;
-                float c = computeSAHCost(node, axis, position);
-                if (c < cost)
+                float ds = (max - min) / 16.0f;
+
+                for (int i = 0; i < 16; i++)
                 {
-                    cost = c;
-                    splitPlane = axis;
-                    splitPosition = position;
+                    float position = min + ds * i;
+                    float c = computeSAHCost(node, axis, position);
+                    if (c < cost)
+                    {
+                        cost = c;
+                        splitPlane = axis;
+                        splitPosition = position;
+                    }
                 }
             }
         }
@@ -484,6 +639,8 @@ struct BLAS
         int index = 0; // start at one for alignment
         while (top > 0)
         {
+            assert(top <= 32);
+
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -519,8 +676,7 @@ struct BLAS
                 // Find split (by splitting along longest axis)
                 int splitPlane;
                 float splitPosition;
-                //findMidPointSplitPlane(node, splitPlane, splitPosition);
-                float splitCost = findSAHSplitPlane(node, splitPlane, splitPosition);
+                float splitCost = findSAHSplitPlane2(node, splitPlane, splitPosition);
 
                 glm::vec3 e = node->mMax - node->mMin; // extent of the node
                 float surfaceArea = e.x * e.y + e.y * e.z + e.z * e.x;
@@ -573,7 +729,7 @@ struct BLAS
         }
     }
 
-    BLASHit intersectBLAS(const Ray &ray) const
+    BLASHit intersectBLAS(const Ray &ray, float maxt) const
     {
         Ray modelSpaceRay;
         modelSpaceRay.mOrigin = mInverseModel * glm::vec4(ray.mOrigin, 1.0f);
@@ -581,7 +737,13 @@ struct BLAS
 
         BLASHit hit;
         hit.mTriIndex = -1;
-        hit.mT = std::numeric_limits<float>::max();
+        hit.mT = maxt;
+
+        float root_t = intersectAABB(modelSpaceRay, mNodes[0].mMin, mNodes[0].mMax);
+        if (root_t == std::numeric_limits<float>::max())
+        {
+            return hit;
+        }
 
         int top = 0;
         int stack[32];
@@ -596,26 +758,52 @@ struct BLAS
 
             const BVHNode *node = &mNodes[nodeIndex];
 
-            if (Intersect::intersect(modelSpaceRay, node->mMin, node->mMax))
+            if (node->isLeaf())
             {
-                if (!node->isLeaf())
+                int startIndex = node->mLeftOrStartIndex;
+                int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+
+                for (int j = startIndex; j < endIndex; j++)
                 {
-                    stack[top++] = node->mLeftOrStartIndex;
-                    stack[top++] = node->mLeftOrStartIndex + 1;
+                    float t = intersectTri(mTriangles[mPerm[j]], modelSpaceRay);
+                    if (t > 0.001f && t < hit.mT)
+                    {
+                        hit.mT = t;
+                        hit.mTriIndex = mPerm[j];
+                    }
+                }
+            }
+            else
+            {
+                const BVHNode *left = &mNodes[node->mLeftOrStartIndex];
+                const BVHNode *right = &mNodes[node->mLeftOrStartIndex + 1];
+                float lt = intersectAABB(modelSpaceRay, left->mMin, left->mMax);
+                float rt = intersectAABB(modelSpaceRay, right->mMin, right->mMax);
+
+                if (lt <= rt)
+                {
+                    // Left node is closer than right node. Place right node on stack followed by left node
+                    // so that the left node (now top of the stack) will be processed first
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
+                    }
+                    if (hit.mT > lt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex;      
+                    }
                 }
                 else
                 {
-                    int startIndex = node->mLeftOrStartIndex;
-                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
-
-                    for (int j = startIndex; j < endIndex; j++)
+                    // Right node is closer than left node. Place left node on stack followed by right node
+                    // so that the right node (now top of the stack) will be processed first
+                    if (hit.mT > lt)
                     {
-                        float t = intersectTri(mTriangles[mPerm[j]], modelSpaceRay);
-                        if (t > 0.001f && t < hit.mT)
-                        {
-                            hit.mT = t;
-                            hit.mTriIndex = mPerm[j];
-                        }
+                        stack[top++] = node->mLeftOrStartIndex;
+                    }
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
                     }
                 }
             }
@@ -661,8 +849,9 @@ struct BLAS
 
 struct TLASHit
 {
-    BLASHit blasHit;
     int blasIndex;
+    int mTriIndex;
+    float mT;
 };
 
 struct TLAS
@@ -824,9 +1013,15 @@ struct TLAS
     TLASHit intersectTLAS(const Ray &ray) const
     {
         TLASHit hit;
-        hit.blasHit.mTriIndex = -1;
-        hit.blasHit.mT = std::numeric_limits<float>::max();
         hit.blasIndex = -1;
+        hit.mTriIndex = -1;
+        hit.mT = std::numeric_limits<float>::max();
+
+        float root_t = intersectAABB(ray, mNodes[0].mMin, mNodes[0].mMax);
+        if (root_t == std::numeric_limits<float>::max())
+        {
+            return hit;
+        }
 
         int top = 0;
         int stack[32];
@@ -841,220 +1036,55 @@ struct TLAS
 
             const BVHNode *node = &mNodes[nodeIndex];
 
-            if (Intersect::intersect(ray, node->mMin, node->mMax))
+            if (node->isLeaf())
             {
-                if (!node->isLeaf())
-                {
-                    stack[top++] = node->mLeftOrStartIndex;
-                    stack[top++] = node->mLeftOrStartIndex + 1;
-                }
-                else
-                {
-                    int startIndex = node->mLeftOrStartIndex;
-                    int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+                int startIndex = node->mLeftOrStartIndex;
+                int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
 
-                    for (int j = startIndex; j < endIndex; j++)
+                for (int j = startIndex; j < endIndex; j++)
+                {
+                    BLASHit h = mBlas[mPerm[j]].intersectBLAS(ray, hit.mT);
+
+                    if (h.mT > 0.001f && h.mT < hit.mT)
                     {
-                        BLASHit h = mBlas[mPerm[j]].intersectBLAS(ray);
-
-                        if (h.mT > 0.001f && h.mT < hit.blasHit.mT)
-                        {
-                            hit.blasHit.mT = h.mT;
-                            hit.blasHit.mTriIndex = h.mTriIndex;
-                            hit.blasIndex = mPerm[j];
-                        }
+                        hit.mT = h.mT;
+                        hit.mTriIndex = h.mTriIndex;
+                        hit.blasIndex = mPerm[j];
                     }
                 }
-            }
-        }
-
-        return hit;
-    }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-struct TLASNode
-{
-    glm::vec3 mMin;
-    glm::vec3 mMax;
-    unsigned int mLeft;
-    unsigned int mRight;
-    unsigned int mBLAS;
-    inline bool isLeaf() const
-    {
-        return (mLeft == 0 && mRight == 0);
-    }
-};
-
-struct TLAS2
-{
-    TLASNode *mNodes;
-    size_t mSize;
-    BLAS *mBlas;
-
-    void allocateTLAS2(size_t size)
-    {
-        mSize = size;
-
-        if (mSize > 0)
-        {
-            mNodes = (TLASNode *)malloc(sizeof(TLASNode) * 2 * mSize);
-        }
-    }
-
-    void freeTLAS2()
-    {
-        if (mSize > 0)
-        {
-            mSize = 0;
-            free(mNodes);
-        }
-    }
-
-    int findSmallestSAMatch(const std::vector<int> &nodeIndices, int N, int nodeIndex)
-    {
-        float maxSurfaceArea = std::numeric_limits<float>::max();
-        int match = -1;
-
-        for (int i = 0; i < N; i++)
-        {
-            if (i != nodeIndex)
-            {
-                glm::vec3 bmin = glm::min(mNodes[nodeIndices[i]].mMin, mNodes[nodeIndices[nodeIndex]].mMin);
-                glm::vec3 bmax = glm::max(mNodes[nodeIndices[i]].mMax, mNodes[nodeIndices[nodeIndex]].mMax);
-            
-                glm::vec3 bsize = bmax - bmin;
-                float surfaceArea = bsize.x * bsize.y + bsize.y * bsize.z + bsize.z * bsize.x;
-                if (surfaceArea < maxSurfaceArea)
-                {
-                    maxSurfaceArea = surfaceArea;
-                    match = i;
-                }
-            }
-        }
-
-        return match;
-    }
-
-    void buildTLAS2(BLAS* blas, size_t size)
-    {
-        assert(mSize == size);
-
-        if (mSize == 0)
-        {
-            return;
-        }
-
-        assert(mNodes != nullptr);
-        assert(mBlas != nullptr);
-
-        mBlas = blas;
-
-        std::vector<int> nodeIndices(size);
-
-        int index = 1;
-        for (size_t i = 0; i < size; i++)
-        {
-            nodeIndices[i] = index;
-
-            mNodes[index].mMin = blas[i].getAABBBounds().getMin();
-            mNodes[index].mMax = blas[i].getAABBBounds().getMax();
-            mNodes[index].mBLAS = (unsigned int)i;
-            mNodes[index].mLeft = 0;
-            mNodes[index].mRight = 0;
-            index++;
-        }
-
-        // Find best match to A
-        int A = 0;
-        int B = findSmallestSAMatch(nodeIndices, (int)nodeIndices.size(), A);
-
-        int count = (int)nodeIndices.size();
-        while (count > 1)
-        {
-            int C = findSmallestSAMatch(nodeIndices, count, B);
-        
-            if (A == C)
-            {
-                int A_Idx = nodeIndices[A];
-                int B_Idx = nodeIndices[B];
-
-                TLASNode *nodeA = &mNodes[A_Idx];
-                TLASNode *nodeB = &mNodes[B_Idx];
-
-                TLASNode *parentAB = &mNodes[index];
-                parentAB->mLeft = A_Idx;
-                parentAB->mRight = B_Idx;
-                parentAB->mMin = glm::min(nodeA->mMin, nodeB->mMin);
-                parentAB->mMax = glm::max(nodeA->mMax, nodeB->mMax);
-
-                nodeIndices[A] = index++;
-                nodeIndices[B] = nodeIndices[count - 1];
-                B = findSmallestSAMatch(nodeIndices, --count, A);
             }
             else
             {
-                A = B;
-                B = C;
-            }
-        }
+                const BVHNode *left = &mNodes[node->mLeftOrStartIndex];
+                const BVHNode *right = &mNodes[node->mLeftOrStartIndex + 1];
+                
+                float lt = intersectAABB(ray, left->mMin, left->mMax);
+                float rt = intersectAABB(ray, right->mMin, right->mMax);
 
-        mNodes[0] = mNodes[nodeIndices[A]];
-    }
-
-    TLASHit intersectTLAS2(const Ray &ray) const
-    {
-        TLASHit hit;
-        hit.blasHit.mTriIndex = -1;
-        hit.blasHit.mT = std::numeric_limits<float>::max();
-        hit.blasIndex = -1;
-
-        int top = 0;
-        int stack[32];
-
-        stack[0] = 0;
-        top++;
-
-        while (top > 0)
-        {
-            int nodeIndex = stack[top - 1];
-            top--;
-
-            const TLASNode *node = &mNodes[nodeIndex];
-
-            if (Intersect::intersect(ray, node->mMin, node->mMax))
-            {
-                if (!node->isLeaf())
+                if (lt <= rt)
                 {
-                    stack[top++] = node->mLeft;
-                    stack[top++] = node->mRight;
+                    // Left node is closer than right node. Place right node on stack followed by left node
+                    // so that the left node (now top of the stack) will be processed first
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
+                    }
+                    if (hit.mT > lt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex;
+                    }
                 }
                 else
                 {
-                    BLASHit h = mBlas[node->mBLAS].intersectBLAS(ray);
-
-                    if (h.mT > 0.001f && h.mT < hit.blasHit.mT)
+                    // Right node is closer than left node. Place left node on stack followed by right node
+                    // so that the right node (now top of the stack) will be processed first
+                    if (hit.mT > lt)
                     {
-                        hit.blasHit.mT = h.mT;
-                        hit.blasHit.mTriIndex = h.mTriIndex;
-                        hit.blasIndex = node->mBLAS;
+                        stack[top++] = node->mLeftOrStartIndex;
+                    }
+                    if (hit.mT > rt)
+                    {
+                        stack[top++] = node->mLeftOrStartIndex + 1;
                     }
                 }
             }
@@ -1063,6 +1093,198 @@ struct TLAS2
         return hit;
     }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//struct TLASNode
+//{
+//    glm::vec3 mMin;
+//    glm::vec3 mMax;
+//    unsigned int mLeft;
+//    unsigned int mRight;
+//    unsigned int mBLAS;
+//    inline bool isLeaf() const
+//    {
+//        return (mLeft == 0 && mRight == 0);
+//    }
+//};
+//
+//struct TLAS2
+//{
+//    TLASNode *mNodes;
+//    size_t mSize;
+//    BLAS *mBlas;
+//
+//    void allocateTLAS2(size_t size)
+//    {
+//        mSize = size;
+//
+//        if (mSize > 0)
+//        {
+//            mNodes = (TLASNode *)malloc(sizeof(TLASNode) * 2 * mSize);
+//        }
+//    }
+//
+//    void freeTLAS2()
+//    {
+//        if (mSize > 0)
+//        {
+//            mSize = 0;
+//            free(mNodes);
+//        }
+//    }
+//
+//    int findSmallestSAMatch(const std::vector<int> &nodeIndices, int N, int nodeIndex)
+//    {
+//        float maxSurfaceArea = std::numeric_limits<float>::max();
+//        int match = -1;
+//
+//        for (int i = 0; i < N; i++)
+//        {
+//            if (i != nodeIndex)
+//            {
+//                glm::vec3 bmin = glm::min(mNodes[nodeIndices[i]].mMin, mNodes[nodeIndices[nodeIndex]].mMin);
+//                glm::vec3 bmax = glm::max(mNodes[nodeIndices[i]].mMax, mNodes[nodeIndices[nodeIndex]].mMax);
+//            
+//                glm::vec3 bsize = bmax - bmin;
+//                float surfaceArea = bsize.x * bsize.y + bsize.y * bsize.z + bsize.z * bsize.x;
+//                if (surfaceArea < maxSurfaceArea)
+//                {
+//                    maxSurfaceArea = surfaceArea;
+//                    match = i;
+//                }
+//            }
+//        }
+//
+//        return match;
+//    }
+//
+//    void buildTLAS2(BLAS* blas, size_t size)
+//    {
+//        assert(mSize == size);
+//
+//        if (mSize == 0)
+//        {
+//            return;
+//        }
+//
+//        assert(mNodes != nullptr);
+//        assert(mBlas != nullptr);
+//
+//        mBlas = blas;
+//
+//        std::vector<int> nodeIndices(size);
+//
+//        int index = 1;
+//        for (size_t i = 0; i < size; i++)
+//        {
+//            nodeIndices[i] = index;
+//
+//            mNodes[index].mMin = blas[i].getAABBBounds().getMin();
+//            mNodes[index].mMax = blas[i].getAABBBounds().getMax();
+//            mNodes[index].mBLAS = (unsigned int)i;
+//            mNodes[index].mLeft = 0;
+//            mNodes[index].mRight = 0;
+//            index++;
+//        }
+//
+//        // Find best match to A
+//        int A = 0;
+//        int B = findSmallestSAMatch(nodeIndices, (int)nodeIndices.size(), A);
+//
+//        int count = (int)nodeIndices.size();
+//        while (count > 1)
+//        {
+//            int C = findSmallestSAMatch(nodeIndices, count, B);
+//        
+//            if (A == C)
+//            {
+//                int A_Idx = nodeIndices[A];
+//                int B_Idx = nodeIndices[B];
+//
+//                TLASNode *nodeA = &mNodes[A_Idx];
+//                TLASNode *nodeB = &mNodes[B_Idx];
+//
+//                TLASNode *parentAB = &mNodes[index];
+//                parentAB->mLeft = A_Idx;
+//                parentAB->mRight = B_Idx;
+//                parentAB->mMin = glm::min(nodeA->mMin, nodeB->mMin);
+//                parentAB->mMax = glm::max(nodeA->mMax, nodeB->mMax);
+//
+//                nodeIndices[A] = index++;
+//                nodeIndices[B] = nodeIndices[count - 1];
+//                B = findSmallestSAMatch(nodeIndices, --count, A);
+//            }
+//            else
+//            {
+//                A = B;
+//                B = C;
+//            }
+//        }
+//
+//        mNodes[0] = mNodes[nodeIndices[A]];
+//    }
+//
+//    TLASHit intersectTLAS2(const Ray &ray) const
+//    {
+//        TLASHit hit;
+//        hit.blasHit.mTriIndex = -1;
+//        hit.blasHit.mT = std::numeric_limits<float>::max();
+//        hit.blasIndex = -1;
+//
+//        int top = 0;
+//        int stack[32];
+//
+//        stack[0] = 0;
+//        top++;
+//
+//        while (top > 0)
+//        {
+//            int nodeIndex = stack[top - 1];
+//            top--;
+//
+//            const TLASNode *node = &mNodes[nodeIndex];
+//
+//            if (intersectAABB(ray, node->mMin, node->mMax))
+//            {
+//                if (!node->isLeaf())
+//                {
+//                    stack[top++] = node->mLeft;
+//                    stack[top++] = node->mRight;
+//                }
+//                else
+//                {
+//                    BLASHit h = mBlas[node->mBLAS].intersectBLAS(ray);
+//
+//                    if (h.mT > 0.001f && h.mT < hit.blasHit.mT)
+//                    {
+//                        hit.blasHit.mT = h.mT;
+//                        hit.blasHit.mTriIndex = h.mTriIndex;
+//                        hit.blasIndex = node->mBLAS;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return hit;
+//    }
+//};
 
 }
 

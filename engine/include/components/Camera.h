@@ -15,8 +15,11 @@
 #include "../core/Color.h"
 #include "../core/Frustum.h"
 #include "../core/Ray.h"
+#include "../core/Sphere.h"
 #include "../core/RenderTexture.h"
 #include "../core/Viewport.h"
+#include "../core/BVH.h"
+#include "../core/RaytraceMaterial.h"
 
 #include "../graphics/Framebuffer.h"
 #include "../graphics/TextureHandle.h"
@@ -71,9 +74,6 @@ class Camera
 
     TimingQuery mQuery;
 
-    std::vector<int> mSamplesPerRay;
-    std::vector<float> mImage;
-
     bool mEnabled;
     bool mRenderToScreen;
 
@@ -105,6 +105,9 @@ class Camera
     glm::vec3 mRight;
 
     std::vector<Id> mColoringIds;
+
+    std::vector<int> mSamplesPerRay;
+    std::vector<float> mImage;
 
     bool mIsViewportChanged;
     bool mMoved;
@@ -185,11 +188,15 @@ class Camera
     {
         return mWorld->getActiveScene()->getComponent<T>(mEntityGuid);
     }
+ 
+    void clearPixels();
+    void resizePixels();
+    void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void updateFinalImage();
 
-    glm::vec2 generatePixelSampleNDC(int u, int v, float du, float dv) const;
     Ray getCameraRay(const glm::vec2 &pixelSampleNDC) const;
-    Ray getCameraRay(int u, int v, float du, float dv) const;
-    void updateRayTracingTexture(const std::vector<unsigned char> &data);
+    Ray getCameraRay(int u, int v, float du, float dv) const;   
 
   private:
     friend class Scene;
