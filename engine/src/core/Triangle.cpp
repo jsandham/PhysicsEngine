@@ -66,6 +66,11 @@ glm::vec3 Triangle::getNormal() const
     return glm::vec3(nx, ny, nz);
 }
 
+glm::vec3 Triangle::getUnitNormal() const
+{
+    return glm::normalize(getNormal());
+}
+
 AABB Triangle::getAABBBounds() const
 {
     glm::vec3 bmin = glm::min(mV0, glm::min(mV1, mV2));

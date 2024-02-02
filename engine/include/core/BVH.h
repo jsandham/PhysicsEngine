@@ -365,17 +365,6 @@ struct BLAS
         return mTriangles[index];
     }
 
-    inline void findMidPointSplitPlane(const BVHNode* node, int& splitPlane, float& splitPosition)
-    {
-        glm::vec3 aabbSize = node->mMax - node->mMin;
-        splitPlane = 0;
-        if (aabbSize.y > aabbSize.x)
-            splitPlane = 1;
-        if (aabbSize.z > aabbSize[splitPlane])
-            splitPlane = 2;
-        splitPosition = node->mMin[splitPlane] + aabbSize[splitPlane] * 0.5f;
-    }
-
     struct Bin
     {
         glm::vec3 mMin;
@@ -383,8 +372,10 @@ struct BLAS
         int mTriCount;
     };
 
-    inline float findSAHSplitPlane2(const BVHNode *node, int &splitPlane, float &splitPosition)
+    inline float findSAHSplitPlane(const BVHNode *node, int &splitPlane, float &splitPosition)
     {
+        constexpr int BIN_COUNT = 8;
+
         splitPlane = 0;
         float cost = std::numeric_limits<float>::max();
 
@@ -398,10 +389,10 @@ struct BLAS
 
             if (min < max)
             {
-                float ds = (max - min) / 16.0f;
+                float ds = (max - min) / BIN_COUNT;
 
-                Bin bins[16];
-                for (int i = 0; i < 16; i++)
+                Bin bins[BIN_COUNT];
+                for (int i = 0; i < BIN_COUNT; i++)
                 {
                     bins[i].mMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                         std::numeric_limits<float>::max());
@@ -415,7 +406,7 @@ struct BLAS
                     const Triangle& tri = mTriangles[mPerm[i]];
 
                     // Find which bin each triangle belongs to
-                    int binIdx = glm::min(16 - 1, (int)((tri.getCentroid()[axis] - min) / ds));
+                    int binIdx = glm::min(BIN_COUNT - 1, (int)((tri.getCentroid()[axis] - min) / ds));
 
                     bins[binIdx].mMin = glm::min(bins[binIdx].mMin, tri.mV0);
                     bins[binIdx].mMin = glm::min(bins[binIdx].mMin, tri.mV1);
@@ -428,10 +419,10 @@ struct BLAS
                     bins[binIdx].mTriCount++;
                 }
 
-                float leftArea[16 - 1];
-                float rightArea[16 - 1];
-                int leftCount[16 - 1];
-                int rightCount[16 - 1];
+                float leftArea[BIN_COUNT - 1];
+                float rightArea[BIN_COUNT - 1];
+                int leftCount[BIN_COUNT - 1];
+                int rightCount[BIN_COUNT - 1];
 
                 glm::vec3 leftMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                     std::numeric_limits<float>::max());
@@ -443,7 +434,7 @@ struct BLAS
                     std::numeric_limits<float>::lowest());
                 int leftSum = 0;
                 int rightSum = 0;
-                for (int i = 0; i < (16 - 1); i++)
+                for (int i = 0; i < (BIN_COUNT - 1); i++)
                 {
                     leftMin = glm::min(leftMin, bins[i].mMin);
                     leftMax = glm::max(leftMax, bins[i].mMax);
@@ -453,16 +444,17 @@ struct BLAS
                     leftArea[i] = leftSize.x * leftSize.y + leftSize.y * leftSize.z + leftSize.z * leftSize.x;
                     leftCount[i] = leftSum;
 
-                    rightMin = glm::min(rightMin, bins[16 - 1 - i].mMin);
-                    rightMax = glm::max(rightMax, bins[16 - 1 - i].mMax);
-                    rightSum += bins[16 - 1 - i].mTriCount;
+                    rightMin = glm::min(rightMin, bins[BIN_COUNT - 1 - i].mMin);
+                    rightMax = glm::max(rightMax, bins[BIN_COUNT - 1 - i].mMax);
+                    rightSum += bins[BIN_COUNT - 1 - i].mTriCount;
 
                     glm::vec3 rightSize = rightMax - rightMin;
-                    rightArea[16 - 2 - i] = rightSize.x * rightSize.y + rightSize.y * rightSize.z + rightSize.z * rightSize.x;
-                    rightCount[16 - 2 - i] = rightSum;
+                    rightArea[BIN_COUNT - 2 - i] =
+                        rightSize.x * rightSize.y + rightSize.y * rightSize.z + rightSize.z * rightSize.x;
+                    rightCount[BIN_COUNT - 2 - i] = rightSum;
                 }
 
-                for (int i = 0; i < 16 - 1; i++)
+                for (int i = 0; i < BIN_COUNT - 1; i++)
                 {
                     // Surface are heuristic
                     float c = leftCount[i] * leftArea[i] + rightCount[i] * rightArea[i];
@@ -479,98 +471,6 @@ struct BLAS
         }
 
         return cost;
-    }
-
-
-    inline float findSAHSplitPlane(const BVHNode *node, int &splitPlane, float &splitPosition)
-    {
-        splitPlane = 0;
-        float cost = std::numeric_limits<float>::max();
-
-        for (int axis = 0; axis < 3; axis++)
-        {
-            float min = node->mMin[axis];
-            float max = node->mMax[axis];
-
-            if (min < max)
-            {
-                float ds = (max - min) / 16.0f;
-
-                for (int i = 0; i < 16; i++)
-                {
-                    float position = min + ds * i;
-                    float c = computeSAHCost(node, axis, position);
-                    if (c < cost)
-                    {
-                        cost = c;
-                        splitPlane = axis;
-                        splitPosition = position;
-                    }
-                }
-            }
-        }
-
-        return cost;
-    }
-
-    inline float computeSAHCost(const BVHNode* node, int splitPlane, float splitPosition)
-    {
-        int startIndex = node->mLeftOrStartIndex;
-        int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
-
-        glm::vec3 leftMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max());
-        glm::vec3 leftMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
-                                      std::numeric_limits<float>::lowest());
-
-        glm::vec3 rightMin = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
-                                      std::numeric_limits<float>::max());
-        glm::vec3 rightMax = glm::vec3(std::numeric_limits<float>::lowest(), std::numeric_limits<float>::lowest(),
-                                      std::numeric_limits<float>::lowest());
-
-        int leftTriCount = 0;
-        int rightTriCount = 0;
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            const Triangle &tri = mTriangles[mPerm[i]];
-            
-            // split triangles to the 'left' or 'right' of split plane based on its centroid
-            if (tri.getCentroid()[splitPlane] < splitPosition)
-            {
-                leftMin = glm::min(leftMin, tri.mV0);
-                leftMin = glm::min(leftMin, tri.mV1);
-                leftMin = glm::min(leftMin, tri.mV2);
-
-                leftMax = glm::max(leftMax, tri.mV0);
-                leftMax = glm::max(leftMax, tri.mV1);
-                leftMax = glm::max(leftMax, tri.mV2);
-
-                leftTriCount++;
-            }
-            else
-            {
-                rightMin = glm::min(rightMin, tri.mV0);
-                rightMin = glm::min(rightMin, tri.mV1);
-                rightMin = glm::min(rightMin, tri.mV2);
-
-                rightMax = glm::max(rightMax, tri.mV0);
-                rightMax = glm::max(rightMax, tri.mV1);
-                rightMax = glm::max(rightMax, tri.mV2);
-
-                rightTriCount++;
-            }
-        }
-
-        glm::vec3 leftSize = leftMax - leftMin;
-        glm::vec3 rightSize = rightMax - rightMin;
-
-        float leftArea = leftSize.x * leftSize.y + leftSize.y * leftSize.z + leftSize.z * leftSize.x;
-        float rightArea = rightSize.x * rightSize.y + rightSize.y * rightSize.z + rightSize.z * rightSize.x;
-
-        // Surface are heuristic
-        float cost = leftTriCount * leftArea + rightTriCount * rightArea;
-
-        return cost > 0.0f ? cost : std::numeric_limits<float>::max();
     }
 
     void allocateBLAS(size_t size)
@@ -676,7 +576,7 @@ struct BLAS
                 // Find split (by splitting along longest axis)
                 int splitPlane;
                 float splitPosition;
-                float splitCost = findSAHSplitPlane2(node, splitPlane, splitPosition);
+                float splitCost = findSAHSplitPlane(node, splitPlane, splitPosition);
 
                 glm::vec3 e = node->mMax - node->mMin; // extent of the node
                 float surfaceArea = e.x * e.y + e.y * e.z + e.z * e.x;

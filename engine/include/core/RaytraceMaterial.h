@@ -52,7 +52,7 @@ namespace PhysicsEngine
             return (word >> 22u) ^ word;
         }
 
-        static float generate_rand(float a = 0.0f, float b = 1.0f)
+        static float random(float a = 0.0f, float b = 1.0f)
         {
             static uint32_t seed = 1234567;
             seed++;
@@ -60,7 +60,22 @@ namespace PhysicsEngine
             return a + (b - a) * uniform;
         }
 
-        static Ray generate_dialectric_ray(const glm::vec3& point, const glm::vec3& v, const glm::vec3& normal, float ir)
+        static glm::vec3 random_in_unit_sphere()
+        {
+            while (true)
+            {
+                glm::vec3 p = glm::vec3(random(-1.0f, 1.0f), random(-1.0f, 1.0f), random(-1.0f, 1.0f));
+                if (glm::length2(p) < 1.0f)
+                    return p;
+            }
+        }
+
+        static glm::vec3 random_on_unit_sphere()
+        {
+            return glm::normalize(random_in_unit_sphere());
+        }
+
+        static Ray dialectric_ray(const glm::vec3& point, const glm::vec3& v, const glm::vec3& normal, float ir)
         {
             bool front_face = glm::dot(v, normal) < 0.0f;
             float refraction_ratio = front_face ? (1.0f / ir) : ir;
@@ -74,7 +89,7 @@ namespace PhysicsEngine
             bool cannot_refract = refraction_ratio * sin_theta > 1.0f;
             glm::vec3 direction;
 
-            if (cannot_refract || reflectance(cos_theta, refraction_ratio) > generate_rand(0.0f, 1.0f))
+            if (cannot_refract || reflectance(cos_theta, refraction_ratio) > random(0.0f, 1.0f))
                 direction = glm::reflect(unit_direction, normal2);
             else
                 direction = refract(unit_direction, normal2, refraction_ratio);
@@ -86,20 +101,20 @@ namespace PhysicsEngine
             return ray;
         }
 
-        static Ray generate_metallic_ray(const glm::vec3& point, const glm::vec3& v, const glm::vec3& normal, float fuzz)
+        static Ray metallic_ray(const glm::vec3& point, const glm::vec3& v, const glm::vec3& normal, float fuzz)
         {
+            glm::vec3 reflected = glm::reflect(glm::normalize(v), normal);
+            
             Ray ray;
             ray.mOrigin = point;
-            ray.mDirection = glm::reflect(glm::normalize(v), normal) +
-                fuzz * glm::vec3(generate_rand(), generate_rand(), generate_rand());
+            ray.mDirection = reflected + fuzz * random_on_unit_sphere();
 
             return ray;
         }
 
-        static Ray generate_lambertian_ray(const glm::vec3& point, const glm::vec3& normal)
+        static Ray lambertian_ray(const glm::vec3& point, const glm::vec3& normal)
         {
-            glm::vec3 unitSphereVector =
-                normal + glm::normalize(glm::vec3(generate_rand(), generate_rand(), generate_rand()));
+            glm::vec3 unitSphereVector = glm::normalize(normal + random_on_unit_sphere());
 
             Ray ray;
             ray.mOrigin = point;

@@ -19,5 +19,10 @@ float Sphere::getVolume() const
 
 glm::vec3 Sphere::getNormal(const glm::vec3 &point) const
 {
-    return glm::normalize((point - mCentre) / mRadius);
+    return (point - mCentre) / mRadius;
+}
+
+glm::vec3 Sphere::getUnitNormal(const glm::vec3 &point) const
+{
+    return glm::normalize(getNormal(point));
 }

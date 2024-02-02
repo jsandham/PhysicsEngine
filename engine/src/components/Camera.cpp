@@ -26,8 +26,9 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(
-        1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
+    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB,
+                                                          TextureWrapMode::ClampToBorder,
+                                                          TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -84,7 +85,8 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB, TextureWrapMode::ClampToBorder,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB,
+                                                          TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
@@ -577,49 +579,57 @@ static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere>
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    for (int depth = 0; depth < maxDepth; depth++)
+    int depth = maxDepth;
+    while (depth >= 0)
     {
         BVHHit hit = bvh.intersect(ray2, spheres);
 
-        if (hit.mIndex >= 0)
+        // If ray does not hit anything, return background color
+        if (hit.mIndex < 0)
         {
-            if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
-            {
-                color *= materials[hit.mIndex].mEmissive;
-                break;
-            }
-
-            glm::vec3 point = ray2.getPoint(hit.mT);
-            glm::vec3 normal = spheres[hit.mIndex].getNormal(point);
-
-            switch (materials[hit.mIndex].mType)
-            {
-            case RaytraceMaterial::MaterialType::Lambertian:
-                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
-                break;
-            case RaytraceMaterial::MaterialType::Metallic:
-                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
-                                                               materials[hit.mIndex].mFuzz);
-                break;
-            case RaytraceMaterial::MaterialType::Dialectric:
-                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
-                                                                 materials[hit.mIndex].mRefractionIndex);
-                break;
-            }
-
-            color *= materials[hit.mIndex].mAlbedo;
-        }
-        else
-        {
-            // color *= glm::vec3(0.0f, 0.0f, 0.0f);
             glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
             float a = 0.5f * (unit_direction.y + 1.0f);
-            color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
-            break;
+            color *= ((1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f)) * 0.3f;
+            return color;
         }
+
+        glm::vec3 point = ray2.getPoint(hit.mT);
+        glm::vec3 normal = spheres[hit.mIndex].getUnitNormal(point);
+
+        if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::Lambertian)
+        {
+            ray2 = RaytraceMaterial::lambertian_ray(point, normal);
+            color *= materials[hit.mIndex].mAlbedo; 
+        }
+        else if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
+        {
+            color *= materials[hit.mIndex].mEmissive;
+            return color;
+        }
+        else if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::Metallic)
+        {
+            ray2 =
+                RaytraceMaterial::metallic_ray(point, ray2.mDirection, normal, materials[hit.mIndex].mFuzz);
+            if (glm::dot(ray2.mDirection, normal) > 0.0f)
+            {
+                color *= materials[hit.mIndex].mAlbedo; 
+            }
+            else
+            {
+                return glm::vec3(0.0f, 0.0f, 0.0f);
+            }
+        }
+        else if (materials[hit.mIndex].mType == RaytraceMaterial::MaterialType::Dialectric)
+        {
+            ray2 = RaytraceMaterial::dialectric_ray(point, ray2.mDirection, normal,
+                                                                materials[hit.mIndex].mRefractionIndex);
+            color *= glm::vec3(1.0f, 1.0f, 1.0f);
+        }
+       
+        depth--;
     }
 
-    return color;
+    return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 // Iterative computeColor using TLAS and BLAS
@@ -630,49 +640,57 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS>
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    for (int depth = 0; depth < maxDepth; depth++)
+    int depth = maxDepth;
+    while (depth >= 0)
     {
         TLASHit hit = tlas.intersectTLAS(ray2);
 
-        if (hit.blasIndex >= 0)
+        // If ray does not hit anything, return background color
+        if (hit.blasIndex < 0)
         {
-            if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
-            {
-                color *= materials[hit.blasIndex].mEmissive;
-                break;
-            }
+            glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
+            float a = 0.5f * (unit_direction.y + 1.0f);
+            color *= ((1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f)) * 0.3f;
+            return color;
+        }
 
-            glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getNormal());
-            glm::vec3 point = ray2.getPoint(hit.mT);
+        glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getUnitNormal());
+        glm::vec3 point = ray2.getPoint(hit.mT);
 
-            switch (materials[hit.blasIndex].mType)
-            {
-            case RaytraceMaterial::MaterialType::Lambertian:
-                ray2 = RaytraceMaterial::generate_lambertian_ray(point, normal);
-                break;
-            case RaytraceMaterial::MaterialType::Metallic:
-                ray2 = RaytraceMaterial::generate_metallic_ray(point, ray.mDirection, normal,
-                                                               materials[hit.blasIndex].mFuzz);
-                break;
-            case RaytraceMaterial::MaterialType::Dialectric:
-                ray2 = RaytraceMaterial::generate_dialectric_ray(point, ray.mDirection, normal,
-                                                                 materials[hit.blasIndex].mRefractionIndex);
-                break;
-            }
-
+        if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::Lambertian)
+        {
+            ray2 = RaytraceMaterial::lambertian_ray(point, normal);
             color *= materials[hit.blasIndex].mAlbedo;
         }
-        else
+        else if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::DiffuseLight)
         {
-            color *= glm::vec3(0.01f, 0.01f, 0.01f);
-            //glm::vec3 unit_direction = glm::normalize(ray2.mDirection);
-            //float a = 0.5f * (unit_direction.y + 1.0f);
-            //color *= (1.0f - a) * glm::vec3(1.0f, 1.0f, 1.0f) + a * glm::vec3(0.5f, 0.7f, 1.0f);
-            break;
+            color *= materials[hit.blasIndex].mEmissive;
+            return color;
         }
+        else if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::Metallic)
+        {
+            ray2 = RaytraceMaterial::metallic_ray(point, ray2.mDirection, normal, materials[hit.blasIndex].mFuzz);
+
+            if (glm::dot(ray2.mDirection, normal) > 0.0f)
+            {
+                color *= materials[hit.blasIndex].mAlbedo;
+            }
+            else
+            {
+                return glm::vec3(0.0f, 0.0f, 0.0f);
+            }
+        }
+        else if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::Dialectric)
+        {
+            ray2 = RaytraceMaterial::dialectric_ray(point, ray2.mDirection, normal,
+                                                             materials[hit.blasIndex].mRefractionIndex);
+            color *= glm::vec3(1.0f, 1.0f, 1.0f);
+        }
+        
+        depth--;
     }
 
-    return color;
+    return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 static uint32_t pcg_hash(uint32_t seed)
@@ -753,16 +771,12 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    //float du = 2.0f / 256;
-    //float dv = 2.0f / 256;
     float du = 2.0f / 1024;
     float dv = 2.0f / 1024;
 
     constexpr int TILE_WIDTH = 8;
     constexpr int TILE_HEIGHT = 8;
 
-    //constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
-    //constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
     constexpr int TILE_ROWS = 1024 / TILE_HEIGHT;
     constexpr int TILE_COLUMNS = 1024 / TILE_WIDTH;
 
@@ -818,14 +832,14 @@ void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, cons
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    float du = 2.0f / 256;
-    float dv = 2.0f / 256;
+    float du = 2.0f / 1024;
+    float dv = 2.0f / 1024;
 
     constexpr int TILE_WIDTH = 8;
     constexpr int TILE_HEIGHT = 8;
 
-    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
-    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+    constexpr int TILE_ROWS = 1024 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 1024 / TILE_WIDTH;
 
     #pragma omp parallel for schedule(dynamic)
     for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)

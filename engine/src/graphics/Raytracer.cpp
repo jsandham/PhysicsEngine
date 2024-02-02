@@ -26,47 +26,45 @@ void Raytracer::update(Camera *camera)
 {
     // Spheres
     srand(0);
-    int sphereCount = 100;
+    int sphereCount = 9;
     std::vector<Sphere> spheres(sphereCount);
     spheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
-    spheres[1] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), 0.5f);
-    spheres[2] = Sphere(glm::vec3(-1.0, 0.0, -1.0f), -0.4f);
-    spheres[3] = Sphere(glm::vec3(0.0, 0.0, -1.0f), 0.5f);
-    spheres[4] = Sphere(glm::vec3(1.0, 0.0, -1.0f), 0.5f);
-    spheres[5] = Sphere(glm::vec3(0.75f, 2.25f, -0.5f), 0.7f);
-    for (int i = 6; i < sphereCount; i++)
-    {
-        spheres[i] = Sphere(glm::linearRand(glm::vec3(-20.0f, 0.0f, -20.0f), glm::vec3(20.0f, 0.0f, 20.0f)), glm::linearRand(0.4f, 2.0f));
-    }
+    spheres[1] = Sphere(glm::vec3(2.0f, 0.0f, -1.0f), 0.5f);
+    spheres[2] = Sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
+    spheres[3] = Sphere(glm::vec3(-2.0f, 0.0f, -1.0f), 0.5f);
+    spheres[4] = Sphere(glm::vec3(2.0f, 0.0f, 1.0f), 0.5f);
+    spheres[5] = Sphere(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f);
+    spheres[6] = Sphere(glm::vec3(-2.0f, 0.0f, 1.0f), 0.5f);
+    spheres[7] = Sphere(glm::vec3(0.5f, 1.0f, 0.5f), 0.5f);
+    spheres[8] = Sphere(glm::vec3(-1.5f, 1.5f, 0.0f), 0.3f);
 
     std::vector<RaytraceMaterial> materials(sphereCount);
-    materials[0].mAlbedo = glm::vec3(0.8f, 0.8f, 0.0f);
+    materials[0].mType = RaytraceMaterial::MaterialType::Lambertian;
+    materials[0].mAlbedo = glm::vec3(0.8f, 0.8f, 0.8f);
+    materials[1].mType = RaytraceMaterial::MaterialType::Lambertian;
+    materials[1].mAlbedo = glm::vec3(0.8f, 0.4f, 0.4f);
+    materials[2].mType = RaytraceMaterial::MaterialType::Lambertian;
+    materials[2].mAlbedo = glm::vec3(0.4f, 0.8f, 0.4f);
 
-    materials[1].mType = RaytraceMaterial::MaterialType::Dialectric;
-    materials[1].mAlbedo = glm::vec3(1.0f, 1.0f, 1.0f);
-    materials[1].mRefractionIndex = 1.5f;
-
-    materials[2].mType = RaytraceMaterial::MaterialType::Dialectric;
-    materials[2].mAlbedo = glm::vec3(1.0f, 1.0f, 1.0f);
-    materials[2].mRefractionIndex = 1.5f;
-
-    materials[3].mType = RaytraceMaterial::MaterialType::Lambertian;
-    materials[3].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
-
+    materials[3].mType = RaytraceMaterial::MaterialType::Metallic;
+    materials[3].mAlbedo = glm::vec3(0.4f, 0.4f, 0.8f);
+    materials[3].mFuzz = 0.0f;
     materials[4].mType = RaytraceMaterial::MaterialType::Metallic;
-    materials[4].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
-    materials[4].mFuzz = 0.1f;
+    materials[4].mAlbedo = glm::vec3(0.4f, 0.8f, 0.4f);
+    materials[4].mFuzz = 0.0f;
+    materials[5].mType = RaytraceMaterial::MaterialType::Metallic;
+    materials[5].mAlbedo = glm::vec3(0.4f, 0.8f, 0.4f);
+    materials[5].mFuzz = 0.2f;
+    materials[6].mType = RaytraceMaterial::MaterialType::Metallic;
+    materials[6].mAlbedo = glm::vec3(0.4f, 0.8f, 0.4f);
+    materials[6].mFuzz = 0.6f;
 
-    materials[5].mType = RaytraceMaterial::MaterialType::Lambertian;
-    materials[5].mAlbedo = glm::vec3(0.1f, 0.2f, 0.5f);
-
-    for (int i = 6; i < sphereCount; i++)
-    {
-        materials[i].mType =
-            (i % 2 == 0) ? RaytraceMaterial::MaterialType::Lambertian : RaytraceMaterial::MaterialType::Metallic;
-        materials[i].mAlbedo = glm::linearRand(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-        materials[i].mFuzz = glm::linearRand(0.0f, 0.2f);
-    }
+    materials[7].mType = RaytraceMaterial::MaterialType::Dialectric;
+    materials[7].mAlbedo = glm::vec3(0.4f, 0.4f, 0.4f);
+    materials[7].mRefractionIndex = 1.5f;
+    materials[8].mType = RaytraceMaterial::MaterialType::DiffuseLight;
+    materials[8].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
+    materials[8].mEmissive = glm::vec3(30.0f, 25.0f, 15.0f);
 
     std::vector<AABB> boundingVolumes(sphereCount);
     for (int i = 0; i < sphereCount; i++)
@@ -90,7 +88,7 @@ void Raytracer::update(Camera *camera)
     camera->raytraceSpheres(bvh, spheres, materials, 5, 32);
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time = end - start;
-    std::cout << "Based MRays/s: " << ((1024 * 1024) / elapsed_time.count()) / 1000000.0f << "\n";
+    std::cout << "Based MRays/s: " << ((256 * 256) / elapsed_time.count()) / 1000000.0f << "\n";
 
     camera->updateFinalImage();
     bvh.freeBVH();
@@ -208,6 +206,9 @@ void Raytracer::update(Camera *camera)
 
     //    mMaterials[4].mType = RaytraceMaterial::MaterialType::DiffuseLight;
     //    mMaterials[4].mEmissive = glm::vec3(4.0f, 4.0f, 4.0f);
+    //    //mMaterials[4].mType = RaytraceMaterial::MaterialType::Metallic;
+    //    //mMaterials[4].mAlbedo = glm::vec3(4.0f, 4.0f, 4.0f);
+    //    //mMaterials[4].mFuzz = 0.1f;
 
     //    generate_blas = false;
     //}
