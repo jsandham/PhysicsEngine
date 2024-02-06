@@ -10,6 +10,7 @@
 #include "../../include/core/World.h"
 
 #include "../../include/graphics/Renderer.h"
+#include "../../include/graphics/platform/gpgpu/gpgpu.h"
 
 using namespace PhysicsEngine;
 
@@ -26,9 +27,11 @@ Camera::Camera(World *world, const Id &id) : mWorld(world), mGuid(Guid::INVALID)
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(256, 256, TextureFormat::RGB,
                                                           TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
+    mTargets.mRaytracingIntersectionCountTex = RenderTextureHandle::create(
+        256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -85,9 +88,11 @@ Camera::Camera(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mTargets.mGeometryFBO = Framebuffer::create(1920, 1080, 3, true);
     mTargets.mSsaoFBO = Framebuffer::create(1920, 1080, 1, false);
     mTargets.mOcclusionMapFBO = Framebuffer::create(64, 64, 1, false);
-    mTargets.mRaytracingTex = RenderTextureHandle::create(1024, 1024, TextureFormat::RGB,
+    mTargets.mRaytracingTex = RenderTextureHandle::create(256, 256, TextureFormat::RGB,
                                                           TextureWrapMode::ClampToBorder,
                                                           TextureFilterMode::Nearest);
+    mTargets.mRaytracingIntersectionCountTex = RenderTextureHandle::create(
+        256, 256, TextureFormat::RGB, TextureWrapMode::ClampToBorder, TextureFilterMode::Nearest);
 
     mRenderPath = RenderPath::Forward;
     mColorTarget = ColorTarget::Color;
@@ -140,6 +145,7 @@ Camera::~Camera()
     delete mTargets.mSsaoFBO;
     delete mTargets.mOcclusionMapFBO;
     delete mTargets.mRaytracingTex;
+    delete mTargets.mRaytracingIntersectionCountTex;
 }
 
 void Camera::serialize(YAML::Node &out) const
@@ -521,6 +527,11 @@ RenderTextureHandle *Camera::getNativeGraphicsRaytracingTex() const
     return mTargets.mRaytracingTex;
 }
 
+RenderTextureHandle *Camera::getNativeGraphicsRaytracingIntersectionCountTex() const
+{
+    return mTargets.mRaytracingIntersectionCountTex;
+}
+
 RenderTextureHandle *Camera::getNativeGraphicsColorTex() const
 {
     return mTargets.mMainFBO->getColorTex();
@@ -573,8 +584,10 @@ Entity *Camera::getEntity() const
 
 // Iterative computeColor for spheres
 static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere> &spheres,
-                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth)
+                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth, int &intersectionCount)
 {
+    intersectionCount = 0;
+
     Ray ray2 = ray;
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -582,7 +595,7 @@ static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere>
     int depth = maxDepth;
     while (depth >= 0)
     {
-        BVHHit hit = bvh.intersect(ray2, spheres);
+        BVHHit hit = bvh.intersect(ray2, spheres, intersectionCount);
 
         // If ray does not hit anything, return background color
         if (hit.mIndex < 0)
@@ -633,9 +646,11 @@ static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere>
 }
 
 // Iterative computeColor using TLAS and BLAS
-static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS> &blas,
-                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth)
+static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS*> &blas,
+                                       const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth, int& intersectCount)
 {
+    intersectCount = 0;
+
     Ray ray2 = ray;
 
     glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -643,7 +658,7 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS>
     int depth = maxDepth;
     while (depth >= 0)
     {
-        TLASHit hit = tlas.intersectTLAS(ray2);
+        TLASHit hit = tlas.intersectTLAS(ray2, intersectCount);
 
         // If ray does not hit anything, return background color
         if (hit.blasIndex < 0)
@@ -654,7 +669,8 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS>
             return color;
         }
 
-        glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getUnitNormal());
+        //glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getUnitNormal());
+        glm::vec3 normal = blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(hit.mTriIndex);
         glm::vec3 point = ray2.getPoint(hit.mT);
 
         if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::Lambertian)
@@ -691,6 +707,22 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS>
     }
 
     return glm::vec3(0.0f, 0.0f, 0.0f);
+}
+
+// Iterative computeNormals using TLAS and BLAS
+static glm::vec3 computeNormalsIterative(const TLAS &tlas, const std::vector<BLAS*> &blas, const Ray &ray, int &intersectCount)
+{
+    intersectCount = 0;
+    TLASHit hit = tlas.intersectTLAS(ray, intersectCount);
+
+    if (hit.blasIndex >= 0)
+    {
+        return blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(hit.mTriIndex);
+    }
+    else
+    {
+        return glm::vec3(0.0f, 0.0f, 0.0f);
+    }
 }
 
 static uint32_t pcg_hash(uint32_t seed)
@@ -735,9 +767,13 @@ void Camera::clearPixels()
     {
         mImage[i] = 0.0f;
     }
-    for (size_t i = 0; i < mSamplesPerRay.size(); i++)
+    for (size_t i = 0; i < mSamplesPerPixel.size(); i++)
     {
-        mSamplesPerRay[i] = 0;
+        mSamplesPerPixel[i] = 0;
+    }
+    for (size_t i = 0; i < mIntersectionCount.size(); i++)
+    {
+        mIntersectionCount[i] = 0;
     }
 }
 
@@ -750,16 +786,10 @@ void Camera::resizePixels()
     if (width * height * 3 != mImage.size())
     {
         mImage.resize(width * height * 3);
-        mSamplesPerRay.resize(width * height);
-        for (size_t i = 0; i < mImage.size(); i++)
-        {
-            mImage[i] = 0.0f;
-        }
+        mSamplesPerPixel.resize(width * height);
+        mIntersectionCount.resize(width * height);
 
-        for (size_t i = 0; i < mSamplesPerRay.size(); i++)
-        {
-            mSamplesPerRay[i] = 0;
-        }
+        this->clearPixels();
     }
 }
 
@@ -771,14 +801,14 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    float du = 2.0f / 1024;
-    float dv = 2.0f / 1024;
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
 
     constexpr int TILE_WIDTH = 8;
     constexpr int TILE_HEIGHT = 8;
 
-    constexpr int TILE_ROWS = 1024 / TILE_HEIGHT;
-    constexpr int TILE_COLUMNS = 1024 / TILE_WIDTH;
+    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
 
     #pragma omp parallel for schedule(dynamic)
     for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
@@ -806,7 +836,7 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
                 assert(offset >= 0);
                 assert(offset < width * height);
 
-                mSamplesPerRay[offset]++;
+                mSamplesPerPixel[offset]++;
 
                 // Read color from image
                 float red = mImage[3 * offset + 0];
@@ -814,32 +844,36 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
                 float blue = mImage[3 * offset + 2];
                 glm::vec3 color = glm::vec3(red, green, blue);
 
-                color += computeColorIterative(bvh, spheres, materials, getCameraRay(pixelSampleNDC), maxBounces);
-                
+                int intersectionCount = 0;
+                color += computeColorIterative(bvh, spheres, materials, getCameraRay(pixelSampleNDC), maxBounces,
+                                               intersectionCount);
+
                 // Store computed color to image
                 mImage[3 * offset + 0] = color.r;
                 mImage[3 * offset + 1] = color.g;
                 mImage[3 * offset + 2] = color.b;
+
+                mIntersectionCount[offset] += intersectionCount;
             }
         }
     }
 }
 
-void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
+void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
 {
     // Image size
     int width = getNativeGraphicsRaytracingTex()->getWidth();
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
     // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
-    float du = 2.0f / 1024;
-    float dv = 2.0f / 1024;
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
 
     constexpr int TILE_WIDTH = 8;
     constexpr int TILE_HEIGHT = 8;
 
-    constexpr int TILE_ROWS = 1024 / TILE_HEIGHT;
-    constexpr int TILE_COLUMNS = 1024 / TILE_WIDTH;
+    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
 
     #pragma omp parallel for schedule(dynamic)
     for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
@@ -867,7 +901,7 @@ void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, cons
                 assert(offset >= 0);
                 assert(offset < width * height);
 
-                mSamplesPerRay[offset]++;
+                mSamplesPerPixel[offset]++;
 
                 // Read color from image
                 float red = mImage[3 * offset + 0];
@@ -875,13 +909,80 @@ void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, cons
                 float blue = mImage[3 * offset + 2];
                 glm::vec3 color = glm::vec3(red, green, blue);
 
-                color += computeColorIterative(tlas, blas, materials, getCameraRay(pixelSampleNDC),
-                                                maxBounces);
+                int intersectionCount = 0;
+                color += computeColorIterative(tlas, blas, materials, getCameraRay(pixelSampleNDC), maxBounces,
+                                               intersectionCount);
 
                 // Store computed color to image
                 mImage[3 * offset + 0] = color.r;
                 mImage[3 * offset + 1] = color.g;
                 mImage[3 * offset + 2] = color.b;
+
+                mIntersectionCount[offset] += intersectionCount;
+            }
+        }
+    }
+}
+
+void Camera::raytraceNormals(const TLAS &tlas, const std::vector<BLAS*> &blas, int maxSamples)
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    // In NDC we use a 2x2x2 box ranging from [-1,1]x[-1,1]x[-1,1]
+    float du = 2.0f / 256;
+    float dv = 2.0f / 256;
+
+    constexpr int TILE_WIDTH = 8;
+    constexpr int TILE_HEIGHT = 8;
+
+    constexpr int TILE_ROWS = 256 / TILE_HEIGHT;
+    constexpr int TILE_COLUMNS = 256 / TILE_WIDTH;
+
+    #pragma omp parallel for schedule(dynamic)
+    for (int t = 0; t < TILE_ROWS * TILE_COLUMNS; t++)
+    {
+        int brow = t / TILE_ROWS;
+        int bcol = t % TILE_COLUMNS;
+
+        for (int r = 0; r < TILE_HEIGHT; r++)
+        {
+            for (int c = 0; c < TILE_WIDTH; c++)
+            {
+                int row = (TILE_HEIGHT * brow + r);
+                int col = (TILE_WIDTH * bcol + c);
+
+                glm::vec2 pixelSampleNDC = generatePixelSampleNDC(col, row, du, dv);
+
+                int irow = (int)(height * (0.5f * (pixelSampleNDC.y + 1.0f)));
+                int icol = (int)(width * (0.5f * (pixelSampleNDC.x + 1.0f)));
+
+                irow = glm::min(height - 1, glm::max(0, irow));
+                icol = glm::min(width - 1, glm::max(0, icol));
+
+                int offset = width * irow + icol;
+
+                assert(offset >= 0);
+                assert(offset < width * height);
+
+                mSamplesPerPixel[offset]++;
+
+                // Read color from image
+                float red = mImage[3 * offset + 0];
+                float green = mImage[3 * offset + 1];
+                float blue = mImage[3 * offset + 2];
+                glm::vec3 color = glm::vec3(red, green, blue);
+
+                int intersectionCount = 0;
+                color += computeNormalsIterative(tlas, blas, getCameraRay(pixelSampleNDC), intersectionCount);
+
+                // Store computed color to image
+                mImage[3 * offset + 0] = color.r;
+                mImage[3 * offset + 1] = color.g;
+                mImage[3 * offset + 2] = color.b;
+
+                mIntersectionCount[offset] += intersectionCount;
             }
         }
     }
@@ -893,49 +994,105 @@ void Camera::updateFinalImage()
     int width = getNativeGraphicsRaytracingTex()->getWidth();
     int height = getNativeGraphicsRaytracingTex()->getHeight();
 
+    std::vector<unsigned char> finalIntersectCountImage(3 * width * height);
     std::vector<unsigned char> finalImage(3 * width * height);
     #pragma omp parallel for
     for (int row = 0; row < height; row++)
     {
         for (int col = 0; col < width; col++)
         {
-            int sampleCount = mSamplesPerRay[width * row + col];
+            int sampleCount = mSamplesPerPixel[width * row + col];
 
-            if (sampleCount > 0)
+            // Read color from image
+            float r = mImage[3 * width * row + 3 * col + 0];
+            float g = mImage[3 * width * row + 3 * col + 1];
+            float b = mImage[3 * width * row + 3 * col + 2];
+
+            float scale = 1.0f / sampleCount;
+            r *= scale;
+            g *= scale;
+            b *= scale;
+
+            // Gamma correction
+            r = glm::sqrt(r);
+            g = glm::sqrt(g);
+            b = glm::sqrt(b);
+
+            int ir = (int)(255 * glm::clamp(r, 0.0f, 1.0f));
+            int ig = (int)(255 * glm::clamp(g, 0.0f, 1.0f));
+            int ib = (int)(255 * glm::clamp(b, 0.0f, 1.0f));
+
+            finalImage[3 * width * row + 3 * col + 0] = (sampleCount > 0) ? static_cast<unsigned char>(ir) : 0;
+            finalImage[3 * width * row + 3 * col + 1] = (sampleCount > 0) ? static_cast<unsigned char>(ig) : 0;
+            finalImage[3 * width * row + 3 * col + 2] = (sampleCount > 0) ? static_cast<unsigned char>(ib) : 0;
+
+            // Debug intersection visualization
+            int intersectionCount = (sampleCount > 0) ? mIntersectionCount[width * row + col] / sampleCount : 0;
+
+            float alpha = intersectionCount / 400.0f;
+            glm::vec3 c;
+            if (alpha < 0.5f)
             {
-                // Read color from image
-                float r = mImage[3 * width * row + 3 * col + 0];
-                float g = mImage[3 * width * row + 3 * col + 1];
-                float b = mImage[3 * width * row + 3 * col + 2];
-
-                float scale = 1.0f / sampleCount;
-                r *= scale;
-                g *= scale;
-                b *= scale;
-
-                // Gamma correction
-                r = glm::sqrt(r);
-                g = glm::sqrt(g);
-                b = glm::sqrt(b);
-
-                int ir = (int)(255 * glm::clamp(r, 0.0f, 1.0f));
-                int ig = (int)(255 * glm::clamp(g, 0.0f, 1.0f));
-                int ib = (int)(255 * glm::clamp(b, 0.0f, 1.0f));
-
-                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(ir);
-                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(ig);
-                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(ib);
+                c = glm::mix(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), alpha);
             }
             else
             {
-                finalImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(0);
-                finalImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(0);
-                finalImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(0);
+                c = glm::mix(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), alpha);
             }
+
+            int ir2 = (int)(255 * glm::clamp(c.r, 0.0f, 1.0f));
+            int ig2 = (int)(255 * glm::clamp(c.g, 0.0f, 1.0f));
+            int ib2 = (int)(255 * glm::clamp(c.b, 0.0f, 1.0f));
+
+            finalIntersectCountImage[3 * width * row + 3 * col + 0] = static_cast<unsigned char>(ir2);
+            finalIntersectCountImage[3 * width * row + 3 * col + 1] = static_cast<unsigned char>(ig2);
+            finalIntersectCountImage[3 * width * row + 3 * col + 2] = static_cast<unsigned char>(ib2);
         }
     }
 
     mTargets.mRaytracingTex->load(finalImage);
+    mTargets.mRaytracingIntersectionCountTex->load(finalIntersectCountImage);
+}
+
+void Camera::clearPixelsUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    gpgpu::clearPixels(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), width, height);
+}
+
+void Camera::resizePixelsUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    if (width * height * 3 != mImage.size())
+    {
+        mImage.resize(width * height * 3);
+        mSamplesPerPixel.resize(width * height);
+        mIntersectionCount.resize(width * height);
+
+        this->clearPixelsUsingDevice();
+    }
+}
+
+void Camera::updateFinalImageUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    std::vector<unsigned char> finalImage(3 * width * height);
+    std::vector<unsigned char> finalIntersectionCountImage(3 * width * height);
+
+    gpgpu::updateFinalImage(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), finalImage.data(),
+                            finalIntersectionCountImage.data(), width, height);
+
+    mTargets.mRaytracingTex->load(finalImage);
+    mTargets.mRaytracingIntersectionCountTex->load(finalIntersectionCountImage);
 }
 
 Ray Camera::getCameraRay(const glm::vec2 &pixelSampleNDC) const

@@ -121,55 +121,32 @@ struct BVHHit
 
 struct BVH
 {
-    BVHNode *mNodes;
-    int *mPerm;
-    size_t mSize;
+    std::vector<BVHNode> mNodes;
+    std::vector<int> mPerm;
 
     inline int getNodeCount() const
     {
-        return (2 * (int)mSize - 1);
+        return (2 * (int)mPerm.size() - 1);
     }
 
-    void allocateBVH(size_t size)
+    void buildBVH(const std::vector<AABB> &boundingAABBs)
     {
-        mSize = size;
-
-        if (mSize > 0)
-        {
-            mNodes = (BVHNode*)malloc(sizeof(BVHNode) * (2 * mSize - 1));
-            mPerm = (int*)malloc(sizeof(int) * mSize);
-        }
-    }
-
-    void freeBVH()
-    {
-        if (mSize > 0)
-        {
-            mSize = 0;
-            free(mNodes);
-            free(mPerm);
-        }
-    }
-
-    void buildBVH(const AABB* boundingAABBs, size_t size)
-    {
-        assert(mSize == size);
-
-        if (mSize == 0)
+        if (boundingAABBs.size() == 0)
         {
             return;
         }
 
-        assert(mNodes != nullptr);
-        assert(mPerm != nullptr);
-
-        for (size_t i = 0; i < mSize; i++)
+        mPerm.resize(boundingAABBs.size());
+        for (size_t i = 0; i < boundingAABBs.size(); i++)
         {
             mPerm[i] = (int)i;
         }
 
+        
+        mNodes.resize(2 * boundingAABBs.size() - 1);
+
         mNodes[0].mLeftOrStartIndex = 0;
-        mNodes[0].mIndexCount = static_cast<int>(mSize);
+        mNodes[0].mIndexCount = static_cast<int>(boundingAABBs.size());
 
         glm::vec3 MAX_VEC3 = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                                                 std::numeric_limits<float>::max());
@@ -259,13 +236,14 @@ struct BVH
         }
     }
 
-    BVHHit intersect(const Ray &ray, const std::vector<Sphere> &spheres) const
+    BVHHit intersect(const Ray &ray, const std::vector<Sphere> &spheres, int &intersectionCount) const
     {
         BVHHit hit;
         hit.mT = std::numeric_limits<float>::max();
         hit.mIndex = -1;
 
         float root_t = intersectAABB(ray, mNodes[0].mMin, mNodes[0].mMax);
+        intersectionCount++;
         if (root_t == std::numeric_limits<float>::max())
         {
             return hit;
@@ -279,6 +257,8 @@ struct BVH
 
         while (top > 0)
         {
+            assert(top <= 32);
+
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -306,6 +286,7 @@ struct BVH
                 
                 float lt = intersectAABB(ray, left->mMin, left->mMax);
                 float rt = intersectAABB(ray, right->mMin, right->mMax);
+                intersectionCount += 2;
 
                 if (lt <= rt)
                 {
@@ -348,21 +329,37 @@ struct BLASHit
 
 struct BLAS
 {
-    BVHNode *mNodes;
-    int *mPerm;
-    size_t mSize;
-    Triangle *mTriangles;
+    std::vector<BVHNode> mNodes;
+    std::vector<int> mPerm;
+    std::vector<Triangle> mTriangles;
+    
     glm::mat4 mModel;
     glm::mat4 mInverseModel;
 
     inline int getNodeCount() const
     {
-        return (2 * (int)mSize - 1);
+        return (2 * (int)mPerm.size() - 1);
     }
 
     inline Triangle getTriangle(size_t index) const
     {
         return mTriangles[index];
+    }
+
+    inline glm::vec3 getTriangleWorldSpaceNormal(size_t index) const
+    {
+        return glm::vec3(mModel * glm::vec4(getTriangle(index).getNormal(), 0.0f));
+    }
+
+    inline glm::vec3 getTriangleWorldSpaceUnitNormal(size_t index) const
+    {
+        return glm::normalize(getTriangleWorldSpaceNormal(index));
+    }
+
+    void setModel(const glm::mat4& model)
+    {
+        mModel = model;
+        mInverseModel = glm::inverse(model);
     }
 
     struct Bin
@@ -473,57 +470,25 @@ struct BLAS
         return cost;
     }
 
-    void allocateBLAS(size_t size)
+    void buildBLAS(const std::vector<Triangle> &triangles)
     {
-        mSize = size;
-
-        if (mSize > 0)
-        {
-            mNodes = (BVHNode *)malloc(sizeof(BVHNode) * (2 * mSize - 1));
-            mPerm = (int *)malloc(sizeof(int) * mSize);
-            mTriangles = (Triangle *)malloc(sizeof(Triangle) * mSize);
-        }
-    }
-
-    void freeBLAS()
-    {
-        if (mSize > 0)
-        {
-            mSize = 0;
-            free(mNodes);
-            free(mPerm);
-            free(mTriangles);
-        }
-    }
-
-    void buildBLAS(const std::vector<Triangle> &triangles, const glm::mat4 &model, size_t size)
-    {
-        assert(mSize == size);
-
-        if (mSize == 0)
+        if (triangles.size() == 0)
         {
             return;
         }
 
-        assert(mNodes != nullptr);
-        assert(mPerm != nullptr);
-        assert(mTriangles != nullptr);
+        mTriangles = triangles;
 
-        mModel = model;
-        mInverseModel = glm::inverse(model);
-
-        for (size_t i = 0; i < mSize; i++)
-        {
-            mTriangles[i] = triangles[i];
-        }
-
-        for (size_t i = 0; i < mSize; i++)
+        mPerm.resize(triangles.size());
+        for (size_t i = 0; i < mPerm.size(); i++)
         {
             mPerm[i] = (int)i;
         }
 
+        mNodes.resize(2 * triangles.size() - 1);
+
         mNodes[0].mLeftOrStartIndex = 0;
-        mNodes[0].mIndexCount = static_cast<int>(mSize);
+        mNodes[0].mIndexCount = static_cast<int>(triangles.size());
 
         glm::vec3 MAX_VEC3 = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                                        std::numeric_limits<float>::max());
@@ -629,7 +594,7 @@ struct BLAS
         }
     }
 
-    BLASHit intersectBLAS(const Ray &ray, float maxt) const
+    BLASHit intersectBLAS(const Ray &ray, float maxt, int &intersectCount) const
     {
         Ray modelSpaceRay;
         modelSpaceRay.mOrigin = mInverseModel * glm::vec4(ray.mOrigin, 1.0f);
@@ -640,6 +605,7 @@ struct BLAS
         hit.mT = maxt;
 
         float root_t = intersectAABB(modelSpaceRay, mNodes[0].mMin, mNodes[0].mMax);
+        intersectCount++;
         if (root_t == std::numeric_limits<float>::max())
         {
             return hit;
@@ -653,6 +619,8 @@ struct BLAS
 
         while (top > 0)
         {
+            assert(top <= 32);
+
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -679,6 +647,7 @@ struct BLAS
                 const BVHNode *right = &mNodes[node->mLeftOrStartIndex + 1];
                 float lt = intersectAABB(modelSpaceRay, left->mMin, left->mMax);
                 float rt = intersectAABB(modelSpaceRay, right->mMin, right->mMax);
+                intersectCount += 2;
 
                 if (lt <= rt)
                 {
@@ -756,65 +725,40 @@ struct TLASHit
 
 struct TLAS
 {
-    BVHNode *mNodes;
-    int *mPerm;
-    size_t mSize;
-    BLAS *mBlas;
+    std::vector<BVHNode> mNodes;
+    std::vector<int> mPerm;
+    std::vector<BLAS*> mBLAS;
 
     inline int getNodeCount() const
     {
-        return (2 * (int)mSize - 1);
+        return (2 * (int)mBLAS.size() - 1);
     }
 
-    void allocateTLAS(size_t size)
+    void buildTLAS(const std::vector<BLAS*> &blas)
     {
-        mSize = size;
-
-        if (mSize > 0)
-        {
-            mNodes = (BVHNode *)malloc(sizeof(BVHNode) * (2 * mSize - 1));
-            mPerm = (int *)malloc(sizeof(int) * mSize);
-        }
-    }
-
-    void freeTLAS()
-    {
-        if (mSize > 0)
-        {
-            mSize = 0;
-            free(mNodes);
-            free(mPerm);
-        }
-    }
-
-    void buildTLAS(BLAS *blas, size_t size)
-    {
-        assert(mSize == size);
-
-        if (mSize == 0)
+        if (blas.size() == 0)
         {
             return;
         }
 
-        mBlas = blas;
+        mBLAS = blas;
 
-        assert(mNodes != nullptr);
-        assert(mPerm != nullptr);
-        assert(mBlas != nullptr);
-
-        std::vector<AABB> boundingAABBs(mSize);
-        for (size_t i = 0; i < mSize; i++)
+        std::vector<AABB> boundingAABBs(blas.size());
+        for (size_t i = 0; i < boundingAABBs.size(); i++)
         {
-            boundingAABBs[i] = blas[i].getAABBBounds();
+            boundingAABBs[i] = blas[i]->getAABBBounds();
         }
 
-        for (size_t i = 0; i < mSize; i++)
+        mPerm.resize(blas.size());
+        for (size_t i = 0; i < mPerm.size(); i++)
         {
             mPerm[i] = (int)i;
         }
 
+        mNodes.resize(2 * blas.size() - 1);
+
         mNodes[0].mLeftOrStartIndex = 0;
-        mNodes[0].mIndexCount = static_cast<int>(mSize);
+        mNodes[0].mIndexCount = static_cast<int>(blas.size());
 
         glm::vec3 MAX_VEC3 = glm::vec3(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
                                        std::numeric_limits<float>::max());
@@ -830,6 +774,8 @@ struct TLAS
         int index = 0; // start at one for alignment
         while (top > 0)
         {
+            assert(top <= 32);
+
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -910,7 +856,7 @@ struct TLAS
         }
     }
 
-    TLASHit intersectTLAS(const Ray &ray) const
+    TLASHit intersectTLAS(const Ray &ray, int& intersectCount) const
     {
         TLASHit hit;
         hit.blasIndex = -1;
@@ -918,6 +864,7 @@ struct TLAS
         hit.mT = std::numeric_limits<float>::max();
 
         float root_t = intersectAABB(ray, mNodes[0].mMin, mNodes[0].mMax);
+        intersectCount++;
         if (root_t == std::numeric_limits<float>::max())
         {
             return hit;
@@ -931,6 +878,8 @@ struct TLAS
 
         while (top > 0)
         {
+            assert(top <= 32);
+
             int nodeIndex = stack[top - 1];
             top--;
 
@@ -943,7 +892,7 @@ struct TLAS
 
                 for (int j = startIndex; j < endIndex; j++)
                 {
-                    BLASHit h = mBlas[mPerm[j]].intersectBLAS(ray, hit.mT);
+                    BLASHit h = mBLAS[mPerm[j]]->intersectBLAS(ray, hit.mT, intersectCount);
 
                     if (h.mT > 0.001f && h.mT < hit.mT)
                     {
@@ -960,6 +909,7 @@ struct TLAS
                 
                 float lt = intersectAABB(ray, left->mMin, left->mMax);
                 float rt = intersectAABB(ray, right->mMin, right->mMax);
+                intersectCount += 2;
 
                 if (lt <= rt)
                 {

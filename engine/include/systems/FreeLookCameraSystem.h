@@ -104,6 +104,7 @@ class FreeLookCameraSystem
 
     Framebuffer *getNativeGraphicsMainFBO() const;
     RenderTextureHandle *getNativeGraphicsRaytracingTex() const;
+    RenderTextureHandle *getNativeGraphicsRaytracingIntersectionCountTex() const;
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
     RenderTextureHandle *getNativeGraphicsColorPickingTex() const;

@@ -25,7 +25,8 @@ namespace PhysicsEditor
 		SSAONoise = 9,
 		OcclusionMap = 10,
 		Raytracing = 11,
-		Count = 12
+		IntersectionCount = 12,
+		Count = 13
 	};
 
 	class SceneView

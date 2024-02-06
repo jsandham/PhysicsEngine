@@ -9,6 +9,7 @@
 #include "AssetEnums.h"
 #include "Guid.h"
 #include "Id.h"
+#include "BVH.h"
 
 #include "../graphics/IndexBuffer.h"
 #include "../graphics/MeshHandle.h"
@@ -51,6 +52,8 @@ class Mesh
     IndexBuffer *mIndexBuffer;
     bool mDeviceUpdateRequired;
 
+    BLAS mBLAS;
+
     friend class World;
 
   public:
@@ -90,9 +93,9 @@ class Mesh
     const std::vector<int> &getSubMeshStartIndices() const;
 
     size_t getVertexCount() const;
-    size_t getNormalCount() const;
-    size_t getTexCoordCount() const;
     size_t getIndexCount() const;
+
+    BLAS *getBLAS();
 
     int getSubMeshStartIndex(int subMeshIndex) const;
     int getSubMeshEndIndex(int subMeshIndex) const;
@@ -119,6 +122,7 @@ class Mesh
     void computeBoundingSphere();
     void computeNormals_SIMD128();
     void computeBoundingSphere_SIMD128();
+    void buildBLAS();
 };
 
 } // namespace PhysicsEngine

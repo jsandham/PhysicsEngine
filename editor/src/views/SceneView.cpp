@@ -123,7 +123,7 @@ void SceneView::drawSceneHeader(Clipboard& clipboard)
 	static bool scaleModeActive = false;
 
 	const char* targetNames[] = { "Color", "Color Picking", "Depth", "Linear Depth", "Normals",
-									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise", "OcclusionMap", "Raytracing"};
+									"Shadow Cascades", "Position", "Albedo/Specular", "SSAO",  "SSAO Noise", "OcclusionMap", "Raytracing", "IntersectionCount"};
 
 	clipboard.mCameraSystem->setViewport(0, 0, (int)mSceneContentSize.x, (int)mSceneContentSize.y);
 
@@ -437,6 +437,9 @@ void SceneView::drawSceneContent(Clipboard& clipboard)
 		break;
 	case DebugTargets::Raytracing:
 		tex = clipboard.mCameraSystem->getNativeGraphicsRaytracingTex();
+		break;
+	case DebugTargets::IntersectionCount:
+		tex = clipboard.mCameraSystem->getNativeGraphicsRaytracingIntersectionCountTex();
 		break;
 	}
 

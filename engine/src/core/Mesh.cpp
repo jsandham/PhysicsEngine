@@ -470,6 +470,8 @@ void Mesh::load(const std::string &filepath)
     mVertexCount = mVertices.size() / 3;
     mIndexCount = mIndices.size();
 
+    buildBLAS();
+
     mDeviceUpdateRequired = true;
 }
 
@@ -504,6 +506,8 @@ void Mesh::load(std::vector<float> vertices, std::vector<float> normals, std::ve
 
     mVertexCount = mVertices.size() / 3;
     mIndexCount = mIndices.size();
+
+    buildBLAS();
 
     mDeviceUpdateRequired = true;
 }
@@ -551,6 +555,11 @@ size_t Mesh::getVertexCount() const
 size_t Mesh::getIndexCount() const
 {
     return mIndexCount;
+}
+
+BLAS *Mesh::getBLAS()
+{
+    return &mBLAS;
 }
 
 int Mesh::getSubMeshStartIndex(int subMeshIndex) const
@@ -627,6 +636,7 @@ void Mesh::setVertices(const std::vector<float> &vertices)
 
         // computeBoundingSphere();
         computeBoundingSphere_SIMD128();
+        buildBLAS();
     }
 }
 
@@ -1230,4 +1240,28 @@ void Mesh::computeBoundingSphere_SIMD128()
             mBounds.mRadius = distance;
         }
     }
+}
+
+void Mesh::buildBLAS()
+{
+    assert(mIndexCount != 0);
+    assert(mVertexCount != 0);
+
+    std::vector<Triangle> triangles(mIndexCount / 3);
+    for (size_t i = 0; i < mIndexCount / 3; i++)
+    {
+        unsigned int i0 = mIndices[3 * i + 0];
+        unsigned int i1 = mIndices[3 * i + 1];
+        unsigned int i2 = mIndices[3 * i + 2];
+
+        glm::vec3 v0 = glm::vec3(mVertices[3 * i0 + 0], mVertices[3 * i0 + 1], mVertices[3 * i0 + 2]);
+        glm::vec3 v1 = glm::vec3(mVertices[3 * i1 + 0], mVertices[3 * i1 + 1], mVertices[3 * i1 + 2]);
+        glm::vec3 v2 = glm::vec3(mVertices[3 * i2 + 0], mVertices[3 * i2 + 1], mVertices[3 * i2 + 2]);
+
+        triangles[i].mV0 = v0;
+        triangles[i].mV1 = v1;
+        triangles[i].mV2 = v2;
+    }
+
+    mBLAS.buildBLAS(triangles);
 }

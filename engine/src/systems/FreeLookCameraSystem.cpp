@@ -351,6 +351,11 @@ RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsRaytracingTex() cons
     return getCamera()->getNativeGraphicsRaytracingTex();
 }
 
+RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsRaytracingIntersectionCountTex() const
+{
+    return getCamera()->getNativeGraphicsRaytracingIntersectionCountTex();
+}
+
 RenderTextureHandle *FreeLookCameraSystem::getNativeGraphicsColorTex() const
 {
     return getCamera()->getNativeGraphicsColorTex();

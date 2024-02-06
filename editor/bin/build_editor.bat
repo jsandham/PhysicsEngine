@@ -60,8 +60,11 @@ set ENGINE_LIB="../../engine/lib/%MODE%/engine.lib"
 
 ::import libraries
 set GLEW_LIB="../../external/glew-2.1.0/lib/%MODE%/glew32.lib"
+set CUDART_LIB="%CUDA_PATH:"=%\lib\x64\cudart.lib"
 
-set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %IMGUICOLORTEXTEDIT_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% opengl32.lib comdlg32.lib
+echo %CUDART_LIB%
+
+set LIBS=%YAML_LIB% %IMGUI_LIB% %IMGUIZMO_LIB% %IMGUICOLORTEXTEDIT_LIB% %FILEWATCH_LIB% %ENGINE_LIB% %GLEW_LIB% %CUDART_LIB% opengl32.lib comdlg32.lib
 set INCLUDES=/I%GLEW% /I%GLM% /I%YAML% /I%IMGUI% /I%IMGUIZMO% /I%IMGUICOLORTEXTEDIT% /I%FILEWATCH% /I%ENGINE%
 cl /std:c++17 /Fe"%MODE%/EditorApplication" %OPT% %WARN% %MODEFLAGS% %FLAGS% %INCLUDES% ../EditorApplication.cpp %SRC_FILES% %LIBS%
 

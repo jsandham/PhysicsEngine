@@ -1,14 +1,19 @@
 @echo off
 
+setlocal enabledelayedexpansion
+
 set GLEW="../../external/glew-2.1.0"
 set YAML="../../external/yaml-cpp/include"
 set GLM="../../external/glm"
 set TINY_OBJ="../../external/tinyobjloader"
 set STB="../../external/stb"
+set CUDA_PATH2="%CUDA_PATH:"=%\include"
+set HIP_PATH2="%HIP_PATH:"=%include"
 set WARN=-W4 -wd4201 -wd4100 -wd4996
 set OPENMP=
 set OPT=/Od
-set MODEFLAGS=/FS /MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+set MODEFLAGS=/FS /MDd /Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+set MODEFLAGS_CUDA=/FS /MDd /Zi /Fd"debug/obj"\ 
 set MODE=debug
 set FLAGS=-nologo /EHsc
 
@@ -25,11 +30,13 @@ for %%x in (%*) do (
 	)
 	if "%%x"=="/debug" (
 		set MODE=debug
-		set MODEFLAGS=/FS /MDd -Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+		set MODEFLAGS=/FS /MDd /Zi /Fo"debug/obj"\ /Fd"debug/obj"\ 
+		set MODEFLAGS_CUDA=/FS /MDd /Zi /Fd"debug/obj"\ 
 	)
 	if "%%x"=="/release" (
 		set MODE=release
 		set MODEFLAGS=/FS /MD /Fo"release/obj"\ /Fd"release/obj"\ 
+		set MODEFLAGS_CUDA=/FS /MD /Fd"release/obj"\ 
 	)
 )
 
@@ -41,6 +48,13 @@ if defined OPENMP (
 	echo [92mOpenMP: off[0m	
 )
 echo [92mOptimization level: %OPT%[0m	
+
+echo %HIP_PATH2%
+echo %CUDA_PATH2%
+
+:: compile cuda code
+echo [92mCompiling CUDA engine code...[0m
+call nvcc -c -g -I%CUDA_PATH2% -Xcompiler "%OPT% %MODEFLAGS_CUDA% " "../src/graphics/platform/gpgpu/cuda/gpgpu.cu" --output-file "%MODE%/obj/gpgpu.obj"
 
 :: compile c++ code
 echo [92mCompiling C++ engine code...[0m
@@ -58,7 +72,7 @@ for /R "../src/" %%f in (*.cpp) do (
 :: create static engine library
 echo [92mCreating static engine library...[0m
 ::lib /nologo /out:%MODE%/engine.lib %OBJ_FILES%
-lib /nologo /out:%MODE%/engine.lib %MODE%/obj/*.obj 
+lib /nologo /out:%MODE%/engine.lib %MODE%/obj/*.obj
 
 :: delete .obj fles
 ::echo [92mDeleting objects...[0m

@@ -88,6 +88,12 @@ class RenderSystem
     std::vector<DrawCallCommand> mDrawCallCommands;
     std::vector<Batch> mBatches;
 
+    // Raytracing
+    BVH mBVH2;
+    std::vector<Sphere> mSpheres;
+    TLAS mTLAS;
+    std::vector<BLAS*> mBLAS;
+
   public:
     HideFlag mHide;
     bool mEnabled;
@@ -115,9 +121,8 @@ class RenderSystem
   private:
     void registerRenderAssets();
     void cacheRenderData();
-    void allocateBVH();
-    void freeBVH();
     void buildBVH();
+    void buildTLAS();
     void frustumCulling(const Camera *camera);
     void occlusionCulling(const Camera *camera);
     void buildRenderQueue();

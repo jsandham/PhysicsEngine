@@ -39,6 +39,7 @@ struct CameraTargets
     Framebuffer *mOcclusionMapFBO;
 
     RenderTextureHandle *mRaytracingTex;
+    RenderTextureHandle *mRaytracingIntersectionCountTex;
 };
 
 struct CameraGizmos
@@ -106,7 +107,8 @@ class Camera
 
     std::vector<Id> mColoringIds;
 
-    std::vector<int> mSamplesPerRay;
+    std::vector<int> mSamplesPerPixel;
+    std::vector<int> mIntersectionCount;
     std::vector<float> mImage;
 
     bool mIsViewportChanged;
@@ -171,6 +173,7 @@ class Camera
     Framebuffer *getNativeGraphicsSSAOFBO() const;
     Framebuffer *getNativeGraphicsOcclusionMapFBO() const;
     RenderTextureHandle *getNativeGraphicsRaytracingTex() const;
+    RenderTextureHandle *getNativeGraphicsRaytracingIntersectionCountTex() const;
 
     RenderTextureHandle *getNativeGraphicsColorTex() const;
     RenderTextureHandle *getNativeGraphicsDepthTex() const;
@@ -192,8 +195,13 @@ class Camera
     void clearPixels();
     void resizePixels();
     void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
-    void raytraceScene(const TLAS &tlas, const std::vector<BLAS> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceNormals(const TLAS &tlas, const std::vector<BLAS*> &blas, int maxSamples);
     void updateFinalImage();
+
+    void clearPixelsUsingDevice();
+    void resizePixelsUsingDevice();
+    void updateFinalImageUsingDevice();
 
     Ray getCameraRay(const glm::vec2 &pixelSampleNDC) const;
     Ray getCameraRay(int u, int v, float du, float dv) const;   

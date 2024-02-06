@@ -16,10 +16,6 @@ namespace PhysicsEngine
       private:
         World *mWorld;
 
-        TLAS mTLAS;
-        std::vector<BLAS> mBLAS;
-        std::vector<RaytraceMaterial> mMaterials;
-
       public:
         Raytracer();
         ~Raytracer();
@@ -27,7 +23,7 @@ namespace PhysicsEngine
         Raytracer &operator=(const Raytracer &other) = delete;
 
         void init(World *world);
-        void update(Camera *camera);
+        void update(Camera *camera, const TLAS &tlas, const std::vector<BLAS*> &blas, const BVH & bvh, const std::vector<Sphere> &spheres);
 
 	};
 }
