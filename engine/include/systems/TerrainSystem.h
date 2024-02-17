@@ -29,7 +29,6 @@ class TerrainSystem
   public:
     TerrainSystem(World *world, const Id &id);
     TerrainSystem(World *world, const Guid &guid, const Id &id);
-    ~TerrainSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

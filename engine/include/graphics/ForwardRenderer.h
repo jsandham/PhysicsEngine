@@ -52,6 +52,8 @@ class ForwardRenderer
     ~ForwardRenderer();
     ForwardRenderer(const ForwardRenderer &other) = delete;
     ForwardRenderer &operator=(const ForwardRenderer &other) = delete;
+    ForwardRenderer(ForwardRenderer &&other) = delete;
+    ForwardRenderer &operator=(ForwardRenderer &&other) = delete;
 
     void init(World *world);
     void update(Camera *camera, const std::vector<DrawCallCommand> &commands,

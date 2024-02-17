@@ -38,10 +38,6 @@ Material::Material(World *world, const Guid &guid, const Id &id) : mWorld(world)
     mShader = nullptr;
 }
 
-Material::~Material()
-{
-}
-
 void Material::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

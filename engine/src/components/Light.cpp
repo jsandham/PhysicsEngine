@@ -76,6 +76,62 @@ Light::~Light()
     delete mTargets.mShadowCubemapFBO;
 }
 
+Light &Light::operator=(Light &&other)
+{
+    std::cout << "In operator=(Light&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mHide = other.mHide;
+        mColor = other.mColor;
+        mIntensity = other.mIntensity;
+        mSpotAngle = other.mSpotAngle;
+        mInnerSpotAngle = other.mInnerSpotAngle;
+        mShadowStrength = other.mShadowStrength;
+        mShadowNearPlane = other.mShadowNearPlane;
+        mShadowFarPlane = other.mShadowFarPlane;
+        mShadowBias = other.mShadowBias;
+        mLightType = other.mLightType;
+        mShadowType = other.mShadowType;
+        mEnabled = other.mEnabled;
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mEntityGuid = other.mEntityGuid;
+        mWorld = other.mWorld;
+        mShadowMapResolution = other.mShadowMapResolution;
+
+        // Free the existing resource.
+        delete mTargets.mShadowCascadeFBO[0];
+        delete mTargets.mShadowCascadeFBO[1];
+        delete mTargets.mShadowCascadeFBO[2];
+        delete mTargets.mShadowCascadeFBO[3];
+        delete mTargets.mShadowCascadeFBO[4];
+        delete mTargets.mShadowSpotlightFBO;
+        delete mTargets.mShadowCubemapFBO;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mTargets.mShadowCascadeFBO[0] = other.mTargets.mShadowCascadeFBO[0];
+        mTargets.mShadowCascadeFBO[1] = other.mTargets.mShadowCascadeFBO[1];
+        mTargets.mShadowCascadeFBO[2] = other.mTargets.mShadowCascadeFBO[2];
+        mTargets.mShadowCascadeFBO[3] = other.mTargets.mShadowCascadeFBO[3];
+        mTargets.mShadowCascadeFBO[4] = other.mTargets.mShadowCascadeFBO[4];
+        mTargets.mShadowSpotlightFBO = other.mTargets.mShadowSpotlightFBO;
+        mTargets.mShadowCubemapFBO = other.mTargets.mShadowCubemapFBO;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mTargets.mShadowCascadeFBO[0] = nullptr;
+        other.mTargets.mShadowCascadeFBO[1] = nullptr;
+        other.mTargets.mShadowCascadeFBO[2] = nullptr;
+        other.mTargets.mShadowCascadeFBO[3] = nullptr;
+        other.mTargets.mShadowCascadeFBO[4] = nullptr;
+        other.mTargets.mShadowSpotlightFBO = nullptr;
+        other.mTargets.mShadowCubemapFBO = nullptr;
+    }
+    return *this;
+}
+
 void Light::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

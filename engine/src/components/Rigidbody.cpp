@@ -55,10 +55,6 @@ Rigidbody::Rigidbody(World *world, const Guid &guid, const Id &id) : mWorld(worl
     mEnabled = true;
 }
 
-Rigidbody::~Rigidbody()
-{
-}
-
 void Rigidbody::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

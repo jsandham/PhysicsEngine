@@ -11,14 +11,14 @@ OpenGLOcclusionQuery::OpenGLOcclusionQuery()
 
 OpenGLOcclusionQuery::~OpenGLOcclusionQuery()
 {
-    GLsizei queryCount = mQueryIds.size();
+    GLsizei queryCount = (GLsizei)mQueryIds.size();
     CHECK_ERROR(glDeleteQueries(queryCount, mQueryIds.data()));
 }
 
 void OpenGLOcclusionQuery::increaseQueryCount(size_t count)
 {
     size_t oldCount = mQueryIds.size();
-    GLsizei queryCount = count - oldCount;
+    GLsizei queryCount = GLsizei(count - oldCount);
     if (queryCount > 0)
     {
         mQueryIds.resize(count);

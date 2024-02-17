@@ -27,7 +27,6 @@ class DebugSystem
   public:
     DebugSystem(World *world, const Id &id);
     DebugSystem(World *world, const Guid &guid, const Id &id);
-    ~DebugSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

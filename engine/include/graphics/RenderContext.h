@@ -18,6 +18,8 @@ constexpr auto RenderAPIToString(RenderAPI api)
     case RenderAPI::DirectX:
         return "DirectX";
     }
+
+    return "OpenGL";
 }
 
 constexpr auto GetShaderLanguageStringFromRenderAPI(RenderAPI api)
@@ -29,6 +31,8 @@ constexpr auto GetShaderLanguageStringFromRenderAPI(RenderAPI api)
     case RenderAPI::DirectX:
         return "HLSL";
     }
+
+    return "GLSL";
 }
 
 class RenderContext

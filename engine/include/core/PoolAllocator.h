@@ -120,8 +120,8 @@ template <class T, size_t T_per_page = 512> class PoolAllocator
         {
             current = get(index);
 
-            *current =
-                std::move(*last); // as long as assignment operator ("rule of three") is implemented this will work
+            // Make ure we follow "rule of five". In particular this needs move assignment operator to be implemented
+            *current = std::move(*last);
         }
 
         (*last).~T();

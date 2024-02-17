@@ -18,10 +18,6 @@ TerrainSystem::TerrainSystem(World *world, const Guid &guid, const Id &id) : mWo
     mEnabled = true;
 }
 
-TerrainSystem::~TerrainSystem()
-{
-}
-
 void TerrainSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

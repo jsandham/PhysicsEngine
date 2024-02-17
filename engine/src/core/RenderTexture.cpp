@@ -114,6 +114,43 @@ RenderTexture::~RenderTexture()
     delete mTargets.mMainFBO;
 }
 
+RenderTexture &RenderTexture::operator=(RenderTexture &&other)
+{
+    std::cout << "In operator=(RenderTexture&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mWorld = other.mWorld;
+        mRawTextureData = other.mRawTextureData;
+        mNumChannels = other.mNumChannels;
+        mAnisoLevel = other.mAnisoLevel;
+        mDimension = other.mDimension;
+        mFormat = other.mFormat;
+        mWrapMode = other.mWrapMode;
+        mFilterMode = other.mFilterMode;
+        mDeviceUpdateRequired = other.mDeviceUpdateRequired;
+        mUpdateRequired = other.mUpdateRequired;
+        mWidth = other.mWidth;
+        mHeight = other.mHeight;
+        mName = other.mName;
+        mHide = other.mHide;
+
+        // Free the existing resource.
+        delete mTargets.mMainFBO;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mTargets.mMainFBO = other.mTargets.mMainFBO;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mTargets.mMainFBO = nullptr;
+    }
+    return *this;
+}
+
 void RenderTexture::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

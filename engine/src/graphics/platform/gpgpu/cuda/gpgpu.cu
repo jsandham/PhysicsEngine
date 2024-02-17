@@ -3,6 +3,7 @@
 //#include <hip/hip_runtime.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <cuda_runtime.h>
 
 #include "../../../../../include/graphics/platform/gpgpu/gpgpu.h"
@@ -22,6 +23,68 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort =
         if (abort)
             exit(code);
     }
+}
+
+struct vec2
+{
+    union {
+        struct
+        {
+            float x, y;
+        };
+        struct
+        {
+            float r, g;
+        };
+    };
+
+    __device__ vec2() : x(0.0f), y(0.0f){};
+    __device__ vec2(float x, float y) : x(x), y(y){};
+
+    __device__ vec2 operator+=(const vec2 &vec)
+    {
+        this->x += vec.x;
+        this->y += vec.y;
+        return *this;
+    }
+
+    __device__ vec2 operator-=(const vec2 &vec)
+    {
+        this->x -= vec.x;
+        this->y -= vec.y;
+        return *this;
+    }
+
+    __device__ vec2 operator*=(float scalar)
+    {
+        this->x *= scalar;
+        this->y *= scalar;
+        return *this;
+    }
+
+    __device__ vec2 operator*=(const vec2 &vec)
+    {
+        this->x *= vec.x;
+        this->y *= vec.y;
+        return *this;
+    }
+
+    __device__ vec2 operator/=(const vec2 &vec)
+    {
+        this->x /= vec.x;
+        this->y /= vec.y;
+        return *this;
+    }
+};
+
+__device__ vec2 operator*(const vec2 &v, float scalar)
+{
+    return vec2(v.x * scalar, v.y * scalar);
+}
+
+__device__ vec2 operator+(const vec2 &v1, const vec2 &v2)
+{
+    return vec2(v1.x + v2.x, v1.y + v2.y);
 }
 
 struct vec3
@@ -90,7 +153,6 @@ __device__ vec3 operator+(const vec3 &v1, const vec3 &v2)
 {
     return vec3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
-
 __device__ float clamp(float d, float min, float max)
 {
     const float t = d < min ? min : d;
@@ -101,6 +163,28 @@ __device__ vec3 mix(vec3 x, vec3 y, float alpha)
 {
     return x * (1.0f - alpha) + y * alpha;
 }
+
+__device__ uint32_t pcg_hash(uint32_t seed)
+{
+    uint32_t state = seed * 747796405u + 2891336453u;
+    uint32_t word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+    return (word >> 22u) ^ word;
+}
+
+__device__ float generate_rand(float a = 0.0f, float b = 1.0f)
+{
+    static uint32_t seed = 1234567;
+    seed++;
+
+    float uniform = (float)pcg_hash(seed) / (float)UINT32_MAX;
+    return a + (b - a) * uniform;
+}
+
+struct Ray
+{
+    vec3 mOrigin;
+    vec3 mDirection;
+};
 template <unsigned int BLOCKSIZE, typename T> __global__ void set_array_to_value_kernel(T *data, int size, T val)
 {
     int tid = BLOCKSIZE * blockIdx.x + threadIdx.x;
@@ -198,6 +282,11 @@ void gpgpu::clearPixels(float *image, int *samplesPerPixel, int* intersectionCou
     CHECK_CUDA(cudaFree(d_samplesPerPixel));
     CHECK_CUDA(cudaFree(d_intersectionCount));
     CHECK_CUDA(cudaFree(d_image));
+}
+
+void gpgpu::raytraceNormals(float *image, glm::vec3 cameraPosition, glm::mat4 projectionMatrix, int width, int height)
+{
+
 }
 
 void gpgpu::updateFinalImage(const float *image, const int *samplesPerPixel, const int *intersectionCount, unsigned char *finalImage, unsigned char *finalIntersectionCountImage, int width,

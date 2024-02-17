@@ -48,6 +48,53 @@ Shader::~Shader()
     }
 }
 
+Shader &Shader::operator=(Shader &&other)
+{
+    std::cout << "In operator=(Shader&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mWorld = other.mWorld;
+        mSource = other.mSource;
+        mSourceFilepath = other.mSourceFilepath;
+        mVertexShader = other.mVertexShader;
+        mFragmentShader = other.mFragmentShader;
+        mGeometryShader = other.mGeometryShader;
+        mVariantMacroMap = other.mVariantMacroMap;
+        mVariants = other.mVariants;
+        mUniforms = other.mUniforms;
+        mMaterialUniforms = other.mMaterialUniforms;
+        mAllProgramsCompiled = other.mAllProgramsCompiled;
+        mActiveProgram = other.mActiveProgram;
+        mName = other.mName;
+        mHide = other.mHide;
+
+        // Free the existing resource.
+        for (size_t i = 0; i < mPrograms.size(); i++)
+        {
+            delete mPrograms[i];
+        }
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mPrograms.resize(other.mPrograms.size());
+        for (size_t i = 0; i < other.mPrograms.size(); i++)
+        {
+            mPrograms[i] = other.mPrograms[i];
+        }
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        for (size_t i = 0; i < other.mPrograms.size(); i++)
+        {
+            other.mPrograms[i] = nullptr;
+        }
+    }
+    return *this;
+}
+
 void Shader::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

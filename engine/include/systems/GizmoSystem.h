@@ -37,7 +37,6 @@ class GizmoSystem
   public:
     GizmoSystem(World *world, const Id &id);
     GizmoSystem(World *world, const Guid &guid, const Id &id);
-    ~GizmoSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

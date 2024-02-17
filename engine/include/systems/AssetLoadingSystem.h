@@ -48,6 +48,10 @@ class AssetLoadingSystem
     AssetLoadingSystem(World *world, const Id &id);
     AssetLoadingSystem(World *world, const Guid &guid, const Id &id);
     ~AssetLoadingSystem();
+    AssetLoadingSystem(const AssetLoadingSystem &other) = delete;
+    AssetLoadingSystem &operator=(const AssetLoadingSystem &other) = delete;
+    AssetLoadingSystem(AssetLoadingSystem &&other) = delete;
+    AssetLoadingSystem &operator=(AssetLoadingSystem &&other) = delete;
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

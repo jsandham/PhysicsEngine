@@ -46,9 +46,6 @@ class Rigidbody
     HideFlag mHide;
     bool mEnabled;
 
-
-
-
     glm::vec3 mVelocity;
     glm::vec3 mAngularVelocity;
     glm::vec3 mCentreOfMass;
@@ -65,7 +62,6 @@ class Rigidbody
   public:
     Rigidbody(World *world, const Id &id);
     Rigidbody(World *world, const Guid &guid, const Id &id);
-    ~Rigidbody();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

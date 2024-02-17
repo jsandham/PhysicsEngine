@@ -32,7 +32,6 @@ class PhysicsSystem
   public:
     PhysicsSystem(World *world, const Id &id);
     PhysicsSystem(World *world, const Guid &guid, const Id &id);
-    ~PhysicsSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

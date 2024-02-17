@@ -90,6 +90,73 @@ Terrain::~Terrain()
     delete mHandle;
 }
 
+Terrain &Terrain::operator=(Terrain &&other)
+{
+    std::cout << "In operator=(Terrain&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mEntityGuid = other.mEntityGuid;
+        mWorld = other.mWorld;
+        for (int i = 0; i < 81; i++)
+        {
+            mTerrainChunks[i] = other.mTerrainChunks[i];
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            mGrassMeshes[i] = other.mGrassMeshes[i];
+            mTreeMeshes[i] = other.mTreeMeshes[i];
+        }
+        mMaterialId = other.mMaterialId;
+        mChunkSize = other.mChunkSize;
+        mChunkResolution = other.mChunkResolution;
+        mVertices = other.mVertices;
+        mNormals = other.mNormals;
+        mTexCoords = other.mTexCoords;
+        mPlaneVertices = other.mPlaneVertices;
+        mPlaneTexCoords = other.mPlaneTexCoords;
+        mTotalChunkCount = other.mTotalChunkCount;
+        mCreated = other.mCreated;
+        mChanged = other.mChanged;
+        mMaterialChanged = other.mMaterialChanged;
+        mGrassMeshChanged = other.mGrassMeshChanged;
+        mTreeMeshChanged = other.mTreeMeshChanged;
+        mHide = other.mHide;
+        mEnabled = other.mEnabled;
+        mMaxViewDistance = other.mMaxViewDistance;
+        mScale = other.mScale;
+        mAmplitude = other.mAmplitude;
+        mOffsetX = other.mOffsetX;
+        mOffsetZ = other.mOffsetZ;
+        mGrassMeshCount = other.mGrassMeshCount;
+        mTreeMeshCount = other.mTreeMeshCount;
+        mCameraTransformId = other.mCameraTransformId;
+
+        // Free the existing resource.
+        delete mVertexBuffer;
+        delete mNormalBuffer;
+        delete mTexCoordsBuffer;
+        delete mHandle;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mVertexBuffer = other.mVertexBuffer;
+        mNormalBuffer = other.mNormalBuffer;
+        mTexCoordsBuffer = other.mTexCoordsBuffer;
+        mHandle = other.mHandle;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mVertexBuffer = nullptr;
+        other.mNormalBuffer = nullptr;
+        other.mTexCoordsBuffer = nullptr;
+        other.mHandle = nullptr;
+    }
+    return *this;
+}
+
 void Terrain::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

@@ -119,7 +119,6 @@ class Scene
   public:
     Scene(World *world, const Id &id);
     Scene(World *world, const Guid &guid, const Id &id);
-    ~Scene();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

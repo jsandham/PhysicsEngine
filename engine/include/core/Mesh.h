@@ -64,6 +64,7 @@ class Mesh
     Mesh(World *world, const Id &id);
     Mesh(World *world, const Guid &guid, const Id &id);
     ~Mesh();
+    Mesh &operator=(Mesh &&other);
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

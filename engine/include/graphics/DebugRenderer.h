@@ -41,6 +41,8 @@ class DebugRenderer
     ~DebugRenderer();
     DebugRenderer(const DebugRenderer &other) = delete;
     DebugRenderer &operator=(const DebugRenderer &other) = delete;
+    DebugRenderer(DebugRenderer &&other) = delete;
+    DebugRenderer &operator=(DebugRenderer &&other) = delete;
 
     void init(World *world);
     void update(Camera *camera, const std::vector<DrawCallCommand> &commands,

@@ -149,6 +149,48 @@ Cubemap::~Cubemap()
     delete mCube;
 }
 
+Cubemap &Cubemap::operator=(Cubemap &&other)
+{
+    std::cout << "In operator=(Cubemap&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mWorld = other.mWorld;
+        mRawTextureData = other.mRawTextureData;
+        mNumChannels = other.mNumChannels;
+        mAnisoLevel = other.mAnisoLevel;
+        mDimension = other.mDimension;
+        mFormat = other.mFormat;
+        mWrapMode = other.mWrapMode;
+        mFilterMode = other.mFilterMode;
+        mDeviceUpdateRequired = other.mDeviceUpdateRequired;
+        mUpdateRequired = other.mUpdateRequired;
+        mLeftTexGuid = other.mLeftTexGuid;
+        mRightTexGuid = other.mRightTexGuid;
+        mBottomTexGuid = other.mBottomTexGuid;
+        mTopTexGuid = other.mTopTexGuid;
+        mBackTexGuid = other.mBackTexGuid;
+        mFrontTexGuid = other.mFrontTexGuid;
+        mWidth = other.mWidth;
+        mName = other.mName;
+        mHide = other.mHide;
+
+        // Free the existing resource.
+        delete mCube;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mCube = other.mCube;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mCube = nullptr;
+    }
+    return *this;
+}
+
 void Cubemap::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

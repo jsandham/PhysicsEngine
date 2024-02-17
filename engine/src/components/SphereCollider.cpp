@@ -30,10 +30,6 @@ SphereCollider::SphereCollider(World *world, const Guid &guid, const Id &id) : m
     mEnabled = true;
 }
 
-SphereCollider::~SphereCollider()
-{
-}
-
 void SphereCollider::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

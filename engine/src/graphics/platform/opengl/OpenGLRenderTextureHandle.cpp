@@ -97,6 +97,8 @@ static int getNumberOfChannels(TextureFormat format)
     case TextureFormat::RGBA:
         return 4;
     }
+
+    return 4;
 }
 
 OpenGLRenderTextureHandle::OpenGLRenderTextureHandle(int width, int height, TextureFormat format,

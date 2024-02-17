@@ -34,34 +34,34 @@ static DXGI_FORMAT getTextureFormat(TextureFormat format)
     return directxFormat;
 }
 
-static D3D11_TEXTURE_ADDRESS_MODE getTextureWrapMode(TextureWrapMode wrapMode)
-{
-    D3D11_TEXTURE_ADDRESS_MODE directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
-
-    switch (wrapMode)
-    {
-    case TextureWrapMode::Repeat:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
-        break;
-    case TextureWrapMode::ClampToEdge:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_CLAMP;
-        break;
-    case TextureWrapMode::ClampToBorder:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_BORDER;
-        break;
-    case TextureWrapMode::MirrorRepeat:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR;
-        break;
-    case TextureWrapMode::MirrorClampToEdge:
-        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
-        break;
-    default:
-        Log::error("DirectX: Invalid texture wrap mode\n");
-        break;
-    }
-
-    return directxWrapMode;
-}
+//static D3D11_TEXTURE_ADDRESS_MODE getTextureWrapMode(TextureWrapMode wrapMode)
+//{
+//    D3D11_TEXTURE_ADDRESS_MODE directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
+//
+//    switch (wrapMode)
+//    {
+//    case TextureWrapMode::Repeat:
+//        directxWrapMode = D3D11_TEXTURE_ADDRESS_WRAP;
+//        break;
+//    case TextureWrapMode::ClampToEdge:
+//        directxWrapMode = D3D11_TEXTURE_ADDRESS_CLAMP;
+//        break;
+//    case TextureWrapMode::ClampToBorder:
+//        directxWrapMode = D3D11_TEXTURE_ADDRESS_BORDER;
+//        break;
+//    case TextureWrapMode::MirrorRepeat:
+//        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR;
+//        break;
+//    case TextureWrapMode::MirrorClampToEdge:
+//        directxWrapMode = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
+//        break;
+//    default:
+//        Log::error("DirectX: Invalid texture wrap mode\n");
+//        break;
+//    }
+//
+//    return directxWrapMode;
+//}
 
 DirectXTextureHandle::DirectXTextureHandle(int width, int height, TextureFormat format, TextureWrapMode wrapMode,
                                            TextureFilterMode filterMode)

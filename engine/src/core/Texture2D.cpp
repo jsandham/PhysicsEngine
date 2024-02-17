@@ -133,6 +133,44 @@ Texture2D::~Texture2D()
     delete mTex;
 }
 
+Texture2D &Texture2D::operator=(Texture2D &&other)
+{
+    std::cout << "In operator=(Texture2D&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mWorld = other.mWorld;
+        mRawTextureData = other.mRawTextureData;
+        mNumChannels = other.mNumChannels;
+        mAnisoLevel = other.mAnisoLevel;
+        mDimension = other.mDimension;
+        mFormat = other.mFormat;
+        mWrapMode = other.mWrapMode;
+        mFilterMode = other.mFilterMode;
+        mDeviceUpdateRequired = other.mDeviceUpdateRequired;
+        mUpdateRequired = other.mUpdateRequired;
+        mSource = other.mSource;
+        mWidth = other.mWidth;
+        mHeight = other.mHeight;
+        mName = other.mName;
+        mHide = other.mHide;
+
+        // Free the existing resource.
+        delete mTex;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mTex = other.mTex;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mTex = nullptr;
+    }
+    return *this;
+}
+
 void Texture2D::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

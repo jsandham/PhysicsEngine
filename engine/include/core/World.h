@@ -123,6 +123,8 @@ class World
     ~World();
     World(const World &other) = delete;
     World &operator=(const World &other) = delete;
+    World(World &&other) = delete;
+    World &operator=(World &&other) = delete;
 
     void loadAllAssetsInPath(const std::filesystem::path &filePath);
     Cubemap* loadCubemapFromYAML(const std::string &filePath);

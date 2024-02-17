@@ -44,10 +44,6 @@ FreeLookCameraSystem::FreeLookCameraSystem(World *world, const Guid &guid, const
     mRenderToScreen = false;
 }
 
-FreeLookCameraSystem::~FreeLookCameraSystem()
-{
-}
-
 void FreeLookCameraSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

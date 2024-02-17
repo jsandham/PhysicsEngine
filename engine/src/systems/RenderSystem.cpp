@@ -194,7 +194,7 @@ void RenderSystem::update()
 
             if (mRaytraceEnabled)
             {
-                mRaytracer.update(camera, mTLAS, mBLAS, mBVH2, mSpheres);
+                mRaytracer.update(camera, mTLAS, mBLAS, mCachedModels, mBVH2, mSpheres);
             }
         }
     }
@@ -381,8 +381,8 @@ void RenderSystem::buildBVH()
 
 void RenderSystem::buildTLAS()
 {
-    /*// Spheres test
-    static bool generate_bvh = true;
+    // Spheres test
+    /*static bool generate_bvh = true;
     if (generate_bvh)
     {
         srand(0);
@@ -411,130 +411,21 @@ void RenderSystem::buildTLAS()
     }*/
 
 
-
-
-
-
-
-
-    /*// TLAS and BLAS test
-    static bool generate_blas = true;
-    if (generate_blas)
-    {
-        Mesh *planeMesh = mWorld->getPrimtiveMesh(PrimitiveType::Plane);
-        Mesh *sphereMesh = mWorld->getPrimtiveMesh(PrimitiveType::Sphere);
-        Mesh *cubeMesh = mWorld->getPrimtiveMesh(PrimitiveType::Cube);
-
-        std::vector<float> planeVertices = planeMesh->getVertices();
-        std::vector<float> sphereVertices = sphereMesh->getVertices();
-        std::vector<float> cubeVertices = cubeMesh->getVertices();
-
-        std::vector<unsigned int> planeIndices = planeMesh->getIndices();
-        std::vector<unsigned int> sphereIndices = sphereMesh->getIndices();
-        std::vector<unsigned int> cubeIndices = cubeMesh->getIndices();
-
-        std::vector<Triangle> planeTriangles(planeIndices.size() / 3);
-        std::vector<Triangle> sphereTriangles(sphereIndices.size() / 3);
-        std::vector<Triangle> cubeTriangles(cubeIndices.size() / 3);
-
-        for (size_t i = 0; i < planeIndices.size() / 3; i++)
-        {
-            unsigned int i0 = planeIndices[3 * i + 0];
-            unsigned int i1 = planeIndices[3 * i + 1];
-            unsigned int i2 = planeIndices[3 * i + 2];
-
-            glm::vec3 v0 = glm::vec3(planeVertices[3 * i0 + 0], planeVertices[3 * i0 + 1], planeVertices[3 * i0 + 2]);
-            glm::vec3 v1 = glm::vec3(planeVertices[3 * i1 + 0], planeVertices[3 * i1 + 1], planeVertices[3 * i1 + 2]);
-            glm::vec3 v2 = glm::vec3(planeVertices[3 * i2 + 0], planeVertices[3 * i2 + 1], planeVertices[3 * i2 + 2]);
-
-            planeTriangles[i].mV0 = v0;
-            planeTriangles[i].mV1 = v1;
-            planeTriangles[i].mV2 = v2;
-        }
-
-        for (size_t i = 0; i < sphereIndices.size() / 3; i++)
-        {
-            unsigned int i0 = sphereIndices[3 * i + 0];
-            unsigned int i1 = sphereIndices[3 * i + 1];
-            unsigned int i2 = sphereIndices[3 * i + 2];
-
-            glm::vec3 v0 =
-                glm::vec3(sphereVertices[3 * i0 + 0], sphereVertices[3 * i0 + 1], sphereVertices[3 * i0 + 2]);
-            glm::vec3 v1 =
-                glm::vec3(sphereVertices[3 * i1 + 0], sphereVertices[3 * i1 + 1], sphereVertices[3 * i1 + 2]);
-            glm::vec3 v2 =
-                glm::vec3(sphereVertices[3 * i2 + 0], sphereVertices[3 * i2 + 1], sphereVertices[3 * i2 + 2]);
-
-            sphereTriangles[i].mV0 = v0;
-            sphereTriangles[i].mV1 = v1;
-            sphereTriangles[i].mV2 = v2;
-        }
-
-        for (size_t i = 0; i < cubeIndices.size() / 3; i++)
-        {
-            unsigned int i0 = cubeIndices[3 * i + 0];
-            unsigned int i1 = cubeIndices[3 * i + 1];
-            unsigned int i2 = cubeIndices[3 * i + 2];
-
-            glm::vec3 v0 = glm::vec3(cubeVertices[3 * i0 + 0], cubeVertices[3 * i0 + 1], cubeVertices[3 * i0 + 2]);
-            glm::vec3 v1 = glm::vec3(cubeVertices[3 * i1 + 0], cubeVertices[3 * i1 + 1], cubeVertices[3 * i1 + 2]);
-            glm::vec3 v2 = glm::vec3(cubeVertices[3 * i2 + 0], cubeVertices[3 * i2 + 1], cubeVertices[3 * i2 + 2]);
-
-            cubeTriangles[i].mV0 = v0;
-            cubeTriangles[i].mV1 = v1;
-            cubeTriangles[i].mV2 = v2;
-        }
-
-        glm::mat4 planeModel = glm::mat4(1.0f);
-        planeModel[0] *= 10.0f;
-        planeModel[1] *= 10.0f;
-        planeModel[2] *= 10.0f;
-        glm::mat4 sphereModelLeft = glm::mat4(1.0f);
-        sphereModelLeft[3] = glm::vec4(-2.0f, 1.0f, 0.0f, 1.0f);
-        glm::mat4 sphereModelCentre = glm::mat4(1.0f);
-        sphereModelCentre[3] = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-        glm::mat4 sphereModelRight = glm::mat4(1.0f);
-        sphereModelRight[3] = glm::vec4(2.0f, 1.0f, 0.0f, 1.0f);
-        glm::mat4 cubeModel = glm::mat4(1.0f);
-        cubeModel[3] = glm::vec4(0.0f, 3.0f, 0.0f, 1.0f);
-
-        mBLAS.resize(5);
-        mBLAS[0].buildBLAS(planeTriangles);
-        mBLAS[0].setModel(planeModel);
-        mBLAS[1].buildBLAS(sphereTriangles);
-        mBLAS[1].setModel(sphereModelLeft);
-        mBLAS[2].buildBLAS(sphereTriangles);
-        mBLAS[2].setModel(sphereModelCentre);
-        mBLAS[3].buildBLAS(sphereTriangles);
-        mBLAS[3].setModel(sphereModelRight);
-        mBLAS[4].buildBLAS(cubeTriangles);
-        mBLAS[4].setModel(cubeModel);
-
-        generate_blas = false;
-    }
-
-    mTLAS.buildTLAS(mBLAS);*/
-
-
-
-
-
     size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
-    mBLAS.resize(meshRendererCount);
-
-    for (size_t i = 0; i < meshRendererCount; i++)
+    if(meshRendererCount > 0)
     {
-        MeshRenderer *meshRenderer = mWorld->getActiveScene()->getComponentByIndex<MeshRenderer>(i);
-        Mesh *mesh = mWorld->getAssetById<Mesh>(meshRenderer->getMeshId());
+        mBLAS.resize(meshRendererCount);
 
-        TransformData *transformData = mWorld->getActiveScene()->getTransformDataByMeshRendererIndex(i);
+        for (size_t i = 0; i < meshRendererCount; i++)
+        {
+            Mesh* mesh = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
 
-        mBLAS[i] = mesh->getBLAS();
-        mBLAS[i]->setModel(transformData->getModelMatrix());
+            mBLAS[i] = mesh->getBLAS();
+        }
+
+        mTLAS.buildTLAS(mBLAS, mCachedModels);
     }
-
-    mTLAS.buildTLAS(mBLAS);
 }
 
 void RenderSystem::frustumCulling(const Camera *camera)
@@ -543,66 +434,79 @@ void RenderSystem::frustumCulling(const Camera *camera)
 
     if (meshRendererCount > 0)
     {
-        mDistanceToCamera.resize(meshRendererCount);
-        mFrustumVisible.resize(meshRendererCount);
-        for (size_t i = 0; i < mFrustumVisible.size(); i++)
+        if (true)
         {
-            mDistanceToCamera[i] = std::pair<float, int>(std::numeric_limits<float>::max(), static_cast<int>(i));
-            mFrustumVisible[i] = 0;
-        }
-
-        std::queue<int> queue;
-        queue.push(0);
-
-        while (!queue.empty())
-        {
-            int nodeIndex = queue.front();
-            queue.pop();
-
-            BVHNode *node = &mBVH.mNodes[nodeIndex];
-
-            AABB aabb;
-            aabb.mCentre = 0.5f * (node->mMax + node->mMin);
-            aabb.mSize = node->mMax - node->mMin;
-
-            if (Intersect::intersect(aabb, camera->getFrustum()))
+            mDistanceToCamera.resize(meshRendererCount);
+            mFrustumVisible.resize(meshRendererCount);
+            for (size_t i = 0; i < mFrustumVisible.size(); i++)
             {
-                if (node->mIndexCount == 0)
-                {
-                    queue.push(node->mLeftOrStartIndex);
-                    queue.push(node->mLeftOrStartIndex + 1);
-                }
-                else
-                {
-                    float distanceToCamera = glm::distance2(aabb.mCentre, camera->getPosition());
+                mDistanceToCamera[i] = std::pair<float, int>(std::numeric_limits<float>::max(), static_cast<int>(i));
+                mFrustumVisible[i] = 0;
+            }
 
-                    int startIndex = node->mLeftOrStartIndex;
-                    int endIndex = startIndex + node->mIndexCount;
-                    for (int i = startIndex; i < endIndex; i++)
+            std::queue<int> queue;
+            queue.push(0);
+
+            while (!queue.empty())
+            {
+                int nodeIndex = queue.front();
+                queue.pop();
+
+                assert(nodeIndex < mBVH.mNodes.size());
+
+                BVHNode *node = &mBVH.mNodes[nodeIndex];
+
+                AABB aabb;
+                aabb.mCentre = 0.5f * (node->mMax + node->mMin);
+                aabb.mSize = node->mMax - node->mMin;
+
+                if (Intersect::intersect(aabb, camera->getFrustum()))
+                {
+                    if (node->mIndexCount == 0)
                     {
-                        mFrustumVisible[mBVH.mPerm[i]] = 1;
+                        queue.push(node->mLeftOrStartIndex);
+                        queue.push(node->mLeftOrStartIndex + 1);
+                    }
+                    else
+                    {
+                        float distanceToCamera = glm::distance2(aabb.mCentre, camera->getPosition());
 
-                        mDistanceToCamera[mBVH.mPerm[i]] = std::pair<float, int>(distanceToCamera, mBVH.mPerm[i]);
+                        int startIndex = node->mLeftOrStartIndex;
+                        int endIndex = startIndex + node->mIndexCount;
+
+                        // if (!(endIndex >= 0 && endIndex <= mBVH.mPerm.size()) || !(startIndex >= 0 && startIndex <
+                        // mBVH.mPerm.size()))
+                        //{
+                        //     std::cout << "startIndex: " << startIndex << " endIndex: " << endIndex << std::endl;
+                        // }
+
+                        assert((startIndex >= 0 && startIndex < mBVH.mPerm.size()));
+                        assert((endIndex >= 0 && endIndex <= mBVH.mPerm.size()));
+
+                        for (int i = startIndex; i < endIndex; i++)
+                        {
+                            mFrustumVisible[mBVH.mPerm[i]] = 1;
+
+                            mDistanceToCamera[mBVH.mPerm[i]] = std::pair<float, int>(distanceToCamera, mBVH.mPerm[i]);
+                        }
                     }
                 }
             }
-            else
+        }
+        else
+        {
+            for (size_t i = 0; i < meshRendererCount; i++)
             {
-                mFrustumVisible[mBVH.mPerm[node->mLeftOrStartIndex]] = 0;
+                mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()); 
+                //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
+            
+                float distanceToCamera = mFrustumVisible[i]
+                                           ? glm::distance2(mCachedBoundingSpheres[i].mCentre, camera->getPosition())
+                                           : std::numeric_limits<float>::max();
+
+                mDistanceToCamera[i] = std::pair<float, int>(distanceToCamera, static_cast<int>(i));
             }
         }
-
-        //for (size_t i = 0; i < meshRendererCount; i++)
-        //{
-        //    mFrustumVisible[i] = Intersect::intersect(mCachedBoundingSpheres[i], camera->getFrustum()); 
-        //    //mFrustumVisible[i] = Intersect::intersect(mCachedBoundingAABBs[i], camera->getFrustum());
-        //
-        //    float distanceToCamera = mFrustumVisible[i]
-        //                               ? glm::distance2(mCachedBoundingSpheres[i].mCentre, camera->getPosition())
-        //                               : std::numeric_limits<float>::max();
-
-        //    mDistanceToCamera[i] = std::pair<float, int>(distanceToCamera, static_cast<int>(i));
-        //}
     }
 }
 

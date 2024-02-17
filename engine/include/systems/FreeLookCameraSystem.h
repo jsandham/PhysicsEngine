@@ -59,7 +59,6 @@ class FreeLookCameraSystem
   public:
     FreeLookCameraSystem(World *world, const Id &id);
     FreeLookCameraSystem(World *world, const Guid &guid, const Id &id);
-    ~FreeLookCameraSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

@@ -34,6 +34,8 @@ class DeferredRenderer
     ~DeferredRenderer();
     DeferredRenderer(const DeferredRenderer &other) = delete;
     DeferredRenderer &operator=(const DeferredRenderer &other) = delete;
+    DeferredRenderer(DeferredRenderer &&other) = delete;
+    DeferredRenderer &operator=(DeferredRenderer &&other) = delete;
 
     void init(World *world);
     void update(Camera *camera, const std::vector<DrawCallCommand> &commands,

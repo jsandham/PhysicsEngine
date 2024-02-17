@@ -26,10 +26,6 @@ PhysicsSystem::PhysicsSystem(World *world, const Guid &guid, const Id &id) : mWo
     mEnabled = true;
 }
 
-PhysicsSystem::~PhysicsSystem()
-{
-}
-
 void PhysicsSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

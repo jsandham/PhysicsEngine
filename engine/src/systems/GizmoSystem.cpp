@@ -16,10 +16,6 @@ GizmoSystem::GizmoSystem(World *world, const Guid &guid, const Id &id) : mWorld(
     mEnabled = true;
 }
 
-GizmoSystem::~GizmoSystem()
-{
-}
-
 void GizmoSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

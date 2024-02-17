@@ -40,7 +40,6 @@ class SphereCollider
   public:
     SphereCollider(World *world, const Id &id);
     SphereCollider(World *world, const Guid &guid, const Id &id);
-    ~SphereCollider();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

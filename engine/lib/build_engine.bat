@@ -54,7 +54,8 @@ echo %CUDA_PATH2%
 
 :: compile cuda code
 echo [92mCompiling CUDA engine code...[0m
-call nvcc -c -g -I%CUDA_PATH2% -Xcompiler "%OPT% %MODEFLAGS_CUDA% " "../src/graphics/platform/gpgpu/cuda/gpgpu.cu" --output-file "%MODE%/obj/gpgpu.obj"
+nvcc --version
+call nvcc -c -g -I%GLM% -I%CUDA_PATH2% -Xcompiler "%OPT% %MODEFLAGS_CUDA% " "../src/graphics/platform/gpgpu/cuda/gpgpu.cu" --output-file "%MODE%/obj/gpgpu.obj"
 
 :: compile c++ code
 echo [92mCompiling C++ engine code...[0m

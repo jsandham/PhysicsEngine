@@ -148,6 +148,84 @@ Camera::~Camera()
     delete mTargets.mRaytracingIntersectionCountTex;
 }
 
+Camera &Camera::operator=(Camera &&other)
+{
+    std::cout << "In operator=(Camera&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mHide = other.mHide;
+        mRenderTextureId = other.mRenderTextureId;
+        mRenderPath = other.mRenderPath;
+        mColorTarget = other.mColorTarget;
+        mMode = other.mMode;
+        mSSAO = other.mSSAO;
+        mShadowCascades = other.mShadowCascades;
+        mGizmos = other.mGizmos;
+        mBackgroundColor = other.mBackgroundColor;
+        mQuery = other.mQuery;
+        mEnabled = other.mEnabled;
+        mRenderToScreen = other.mRenderToScreen;
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mEntityGuid = other.mEntityGuid;
+        mWorld = other.mWorld;
+        mFrustum = other.mFrustum;
+        mViewport = other.mViewport;
+        for (int i = 0; i < 64; i++)
+        {
+            mSsaoSamples[i] = other.mSsaoSamples[i];
+        }
+        mCascadeSplits = other.mCascadeSplits;
+        mViewMatrix = other.mViewMatrix;
+        mInvViewMatrix = other.mInvViewMatrix;
+        mProjMatrix = other.mProjMatrix;
+        mInvProjMatrix = other.mInvProjMatrix;
+        mViewProjMatrix = other.mViewProjMatrix;
+        mInvViewProjMatrix = other.mInvViewProjMatrix;
+        mPosition = other.mPosition;
+        mForward = other.mForward;
+        mUp = other.mUp;
+        mRight = other.mRight;
+        mColoringIds = other.mColoringIds;
+        mSamplesPerPixel = other.mSamplesPerPixel;
+        mIntersectionCount = other.mIntersectionCount;
+        mImage = other.mImage;
+        mIsViewportChanged = other.mIsViewportChanged;
+        mMoved = other.mMoved;
+
+        // Free the existing resource.
+        delete mTargets.mMainFBO;
+        delete mTargets.mColorPickingFBO;
+        delete mTargets.mGeometryFBO;
+        delete mTargets.mSsaoFBO;
+        delete mTargets.mOcclusionMapFBO;
+        delete mTargets.mRaytracingTex;
+        delete mTargets.mRaytracingIntersectionCountTex;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mTargets.mMainFBO = other.mTargets.mMainFBO;
+        mTargets.mColorPickingFBO = other.mTargets.mColorPickingFBO;
+        mTargets.mGeometryFBO = other.mTargets.mGeometryFBO;
+        mTargets.mSsaoFBO = other.mTargets.mSsaoFBO;
+        mTargets.mOcclusionMapFBO = other.mTargets.mOcclusionMapFBO;
+        mTargets.mRaytracingTex = other.mTargets.mRaytracingTex;
+        mTargets.mRaytracingIntersectionCountTex = other.mTargets.mRaytracingIntersectionCountTex;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        other.mTargets.mMainFBO = nullptr;
+        other.mTargets.mColorPickingFBO = nullptr;
+        other.mTargets.mGeometryFBO = nullptr;
+        other.mTargets.mSsaoFBO = nullptr;
+        other.mTargets.mOcclusionMapFBO = nullptr;
+        other.mTargets.mRaytracingTex = nullptr;
+        other.mTargets.mRaytracingIntersectionCountTex = nullptr;
+    }
+    return *this;
+}
+
 void Camera::serialize(YAML::Node &out) const
 {
     out["type"] = getType();
@@ -646,7 +724,7 @@ static glm::vec3 computeColorIterative(const BVH &bvh, const std::vector<Sphere>
 }
 
 // Iterative computeColor using TLAS and BLAS
-static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS*> &blas,
+static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models,
                                        const std::vector<RaytraceMaterial> &materials, const Ray &ray, int maxDepth, int& intersectCount)
 {
     intersectCount = 0;
@@ -670,7 +748,7 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS*
         }
 
         //glm::vec3 normal = glm::normalize(blas[hit.blasIndex].getTriangle(hit.mTriIndex).getUnitNormal());
-        glm::vec3 normal = blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(hit.mTriIndex);
+        glm::vec3 normal = blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(models[hit.blasIndex], hit.mTriIndex);
         glm::vec3 point = ray2.getPoint(hit.mT);
 
         if (materials[hit.blasIndex].mType == RaytraceMaterial::MaterialType::Lambertian)
@@ -710,14 +788,14 @@ static glm::vec3 computeColorIterative(const TLAS &tlas, const std::vector<BLAS*
 }
 
 // Iterative computeNormals using TLAS and BLAS
-static glm::vec3 computeNormalsIterative(const TLAS &tlas, const std::vector<BLAS*> &blas, const Ray &ray, int &intersectCount)
+static glm::vec3 computeNormalsIterative(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models, const Ray &ray, int &intersectCount)
 {
     intersectCount = 0;
     TLASHit hit = tlas.intersectTLAS(ray, intersectCount);
 
     if (hit.blasIndex >= 0)
     {
-        return blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(hit.mTriIndex);
+        return blas[hit.blasIndex]->getTriangleWorldSpaceUnitNormal(models[hit.blasIndex], hit.mTriIndex);
     }
     else
     {
@@ -859,7 +937,7 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
     }
 }
 
-void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
+void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
 {
     // Image size
     int width = getNativeGraphicsRaytracingTex()->getWidth();
@@ -910,7 +988,7 @@ void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, con
                 glm::vec3 color = glm::vec3(red, green, blue);
 
                 int intersectionCount = 0;
-                color += computeColorIterative(tlas, blas, materials, getCameraRay(pixelSampleNDC), maxBounces,
+                color += computeColorIterative(tlas, blas, models, materials, getCameraRay(pixelSampleNDC), maxBounces,
                                                intersectionCount);
 
                 // Store computed color to image
@@ -924,7 +1002,8 @@ void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, con
     }
 }
 
-void Camera::raytraceNormals(const TLAS &tlas, const std::vector<BLAS*> &blas, int maxSamples)
+void Camera::raytraceNormals(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
+                             int maxSamples)
 {
     // Image size
     int width = getNativeGraphicsRaytracingTex()->getWidth();
@@ -975,7 +1054,7 @@ void Camera::raytraceNormals(const TLAS &tlas, const std::vector<BLAS*> &blas, i
                 glm::vec3 color = glm::vec3(red, green, blue);
 
                 int intersectionCount = 0;
-                color += computeNormalsIterative(tlas, blas, getCameraRay(pixelSampleNDC), intersectionCount);
+                color += computeNormalsIterative(tlas, blas, models, getCameraRay(pixelSampleNDC), intersectionCount);
 
                 // Store computed color to image
                 mImage[3 * offset + 0] = color.r;

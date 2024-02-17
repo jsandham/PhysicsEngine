@@ -42,10 +42,6 @@ MeshRenderer::MeshRenderer(World *world, const Guid &guid, const Id &id) : mWorl
     mEnabled = true;
 }
 
-MeshRenderer::~MeshRenderer()
-{
-}
-
 void MeshRenderer::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

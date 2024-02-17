@@ -25,7 +25,6 @@ class CleanUpSystem
   public:
     CleanUpSystem(World *world, const Id &id);
     CleanUpSystem(World *world, const Guid &guid, const Id &id);
-    ~CleanUpSystem();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

@@ -29,7 +29,7 @@ DirectXRenderContext::DirectXRenderContext(void *window)
     sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // DXGI_SWAP_EFFECT_DISCARD;
     sd.Flags = 0;
 
-    HRESULT hr =
+    HRESULT hresult =
         D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, nullptr, 0,
                                       D3D11_SDK_VERSION, &sd, &mSwapChain, &mD3DDevice, nullptr, &mD3DDeviceContext);
 
@@ -39,7 +39,7 @@ DirectXRenderContext::DirectXRenderContext(void *window)
     }
 
     LPTSTR lpBuf = NULL;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, hr,
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, hresult,
                   0, (LPTSTR)&lpBuf, 0, NULL);
 
     ID3D11Resource *backbuffer = nullptr;

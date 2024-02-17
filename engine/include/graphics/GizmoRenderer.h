@@ -134,6 +134,8 @@ class GizmoRenderer
     ~GizmoRenderer();
     GizmoRenderer(const GizmoRenderer &other) = delete;
     GizmoRenderer &operator=(const GizmoRenderer &other) = delete;
+    GizmoRenderer(GizmoRenderer &&other) = delete;
+    GizmoRenderer &operator=(GizmoRenderer &&other) = delete;
 
     void init(World *world);
     void update(Camera *camera);

@@ -51,6 +51,7 @@ class RenderTexture
     RenderTexture(World *world, const Id &id, int width, int height);
     RenderTexture(World *world, const Id &id, int width, int height, TextureFormat format);
     ~RenderTexture();
+    RenderTexture &operator=(RenderTexture &&other);
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

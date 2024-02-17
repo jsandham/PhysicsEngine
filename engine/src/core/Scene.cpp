@@ -397,10 +397,6 @@ Scene::Scene(World *world, const Guid &guid, const Id &id) : mWorld(world), mGui
     mVersion = SCENE_VERSION;
 }
 
-Scene::~Scene()
-{
-}
-
 void Scene::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

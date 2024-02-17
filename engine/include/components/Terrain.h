@@ -89,6 +89,7 @@ class Terrain
     Terrain(World *world, const Id &id);
     Terrain(World *world, const Guid &guid, const Id &id);
     ~Terrain();
+    Terrain &operator=(Terrain &&other);
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

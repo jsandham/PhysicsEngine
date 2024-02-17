@@ -111,6 +111,65 @@ Mesh::~Mesh()
     delete mHandle;
 }
 
+Mesh &Mesh::operator=(Mesh &&other)
+{
+    std::cout << "In operator=(Mesh&&)." << std::endl;
+
+    if (this != &other)
+    {
+        mGuid = other.mGuid;
+        mId = other.mId;
+        mWorld = other.mWorld;
+        mSource = other.mSource;
+        mSourceFilepath = other.mSourceFilepath;
+        mVertices = other.mVertices;
+        mNormals = other.mNormals;
+        mTexCoords = other.mTexCoords;
+        mColors = other.mColors;
+        mIndices = other.mIndices;
+        mVertexCount = other.mVertexCount;
+        mIndexCount = other.mIndexCount;
+        mSubMeshVertexStartIndices = other.mSubMeshVertexStartIndices;
+        mSubMeshStartIndices = other.mSubMeshStartIndices;
+        mBounds = other.mBounds;
+        mDeviceUpdateRequired = other.mDeviceUpdateRequired;
+        mBLAS = other.mBLAS;
+        mName = other.mName;
+        mHide = other.mHide;
+
+        // Free the existing resource.
+        delete mHandle;
+        delete mVertexBuffer;
+        delete mNormalBuffer;
+        delete mTexCoordsBuffer;
+        delete mInstanceModelBuffer;
+        delete mInstanceColorBuffer;
+        delete mIndexBuffer;
+
+        // Copy the data pointer and its length from the
+        // source object.
+        mHandle = other.mHandle;
+        mVertexBuffer = other.mVertexBuffer;
+        mNormalBuffer = other.mNormalBuffer;
+        mTexCoordsBuffer = other.mTexCoordsBuffer;
+        mInstanceModelBuffer = other.mInstanceModelBuffer;
+        mInstanceColorBuffer = other.mInstanceColorBuffer;
+        mIndexBuffer = other.mIndexBuffer;
+
+        // Release the data pointer from the source object so that
+        // the destructor does not free the memory multiple times.
+        mHandle = nullptr;
+        mVertexBuffer = nullptr;
+        mNormalBuffer = nullptr;
+        mTexCoordsBuffer = nullptr;
+        mInstanceModelBuffer = nullptr;
+        mInstanceColorBuffer = nullptr;
+        mIndexBuffer = nullptr;
+    }
+    return *this;
+}
+
+
 void Mesh::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

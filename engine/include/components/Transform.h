@@ -62,7 +62,6 @@ class Transform
   public:
     Transform(World *world, const Id &id);
     Transform(World *world, const Guid &guid, const Id &id);
-    ~Transform();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

@@ -21,10 +21,6 @@ DebugSystem::DebugSystem(World *world, const Guid &guid, const Id &id) : mWorld(
     mEnabled = true;
 }
 
-DebugSystem::~DebugSystem()
-{
-}
-
 void DebugSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

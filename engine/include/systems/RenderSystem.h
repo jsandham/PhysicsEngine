@@ -93,6 +93,7 @@ class RenderSystem
     std::vector<Sphere> mSpheres;
     TLAS mTLAS;
     std::vector<BLAS*> mBLAS;
+    std::vector<int> mBLASIndices;
 
   public:
     HideFlag mHide;
@@ -103,6 +104,10 @@ class RenderSystem
     RenderSystem(World *world, const Id &id);
     RenderSystem(World *world, const Guid &guid, const Id &id);
     ~RenderSystem();
+    RenderSystem(const RenderSystem &other) = delete;
+    RenderSystem &operator=(const RenderSystem &other) = delete;
+    RenderSystem(RenderSystem &&other) = delete;
+    RenderSystem &operator=(RenderSystem &&other) = delete;
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

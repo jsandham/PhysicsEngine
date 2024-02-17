@@ -53,6 +53,7 @@ class Cubemap
     Cubemap(World *world, const Id &id, int width);
     Cubemap(World *world, const Id &id, int width, TextureFormat format);
     ~Cubemap();
+    Cubemap &operator=(Cubemap &&other);
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

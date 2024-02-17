@@ -118,6 +118,7 @@ class Camera
     Camera(World *world, const Id &id);
     Camera(World *world, const Guid &guid, const Id &id);
     ~Camera();
+    Camera &operator=(Camera &&other);
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);
@@ -194,9 +195,12 @@ class Camera
  
     void clearPixels();
     void resizePixels();
-    void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
-    void raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
-    void raytraceNormals(const TLAS &tlas, const std::vector<BLAS*> &blas, int maxSamples);
+    void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
+                         const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceScene(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
+                       const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceNormals(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
+                         int maxSamples);
     void updateFinalImage();
 
     void clearPixelsUsingDevice();

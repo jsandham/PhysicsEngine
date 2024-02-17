@@ -78,10 +78,6 @@ Transform::Transform(World *world, const Guid &guid, const Id &id) : mWorld(worl
     mEntityGuid = Guid::INVALID;
 }
 
-Transform::~Transform()
-{
-}
-
 void Transform::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

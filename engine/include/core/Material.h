@@ -39,7 +39,6 @@ class Material
   public:
     Material(World *world, const Id &id);
     Material(World *world, const Guid &guid, const Id &id);
-    ~Material();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

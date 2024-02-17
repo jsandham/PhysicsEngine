@@ -18,10 +18,6 @@ BoxCollider::BoxCollider(World *world, const Guid &guid, const Id &id) : mWorld(
     mEnabled = true;
 }
 
-BoxCollider::~BoxCollider()
-{
-}
-
 void BoxCollider::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

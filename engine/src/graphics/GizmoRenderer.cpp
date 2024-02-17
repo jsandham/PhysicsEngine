@@ -806,8 +806,6 @@ void GizmoRenderer::renderBVHGizmos(Camera *camera)
                                                             camera->getViewport().mWidth,
                                                             camera->getViewport().mHeight);
 
-            Transform *transform = camera->getComponent<Transform>();
-
             glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 
             mGridShader->bind();
@@ -1173,8 +1171,6 @@ void GizmoRenderer::renderBoundingVolumeHeirarchy(Camera *camera)
             camera->getNativeGraphicsMainFBO()->setViewport(camera->getViewport().mX, camera->getViewport().mY,
                                                             camera->getViewport().mWidth,
                                                             camera->getViewport().mHeight);
-
-            Transform *transform = camera->getComponent<Transform>();
 
             glm::mat4 mvp = camera->getProjMatrix() * camera->getViewMatrix();
 

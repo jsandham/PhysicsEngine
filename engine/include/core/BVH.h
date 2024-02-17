@@ -1,16 +1,6 @@
 #ifndef BVH_H__
 #define BVH_H__
 
-// no sorting
-// head on 5.3 million intersectAABB
-// rotated 3.4 million intersectAABB
-// fully culled 65536 intersectAABB
-
-// with sorting
-// head on 4.2 million intersectAABB
-// rotated 1.8 million intersectAABB
-// fully culled 65536 intersectAABB
-
 #include <vector>
 #include <queue>
 #include <stack>
@@ -174,6 +164,9 @@ struct BVH
             int startIndex = node->mLeftOrStartIndex;
             int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
 
+            assert((startIndex >= 0 && startIndex < mPerm.size()));
+            assert((endIndex >= 0 && endIndex <= mPerm.size()));
+
             for (int i = startIndex; i < endIndex; i++)
             {
                 const AABB *aabb = &boundingAABBs[mPerm[i]];
@@ -332,9 +325,6 @@ struct BLAS
     std::vector<BVHNode> mNodes;
     std::vector<int> mPerm;
     std::vector<Triangle> mTriangles;
-    
-    glm::mat4 mModel;
-    glm::mat4 mInverseModel;
 
     inline int getNodeCount() const
     {
@@ -346,20 +336,14 @@ struct BLAS
         return mTriangles[index];
     }
 
-    inline glm::vec3 getTriangleWorldSpaceNormal(size_t index) const
+    inline glm::vec3 getTriangleWorldSpaceNormal(const glm::mat4 &model, size_t index) const
     {
-        return glm::vec3(mModel * glm::vec4(getTriangle(index).getNormal(), 0.0f));
+        return glm::vec3(model * glm::vec4(getTriangle(index).getNormal(), 0.0f));
     }
 
-    inline glm::vec3 getTriangleWorldSpaceUnitNormal(size_t index) const
+    inline glm::vec3 getTriangleWorldSpaceUnitNormal(const glm::mat4 &model, size_t index) const
     {
-        return glm::normalize(getTriangleWorldSpaceNormal(index));
-    }
-
-    void setModel(const glm::mat4& model)
-    {
-        mModel = model;
-        mInverseModel = glm::inverse(model);
+        return glm::normalize(getTriangleWorldSpaceNormal(model, index));
     }
 
     struct Bin
@@ -397,6 +381,9 @@ struct BLAS
                         std::numeric_limits<float>::lowest());
                     bins[i].mTriCount = 0;
                 }
+
+                assert((startIndex >= 0 && startIndex < mPerm.size()));
+                assert((endIndex >= 0 && endIndex <= mPerm.size()));
 
                 for (int i = startIndex; i < endIndex; i++)
                 {
@@ -521,6 +508,14 @@ struct BLAS
             int startIndex = node->mLeftOrStartIndex;
             int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
 
+            if (!(endIndex >= 0 && endIndex <= mPerm.size()) || !(startIndex >= 0 && startIndex < mPerm.size()))
+            {
+                std::cout << "startIndex: " << startIndex << " endIndex: " << endIndex << std::endl;
+            }
+
+            assert((startIndex >= 0 && startIndex < mPerm.size()));
+            assert((endIndex >= 0 && endIndex <= mPerm.size()));
+
             for (int i = startIndex; i < endIndex; i++)
             {
                 const Triangle *tri = &triangles[mPerm[i]];
@@ -596,15 +591,11 @@ struct BLAS
 
     BLASHit intersectBLAS(const Ray &ray, float maxt, int &intersectCount) const
     {
-        Ray modelSpaceRay;
-        modelSpaceRay.mOrigin = mInverseModel * glm::vec4(ray.mOrigin, 1.0f);
-        modelSpaceRay.mDirection = mInverseModel * glm::vec4(ray.mDirection, 0.0f);
-
         BLASHit hit;
         hit.mTriIndex = -1;
         hit.mT = maxt;
 
-        float root_t = intersectAABB(modelSpaceRay, mNodes[0].mMin, mNodes[0].mMax);
+        float root_t = intersectAABB(ray, mNodes[0].mMin, mNodes[0].mMax);
         intersectCount++;
         if (root_t == std::numeric_limits<float>::max())
         {
@@ -633,7 +624,7 @@ struct BLAS
 
                 for (int j = startIndex; j < endIndex; j++)
                 {
-                    float t = intersectTri(mTriangles[mPerm[j]], modelSpaceRay);
+                    float t = intersectTri(mTriangles[mPerm[j]], ray);
                     if (t > 0.001f && t < hit.mT)
                     {
                         hit.mT = t;
@@ -645,8 +636,8 @@ struct BLAS
             {
                 const BVHNode *left = &mNodes[node->mLeftOrStartIndex];
                 const BVHNode *right = &mNodes[node->mLeftOrStartIndex + 1];
-                float lt = intersectAABB(modelSpaceRay, left->mMin, left->mMax);
-                float rt = intersectAABB(modelSpaceRay, right->mMin, right->mMax);
+                float lt = intersectAABB(ray, left->mMin, left->mMax);
+                float rt = intersectAABB(ray, right->mMin, right->mMax);
                 intersectCount += 2;
 
                 if (lt <= rt)
@@ -681,7 +672,7 @@ struct BLAS
         return hit;
     }
 
-    AABB getAABBBounds() const
+    AABB getAABBBounds(const glm::mat4 &model) const
     {
         glm::vec3 size = mNodes[0].mMax - mNodes[0].mMin;
 
@@ -697,7 +688,7 @@ struct BLAS
 
         for (int i = 0; i < 8; i++)
         {
-            a[i] = glm::vec3(mModel * glm::vec4(a[i], 1.0f));
+            a[i] = glm::vec3(model * glm::vec4(a[i], 1.0f));
         }
 
         glm::vec3 min = a[0];
@@ -728,25 +719,36 @@ struct TLAS
     std::vector<BVHNode> mNodes;
     std::vector<int> mPerm;
     std::vector<BLAS*> mBLAS;
+    std::vector<glm::mat4> mModels;
+    std::vector<glm::mat4> mInverseModels;
 
     inline int getNodeCount() const
     {
         return (2 * (int)mBLAS.size() - 1);
     }
 
-    void buildTLAS(const std::vector<BLAS*> &blas)
+    void buildTLAS(const std::vector<BLAS*> &blas, const std::vector<glm::mat4>& models)
     {
         if (blas.size() == 0)
         {
             return;
         }
 
-        mBLAS = blas;
+        assert(blas.size() == models.size());
 
-        std::vector<AABB> boundingAABBs(blas.size());
+        mBLAS = blas;
+        mModels = models;
+
+        mInverseModels.resize(mModels.size());
+        for (size_t i = 0; i < mInverseModels.size(); i++)
+        {
+            mInverseModels[i] = glm::inverse(mModels[i]);
+        }
+
+        std::vector<AABB> boundingAABBs(mBLAS.size());
         for (size_t i = 0; i < boundingAABBs.size(); i++)
         {
-            boundingAABBs[i] = blas[i]->getAABBBounds();
+            boundingAABBs[i] = mBLAS[i]->getAABBBounds(mModels[i]);
         }
 
         mPerm.resize(blas.size());
@@ -790,6 +792,9 @@ struct TLAS
 
             int startIndex = node->mLeftOrStartIndex;
             int endIndex = node->mLeftOrStartIndex + node->mIndexCount;
+
+            assert((startIndex >= 0 && startIndex < mPerm.size()));
+            assert((endIndex >= 0 && endIndex <= mPerm.size()));
 
             for (int i = startIndex; i < endIndex; i++)
             {
@@ -892,7 +897,11 @@ struct TLAS
 
                 for (int j = startIndex; j < endIndex; j++)
                 {
-                    BLASHit h = mBLAS[mPerm[j]]->intersectBLAS(ray, hit.mT, intersectCount);
+                    Ray modelSpaceRay;
+                    modelSpaceRay.mOrigin = mInverseModels[mPerm[j]] * glm::vec4(ray.mOrigin, 1.0f);
+                    modelSpaceRay.mDirection = mInverseModels[mPerm[j]] * glm::vec4(ray.mDirection, 0.0f);
+
+                    BLASHit h = mBLAS[mPerm[j]]->intersectBLAS(modelSpaceRay, hit.mT, intersectCount);
 
                     if (h.mT > 0.001f && h.mT < hit.mT)
                     {

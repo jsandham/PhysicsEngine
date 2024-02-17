@@ -17,10 +17,6 @@ CleanUpSystem::CleanUpSystem(World *world, const Guid &guid, const Id &id) : mWo
     mEnabled = true;
 }
 
-CleanUpSystem::~CleanUpSystem()
-{
-}
-
 void CleanUpSystem::serialize(YAML::Node &out) const
 {
     out["type"] = getType();
