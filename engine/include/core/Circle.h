@@ -15,7 +15,6 @@ class Circle
   public:
     Circle();
     Circle(glm::vec3 centre, glm::vec3 normal, float radius);
-    ~Circle();
 
     float getArea() const;
     float getCircumference() const;

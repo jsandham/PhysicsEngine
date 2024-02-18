@@ -10,10 +10,6 @@ Circle::Circle(glm::vec3 centre, glm::vec3 normal, float radius) : mCentre(centr
 {
 }
 
-Circle::~Circle()
-{
-}
-
 float Circle::getArea() const
 {
     return glm::pi<float>() * mRadius * mRadius;

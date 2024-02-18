@@ -118,6 +118,9 @@ class Camera
     Camera(World *world, const Id &id);
     Camera(World *world, const Guid &guid, const Id &id);
     ~Camera();
+    Camera(const Camera &other) = delete;
+    Camera &operator=(const Camera &other) = delete;
+    Camera(Camera &&other) = delete;
     Camera &operator=(Camera &&other);
 
     void serialize(YAML::Node &out) const;
@@ -138,7 +141,6 @@ class Camera
                            const glm::vec3 &right);
     void setColoringIds(const std::vector<Id> &ids);
 
-    bool isCreated() const;
     bool isViewportChanged() const;
     bool moved() const;
     glm::vec3 getPosition() const;
@@ -203,12 +205,15 @@ class Camera
                          int maxSamples);
     void updateFinalImage();
 
-    void clearPixelsUsingDevice();
-    void resizePixelsUsingDevice();
-    void updateFinalImageUsingDevice();
-
     Ray getCameraRay(const glm::vec2 &pixelSampleNDC) const;
     Ray getCameraRay(int u, int v, float du, float dv) const;   
+
+
+
+    void clearPixelsUsingDevice();
+    void resizePixelsUsingDevice();
+    void raytraceNormalsUsingDevice();
+    void updateFinalImageUsingDevice();
 
   private:
     friend class Scene;

@@ -18,10 +18,6 @@ Rect::Rect(const glm::vec2 &min, const glm::vec2 &max)
     mHeight = max.y - min.y;
 }
 
-Rect::~Rect()
-{
-}
-
 bool Rect::contains(float x, float y) const
 {
     float maxX = mX + mWidth;

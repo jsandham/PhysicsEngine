@@ -474,12 +474,6 @@ void RenderSystem::frustumCulling(const Camera *camera)
                         int startIndex = node->mLeftOrStartIndex;
                         int endIndex = startIndex + node->mIndexCount;
 
-                        // if (!(endIndex >= 0 && endIndex <= mBVH.mPerm.size()) || !(startIndex >= 0 && startIndex <
-                        // mBVH.mPerm.size()))
-                        //{
-                        //     std::cout << "startIndex: " << startIndex << " endIndex: " << endIndex << std::endl;
-                        // }
-
                         assert((startIndex >= 0 && startIndex < mBVH.mPerm.size()));
                         assert((endIndex >= 0 && endIndex <= mBVH.mPerm.size()));
 

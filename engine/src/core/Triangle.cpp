@@ -13,10 +13,6 @@ Triangle::Triangle(const glm::vec3 &v0, const glm::vec3 &v1, const glm::vec3 &v2
 {
 }
 
-Triangle::~Triangle()
-{
-}
-
 glm::vec3 Triangle::getBarycentric(const glm::vec3 &p) const
 {
     glm::vec3 e1 = mV1 - mV0;

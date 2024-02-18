@@ -937,7 +937,8 @@ void Camera::raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
     }
 }
 
-void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
+void Camera::raytraceScene(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
+                           const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples)
 {
     // Image size
     int width = getNativeGraphicsRaytracingTex()->getWidth();
@@ -1133,47 +1134,6 @@ void Camera::updateFinalImage()
     mTargets.mRaytracingIntersectionCountTex->load(finalIntersectCountImage);
 }
 
-void Camera::clearPixelsUsingDevice()
-{
-    // Image size
-    int width = getNativeGraphicsRaytracingTex()->getWidth();
-    int height = getNativeGraphicsRaytracingTex()->getHeight();
-
-    gpgpu::clearPixels(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), width, height);
-}
-
-void Camera::resizePixelsUsingDevice()
-{
-    // Image size
-    int width = getNativeGraphicsRaytracingTex()->getWidth();
-    int height = getNativeGraphicsRaytracingTex()->getHeight();
-
-    if (width * height * 3 != mImage.size())
-    {
-        mImage.resize(width * height * 3);
-        mSamplesPerPixel.resize(width * height);
-        mIntersectionCount.resize(width * height);
-
-        this->clearPixelsUsingDevice();
-    }
-}
-
-void Camera::updateFinalImageUsingDevice()
-{
-    // Image size
-    int width = getNativeGraphicsRaytracingTex()->getWidth();
-    int height = getNativeGraphicsRaytracingTex()->getHeight();
-
-    std::vector<unsigned char> finalImage(3 * width * height);
-    std::vector<unsigned char> finalIntersectionCountImage(3 * width * height);
-
-    gpgpu::updateFinalImage(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), finalImage.data(),
-                            finalIntersectionCountImage.data(), width, height);
-
-    mTargets.mRaytracingTex->load(finalImage);
-    mTargets.mRaytracingIntersectionCountTex->load(finalIntersectionCountImage);
-}
-
 Ray Camera::getCameraRay(const glm::vec2 &pixelSampleNDC) const
 {
     // Transform NDC coordinate back to world space
@@ -1217,4 +1177,80 @@ Ray Camera::getCameraRay(int u, int v, float du, float dv) const
     ray.mDirection = pixelCentre_WorldSpace - this->getPosition();
 
     return ray;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void Camera::clearPixelsUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    gpgpu::clearPixels(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), width, height);
+}
+
+void Camera::resizePixelsUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    if (width * height * 3 != mImage.size())
+    {
+        mImage.resize(width * height * 3);
+        mSamplesPerPixel.resize(width * height);
+        mIntersectionCount.resize(width * height);
+
+        this->clearPixelsUsingDevice();
+    }
+}
+
+void Camera::raytraceNormalsUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    gpgpu::raytraceNormals(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), getPosition(), getProjMatrix(), width, height);
+}
+
+void Camera::updateFinalImageUsingDevice()
+{
+    // Image size
+    int width = getNativeGraphicsRaytracingTex()->getWidth();
+    int height = getNativeGraphicsRaytracingTex()->getHeight();
+
+    std::vector<unsigned char> finalImage(3 * width * height);
+    std::vector<unsigned char> finalIntersectionCountImage(3 * width * height);
+
+    gpgpu::updateFinalImage(mImage.data(), mSamplesPerPixel.data(), mIntersectionCount.data(), finalImage.data(),
+                            finalIntersectionCountImage.data(), width, height);
+
+    mTargets.mRaytracingTex->load(finalImage);
+    mTargets.mRaytracingIntersectionCountTex->load(finalIntersectionCountImage);
 }

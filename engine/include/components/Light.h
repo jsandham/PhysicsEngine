@@ -53,6 +53,9 @@ class Light
     Light(World *world, const Id &id);
     Light(World *world, const Guid &guid, const Id &id);
     ~Light();
+    Light(const Light &other) = delete;
+    Light &operator=(const Light &other) = delete;
+    Light(Light &&other) = delete;
     Light &operator=(Light &&other);
 
     void serialize(YAML::Node &out) const;

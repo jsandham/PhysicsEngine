@@ -15,7 +15,6 @@ class Capsule
   public:
     Capsule();
     Capsule(glm::vec3 centre, float radius, float height);
-    ~Capsule();
 };
 } // namespace PhysicsEngine
 

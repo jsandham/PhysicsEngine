@@ -10,10 +10,6 @@ Line::Line(glm::vec3 start, glm::vec3 end) : mStart(start), mEnd(end)
 {
 }
 
-Line::~Line()
-{
-}
-
 float Line::getLength() const
 {
     return glm::distance(mStart, mEnd);

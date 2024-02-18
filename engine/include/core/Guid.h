@@ -22,7 +22,6 @@ class Guid
     Guid(const unsigned char *bytes);
     Guid(const Guid &guid);
     Guid(const std::string &str);
-    ~Guid();
 
     Guid &operator=(const Guid &guid);
     bool operator==(const Guid &guid) const;

@@ -52,6 +52,9 @@ class Texture2D
     Texture2D(World *world, const Id &id, int width, int height);
     Texture2D(World *world, const Id &id, int width, int height, TextureFormat format);
     ~Texture2D();
+    Texture2D(const Texture2D &other) = delete;
+    Texture2D &operator=(const Texture2D &other) = delete;
+    Texture2D(Texture2D &&other) = delete;
     Texture2D &operator=(Texture2D &&other);
 
     void serialize(YAML::Node &out) const;

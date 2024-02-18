@@ -12,11 +12,6 @@ Raytracer::Raytracer()
 {
 }
 
-Raytracer ::~Raytracer()
-{
-
-}
-
 void Raytracer::init(World *world)
 {
     mWorld = world;
@@ -140,7 +135,22 @@ void Raytracer::update(Camera *camera, const TLAS &tlas, const std::vector<BLAS 
             materials[i].mEmissive = glm::vec3(30.0f, 25.0f, 15.0f);
         }
         
-        materials[i].mAlbedo = (i % 2 == 0) ? glm::vec3(0.8f, 0.2f, 0.5f) : glm::vec3(0.8f, 0.6f, 0.2f);
+        if (i % 4 == 0)
+        {
+            materials[i].mAlbedo = glm::vec3(0.8f, 0.2f, 0.5f);
+        }
+        else if (i % 4 == 1)
+        {
+            materials[i].mAlbedo = glm::vec3(0.8f, 0.6f, 0.2f);
+        }
+        else if (i % 4 == 2)
+        {
+            materials[i].mAlbedo = glm::vec3(0.4f, 0.5f, 0.8f);
+        }
+        else
+        {
+            materials[i].mAlbedo = glm::vec3(0.3f, 0.7f, 0.4f);
+        }
         materials[i].mFuzz = 0.0f;
     }
 
@@ -152,8 +162,9 @@ void Raytracer::update(Camera *camera, const TLAS &tlas, const std::vector<BLAS 
     camera->resizePixels();
 
     auto start = std::chrono::high_resolution_clock::now();
-    camera->raytraceScene(tlas, blas, models, materials, 5, 32);
+    //camera->raytraceScene(tlas, blas, models, materials, 5, 32);
     //camera->raytraceNormals(tlas, blas, models, 32);
+    camera->raytraceNormalsUsingDevice();
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed_time = end - start;
 

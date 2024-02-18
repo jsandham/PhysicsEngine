@@ -30,7 +30,6 @@ class Entity
   public:
     Entity(World *world, const Id &id);
     Entity(World *world, const Guid &guid, const Id &id);
-    ~Entity();
 
     void serialize(YAML::Node &out) const;
     void deserialize(const YAML::Node &in);

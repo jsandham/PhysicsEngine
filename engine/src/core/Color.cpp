@@ -28,10 +28,6 @@ Color::Color(const glm::vec4 &rgba) : mR(rgba.x), mG(rgba.y), mB(rgba.z), mA(rgb
 {
 }
 
-Color::~Color()
-{
-}
-
 const Color32 Color32::clear(0, 0, 0, 0);
 const Color32 Color32::white(255, 255, 255, 255);
 const Color32 Color32::black(0, 0, 0, 255);
@@ -50,10 +46,6 @@ Color32::Color32() : mR(0), mG(0), mB(0), mA(0)
 }
 
 Color32::Color32(unsigned char r, unsigned char g, unsigned char b, unsigned char a) : mR(r), mG(g), mB(b), mA(a)
-{
-}
-
-Color32::~Color32()
 {
 }
 

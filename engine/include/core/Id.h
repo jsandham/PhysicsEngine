@@ -14,7 +14,6 @@ class Id
   public:
     Id();
     Id(int id);
-    ~Id();
 
     Id &operator=(const Id &id);
     bool operator==(const Id &id) const;

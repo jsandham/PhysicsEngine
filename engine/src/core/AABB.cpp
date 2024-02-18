@@ -14,10 +14,6 @@ AABB::AABB(const glm::vec3 &centre, const glm::vec3 &size) : mCentre(centre), mS
 {
 }
 
-AABB::~AABB()
-{
-}
-
 glm::vec3 AABB::getExtents() const
 {
     return 0.5f * mSize;

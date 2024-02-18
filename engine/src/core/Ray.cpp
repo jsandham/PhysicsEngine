@@ -10,10 +10,6 @@ Ray::Ray(const glm::vec3 &origin, const glm::vec3 &direction) : mOrigin(origin),
 {
 }
 
-Ray::~Ray()
-{
-}
-
 glm::vec3 Ray::getPoint(float t) const
 {
     return mOrigin + t * mDirection;

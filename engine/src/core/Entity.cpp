@@ -20,10 +20,6 @@ Entity::Entity(World *world, const Guid &guid, const Id &id) : mWorld(world), mG
     mDoNotDestroy = false;
 }
 
-Entity::~Entity()
-{
-}
-
 void Entity::serialize(YAML::Node &out) const
 {
     out["type"] = getType();

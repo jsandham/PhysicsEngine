@@ -18,9 +18,6 @@ namespace PhysicsEngine
 
       public:
         Raytracer();
-        ~Raytracer();
-        Raytracer(const Raytracer &other) = delete;
-        Raytracer &operator=(const Raytracer &other) = delete;
 
         void init(World *world);
         void update(Camera *camera, const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models, const BVH & bvh, const std::vector<Sphere> &spheres);

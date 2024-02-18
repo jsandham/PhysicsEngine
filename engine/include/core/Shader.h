@@ -65,6 +65,9 @@ class Shader
     Shader(World *world, const Id &id);
     Shader(World *world, const Guid &guid, const Id &id);
     ~Shader();
+    Shader(const Shader &other) = delete;
+    Shader &operator=(const Shader &other) = delete;
+    Shader(Shader &&other) = delete;
     Shader &operator=(Shader &&other);
 
     void serialize(YAML::Node &out) const;

@@ -12,10 +12,6 @@ Id::Id(int id) : mId(id)
 {
 }
 
-Id::~Id()
-{
-}
-
 Id &Id::operator=(const Id &id)
 {
     if (this != &id)

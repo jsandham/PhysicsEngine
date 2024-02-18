@@ -18,7 +18,6 @@ class Rect
     Rect();
     Rect(float x, float y, float width, float height);
     Rect(const glm::vec2 &min, const glm::vec2 &max);
-    ~Rect();
 
     bool contains(float x, float y) const;
     float getArea() const;

@@ -137,10 +137,6 @@ Guid::Guid(const unsigned char *bytes)
     }
 }
 
-Guid::~Guid()
-{
-}
-
 Guid &Guid::operator=(const Guid &guid)
 {
     if (this != &guid)

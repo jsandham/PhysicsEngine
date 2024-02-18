@@ -30,7 +30,6 @@ class Color
     Color();
     Color(float r, float g, float b, float a);
     Color(const glm::vec4 &rgba);
-    ~Color();
 };
 
 class Color32
@@ -57,7 +56,6 @@ class Color32
   public:
     Color32();
     Color32(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-    ~Color32();
 
     // Allows use of Color32 as key in unordered_map
     bool operator==(const Color32 &other) const
