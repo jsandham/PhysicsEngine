@@ -1,8 +1,9 @@
 #include "../../../../include/graphics/platform/directx/DirectXMeshHandle.h"
 #include "../../../../include/graphics/platform/directx/DirectXShaderProgram.h"
 #include "../../../../include/graphics/platform/directx/DirectXError.h"
-
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
+
+#include "../../../../include/core/Log.h"
 
 #include <assert.h>
 

@@ -6,6 +6,7 @@
 #include "yaml-cpp/yaml.h"
 
 #include "glm.h"
+#include "CoreYaml.h"
 #include "AssetEnums.h"
 #include "Guid.h"
 #include "Color.h"

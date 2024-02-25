@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "CoreYaml.h"
 #include "SerializationEnums.h"
 #include "Guid.h"
 #include "Id.h"

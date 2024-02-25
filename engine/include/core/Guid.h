@@ -6,8 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "yaml-cpp/yaml.h"
-
 namespace PhysicsEngine
 {
 // see https://github.com/graeme-hill/crossguid
@@ -41,26 +39,6 @@ class Guid
 
 std::ostream &operator<<(std::ostream &os, const Guid &id);
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// Guid
-template <> struct convert<PhysicsEngine::Guid>
-{
-    static Node encode(const PhysicsEngine::Guid &rhs)
-    {
-        Node node;
-        node = rhs.toString();
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::Guid &rhs)
-    {
-        rhs = node.as<std::string>();
-        return true;
-    }
-};
-} // namespace YAML
 
 // allow use of Guid in unordered_set and unordered_map
 namespace std

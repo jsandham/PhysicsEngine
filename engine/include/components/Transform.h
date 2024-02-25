@@ -6,6 +6,7 @@
 #include "../core/Guid.h"
 #include "../core/Id.h"
 
+#include "ComponentYaml.h"
 #include "ComponentEnums.h"
 
 namespace PhysicsEngine

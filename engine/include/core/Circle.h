@@ -1,7 +1,7 @@
 #ifndef CIRCLE_H__
 #define CIRCLE_H__
 
-#include "GlmYaml.h"
+#include "glm.h"
 
 namespace PhysicsEngine
 {
@@ -20,30 +20,5 @@ class Circle
     float getCircumference() const;
 };
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// Circle
-template <> struct convert<PhysicsEngine::Circle>
-{
-    static Node encode(const PhysicsEngine::Circle &rhs)
-    {
-        Node node;
-        node["centre"] = rhs.mCentre;
-        node["normal"] = rhs.mNormal;
-        node["radius"] = rhs.mRadius;
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::Circle &rhs)
-    {
-        rhs.mCentre = node["centre"].as<glm::vec3>();
-        rhs.mNormal = node["normal"].as<glm::vec3>();
-        rhs.mRadius = node["radius"].as<float>();
-
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif

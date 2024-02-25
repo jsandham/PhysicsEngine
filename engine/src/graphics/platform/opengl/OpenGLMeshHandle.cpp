@@ -148,7 +148,7 @@ void OpenGLMeshHandle::draw(size_t vertexOffset, size_t vertexCount)
 void OpenGLMeshHandle::drawIndexed(size_t indexOffset, size_t indexCount)
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawElements(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, 0));
+    CHECK_ERROR(glDrawElements(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(unsigned int))));
     CHECK_ERROR(glBindVertexArray(0));
 }
 
@@ -162,6 +162,6 @@ void OpenGLMeshHandle::drawInstanced(size_t vertexOffset, size_t vertexCount, si
 void OpenGLMeshHandle::drawIndexedInstanced(size_t indexOffset, size_t indexCount, size_t instanceCount)
 {
     CHECK_ERROR(glBindVertexArray(mVao));
-    CHECK_ERROR(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, 0, (GLsizei)instanceCount));
+    CHECK_ERROR(glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)indexCount, GL_UNSIGNED_INT, (void*)(indexOffset * sizeof(unsigned int)), (GLsizei)instanceCount));
     CHECK_ERROR(glBindVertexArray(0));
 }

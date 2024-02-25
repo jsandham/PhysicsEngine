@@ -5,6 +5,8 @@
 #include <thread>
 #include <vector>
 
+#include "yaml-cpp/yaml.h"
+
 #include "../core/SerializationEnums.h"
 #include "../core/AssetEnums.h"
 #include "../core/Guid.h"

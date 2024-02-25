@@ -7,6 +7,7 @@
 #include "Guid.h"
 #include "Id.h"
 #include "Types.h"
+#include "CoreYaml.h"
 #include "SerializationEnums.h"
 
 namespace PhysicsEngine

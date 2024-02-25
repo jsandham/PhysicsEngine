@@ -8,6 +8,7 @@
 #include "../core/Sphere.h"
 #include "../core/AABB.h"
 
+#include "ComponentYaml.h"
 #include "ComponentEnums.h"
 
 namespace PhysicsEngine

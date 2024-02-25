@@ -10,6 +10,7 @@
 
 #include "../graphics/MeshHandle.h"
 
+#include "ComponentYaml.h"
 #include "ComponentEnums.h"
 
 namespace PhysicsEngine

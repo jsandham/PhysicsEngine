@@ -614,9 +614,11 @@ struct mat4
 
 
 
-struct Triangle
+struct DeviceTriangle
 {
-
+    float v0_x, v0_y, v0_z;
+    float v1_x, v1_y, v1_z;
+    float v2_x, v2_y, v2_z;
 };
 
 
@@ -850,9 +852,66 @@ void gpgpu::clearPixels(float *image, int *samplesPerPixel, int* intersectionCou
     CHECK_CUDA(cudaFree(d_image));
 }
 
-void gpgpu::raytraceNormals(float *image, int *samplesPerPixel, int *intersectionCount, glm::vec3 cameraPosition,
+struct DeviceBVHNode
+{
+    float minx, miny, minz;
+    float maxx, maxy, maxz;
+    // If indexCount == 0 (i.e. not a leaf node) then leftOrStartIndex is the left child index
+    // If indexCount != 0 (i.e. a leaf node) then leftOrStartIndex is the start index
+    int leftOrStartIndex;
+    int indexCount;
+
+    __device__ inline bool isLeaf() const
+    {
+        return indexCount > 0;
+    }
+};
+
+struct DeviceBLAS
+{
+    DeviceBVHNode *nodes;
+    int *perm;
+    DeviceTriangle *triangles;
+};
+
+//struct DeviceTLAS
+//{
+//    DeviceBVHNode *nodes;
+//    int *perm;
+//    DeviceBLAS **blas;
+//    mat4 *models;
+//    mat4 *inverseModels;
+//};
+
+
+struct DeviceTLAS
+{
+    DeviceBVHNode *nodes;
+    int *perm;
+    //DeviceBLAS **blas;
+    DeviceBVHNode *blasNodes;
+    int *blasPerm;
+    DeviceTriangle *blasTriangles;
+    
+    mat4 *models;
+    mat4 *inverseModels;
+};
+
+
+
+
+void gpgpu::raytraceNormals(const PhysicsEngine::RTGeometry &geometry, float *image, int *samplesPerPixel,
+                            int *intersectionCount, glm::vec3 cameraPosition,
                             glm::mat4 projectionMatrix, int width, int height)
 {
+    // Allocate TLAS and BLAS structures on device
+    //DeviceBLAS **d_blas = nullptr;
+    //DeviceTLAS *d_tlas = nullptr;
+    //CHECK_CUDA(cudaMalloc((void**)&d_blas, sizeof(DeviceBLAS*) * blas.size()));
+
+
+
+
     int *d_samplesPerPixel = nullptr;
     int *d_intersectionCount = nullptr;
     float *d_image = nullptr;

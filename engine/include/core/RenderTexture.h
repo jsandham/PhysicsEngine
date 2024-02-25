@@ -4,6 +4,7 @@
 #include "../graphics/Framebuffer.h"
 
 #include "SerializationEnums.h"
+#include "AssetYaml.h"
 #include "AssetEnums.h"
 #include "Guid.h"
 #include "Id.h"

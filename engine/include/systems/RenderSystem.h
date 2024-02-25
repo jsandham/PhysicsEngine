@@ -10,6 +10,7 @@
 #include "../core/AABB.h"
 #include "../core/Sphere.h"
 #include "../core/BVH.h"
+#include "../core/RTGeometry.h"
 
 #include "../components/Camera.h"
 #include "../components/Transform.h"
@@ -89,11 +90,7 @@ class RenderSystem
     std::vector<Batch> mBatches;
 
     // Raytracing
-    BVH mBVH2;
-    std::vector<Sphere> mSpheres;
-    TLAS mTLAS;
-    std::vector<BLAS*> mBLAS;
-    std::vector<int> mBLASIndices;
+    RTGeometry mRTGeometry;
 
   public:
     HideFlag mHide;
@@ -127,7 +124,9 @@ class RenderSystem
     void registerRenderAssets();
     void cacheRenderData();
     void buildBVH();
-    void buildTLAS();
+    void createRTGeometry();
+    void destroyRTGeometry();
+    void buildRTGeometry();
     void frustumCulling(const Camera *camera);
     void occlusionCulling(const Camera *camera);
     void buildRenderQueue();

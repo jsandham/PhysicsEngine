@@ -3,13 +3,13 @@
 
 #include <vector>
 
-#include "../core/BVH.h"
+#include "../core/RTGeometry.h"
 #include "../core/RaytraceMaterial.h"
 
 namespace PhysicsEngine
 {
 	class World;
-	class Camera;;
+	class Camera;
 
 	class Raytracer
 	{
@@ -20,7 +20,7 @@ namespace PhysicsEngine
         Raytracer();
 
         void init(World *world);
-        void update(Camera *camera, const TLAS &tlas, const std::vector<BLAS*> &blas, const std::vector<glm::mat4> &models, const BVH & bvh, const std::vector<Sphere> &spheres);
+        void update(Camera *camera, const RTGeometry &geomtry);
 
 	};
 }

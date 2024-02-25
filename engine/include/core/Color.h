@@ -1,7 +1,9 @@
 #ifndef COLOR_H__
 #define COLOR_H__
 
-#include "GlmYaml.h"
+#include <string>
+
+#include "glm.h"
 
 namespace PhysicsEngine
 {
@@ -89,64 +91,5 @@ template <> struct hash<PhysicsEngine::Color32>
     }
 };
 } // namespace std
-
-namespace YAML
-{
-// Color
-template <> struct convert<PhysicsEngine::Color>
-{
-    static Node encode(const PhysicsEngine::Color &rhs)
-    {
-        Node node;
-        node.push_back(rhs.mR);
-        node.push_back(rhs.mG);
-        node.push_back(rhs.mB);
-        node.push_back(rhs.mA);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::Color &rhs)
-    {
-        if (!node.IsSequence() || node.size() != 4)
-        {
-            return false;
-        }
-
-        rhs.mR = node[0].as<float>();
-        rhs.mG = node[1].as<float>();
-        rhs.mB = node[2].as<float>();
-        rhs.mA = node[3].as<float>();
-        return true;
-    }
-};
-
-// Color32
-template <> struct convert<PhysicsEngine::Color32>
-{
-    static Node encode(const PhysicsEngine::Color32 &rhs)
-    {
-        Node node;
-        node.push_back(rhs.mR);
-        node.push_back(rhs.mG);
-        node.push_back(rhs.mB);
-        node.push_back(rhs.mA);
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::Color32 &rhs)
-    {
-        if (!node.IsSequence() || node.size() != 4)
-        {
-            return false;
-        }
-
-        rhs.mR = node[0].as<unsigned char>();
-        rhs.mG = node[1].as<unsigned char>();
-        rhs.mB = node[2].as<unsigned char>();
-        rhs.mA = node[3].as<unsigned char>();
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif

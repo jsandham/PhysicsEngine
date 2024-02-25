@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "yaml-cpp/yaml.h"
+
 #include "../core/SerializationEnums.h"
 #include "../core/Guid.h"
 #include "../core/Id.h"

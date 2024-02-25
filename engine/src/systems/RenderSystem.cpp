@@ -144,7 +144,8 @@ void RenderSystem::update()
     cacheRenderData();
 
     buildBVH();
-    buildTLAS();
+    createRTGeometry();
+    buildRTGeometry();
 
     for (size_t i = 0; i < mWorld->getActiveScene()->getNumberOfComponents<Camera>(); i++)
     {
@@ -194,10 +195,12 @@ void RenderSystem::update()
 
             if (mRaytraceEnabled)
             {
-                mRaytracer.update(camera, mTLAS, mBLAS, mCachedModels, mBVH2, mSpheres);
+                mRaytracer.update(camera, mRTGeometry);
             }
         }
     }
+
+    destroyRTGeometry();
 }
 
 void RenderSystem::registerRenderAssets()
@@ -379,52 +382,30 @@ void RenderSystem::buildBVH()
     }
 }
 
-void RenderSystem::buildTLAS()
+void RenderSystem::createRTGeometry()
 {
-    // Spheres test
-    /*static bool generate_bvh = true;
-    if (generate_bvh)
-    {
-        srand(0);
-        int sphereCount = 9;
-        mSpheres.resize(sphereCount);
-        mSpheres[0] = Sphere(glm::vec3(0.0, -100.5, -1.0f), 100.0f);
-        mSpheres[1] = Sphere(glm::vec3(2.0f, 0.0f, -1.0f), 0.5f);
-        mSpheres[2] = Sphere(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f);
-        mSpheres[3] = Sphere(glm::vec3(-2.0f, 0.0f, -1.0f), 0.5f);
-        mSpheres[4] = Sphere(glm::vec3(2.0f, 0.0f, 1.0f), 0.5f);
-        mSpheres[5] = Sphere(glm::vec3(0.0f, 0.0f, 1.0f), 0.5f);
-        mSpheres[6] = Sphere(glm::vec3(-2.0f, 0.0f, 1.0f), 0.5f);
-        mSpheres[7] = Sphere(glm::vec3(0.5f, 1.0f, 0.5f), 0.5f);
-        mSpheres[8] = Sphere(glm::vec3(-1.5f, 1.5f, 0.0f), 0.3f);
+    mRTGeometry.createRTGeometry();
+}
 
-        std::vector<AABB> boundingVolumes(sphereCount);
-        for (int i = 0; i < sphereCount; i++)
-        {
-            boundingVolumes[i].mCentre = mSpheres[i].mCentre;
-            boundingVolumes[i].mSize = 2.0f * glm::vec3(mSpheres[i].mRadius, mSpheres[i].mRadius, mSpheres[i].mRadius);
-        }
+void RenderSystem::destroyRTGeometry()
+{
+    mRTGeometry.destroyRTGeometry();
+}
 
-        mBVH2.buildBVH(boundingVolumes);
-
-        generate_bvh = true;
-    }*/
-
-
+void RenderSystem::buildRTGeometry()
+{
     size_t meshRendererCount = mWorld->getActiveScene()->getNumberOfComponents<MeshRenderer>();
 
     if(meshRendererCount > 0)
     {
-        mBLAS.resize(meshRendererCount);
+        std::vector<Mesh *> meshes(meshRendererCount);        
 
         for (size_t i = 0; i < meshRendererCount; i++)
         {
-            Mesh* mesh = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
-
-            mBLAS[i] = mesh->getBLAS();
+            meshes[i] = mWorld->getAssetByIndex<Mesh>(mCachedMeshIndices[i]);
         }
 
-        mTLAS.buildTLAS(mBLAS, mCachedModels);
+        mRTGeometry.buildRTGeometryAccelStruct(meshes, mCachedModels);
     }
 }
 
@@ -752,7 +733,7 @@ void RenderSystem::buildDrawCallCommandList()
         }
 
         // If not using instancing, check if batching
-        int batchCount = 0;
+        /*int batchCount = 0;
         int batchVertexCount = 0;
         if (!instanced)
         {
@@ -787,7 +768,7 @@ void RenderSystem::buildDrawCallCommandList()
                     break;
                 }
             }
-        }
+        }*/
 
         //std::cout << "batchCount: " << batchCount << " batchVertexCount: " << batchVertexCount << std::endl;
 

@@ -9,6 +9,7 @@
 #include "../graphics/Framebuffer.h"
 #include "../graphics/RenderTextureHandle.h"
 
+#include "ComponentYaml.h"
 #include "ComponentEnums.h"
 
 namespace PhysicsEngine

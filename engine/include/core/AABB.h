@@ -1,7 +1,7 @@
 #ifndef AABB_H__
 #define AABB_H__
 
-#include "GlmYaml.h"
+#include "glm.h"
 
 namespace PhysicsEngine
 {
@@ -22,27 +22,5 @@ class AABB
     float getSurfaceArea() const;
 };
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// AABB
-template <> struct convert<PhysicsEngine::AABB>
-{
-    static Node encode(const PhysicsEngine::AABB &rhs)
-    {
-        Node node;
-        node["centre"] = rhs.mCentre;
-        node["size"] = rhs.mSize;
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::AABB &rhs)
-    {
-        rhs.mCentre = node["centre"].as<glm::vec3>();
-        rhs.mSize = node["size"].as<glm::vec3>();
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif

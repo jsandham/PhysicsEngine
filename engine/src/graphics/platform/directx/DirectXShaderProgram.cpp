@@ -3,6 +3,7 @@
 
 #include "../../../../include/graphics/platform/directx/DirectXRenderContext.h"
 
+#include "../../../../include/core/Log.h"
 #include "../../../../include/core/Shader.h"
 
 #include <algorithm>

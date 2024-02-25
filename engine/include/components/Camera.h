@@ -19,6 +19,7 @@
 #include "../core/RenderTexture.h"
 #include "../core/Viewport.h"
 #include "../core/BVH.h"
+#include "../core/RTGeometry.h"
 #include "../core/RaytraceMaterial.h"
 
 #include "../graphics/Framebuffer.h"
@@ -26,6 +27,7 @@
 #include "../graphics/GraphicsQuery.h"
 #include "../graphics/RenderTextureHandle.h"
 
+#include "ComponentYaml.h"
 #include "ComponentEnums.h"
 
 namespace PhysicsEngine
@@ -106,7 +108,6 @@ class Camera
     glm::vec3 mRight;
 
     std::vector<Id> mColoringIds;
-
     std::vector<int> mSamplesPerPixel;
     std::vector<int> mIntersectionCount;
     std::vector<float> mImage;
@@ -197,12 +198,10 @@ class Camera
  
     void clearPixels();
     void resizePixels();
-    void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
-                         const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
-    void raytraceScene(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
-                       const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
-    void raytraceNormals(const TLAS &tlas, const std::vector<BLAS *> &blas, const std::vector<glm::mat4> &models,
-                         int maxSamples);
+    //void raytraceSpheres(const BVH &bvh, const std::vector<Sphere> &spheres,
+    //                     const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceScene(const RTGeometry &geometry, const std::vector<RaytraceMaterial> &materials, int maxBounces, int maxSamples);
+    void raytraceNormals(const RTGeometry &geometry, int maxSamples);
     void updateFinalImage();
 
     Ray getCameraRay(const glm::vec2 &pixelSampleNDC) const;
@@ -212,7 +211,7 @@ class Camera
 
     void clearPixelsUsingDevice();
     void resizePixelsUsingDevice();
-    void raytraceNormalsUsingDevice();
+    void raytraceNormalsUsingDevice(const RTGeometry &geometry);
     void updateFinalImageUsingDevice();
 
   private:

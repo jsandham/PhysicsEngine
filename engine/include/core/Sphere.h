@@ -1,7 +1,7 @@
 #ifndef SPHERE_H__
 #define SPHERE_H__
 
-#include "GlmYaml.h"
+#include "glm.h"
 
 namespace PhysicsEngine
 {
@@ -20,27 +20,5 @@ class Sphere
     glm::vec3 getUnitNormal(const glm::vec3 &point) const;
 };
 } // namespace PhysicsEngine
-
-namespace YAML
-{
-// Sphere
-template <> struct convert<PhysicsEngine::Sphere>
-{
-    static Node encode(const PhysicsEngine::Sphere &rhs)
-    {
-        Node node;
-        node["centre"] = rhs.mCentre;
-        node["radius"] = rhs.mRadius;
-        return node;
-    }
-
-    static bool decode(const Node &node, PhysicsEngine::Sphere &rhs)
-    {
-        rhs.mCentre = node["centre"].as<glm::vec3>();
-        rhs.mRadius = node["radius"].as<float>();
-        return true;
-    }
-};
-} // namespace YAML
 
 #endif
